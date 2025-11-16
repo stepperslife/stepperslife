@@ -128,6 +128,9 @@ services:
       AUTH_GOOGLE_CLIENT_ID: ${AUTH_GOOGLE_CLIENT_ID}
       AUTH_GOOGLE_CLIENT_SECRET: ${AUTH_GOOGLE_CLIENT_SECRET}
 
+      # Convex (Legacy - for backwards compatibility)
+      NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-https://thoughtful-panther-326.convex.cloud}
+
       # App URLs
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3004}
     ports:
