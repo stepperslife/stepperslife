@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Environment variables (local only)
+.env.local
+.env.*.local
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker
+docker-compose.override.yml
+.docker/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+postgres_data/
+*.sql.backup
+
+# Cache
+.cache/
+.next/cache/
+
+# Build outputs
+.turbo/
+.eslintcache
+
+# Backup files
+*.tar.gz
+*.zip
+backups/
+
+# Test coverage
+coverage/
+.nyc_output/
