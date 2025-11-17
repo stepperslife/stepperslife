@@ -2,7 +2,7 @@
 
 import { ConvexReactClient } from "convex/react";
 import { ConvexProvider } from "convex/react";
-import { ReactNode, useMemo, useEffect } from "react";
+import { ReactNode, useMemo, useEffect, useRef } from "react";
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!;
 
@@ -12,8 +12,18 @@ export function ConvexClientProvider({ children }: { children: ReactNode }) {
     return new ConvexReactClient(convexUrl);
   }, []);
 
+  const authSetupRef = useRef(false);
+
   useEffect(() => {
+    // Only set up auth once
+    if (authSetupRef.current) {
+      console.log("[ConvexClientProvider] Auth already set up, skipping");
+      return;
+    }
+
+    authSetupRef.current = true;
     console.log("[ConvexClientProvider] Setting up auth...");
+
     // Set up auth with an async function that fetches the token
     convex.setAuth(async () => {
       try {
