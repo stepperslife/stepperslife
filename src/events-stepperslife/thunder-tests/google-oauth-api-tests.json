@@ -1,0 +1,202 @@
+{
+  "clientName": "Thunder Client",
+  "collectionName": "Google OAuth API Tests",
+  "collectionId": "google-oauth-tests",
+  "dateExported": "2025-11-17",
+  "version": "1.2",
+  "folders": [],
+  "requests": [
+    {
+      "name": "1. GET /api/auth/google - Initiate OAuth",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/auth/google?callbackUrl=/organizer/events",
+      "headers": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "302",
+          "action": "equal"
+        },
+        {
+          "type": "res-header",
+          "value": "location",
+          "action": "istype"
+        }
+      ],
+      "colId": "google-oauth-tests",
+      "description": "Initiates Google OAuth flow. Should redirect to Google OAuth consent screen with state parameter.",
+      "docs": "This endpoint:\n1. Generates CSRF state token\n2. Stores state and callback URL in HTTP-only cookies\n3. Redirects to Google OAuth authorization URL\n\nExpected Response: 302 redirect to accounts.google.com"
+    },
+    {
+      "name": "2. GET /api/auth/callback/google - OAuth Callback",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/auth/callback/google?code=test_auth_code&state=test_state",
+      "headers": [
+        {
+          "name": "Cookie",
+          "value": "oauth_state=test_state"
+        }
+      ],
+      "tests": [],
+      "colId": "google-oauth-tests",
+      "description": "Handles OAuth callback from Google. Validates state, exchanges code for token, creates user session.",
+      "docs": "This endpoint:\n1. Validates CSRF state token\n2. Exchanges authorization code for access token\n3. Retrieves user info from Google\n4. Creates/updates user in database\n5. Creates JWT session token\n6. Sets session cookie\n7. Redirects to callback URL\n\nNote: This test will fail without a valid Google authorization code"
+    },
+    {
+      "name": "3. GET /api/auth/me - Get Current User",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/auth/me",
+      "headers": [
+        {
+          "name": "Cookie",
+          "value": "auth-token={{authToken}}"
+        }
+      ],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200",
+          "action": "equal"
+        },
+        {
+          "type": "json-query",
+          "value": "$.user",
+          "action": "istype"
+        }
+      ],
+      "colId": "google-oauth-tests",
+      "description": "Returns current authenticated user information based on session cookie.",
+      "docs": "Returns user object with:\n- id\n- email\n- name\n- image (optional)\n- authProvider\n- emailVerified\n\nRequires valid session cookie"
+    },
+    {
+      "name": "4. GET /api/auth/convex-token - Get Convex JWT",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/auth/convex-token",
+      "headers": [
+        {
+          "name": "Cookie",
+          "value": "auth-token={{authToken}}"
+        }
+      ],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200",
+          "action": "equal"
+        }
+      ],
+      "colId": "google-oauth-tests",
+      "description": "Returns Convex JWT token for authenticated user to access Convex backend.",
+      "docs": "Used by Convex client to authenticate API requests.\nReturns: { token: string } or { error: string }"
+    },
+    {
+      "name": "5. POST /api/auth/logout - Logout User",
+      "method": "POST",
+      "url": "{{baseUrl}}/api/auth/logout",
+      "headers": [
+        {
+          "name": "Cookie",
+          "value": "auth-token={{authToken}}"
+        }
+      ],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200",
+          "action": "equal"
+        }
+      ],
+      "colId": "google-oauth-tests",
+      "description": "Logs out user by clearing session cookie.",
+      "docs": "Clears the auth-token cookie by setting it with expired date.\nReturns: { success: true }"
+    },
+    {
+      "name": "6. GET /login - Login Page",
+      "method": "GET",
+      "url": "{{baseUrl}}/login",
+      "headers": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200",
+          "action": "equal"
+        },
+        {
+          "type": "res-body",
+          "value": "Continue with Google",
+          "action": "contains"
+        }
+      ],
+      "colId": "google-oauth-tests",
+      "description": "Login page should contain Google OAuth button.",
+      "docs": "Verifies the login page loads correctly and displays the Google sign-in option."
+    },
+    {
+      "name": "7. GET /organizer/events - Protected Route",
+      "method": "GET",
+      "url": "{{baseUrl}}/organizer/events",
+      "headers": [],
+      "tests": [],
+      "colId": "google-oauth-tests",
+      "description": "Test accessing protected route without authentication. Should redirect to login.",
+      "docs": "Protected routes should redirect unauthenticated users to /login"
+    },
+    {
+      "name": "8. GET /organizer/events - Protected Route (Authenticated)",
+      "method": "GET",
+      "url": "{{baseUrl}}/organizer/events",
+      "headers": [
+        {
+          "name": "Cookie",
+          "value": "auth-token={{authToken}}"
+        }
+      ],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200",
+          "action": "equal"
+        }
+      ],
+      "colId": "google-oauth-tests",
+      "description": "Test accessing protected route with valid authentication.",
+      "docs": "Authenticated users should be able to access organizer dashboard"
+    }
+  ],
+  "settings": {
+    "options": {
+      "baseUrl": "https://events.stepperslife.com"
+    },
+    "envId": "google-oauth-env"
+  },
+  "environments": [
+    {
+      "name": "Production",
+      "data": [
+        {
+          "name": "baseUrl",
+          "value": "https://events.stepperslife.com"
+        },
+        {
+          "name": "authToken",
+          "value": "YOUR_AUTH_TOKEN_HERE"
+        }
+      ],
+      "envId": "google-oauth-env-prod"
+    },
+    {
+      "name": "Local",
+      "data": [
+        {
+          "name": "baseUrl",
+          "value": "http://localhost:3004"
+        },
+        {
+          "name": "authToken",
+          "value": "YOUR_AUTH_TOKEN_HERE"
+        }
+      ],
+      "envId": "google-oauth-env-local"
+    }
+  ]
+}

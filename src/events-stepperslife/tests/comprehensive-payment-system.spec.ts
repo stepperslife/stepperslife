@@ -119,14 +119,14 @@ test.describe("Comprehensive Payment System Tests", () => {
         "CASH"
       );
 
-      console.log(`   Order ${i}: ${formatCents(order.totalCents)} - Status: PENDING_ACTIVATION`);
+      console.log(`   Order ${i}: ${formatCents(order.totalCents)} - Status: PENDING`);
 
       // Verify order
       const orderDetails = await verifyOrder(order.orderId);
       expect(orderDetails).not.toBeNull();
-      expect(orderDetails?.order.status).toBe("PENDING_ACTIVATION");
+      expect(orderDetails?.order.status).toBe("PENDING"); // Cash orders are PENDING until payment collected
       expect(orderDetails?.ticketCount).toBe(1);
-      expect(orderDetails?.tickets[0].status).toBe("PENDING_ACTIVATION");
+      expect(orderDetails?.tickets[0].status).toBe("PENDING_ACTIVATION"); // Tickets need activation code
       expect(orderDetails?.tickets[0].activationCode).toBeTruthy();
     }
 

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
+import { getJwtSecretEncoded, validateJwtSecret } from "@/lib/auth/jwt-secret";
+import { getBaseUrl } from "@/lib/constants/app-config";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,14 +13,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    // Verify the session token
-    const JWT_SECRET = process.env.JWT_SECRET || process.env.AUTH_SECRET;
-    if (!JWT_SECRET) {
-      console.error("[Convex Token] JWT_SECRET not configured");
+    // Verify the session token using centralized secret
+    const validation = validateJwtSecret();
+    if (!validation.valid) {
+      console.error("[Convex Token] JWT_SECRET not configured:", validation.error);
       return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
     }
 
-    const secret = new TextEncoder().encode(JWT_SECRET);
+    const secret = getJwtSecretEncoded();
 
     try {
       const { payload } = await jwtVerify(sessionToken.value, secret);
@@ -26,11 +28,12 @@ export async function GET(request: NextRequest) {
       // Create a Convex-compatible JWT token
       // Convex expects specific fields in the token
       // The token identifier format: domain|applicationID|subject
-      const tokenIdentifier = `https://events.stepperslife.com|convex|${payload.userId}`;
+      const baseUrl = getBaseUrl(request);
+      const tokenIdentifier = `${baseUrl}|convex|${payload.userId}`;
 
       const convexToken = await new SignJWT({
         sub: tokenIdentifier,
-        iss: "https://events.stepperslife.com",
+        iss: baseUrl,
         aud: "convex",
         email: payload.email as string,
         name: payload.name,

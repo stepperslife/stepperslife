@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
+import { APP_CONFIG } from "@/lib/constants/app-config";
 
 export const runtime = "nodejs";
 
@@ -52,10 +53,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return new NextResponse("Event or image not found", { status: 404 });
     }
 
-    // Fetch the original image
+    // Fetch the original image using centralized domain config
     const imageUrl = eventDetails.imageUrl.startsWith("http")
       ? eventDetails.imageUrl
-      : `https://events.stepperslife.com${eventDetails.imageUrl}`;
+      : `${APP_CONFIG.PROTOCOL}://${APP_CONFIG.DOMAIN}${eventDetails.imageUrl}`;
 
     const imageResponse = await fetch(imageUrl);
 

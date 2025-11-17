@@ -21,6 +21,14 @@ export default function EventsListClient() {
 
   const categories = useQuery(api.public.queries.getCategories, {});
 
+  // DEBUG: Log events state
+  console.log("[EventsListClient] Events state:", {
+    events,
+    eventsLength: events?.length,
+    eventsIsUndefined: events === undefined,
+    eventsIsArray: Array.isArray(events),
+  });
+
   // Format date
   function formatEventDate(timestamp: number, timezone?: string): string {
     const date = new Date(timestamp);

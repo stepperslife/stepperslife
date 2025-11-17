@@ -8,8 +8,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { completeGoogleOAuth } from "@/lib/auth/google-oauth";
 import { api } from "@/convex/_generated/api";
-import { SignJWT } from "jose";
 import { convexClient as convex } from "@/lib/auth/convex-client";
+import { createAndSetSession } from "@/lib/auth/session-manager";
+import { getBaseUrl } from "@/lib/constants/app-config";
 
 export async function GET(request: NextRequest) {
   try {
@@ -55,44 +56,21 @@ export async function GET(request: NextRequest) {
     // Fetch the complete user data to get role
     const user = await convex.query(api.users.queries.getUserById, { userId });
 
-    // Create session token (JWT)
-    const secret = new TextEncoder().encode(
-      process.env.JWT_SECRET || process.env.AUTH_SECRET || "development-secret-change-in-production"
-    );
-
-    const token = await new SignJWT({
-      userId: userId,
-      email: googleUser.email,
-      name: googleUser.name,
-      role: user?.role || "user",
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("30d")
-      .sign(secret);
-
-    // Redirect to callback URL with session
-    // Use the proper base URL from environment or request headers (for production behind Nginx)
-    const protocol = request.headers.get("x-forwarded-proto") || "https";
-    const host =
-      request.headers.get("x-forwarded-host") ||
-      request.headers.get("host") ||
-      "events.stepperslife.com";
-    const baseUrl = `${protocol}://${host}`;
+    // Redirect to callback URL with session using centralized base URL utility
+    const baseUrl = getBaseUrl(request);
     const response = NextResponse.redirect(new URL(callbackUrl, baseUrl));
 
-    // Set session cookie
-    // Always use .stepperslife.com domain for production deployment
-    // (NODE_ENV may not be set in PM2, so we check for localhost instead)
-    const isLocalhost = host?.includes('localhost');
-    response.cookies.set("session_token", token, {
-      httpOnly: true,
-      secure: !isLocalhost, // secure in production (non-localhost)
-      sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-      path: "/",
-      domain: isLocalhost ? undefined : ".stepperslife.com",
-    });
+    // Create session token and set cookie using centralized utility
+    await createAndSetSession(
+      response,
+      {
+        userId: userId,
+        email: googleUser.email,
+        name: googleUser.name,
+        role: user?.role || "user",
+      },
+      request
+    );
 
     // Clear OAuth cookies
     response.cookies.delete("oauth_state");

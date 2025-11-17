@@ -27,19 +27,35 @@ import {
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatEventLocation } from "@/lib/location-format";
 import toast from "react-hot-toast";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 
 export default function MyTicketsPage() {
-  const tickets = useQuery(api.tickets.queries.getMyTickets);
+  // Check authentication status first
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  // Only fetch tickets if authenticated
+  const tickets = useQuery(
+    isAuthenticated ? api.tickets.queries.getMyTickets : "skip"
+  );
+
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
   const [transferModalTicket, setTransferModalTicket] = useState<any | null>(null);
   const [transferEmail, setTransferEmail] = useState("");
   const [transferName, setTransferName] = useState("");
   const [isTransferring, setIsTransferring] = useState(false);
+
+  // Check authentication on mount
+  useEffect(() => {
+    fetch("/api/auth/me", { credentials: "same-origin" })
+      .then((res) => {
+        setIsAuthenticated(res.ok);
+      })
+      .catch(() => setIsAuthenticated(false));
+  }, []);
 
   // CRUD state management
   const [editModalTicket, setEditModalTicket] = useState<any | null>(null);
@@ -232,6 +248,43 @@ export default function MyTicketsPage() {
     return true;
   };
 
+  // Show loading while checking authentication
+  if (isAuthenticated === null) {
+    return (
+      <>
+        <PublicHeader showCreateButton={false} />
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </>
+    );
+  }
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <>
+        <PublicHeader showCreateButton={false} />
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+          <div className="text-center">
+            <Ticket className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2 dark:text-white">Please sign in</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              You need to be logged in to view your tickets
+            </p>
+            <Link
+              href="/login"
+              className="inline-block bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90"
+            >
+              Sign In
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Show loading while fetching tickets
   if (!tickets) {
     return (
       <>

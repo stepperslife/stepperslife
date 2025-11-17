@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { api } from "@/convex/_generated/api";
-import bcrypt from "bcryptjs";
-import { SignJWT } from "jose";
 import { convexClient as convex } from "@/lib/auth/convex-client";
-
-// JWT secret - should be in environment variable
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET || process.env.JWT_SECRET || "your-secret-key-change-this-in-production"
-);
+import { verifyPassword } from "@/lib/auth/password-utils";
+import { createAndSetSession } from "@/lib/auth/session-manager";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,24 +23,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+    // Verify password using centralized utility
+    const isValidPassword = await verifyPassword(password, user.passwordHash);
 
     if (!isValidPassword) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
-
-    // Create JWT token
-    const token = await new SignJWT({
-      userId: user._id,
-      email: user.email,
-      name: user.name || user.email,
-      role: user.role || "user",
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("30d") // Token expires in 30 days
-      .sign(JWT_SECRET);
 
     // Create response
     const response = NextResponse.json(
@@ -61,18 +44,17 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
 
-    // Set cookie (using session_token for consistency with OAuth)
-    // Always use .stepperslife.com domain for production deployment
-    // (NODE_ENV may not be set in PM2, so we check for localhost instead)
-    const isLocalhost = request.headers.get('host')?.includes('localhost');
-    response.cookies.set("session_token", token, {
-      httpOnly: true,
-      secure: !isLocalhost, // secure in production (non-localhost)
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-      path: "/",
-      domain: isLocalhost ? undefined : ".stepperslife.com",
-    });
+    // Create session token and set cookie using centralized utility
+    await createAndSetSession(
+      response,
+      {
+        userId: user._id,
+        email: user.email,
+        name: user.name || user.email,
+        role: user.role || "user",
+      },
+      request
+    );
 
     return response;
   } catch (error) {

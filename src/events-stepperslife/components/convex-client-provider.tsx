@@ -7,24 +7,32 @@ import { ReactNode, useMemo, useEffect } from "react";
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!;
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
-  const convex = useMemo(() => new ConvexReactClient(convexUrl), []);
+  const convex = useMemo(() => {
+    console.log("[ConvexClientProvider] Creating Convex client with URL:", convexUrl);
+    return new ConvexReactClient(convexUrl);
+  }, []);
 
   useEffect(() => {
+    console.log("[ConvexClientProvider] Setting up auth...");
     // Set up auth with an async function that fetches the token
     convex.setAuth(async () => {
       try {
+        console.log("[ConvexAuth] Fetching auth token from /api/auth/convex-token");
         const response = await fetch("/api/auth/convex-token", {
           credentials: "same-origin",
         });
 
+        console.log("[ConvexAuth] Auth response status:", response.status);
 
         if (response.ok) {
           const data = await response.json();
+          console.log("[ConvexAuth] Auth successful, token received:", !!data.token);
           // Return the JWT token that Convex can verify
           return data.token || null;
         }
         // Return null when not authenticated (401) - this is expected and not an error
         if (response.status === 401) {
+          console.log("[ConvexAuth] Not authenticated (401) - returning null");
           return null;
         }
         throw new Error(`Auth check failed with status ${response.status}`);
@@ -33,6 +41,7 @@ export function ConvexClientProvider({ children }: { children: ReactNode }) {
         return null;
       }
     });
+    console.log("[ConvexClientProvider] Auth setup complete");
   }, [convex]);
 
   return <ConvexProvider client={convex}>{children}</ConvexProvider>;

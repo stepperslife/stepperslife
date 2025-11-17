@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { api } from "@/convex/_generated/api";
-import * as bcrypt from "bcryptjs";
 import { convexClient as convex } from "@/lib/auth/convex-client";
+import {
+  hashPassword,
+  validatePasswordStrength,
+  validateEmailFormat,
+} from "@/lib/auth/password-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,28 +17,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please provide all required fields" }, { status: 400 });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Validate email format using centralized utility
+    if (!validateEmailFormat(email)) {
       return NextResponse.json({ error: "Please provide a valid email address" }, { status: 400 });
     }
 
-    // Validate password strength
-    if (password.length < 8) {
+    // Validate password strength using centralized utility
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
       return NextResponse.json(
-        { error: "Password must be at least 8 characters long" },
-        { status: 400 }
-      );
-    }
-
-    // Check for password complexity
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-
-    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
-      return NextResponse.json(
-        { error: "Password must contain uppercase, lowercase, and numbers" },
+        { error: passwordValidation.error },
         { status: 400 }
       );
     }
@@ -56,9 +48,8 @@ export async function POST(request: NextRequest) {
       // Continue with registration
     }
 
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // Hash the password using centralized utility
+    const hashedPassword = await hashPassword(password);
 
     // Create the user in Convex
     const userId = await convex.mutation(api.users.mutations.createUser, {

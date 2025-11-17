@@ -7,6 +7,8 @@ import {
   getTokenExpiry,
 } from "@/lib/auth/magic-link";
 import { convexClient as convex } from "@/lib/auth/convex-client";
+import { validateEmailFormat } from "@/lib/auth/password-utils";
+import { getBaseUrl } from "@/lib/constants/app-config";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,9 +18,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Validate email format using centralized utility
+    if (!validateEmailFormat(email)) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
     }
 
@@ -40,7 +41,8 @@ export async function POST(request: NextRequest) {
 
     // Send magic link email with callback URL encoded in token
     const callbackParam = callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : "";
-    const verificationUrl = `${process.env.NEXTAUTH_URL || "https://events.stepperslife.com"}/api/auth/verify-magic-link?token=${token}${callbackParam}`;
+    const baseUrl = getBaseUrl(request);
+    const verificationUrl = `${baseUrl}/api/auth/verify-magic-link?token=${token}${callbackParam}`;
 
     // Update the email to include callback URL
     await sendMagicLinkEmailWithCallback(email, verificationUrl, user?.name);

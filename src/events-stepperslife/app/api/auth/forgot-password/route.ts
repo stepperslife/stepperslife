@@ -3,6 +3,8 @@ import { api } from "@/convex/_generated/api";
 import { Resend } from "resend";
 import { randomBytes, createHash } from "crypto";
 import { convexClient as convex } from "@/lib/auth/convex-client";
+import { getBaseUrl } from "@/lib/constants/app-config";
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
@@ -37,8 +39,9 @@ export async function POST(request: NextRequest) {
       expiry,
     });
 
-    // Send reset email
-    const resetUrl = `${process.env.NEXTAUTH_URL || "https://events.stepperslife.com"}/reset-password?token=${token}`;
+    // Send reset email using centralized base URL
+    const baseUrl = getBaseUrl(request);
+    const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     await resend.emails.send({
       from: "Steppers Life Events <noreply@events.stepperslife.com>",

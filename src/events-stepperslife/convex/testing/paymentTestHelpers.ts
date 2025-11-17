@@ -104,6 +104,8 @@ export const setupTestEvent = mutation({
       platformFeeFixed: args.paymentModel === "CREDIT_CARD" ? (args.charityDiscount ? 90 : 179) : 0,
       processingFeePercent: 2.9,
       charityDiscount: args.charityDiscount || false,
+      lowPriceDiscount: args.ticketPrice < 2000, // Under $20
+      isActive: true,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -117,8 +119,6 @@ export const setupTestEvent = mutation({
       quantity: args.ticketQuantity,
       sold: 0,
       isActive: true,
-      sortOrder: 0,
-      version: 0,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -191,16 +191,26 @@ export const simulateOrder = mutation({
     }
 
     // Create order
+    // For PREPAY model with CASH customer payment, the actual payment processor is SQUARE
+    const actualPaymentMethod = paymentConfig.paymentModel === "PREPAY" && args.paymentMethod === "CASH"
+      ? "SQUARE"
+      : args.paymentMethod === "CASH"
+        ? "STRIPE"  // Default fallback for CASH
+        : args.paymentMethod;
+
     const orderId = await ctx.db.insert("orders", {
       eventId: args.eventId,
       buyerId,
-      status: args.paymentMethod === "CASH" ? "PENDING_ACTIVATION" : "COMPLETED",
+      buyerEmail: args.buyerEmail,
+      buyerName: args.buyerName,
+      status: args.paymentMethod === "CASH" ? "PENDING" : "COMPLETED",
       subtotalCents,
       platformFeeCents,
       processingFeeCents,
       totalCents,
-      paymentMethod: args.paymentMethod,
+      paymentMethod: actualPaymentMethod,
       stripePaymentIntentId: args.paymentMethod === "STRIPE" ? `test_pi_${Date.now()}` : undefined,
+      paidAt: args.paymentMethod !== "CASH" ? Date.now() : undefined,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });

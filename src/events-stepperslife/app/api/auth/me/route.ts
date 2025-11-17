@@ -3,10 +3,9 @@ import { jwtVerify } from "jose";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { convexClient as convex } from "@/lib/auth/convex-client";
+import { getJwtSecretEncoded } from "@/lib/auth/jwt-secret";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET || process.env.JWT_SECRET || "your-secret-key-change-this-in-production"
-);
+const JWT_SECRET = getJwtSecretEncoded();
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,7 +33,6 @@ export async function GET(request: NextRequest) {
     console.error("[Auth /me] Verification error:", error);
     console.error("[Auth /me] Error name:", error instanceof Error ? error.name : typeof error);
     console.error("[Auth /me] Error message:", error instanceof Error ? error.message : String(error));
-    console.error("[Auth /me] JWT_SECRET is:", process.env.AUTH_SECRET || process.env.JWT_SECRET ? 'defined' : 'UNDEFINED');
     return NextResponse.json({
       error: "Invalid token",
       debug: error instanceof Error ? error.message : String(error)
