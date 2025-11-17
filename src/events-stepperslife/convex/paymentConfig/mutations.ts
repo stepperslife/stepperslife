@@ -13,6 +13,17 @@ export const selectPrepayModel = mutation({
   args: {
     eventId: v.id("events"),
     ticketsAllocated: v.number(),
+    customerPaymentMethods: v.array(
+      v.union(
+        v.literal("CASH"),
+        v.literal("STRIPE"),
+        v.literal("PAYPAL"),
+        v.literal("CASHAPP")
+      )
+    ),
+    organizerPaymentMethod: v.optional(
+      v.union(v.literal("SQUARE"), v.literal("CASHAPP"), v.literal("PAYPAL"))
+    ),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -41,6 +52,26 @@ export const selectPrepayModel = mutation({
       throw new Error("Payment model already configured for this event");
     }
 
+    // Validate at least one payment method is selected
+    if (args.customerPaymentMethods.length === 0) {
+      throw new Error("At least one customer payment method must be selected");
+    }
+
+    // Check if Stripe/PayPal are selected but not connected
+    if (args.customerPaymentMethods.includes("STRIPE") && !user.stripeConnectedAccountId) {
+      throw new Error("Stripe account not connected. Please connect Stripe in Settings.");
+    }
+
+    if (
+      (args.customerPaymentMethods.includes("PAYPAL") ||
+        args.customerPaymentMethods.includes("CASHAPP")) &&
+      !user.paypalMerchantId
+    ) {
+      throw new Error(
+        "PayPal account not connected. Please connect PayPal in Settings for PayPal/CashApp payments."
+      );
+    }
+
     // Check credit balance
     const credits = await ctx.db
       .query("organizerCredits")
@@ -60,6 +91,10 @@ export const selectPrepayModel = mutation({
       eventId: args.eventId,
       organizerId: user._id,
       paymentModel: "PREPAY",
+      customerPaymentMethods: args.customerPaymentMethods,
+      organizerPaymentMethod: args.organizerPaymentMethod,
+      stripeConnectAccountId: user.stripeConnectedAccountId,
+      paypalMerchantId: user.paypalMerchantId,
       isActive: true,
       activatedAt: Date.now(),
       ticketsAllocated: args.ticketsAllocated,
@@ -87,7 +122,8 @@ export const selectPrepayModel = mutation({
 });
 
 /**
- * Select Credit Card payment model for event (standard online payments)
+ * Select Credit Card payment model for event (split payments with automatic fees)
+ * For CREDIT_CARD model, Stripe is the only supported payment method
  */
 export const selectCreditCardModel = mutation({
   args: {
@@ -136,13 +172,15 @@ export const selectCreditCardModel = mutation({
       : DEFAULT_PLATFORM_FEE_FIXED_CENTS;
 
     // Create payment config
+    // CREDIT_CARD model only uses Stripe (automatic split payment)
     const configId = await ctx.db.insert("eventPaymentConfig", {
       eventId: args.eventId,
       organizerId: user._id,
       paymentModel: "CREDIT_CARD",
+      customerPaymentMethods: ["STRIPE"], // Only Stripe for split payment model
+      stripeConnectAccountId: user.stripeConnectedAccountId,
       isActive: true,
       activatedAt: Date.now(),
-      stripeConnectAccountId: user.stripeConnectedAccountId,
       platformFeePercent,
       platformFeeFixed,
       processingFeePercent: DEFAULT_PROCESSING_FEE_PERCENT,

@@ -22,15 +22,18 @@ import Image from "next/image";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 
-type PaymentModel = "PREPAY" | "CREDIT_CARD" | "CONSIGNMENT";
-type PackageSize = 100 | 250 | 500 | 1000 | 2500;
+type PaymentModel = "PREPAY" | "CREDIT_CARD";
+type PackageSize = 100 | 250 | 500 | 1000 | 2500 | 5000 | 10000 | 20000;
 
-const PACKAGES: { size: PackageSize; price: number; popular?: boolean }[] = [
-  { size: 100, price: 30 },
-  { size: 250, price: 75 },
-  { size: 500, price: 150, popular: true },
-  { size: 1000, price: 300 },
-  { size: 2500, price: 750 },
+const PACKAGES: { size: PackageSize; price: number; pricePerTicket: number; popular?: boolean; savings?: string }[] = [
+  { size: 100, price: 30, pricePerTicket: 0.30 },
+  { size: 250, price: 72.50, pricePerTicket: 0.29 },
+  { size: 500, price: 140, pricePerTicket: 0.28, popular: true },
+  { size: 1000, price: 260, pricePerTicket: 0.26 },
+  { size: 2500, price: 600, pricePerTicket: 0.24 },
+  { size: 5000, price: 1100, pricePerTicket: 0.22, savings: "Save 27% vs 100 pack" },
+  { size: 10000, price: 2000, pricePerTicket: 0.20, savings: "Save 33% vs 100 pack" },
+  { size: 20000, price: 4400, pricePerTicket: 0.22, savings: "Enterprise pricing" },
 ];
 
 const POWER_UP_PRICE_PER_TICKET = 0.5;
@@ -48,9 +51,12 @@ export default function PricingPage() {
     const quantity = parseInt(ticketQuantity) || 0;
     const revenue = price * quantity;
 
-    // PREPAY calculation
+    // PREPAY calculation - find the right package or use per-ticket pricing
     const prepayPackage = PACKAGES.find((p) => p.size >= quantity) || PACKAGES[PACKAGES.length - 1];
-    const prepayUpfrontCost = prepayPackage.price + powerUpQuantity * POWER_UP_PRICE_PER_TICKET;
+    const baseTicketCost = quantity <= prepayPackage.size
+      ? prepayPackage.price
+      : quantity * prepayPackage.pricePerTicket;
+    const prepayUpfrontCost = baseTicketCost + powerUpQuantity * POWER_UP_PRICE_PER_TICKET;
     const prepayProcessingFee = revenue * 0.029; // 2.9% processing only
     const prepayNet = revenue - prepayProcessingFee - prepayUpfrontCost;
 
@@ -59,10 +65,6 @@ export default function PricingPage() {
     const ccTotalWithPlatform = revenue + ccPlatformFee;
     const ccProcessingFee = ccTotalWithPlatform * 0.029;
     const ccNet = revenue - ccPlatformFee;
-
-    // CONSIGNMENT calculation
-    const consignPlatformFee = quantity * 1.79 + revenue * 0.037;
-    const consignNet = revenue - consignPlatformFee;
 
     return {
       prepay: {
@@ -79,14 +81,6 @@ export default function PricingPage() {
         net: ccNet,
         total: revenue,
       },
-      consignment: {
-        upfront: 0,
-        platformFee: consignPlatformFee,
-        processingFee: 0,
-        net: consignNet,
-        total: revenue,
-        settlementDue: consignPlatformFee,
-      },
     };
   };
 
@@ -99,19 +93,9 @@ export default function PricingPage() {
         "Power-ups are emergency ticket allocations available at $0.50 per ticket when you need more tickets quickly after using your initial package.",
     },
     {
-      question: "When is consignment settlement due?",
-      answer:
-        "Settlement is due exactly 24 hours before your event starts. You'll receive reminders and can pay easily via Square or Cash App.",
-    },
-    {
       question: "Can I mix payment models?",
       answer:
         "Yes! You can choose different payment models for different events. Each event can have its own payment configuration.",
-    },
-    {
-      question: "What if I can't settle on time?",
-      answer:
-        "Contact our support team immediately. We can work out payment plans or alternative arrangements to ensure your event proceeds smoothly.",
     },
     {
       question: "Do charity events get discounts?",
@@ -121,6 +105,16 @@ export default function PricingPage() {
       question: "How do split payments work?",
       answer:
         "With the Credit Card model, payments are automatically split. Customers pay online, and your revenue (minus fees) is instantly deposited to your Stripe account.",
+    },
+    {
+      question: "What payment processors do you support?",
+      answer:
+        "We support Stripe and PayPal for split payments (CREDIT_CARD model). For PREPAY model, organizers can purchase credits via Square, CashApp, or PayPal.",
+    },
+    {
+      question: "Can customers pay with cash?",
+      answer:
+        "Yes! With the PREPAY model, you can enable cash-at-door payment. Customers reserve tickets online and pay when they arrive at your event.",
     },
   ];
 
@@ -187,11 +181,11 @@ export default function PricingPage() {
         {/* Payment Models */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Three Flexible Payment Models</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Two Flexible Payment Models</h2>
             <p className="text-lg text-gray-600">Pick the one that matches your event style</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {/* PREPAY Model */}
             <div className="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-emerald-200 relative">
               {/* Model Image */}
@@ -213,17 +207,20 @@ export default function PricingPage() {
 
               <div className="p-6">
                 <div className="mb-6">
-                  <p className="text-3xl font-bold text-gray-900">$0.30</p>
-                  <p className="text-gray-600">per ticket upfront</p>
+                  <p className="text-3xl font-bold text-gray-900">$0.20-$0.30</p>
+                  <p className="text-gray-600">per ticket (volume discounts)</p>
                 </div>
 
                 <div className="mb-6">
                   <p className="font-semibold text-gray-900 mb-2">Package Options:</p>
-                  <div className="space-y-2">
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
                     {PACKAGES.map((pkg) => (
-                      <div key={pkg.size} className="flex justify-between items-center">
-                        <span className="text-gray-600">{pkg.size.toLocaleString()} tickets</span>
-                        <span className="font-semibold">${pkg.price}</span>
+                      <div key={pkg.size} className="flex justify-between items-center gap-2">
+                        <span className="text-gray-600 text-sm">{pkg.size.toLocaleString()} tickets</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">${pkg.pricePerTicket.toFixed(2)}/ea</span>
+                          <span className="font-semibold">${pkg.price.toLocaleString()}</span>
+                        </div>
                         {pkg.popular && (
                           <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full">
                             Popular
@@ -232,6 +229,7 @@ export default function PricingPage() {
                       </div>
                     ))}
                   </div>
+                  <p className="text-xs text-gray-500 mt-2">20,000+ tickets? Contact us for enterprise pricing</p>
                 </div>
 
                 <div className="mb-6">
@@ -364,98 +362,6 @@ export default function PricingPage() {
                 </div>
               </div>
             </div>
-
-            {/* CONSIGNMENT Model */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-primary/30 relative">
-              {/* Model Image */}
-              <div className="h-48 relative">
-                <Image
-                  src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2940&auto=format&fit=crop"
-                  alt="Consignment model"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-primary flex items-end">
-                  <div className="p-6 text-white">
-                    <Users className="w-12 h-12 mb-3" />
-                    <h3 className="text-2xl font-bold mb-2">CONSIGNMENT</h3>
-                    <p className="text-blue-100">Sell First, Settle Later</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6">
-                <div className="mb-6">
-                  <p className="text-3xl font-bold text-gray-900">$0</p>
-                  <p className="text-gray-600">upfront cost</p>
-                </div>
-
-                <div className="mb-6">
-                  <p className="font-semibold text-gray-900 mb-2">How It Works:</p>
-                  <ol className="space-y-2 text-sm text-gray-600">
-                    <li className="flex gap-2">
-                      <span className="font-semibold">1.</span>
-                      Staff sells tickets (cash/card)
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold">2.</span>
-                      Track all sales in system
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold">3.</span>
-                      Settle 24 hours before event
-                    </li>
-                  </ol>
-                </div>
-
-                <div className="mb-6">
-                  <div className="bg-accent border border-primary/30 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Clock className="w-4 h-4 text-primary" />
-                      <span className="font-semibold text-sm">Settlement Timeline</span>
-                    </div>
-                    <p className="text-xs text-gray-600">
-                      Due 24 hours before event via Square/Cash App
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span className="text-sm text-gray-700">Perfect for in-person sales</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span className="text-sm text-gray-700">Great for street teams</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span className="text-sm text-gray-700">Cash-friendly</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 justify-center items-center">
-                  {/* Square Logo */}
-                  <svg className="h-8" viewBox="0 0 44 44" fill="none">
-                    <rect width="44" height="44" rx="8" fill="#00D632" />
-                    <path
-                      d="M29.5 20.5C29.5 20.9 29.3 21.3 29 21.5L26.2 24.3C26 24.5 25.7 24.6 25.4 24.6C25.1 24.6 24.8 24.5 24.6 24.3C24.2 23.9 24.2 23.3 24.6 22.9L25.7 21.8H18.5C17.9 21.8 17.5 21.4 17.5 20.8C17.5 20.2 17.9 19.8 18.5 19.8H25.7L24.6 18.7C24.2 18.3 24.2 17.7 24.6 17.3C25 16.9 25.6 16.9 26 17.3L28.8 20.1C29.2 20.3 29.4 20.6 29.5 20.5ZM33 11H11C9.3 11 8 12.3 8 14V30C8 31.7 9.3 33 11 33H33C34.7 33 36 31.7 36 30V14C36 12.3 34.7 11 33 11Z"
-                      fill="white"
-                    />
-                  </svg>
-
-                  {/* Cash App Logo */}
-                  <svg className="h-8" viewBox="0 0 120 120" fill="none">
-                    <rect width="120" height="120" rx="24" fill="#00D632" />
-                    <path
-                      d="M84.5 42.5C84.5 41.1 83.4 40 82 40C80.6 40 79.5 41.1 79.5 42.5C79.5 46.4 77.1 49.8 73.5 51.3C72.2 51.9 71.7 53.5 72.3 54.8C72.7 55.7 73.6 56.2 74.5 56.2C74.8 56.2 75.2 56.1 75.5 56C81.1 53.6 84.5 48.5 84.5 42.5ZM67.2 44.8C66.7 42.3 64.5 40.5 62 40.5H53.5V36.5C53.5 35.1 52.4 34 51 34C49.6 34 48.5 35.1 48.5 36.5V40.5H45C43.6 40.5 42.5 41.6 42.5 43C42.5 44.4 43.6 45.5 45 45.5H48.5V65.5H45C43.6 65.5 42.5 66.6 42.5 68C42.5 69.4 43.6 70.5 45 70.5H48.5V74.5C48.5 75.9 49.6 77 51 77C52.4 77 53.5 75.9 53.5 74.5V70.5H62.5C65 70.5 67.2 68.7 67.7 66.2C68 63.7 66.7 61.5 64.5 60.5C66.7 59.5 68 57.3 67.7 54.8C67.2 52.3 65 50.5 62.5 50.5H53.5V45.5H62C62.3 45.5 62.5 45.7 62.5 46V47C62.5 48.4 63.6 49.5 65 49.5C66.4 49.5 67.5 48.4 67.5 47V46C67.5 45.5 67.4 45.1 67.2 44.8ZM62.5 55.5C62.8 55.5 63 55.7 63 56V57C63 57.3 62.8 57.5 62.5 57.5H53.5V55.5H62.5ZM53.5 65.5V63.5H62.5C62.8 63.5 63 63.7 63 64V65C63 65.3 62.8 65.5 62.5 65.5H53.5Z"
-                      fill="white"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -506,7 +412,7 @@ export default function PricingPage() {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                 {/* PREPAY Results */}
                 <div className="bg-emerald-50 rounded-lg p-6">
                   <h3 className="font-bold text-lg mb-4 text-emerald-700">PREPAY</h3>
@@ -560,38 +466,6 @@ export default function PricingPage() {
                         <span className="font-bold text-primary">
                           ${fees.creditCard.net.toFixed(2)}
                         </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* CONSIGNMENT Results */}
-                <div className="bg-accent rounded-lg p-6">
-                  <h3 className="font-bold text-lg mb-4 text-primary">CONSIGNMENT</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Upfront Cost:</span>
-                      <span className="font-semibold">$0.00</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Platform Fees:</span>
-                      <span className="font-semibold">
-                        ${fees.consignment.platformFee.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Processing:</span>
-                      <span className="font-semibold">$0.00</span>
-                    </div>
-                    <div className="border-t pt-3 mt-3">
-                      <div className="flex justify-between">
-                        <span className="font-semibold">Your Revenue:</span>
-                        <span className="font-bold text-primary">
-                          ${fees.consignment.net.toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="mt-2 text-xs text-gray-600">
-                        Settlement due: ${fees.consignment.settlementDue?.toFixed(2)}
                       </div>
                     </div>
                   </div>

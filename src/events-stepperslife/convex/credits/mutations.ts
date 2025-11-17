@@ -51,13 +51,27 @@ export const purchaseCredits = mutation({
   },
   handler: async (ctx, args) => {
     // Get user's current credit balance
-    const userCredits = await ctx.db
-      .query("credits")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+    let userCredits = await ctx.db
+      .query("organizerCredits")
+      .withIndex("by_organizer", (q) => q.eq("organizerId", args.userId))
       .first();
 
+    // Initialize credits if they don't exist
     if (!userCredits) {
-      throw new Error("User credits not found");
+      const creditId = await ctx.db.insert("organizerCredits", {
+        organizerId: args.userId,
+        creditsTotal: 0,
+        creditsUsed: 0,
+        creditsRemaining: 0,
+        firstEventFreeUsed: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+
+      userCredits = await ctx.db.get(creditId);
+      if (!userCredits) {
+        throw new Error("Failed to initialize user credits");
+      }
     }
 
     // Create transaction record
@@ -75,6 +89,8 @@ export const purchaseCredits = mutation({
     // Add credits to user balance
     await ctx.db.patch(userCredits._id, {
       creditsTotal: userCredits.creditsTotal + args.credits,
+      creditsRemaining: userCredits.creditsRemaining + args.credits,
+      updatedAt: Date.now(),
     });
 
     return {

@@ -90,3 +90,73 @@ export const getUserByEmail = query({
     return user;
   },
 });
+
+/**
+ * Get Stripe Connect account info for current user
+ */
+export const getStripeConnectAccount = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    const userInfo = typeof identity === "string" ? JSON.parse(identity) : identity;
+    const email = userInfo.email || identity.email;
+    if (!email) {
+      return null;
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .first();
+
+    if (!user) {
+      return null;
+    }
+
+    return {
+      stripeConnectedAccountId: user.stripeConnectedAccountId,
+      stripeAccountSetupComplete: user.stripeAccountSetupComplete,
+      acceptsStripePayments: user.acceptsStripePayments,
+    };
+  },
+});
+
+/**
+ * Get PayPal account info for current user
+ */
+export const getPayPalAccount = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    const userInfo = typeof identity === "string" ? JSON.parse(identity) : identity;
+    const email = userInfo.email || identity.email;
+    if (!email) {
+      return null;
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .first();
+
+    if (!user) {
+      return null;
+    }
+
+    return {
+      paypalMerchantId: user.paypalMerchantId,
+      paypalAccountSetupComplete: user.paypalAccountSetupComplete,
+      paypalPartnerReferralId: user.paypalPartnerReferralId,
+      paypalOnboardingStatus: user.paypalOnboardingStatus,
+      acceptsPaypalPayments: user.acceptsPaypalPayments,
+    };
+  },
+});

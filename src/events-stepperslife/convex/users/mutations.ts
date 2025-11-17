@@ -196,6 +196,7 @@ export const updatePaymentProcessorSettings = mutation({
 
 /**
  * Connect Stripe account for receiving ticket payments
+ * This saves the account ID but marks setup as incomplete until verified
  */
 export const connectStripeAccount = mutation({
   args: {
@@ -218,8 +219,8 @@ export const connectStripeAccount = mutation({
 
     await ctx.db.patch(user._id, {
       stripeConnectedAccountId: args.stripeConnectedAccountId,
-      stripeAccountSetupComplete: true,
-      acceptsStripePayments: true, // Auto-enable when connected
+      stripeAccountSetupComplete: false, // Mark as incomplete until verified
+      acceptsStripePayments: false, // Don't enable until setup complete
       updatedAt: Date.now(),
     });
 
@@ -228,11 +229,86 @@ export const connectStripeAccount = mutation({
 });
 
 /**
+ * Mark Stripe account setup as complete after verifying with Stripe
+ * This is called after the organizer completes the Stripe Connect onboarding
+ */
+export const markStripeAccountComplete = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (!user.stripeConnectedAccountId) {
+      throw new Error("No Stripe account connected");
+    }
+
+    await ctx.db.patch(user._id, {
+      stripeAccountSetupComplete: true,
+      acceptsStripePayments: true, // Auto-enable when setup complete
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+/**
+ * Update Stripe account status from webhook
+ * This allows webhooks to update account status when Stripe sends updates
+ */
+export const updateStripeAccountStatus = mutation({
+  args: {
+    accountId: v.string(),
+    chargesEnabled: v.boolean(),
+    payoutsEnabled: v.boolean(),
+    detailsSubmitted: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    // Find user by Stripe account ID
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_stripeConnectedAccountId", (q) =>
+        q.eq("stripeConnectedAccountId", args.accountId)
+      )
+      .first();
+
+    if (!user) {
+      // This is okay - might be a test account or deleted user
+      return { success: false, reason: "User not found for account" };
+    }
+
+    // Update account status based on Stripe's data
+    const setupComplete = args.detailsSubmitted && args.chargesEnabled && args.payoutsEnabled;
+
+    await ctx.db.patch(user._id, {
+      stripeAccountSetupComplete: setupComplete,
+      acceptsStripePayments: setupComplete,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true, setupComplete };
+  },
+});
+
+/**
  * Connect PayPal account for receiving ticket payments
+ * Saves Partner Referral ID and merchant ID, marks setup as incomplete initially
  */
 export const connectPaypalAccount = mutation({
   args: {
-    paypalMerchantId: v.string(),
+    paypalMerchantId: v.optional(v.string()),
+    paypalPartnerReferralId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -251,10 +327,85 @@ export const connectPaypalAccount = mutation({
 
     await ctx.db.patch(user._id, {
       paypalMerchantId: args.paypalMerchantId,
-      paypalAccountSetupComplete: true,
-      acceptsPaypalPayments: true, // Auto-enable when connected
+      paypalPartnerReferralId: args.paypalPartnerReferralId,
+      paypalAccountSetupComplete: false, // Mark as incomplete until verified
+      acceptsPaypalPayments: false, // Don't enable until setup complete
+      paypalOnboardingStatus: "PENDING",
       updatedAt: Date.now(),
     });
+
+    return { success: true };
+  },
+});
+
+/**
+ * Mark PayPal account setup as complete after verifying with PayPal API
+ */
+export const markPayPalAccountComplete = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (!user.paypalMerchantId) {
+      throw new Error("No PayPal account connected");
+    }
+
+    await ctx.db.patch(user._id, {
+      paypalAccountSetupComplete: true,
+      acceptsPaypalPayments: true, // Auto-enable when setup complete
+      paypalOnboardingStatus: "COMPLETED",
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+/**
+ * Update PayPal account onboarding status (called from webhooks or status check)
+ */
+export const updatePayPalAccountStatus = mutation({
+  args: {
+    paypalMerchantId: v.string(),
+    setupComplete: v.boolean(),
+    onboardingStatus: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Find user by PayPal merchant ID
+    const users = await ctx.db.query("users").collect();
+    const user = users.find((u) => u.paypalMerchantId === args.paypalMerchantId);
+
+    if (!user) {
+      throw new Error(`No user found with PayPal merchant ID: ${args.paypalMerchantId}`);
+    }
+
+    const updates: any = {
+      paypalAccountSetupComplete: args.setupComplete,
+      acceptsPaypalPayments: args.setupComplete,
+      updatedAt: Date.now(),
+    };
+
+    if (args.onboardingStatus) {
+      updates.paypalOnboardingStatus = args.onboardingStatus;
+    }
+
+    if (!args.setupComplete) {
+      updates.acceptsPaypalPayments = false;
+    }
+
+    await ctx.db.patch(user._id, updates);
 
     return { success: true };
   },

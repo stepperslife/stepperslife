@@ -30,6 +30,8 @@ export default defineSchema({
     // PayPal fields (for receiving ticket payments from customers)
     paypalMerchantId: v.optional(v.string()),
     paypalAccountSetupComplete: v.optional(v.boolean()),
+    paypalPartnerReferralId: v.optional(v.string()), // Partner Referrals API tracking ID
+    paypalOnboardingStatus: v.optional(v.string()), // Onboarding status from PayPal
     // Payment processor preferences (which processors organizer accepts for ticket sales)
     acceptsStripePayments: v.optional(v.boolean()),
     acceptsPaypalPayments: v.optional(v.boolean()),
@@ -192,30 +194,51 @@ export default defineSchema({
     // Payment model - Updated with clearer names (includes legacy for migration)
     paymentModel: v.union(
       v.literal("PREPAY"), // Formerly PRE_PURCHASE - Pay upfront for tickets
-      v.literal("CONSIGNMENT"), // NEW - Float tickets, settle day-of/morning-of
       v.literal("CREDIT_CARD"), // Formerly PAY_AS_SELL - Standard online payments
       v.literal("PRE_PURCHASE"), // Legacy - will be migrated to PREPAY
       v.literal("PAY_AS_SELL") // Legacy - will be migrated to CREDIT_CARD
+    ),
+
+    // For CREDIT_CARD model: Which payment processor handles split payments
+    // Organizer chooses Stripe OR PayPal for automatic split payment
+    merchantProcessor: v.optional(
+      v.union(
+        v.literal("STRIPE"),
+        v.literal("PAYPAL")
+      )
+    ),
+
+    // HOW ORGANIZER PAYS STEPPERSLIFE (for PREPAY model only)
+    // Organizer purchases ticket credits via Square, CashApp, or PayPal
+    organizerPaymentMethod: v.optional(
+      v.union(
+        v.literal("SQUARE"),
+        v.literal("CASHAPP"),
+        v.literal("PAYPAL")
+      )
+    ),
+
+    // HOW CUSTOMERS PAY ORGANIZER (for ticket purchases)
+    // Customer payment methods enabled for this event
+    customerPaymentMethods: v.array(
+      v.union(
+        v.literal("CASH"), // Cash at door
+        v.literal("STRIPE"), // Online credit card via Stripe
+        v.literal("PAYPAL"), // Online PayPal
+        v.literal("CASHAPP") // Online CashApp (via Stripe integration)
+      )
     ),
 
     // Status
     isActive: v.boolean(),
     activatedAt: v.optional(v.number()),
 
-    // Stripe Connect (for CREDIT_CARD model)
-    stripeConnectAccountId: v.optional(v.string()),
+    // Payment processor account IDs
+    stripeConnectAccountId: v.optional(v.string()), // For Stripe payments
+    paypalMerchantId: v.optional(v.string()), // For PayPal payments
 
     // PREPAY specific (formerly Pre-purchase)
     ticketsAllocated: v.optional(v.number()),
-
-    // CONSIGNMENT specific fields (NEW)
-    consignmentSettlementDue: v.optional(v.number()), // When settlement is due (event date or morning of)
-    consignmentSettled: v.optional(v.boolean()), // Whether consignment has been settled
-    consignmentSettledAt: v.optional(v.number()), // When settlement was completed
-    consignmentSettlementAmount: v.optional(v.number()), // Amount owed in cents
-    consignmentFloatedTickets: v.optional(v.number()), // Number of tickets floated
-    consignmentSoldTickets: v.optional(v.number()), // Number of consignment tickets sold
-    consignmentNotes: v.optional(v.string()), // Settlement notes
 
     // CREDIT_CARD fee structure (formerly Pay-as-sell)
     platformFeePercent: v.number(), // 3.7% or discounted

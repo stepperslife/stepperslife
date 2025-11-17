@@ -24,7 +24,7 @@ export default defineConfig({
 
   use: {
     // Base URL for the application
-    baseURL: "https://events.stepperslife.com",
+    baseURL: "http://127.0.0.1",
 
     // Capture trace on first retry
     trace: "on-first-retry",

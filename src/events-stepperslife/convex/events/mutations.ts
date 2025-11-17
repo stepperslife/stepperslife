@@ -278,7 +278,7 @@ async function autoAssignSubSellers(
 export const configurePayment = mutation({
   args: {
     eventId: v.id("events"),
-    model: v.union(v.literal("PREPAY"), v.literal("CREDIT_CARD"), v.literal("CONSIGNMENT")),
+    model: v.union(v.literal("PREPAY"), v.literal("CREDIT_CARD")),
     ticketPrice: v.optional(v.number()),
     platformFeePercent: v.optional(v.number()),
     platformFeeFixed: v.optional(v.number()),

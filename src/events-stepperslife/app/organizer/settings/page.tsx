@@ -45,14 +45,33 @@ export default function SettingsPage() {
   const handleConnectStripe = async () => {
     try {
       setIsProcessing(true);
-      // In production, this would redirect to Stripe Connect OAuth flow
-      // For now, show alert that feature is coming soon
-      alert(
-        "Stripe Connect integration coming soon! You'll be redirected to complete Stripe setup."
-      );
+
+      // Create Stripe Connect account and get onboarding link
+      const response = await fetch("/api/stripe/create-connect-account", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: currentUser.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create Stripe Connect account");
+      }
+
+      const data = await response.json();
+
+      // Redirect to Stripe onboarding
+      if (data.accountLinkUrl) {
+        window.location.href = data.accountLinkUrl;
+      } else {
+        throw new Error("No onboarding link received");
+      }
     } catch (error) {
       console.error("Error connecting Stripe:", error);
-      alert("Failed to connect Stripe account");
+      alert("Failed to connect Stripe account. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -191,46 +210,81 @@ export default function SettingsPage() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                    Stripe
-                    {currentUser.stripeConnectedAccountId && (
+                    Stripe Connect
+                    {currentUser.stripeAccountSetupComplete && (
                       <CheckCircle2 className="w-4 h-4 text-green-600" />
                     )}
                   </h3>
                   <p className="text-sm text-gray-600 mt-1">
-                    Accept credit card payments through Stripe
+                    Accept credit card payments with automatic split payments
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Platform fee: 3.7% + $1.79 per ticket
                   </p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={currentUser.acceptsStripePayments || false}
-                    onChange={(e) => handleTogglePaymentMethod("stripe", e.target.checked)}
-                    disabled={!currentUser.stripeConnectedAccountId || isProcessing}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-disabled:opacity-50"></div>
-                </label>
+                {currentUser.stripeAccountSetupComplete && (
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={currentUser.acceptsStripePayments || false}
+                      onChange={(e) => handleTogglePaymentMethod("stripe", e.target.checked)}
+                      disabled={!currentUser.stripeAccountSetupComplete || isProcessing}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-disabled:opacity-50"></div>
+                  </label>
+                )}
               </div>
-              {currentUser.stripeConnectedAccountId ? (
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 px-3 py-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
-                    Connected
+
+              {/* Connected and Complete */}
+              {currentUser.stripeAccountSetupComplete && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 px-3 py-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                      ✓ Setup Complete - Ready to Accept Payments
+                    </div>
                   </div>
-                  <button
-                    onClick={() => handleDisconnectProcessor("stripe")}
-                    disabled={isProcessing}
-                    className="px-3 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded border border-red-200 transition-colors disabled:opacity-50"
-                  >
-                    Disconnect
-                  </button>
+                  <div className="flex gap-2">
+                    <Link
+                      href="/organizer/onboarding/refresh"
+                      className="px-3 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded border border-blue-200 transition-colors"
+                    >
+                      Update Account
+                    </Link>
+                    <button
+                      onClick={() => handleDisconnectProcessor("stripe")}
+                      disabled={isProcessing}
+                      className="px-3 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded border border-red-200 transition-colors disabled:opacity-50"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
                 </div>
-              ) : (
+              )}
+
+              {/* Connected but Incomplete */}
+              {currentUser.stripeConnectedAccountId && !currentUser.stripeAccountSetupComplete && (
+                <div className="space-y-2">
+                  <div className="px-3 py-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
+                    ⚠ Setup Incomplete - Additional Information Required
+                  </div>
+                  <Link
+                    href="/organizer/onboarding/refresh"
+                    className="w-full block px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm text-center"
+                  >
+                    Complete Setup
+                  </Link>
+                </div>
+              )}
+
+              {/* Not Connected */}
+              {!currentUser.stripeConnectedAccountId && (
                 <button
                   onClick={handleConnectStripe}
                   disabled={isProcessing}
                   className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm disabled:opacity-50"
                 >
-                  Connect Stripe Account
+                  {isProcessing ? "Connecting..." : "Connect Stripe Account"}
                 </button>
               )}
             </div>
