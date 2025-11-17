@@ -13,7 +13,14 @@
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
-    "test:report": "playwright show-report test-results/html-report"
+    "test:report": "playwright show-report test-results/html-report",
+    "test:payment:all": "ts-node scripts/run-comprehensive-payment-tests.ts all",
+    "test:payment:required": "ts-node scripts/run-comprehensive-payment-tests.ts required",
+    "test:payment:api": "ts-node scripts/test-payment-api.ts",
+    "test:payment:e2e": "playwright test tests/comprehensive-payment-suite.spec.ts",
+    "test:payment:verify": "ts-node scripts/verify-split-payments.ts application-fees",
+    "test:payment:cleanup": "ts-node scripts/cleanup-test-data.ts stats",
+    "test:payment:cleanup:all": "ts-node scripts/cleanup-test-data.ts all"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -80,12 +87,14 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "5.9.3"
   }
 }

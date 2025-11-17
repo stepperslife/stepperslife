@@ -1,0 +1,219 @@
+{
+  "organizers": {
+    "prepay": {
+      "email": "test-organizer-prepay@stepperslife.test",
+      "name": "PREPAY Test Organizer",
+      "credits": 1000,
+      "paymentModel": "PREPAY"
+    },
+    "creditCard": {
+      "email": "test-organizer-creditcard@stepperslife.test",
+      "name": "CREDIT_CARD Test Organizer",
+      "credits": 0,
+      "stripeConnectId": "acct_test_stripe_12345",
+      "paymentModel": "CREDIT_CARD"
+    }
+  },
+  "events": {
+    "prepay": [
+      {
+        "name": "PREPAY Cash Event",
+        "price": 2500,
+        "quantity": 100,
+        "ticketsAllocated": 100,
+        "customerPaymentMethods": ["CASH"]
+      },
+      {
+        "name": "PREPAY Stripe Event",
+        "price": 3000,
+        "quantity": 200,
+        "ticketsAllocated": 200,
+        "customerPaymentMethods": ["STRIPE"]
+      },
+      {
+        "name": "PREPAY Multi-Payment Event",
+        "price": 2000,
+        "quantity": 150,
+        "ticketsAllocated": 150,
+        "customerPaymentMethods": ["CASH", "STRIPE", "PAYPAL"]
+      }
+    ],
+    "creditCard": [
+      {
+        "name": "Split Payment Event",
+        "price": 5000,
+        "quantity": 100,
+        "charityDiscount": false
+      },
+      {
+        "name": "Charity Event",
+        "price": 4000,
+        "quantity": 100,
+        "charityDiscount": true
+      },
+      {
+        "name": "High Volume Event",
+        "price": 7500,
+        "quantity": 500,
+        "charityDiscount": false
+      },
+      {
+        "name": "Low Price Event",
+        "price": 1500,
+        "quantity": 200,
+        "charityDiscount": true
+      },
+      {
+        "name": "Failed Payment Test Event",
+        "price": 2500,
+        "quantity": 100,
+        "charityDiscount": false
+      },
+      {
+        "name": "Refund Test Event",
+        "price": 3000,
+        "quantity": 100,
+        "charityDiscount": false
+      },
+      {
+        "name": "Mixed Test Event",
+        "price": 2000,
+        "quantity": 150,
+        "charityDiscount": false
+      }
+    ]
+  },
+  "buyers": {
+    "cash": {
+      "namePrefix": "Cash Buyer",
+      "emailPrefix": "cash-buyer",
+      "count": 5
+    },
+    "stripe": {
+      "namePrefix": "Stripe Buyer",
+      "emailPrefix": "stripe-buyer",
+      "count": 10
+    },
+    "paypal": {
+      "namePrefix": "PayPal Buyer",
+      "emailPrefix": "paypal-buyer",
+      "count": 3
+    },
+    "mixed": {
+      "namePrefix": "Mixed Buyer",
+      "emailPrefix": "mixed-buyer",
+      "count": 10
+    }
+  },
+  "feeCalculations": {
+    "prepay": {
+      "platformFeePercent": 0,
+      "platformFeeFixed": 0,
+      "processingFeePercent": 2.9
+    },
+    "creditCard": {
+      "regular": {
+        "platformFeePercent": 3.7,
+        "platformFeeFixed": 179,
+        "processingFeePercent": 2.9
+      },
+      "charity": {
+        "platformFeePercent": 1.85,
+        "platformFeeFixed": 90,
+        "processingFeePercent": 2.9
+      },
+      "lowPrice": {
+        "platformFeePercent": 1.85,
+        "platformFeeFixed": 90,
+        "processingFeePercent": 2.9
+      }
+    }
+  },
+  "testScenarios": [
+    {
+      "id": "test1",
+      "name": "PREPAY with Cash Payment",
+      "eventType": "PREPAY",
+      "purchases": 5,
+      "paymentMethod": "CASH",
+      "expectedStatus": "PENDING_ACTIVATION"
+    },
+    {
+      "id": "test2",
+      "name": "PREPAY with Stripe Payment",
+      "eventType": "PREPAY",
+      "purchases": 10,
+      "paymentMethod": "STRIPE",
+      "expectedStatus": "COMPLETED"
+    },
+    {
+      "id": "test3",
+      "name": "PREPAY Multiple Payment Methods",
+      "eventType": "PREPAY",
+      "purchases": 10,
+      "paymentMethods": ["CASH", "STRIPE", "PAYPAL"],
+      "expectedStatuses": ["PENDING_ACTIVATION", "COMPLETED", "COMPLETED"]
+    },
+    {
+      "id": "test4",
+      "name": "Basic Split Payment",
+      "eventType": "CREDIT_CARD",
+      "purchases": 5,
+      "paymentMethod": "STRIPE",
+      "expectedStatus": "COMPLETED"
+    },
+    {
+      "id": "test5",
+      "name": "Charity Discount",
+      "eventType": "CREDIT_CARD",
+      "purchases": 5,
+      "paymentMethod": "STRIPE",
+      "charityDiscount": true,
+      "expectedStatus": "COMPLETED"
+    },
+    {
+      "id": "test6",
+      "name": "High Volume Sales",
+      "eventType": "CREDIT_CARD",
+      "purchases": 50,
+      "paymentMethod": "STRIPE",
+      "concurrent": true,
+      "expectedStatus": "COMPLETED"
+    },
+    {
+      "id": "test7",
+      "name": "Low Price Event",
+      "eventType": "CREDIT_CARD",
+      "purchases": 10,
+      "paymentMethod": "STRIPE",
+      "lowPriceDiscount": true,
+      "expectedStatus": "COMPLETED"
+    },
+    {
+      "id": "test8",
+      "name": "Failed Payment Handling",
+      "eventType": "CREDIT_CARD",
+      "purchases": 1,
+      "paymentMethod": "STRIPE",
+      "expectedStatus": "FAILED",
+      "note": "Requires Stripe webhook integration"
+    },
+    {
+      "id": "test9",
+      "name": "Refund Processing",
+      "eventType": "CREDIT_CARD",
+      "purchases": 5,
+      "paymentMethod": "STRIPE",
+      "refunds": 2,
+      "note": "Requires admin panel integration"
+    },
+    {
+      "id": "test10",
+      "name": "Mixed PREPAY + CREDIT_CARD",
+      "eventTypes": ["PREPAY", "CREDIT_CARD"],
+      "purchases": 4,
+      "concurrent": true,
+      "expectedStatuses": ["PENDING_ACTIVATION", "COMPLETED", "COMPLETED", "COMPLETED"]
+    }
+  ]
+}
