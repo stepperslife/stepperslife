@@ -226,7 +226,8 @@ export default defineSchema({
       v.union(
         v.literal("CASH"),     // Physical USD cash at door (staff validated, default)
         v.literal("STRIPE"),   // Online credit/debit card via Stripe (includes Cash App via Stripe)
-        v.literal("PAYPAL")    // Online PayPal with split payment support
+        v.literal("PAYPAL"),   // Online PayPal with split payment support
+        v.literal("CASHAPP")   // DEPRECATED - Legacy support only (use STRIPE instead)
       )
     ),
 
@@ -618,6 +619,10 @@ export default defineSchema({
         v.literal("STRIPE"),  // Customer paid via Stripe
         v.literal("PAYPAL"),  // Customer paid via PayPal
         v.literal("CASH"),    // Customer paid cash at door
+        v.literal("SQUARE"),  // DEPRECATED - Legacy support only (migrating away)
+        v.literal("CASH_APP"), // DEPRECATED - Legacy support only (use STRIPE instead)
+        v.literal("ONLINE"),  // Generic online payment
+        v.literal("FREE"),    // Free ticket (no payment)
         v.literal("TEST")     // Test mode payment
       )
     ),

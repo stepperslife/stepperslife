@@ -7,7 +7,7 @@ set -e
 
 VPS_HOST="events-vps"
 VPS_PATH="/root/websites/events-stepperslife"
-LOCAL_PATH="/Users/irawatkins/Desktop/event.stepperslife.com"
+LOCAL_PATH="/Users/irawatkins/stepperslife-v2-docker/src/events-stepperslife"
 
 echo "🚀 Deploying to VPS: $VPS_HOST (72.60.28.175)"
 echo "📁 Local: $LOCAL_PATH"

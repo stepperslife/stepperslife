@@ -37,6 +37,7 @@ export const activateAllTickets = mutation({
           eventId: event._id,
           organizerId: event.organizerId!,
           paymentModel: "PREPAY",
+          customerPaymentMethods: ["CASH"], // Default to cash at door for prepay model
           isActive: true,
           activatedAt: Date.now(),
           platformFeePercent: 0, // No platform fee for prepay
