@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const userId = await convex.mutation(api.users.mutations.createUser, {
       name: name.trim(),
       email: email.toLowerCase().trim(),
-      password: hashedPassword,
+      passwordHash: hashedPassword, // Fixed: was 'password', should be 'passwordHash'
       role: "organizer", // Default role
     });
 
