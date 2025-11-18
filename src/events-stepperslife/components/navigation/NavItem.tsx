@@ -35,7 +35,7 @@ export function NavItem({
 
   const handleClick = (e: React.MouseEvent) => {
     if (hasSubmenu) {
-      e.preventDefault();
+      // Don't prevent navigation, just toggle submenu
       setIsSubmenuOpen(!isSubmenuOpen);
     } else if (onNavigate) {
       onNavigate();
@@ -88,19 +88,15 @@ export function NavItem({
     </div>
   );
 
-  // If collapsed, wrap in tooltip
+  // If collapsed, wrap in tooltip - always use Link even for items with submenus
   if (isCollapsed) {
     return (
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            {hasSubmenu ? (
-              <div>{itemContent}</div>
-            ) : (
-              <Link href={item.href} onClick={onNavigate}>
-                {itemContent}
-              </Link>
-            )}
+            <Link href={item.href} onClick={onNavigate}>
+              {itemContent}
+            </Link>
           </TooltipTrigger>
           <TooltipContent side="right" className="flex flex-col gap-1">
             <span className="font-semibold">{item.label}</span>
@@ -118,10 +114,8 @@ export function NavItem({
     );
   }
 
-  // Regular item
-  const mainItem = hasSubmenu ? (
-    <div>{itemContent}</div>
-  ) : (
+  // Regular item - always use Link so parent items with submenus can still navigate
+  const mainItem = (
     <Link href={item.href} onClick={onNavigate}>
       {itemContent}
     </Link>
