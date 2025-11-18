@@ -39,7 +39,7 @@ export default function MyTicketsPage() {
 
   // Only fetch tickets if authenticated
   const tickets = useQuery(
-    isAuthenticated ? api.tickets.queries.getMyTickets : "skip"
+    isAuthenticated ? api.tickets.queries.getMyTickets : undefined
   );
 
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
