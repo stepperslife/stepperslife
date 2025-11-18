@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { Id } from "@/convex/_generated/dataModel";
+import imageCompression from "browser-image-compression";
 
 interface ImageUploadProps {
   onImageUploaded: (storageId: Id<"_storage">) => void;
@@ -23,6 +24,7 @@ export function ImageUpload({
   required = false,
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [compressionProgress, setCompressionProgress] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,33 +40,51 @@ export function ImageUpload({
       return;
     }
 
-    // Validate file size (max 10MB)
+    // Validate original file size (max 10MB before compression)
     if (file.size > 10 * 1024 * 1024) {
       alert("Image must be less than 10MB");
       return;
     }
 
     setIsUploading(true);
+    setCompressionProgress(0);
 
     try {
+      console.log(`Original image size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+
+      // Compress image
+      const compressionOptions = {
+        maxSizeMB: 2, // Target max size of 2MB
+        maxWidthOrHeight: 1920, // Max dimension
+        useWebWorker: true,
+        fileType: file.type,
+        initialQuality: 0.85, // 85% quality
+        onProgress: (progress: number) => {
+          setCompressionProgress(progress);
+        },
+      };
+
+      const compressedFile = await imageCompression(file, compressionOptions);
+      console.log(`Compressed image size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+
       // Generate upload URL
       const uploadUrl = await generateUploadUrl();
 
-      // Upload the file
+      // Upload the compressed file
       const result = await fetch(uploadUrl, {
         method: "POST",
-        headers: { "Content-Type": file.type },
-        body: file,
+        headers: { "Content-Type": compressedFile.type },
+        body: compressedFile,
       });
 
       const { storageId } = await result.json();
 
-      // Create preview
+      // Create preview from compressed file
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(compressedFile);
 
       // Notify parent
       onImageUploaded(storageId);
@@ -73,6 +93,7 @@ export function ImageUpload({
       alert("Failed to upload image. Please try again.");
     } finally {
       setIsUploading(false);
+      setCompressionProgress(0);
     }
   };
 
@@ -116,7 +137,20 @@ export function ImageUpload({
             {isUploading ? (
               <>
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-                <p className="text-sm text-gray-600">Uploading...</p>
+                {compressionProgress > 0 && compressionProgress < 100 ? (
+                  <>
+                    <p className="text-sm text-gray-600 mb-2">Optimizing image...</p>
+                    <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary transition-all duration-300"
+                        style={{ width: `${compressionProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">{compressionProgress}%</p>
+                  </>
+                ) : (
+                  <p className="text-sm text-gray-600">Uploading...</p>
+                )}
               </>
             ) : (
               <>
@@ -127,7 +161,7 @@ export function ImageUpload({
                     Click to upload event image{required && " *"}
                   </p>
                 </div>
-                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB (auto-optimized)</p>
                 {required && (
                   <p className="text-xs text-red-600 mt-2 font-medium">Required</p>
                 )}

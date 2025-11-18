@@ -367,13 +367,13 @@ export const resetAllDataExceptProducts = mutation({
       deletedCounts.events++;
     }
 
-    // Reset organizer credits to 300 free tickets
+    // Reset organizer credits to 1,000 free tickets
     const organizerCredits = await ctx.db.query("organizerCredits").collect();
     for (const credits of organizerCredits) {
       await ctx.db.patch(credits._id, {
-        creditsTotal: 300,
+        creditsTotal: 1000,
         creditsUsed: 0,
-        creditsRemaining: 300,
+        creditsRemaining: 1000,
         firstEventFreeUsed: false,
         updatedAt: Date.now(),
       });

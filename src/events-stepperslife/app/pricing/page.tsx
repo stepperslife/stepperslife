@@ -158,21 +158,74 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* Special Offers Banner */}
+        {/* FREE TICKETS PROMOTION BANNER */}
+        <div className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 border-b-4 border-emerald-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <Sparkles className="w-8 h-8 text-yellow-300 animate-pulse" />
+                <h2 className="text-3xl md:text-4xl font-bold text-white">
+                  🎉 NEW ORGANIZER SPECIAL! 🎉
+                </h2>
+                <Sparkles className="w-8 h-8 text-yellow-300 animate-pulse" />
+              </div>
+              <p className="text-2xl md:text-3xl font-bold text-white mb-2">
+                Get 1,000 FREE Tickets for Your First Event!
+              </p>
+              <p className="text-lg text-emerald-100 mb-4">
+                Valid for <span className="font-semibold text-white">TICKETED</span>, <span className="font-semibold text-white">FREE</span>, and <span className="font-semibold text-white">SAVE-THE-DATE</span> events
+              </p>
+              <p className="text-sm text-emerald-200 italic">
+                * Credits are event-specific and expire when your first event ends
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* PAYMENT FLEXIBILITY NOTE */}
+        <div className="bg-blue-50 border-b border-blue-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-start gap-4 max-w-3xl mx-auto">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">💡 How It Works:</h3>
+                <ol className="space-y-2 text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold text-blue-600">1.</span>
+                    <span><strong>Create your event</strong> - 100% FREE to set up, no payment required</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold text-blue-600">2.</span>
+                    <span><strong>Add tickets and details</strong> - Configure everything how you want it</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold text-blue-600">3.</span>
+                    <span><strong>Choose your payment option</strong> - Select PREPAY or CREDIT CARD model when ready to publish</span>
+                  </li>
+                </ol>
+                <p className="mt-3 text-sm font-semibold text-blue-700">
+                  ✨ No payment required until you're ready to publish your event!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Offers */}
         <div className="bg-yellow-50 border-b border-yellow-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-yellow-600" />
-                <span className="font-semibold">New Organizers: Get 200 FREE tickets!</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <Heart className="w-5 h-5 text-red-500" />
-                <span>Charity Events: 50% off platform fees</span>
+                <span className="font-semibold">Charity Events: 50% off platform fees</span>
               </div>
               <div className="flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-green-600" />
-                <span>Low-price events under $20: Automatic 50% discount</span>
+                <span className="font-semibold">Low-price events under $20: Automatic 50% discount</span>
               </div>
             </div>
           </div>
