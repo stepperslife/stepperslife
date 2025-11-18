@@ -6,19 +6,12 @@
 
 const requiredEnvVars = [
   'NEXT_PUBLIC_CONVEX_URL',
-  'CONVEX_DEPLOY_KEY',
   'JWT_SECRET',
   'AUTH_SECRET',
   'NEXTAUTH_URL',
   'AUTH_GOOGLE_CLIENT_ID',
   'AUTH_GOOGLE_CLIENT_SECRET',
   'RESEND_API_KEY',
-  'NEXT_PUBLIC_SQUARE_APPLICATION_ID',
-  'NEXT_PUBLIC_SQUARE_LOCATION_ID',
-  'NEXT_PUBLIC_SQUARE_ENVIRONMENT',
-  'SQUARE_ACCESS_TOKEN',
-  'SQUARE_LOCATION_ID',
-  'SQUARE_ENVIRONMENT',
   'STRIPE_SECRET_KEY',
   'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
 ] as const;
@@ -28,6 +21,15 @@ const optionalEnvVars = [
   'NEXT_PUBLIC_SENTRY_DSN',
   'STRIPE_SECRET_KEY',
   'STRIPE_PUBLISHABLE_KEY',
+  // Square is ONLY for organizer credit purchases (organizer → platform)
+  // NOT required for customer ticket purchases (customer → organizer via Stripe/PayPal/Cash)
+  'NEXT_PUBLIC_SQUARE_APPLICATION_ID',
+  'NEXT_PUBLIC_SQUARE_LOCATION_ID',
+  'NEXT_PUBLIC_SQUARE_ENVIRONMENT',
+  'SQUARE_ACCESS_TOKEN',
+  'SQUARE_LOCATION_ID',
+  'SQUARE_ENVIRONMENT',
+  'CONVEX_DEPLOY_KEY', // Only needed for deployment, not local dev
 ] as const;
 
 export function validateEnv() {

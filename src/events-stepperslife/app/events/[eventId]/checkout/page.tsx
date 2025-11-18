@@ -5,8 +5,6 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { SquareCardPayment } from "@/components/checkout/SquareCardPayment";
-import { CashAppQRPayment } from "@/components/checkout/CashAppPayment";
 import { StripeCheckout } from "@/components/checkout/StripeCheckout";
 import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import type { SelectedSeat } from "@/components/checkout/SeatSelection";
@@ -67,7 +65,7 @@ export default function CheckoutPage() {
   const [buyerEmail, setBuyerEmail] = useState("");
   const [buyerName, setBuyerName] = useState("");
   const [showPayment, setShowPayment] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "cashapp" | "paypal">("card");
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "cash">("card");
   const [orderId, setOrderId] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [referralCode, setReferralCode] = useState<string | null>(null);
@@ -823,7 +821,7 @@ export default function CheckoutPage() {
                     </div>
                   ) : null}
 
-                  {/* Payment Method Selector - Only show for Square/CashApp/PayPal (prepaid events) */}
+                  {/* Payment Method Selector - CUSTOMER payment methods only (Stripe/PayPal/Cash) */}
                   {!useStripePayment && (
                     <div className="grid grid-cols-3 gap-3 mb-6">
                       <button
@@ -837,16 +835,6 @@ export default function CheckoutPage() {
                         Credit/Debit Card
                       </button>
                       <button
-                        onClick={() => setPaymentMethod("cashapp")}
-                        className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                          paymentMethod === "cashapp"
-                            ? "border-green-600 bg-green-50 text-green-900 font-semibold"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        Cash App Pay
-                      </button>
-                      <button
                         onClick={() => setPaymentMethod("paypal")}
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "paypal"
@@ -856,10 +844,20 @@ export default function CheckoutPage() {
                       >
                         PayPal
                       </button>
+                      <button
+                        onClick={() => setPaymentMethod("cash")}
+                        className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                          paymentMethod === "cash"
+                            ? "border-green-600 bg-green-50 text-green-900 font-semibold"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        Cash In-Person
+                      </button>
                     </div>
                   )}
 
-                  {/* Payment Form */}
+                  {/* Payment Form - CUSTOMER payment methods only (Stripe, PayPal, Cash) */}
                   {useStripePayment ? (
                     // Stripe payment for CREDIT_CARD events
                     <StripeCheckout
@@ -880,25 +878,26 @@ export default function CheckoutPage() {
                       onBack={() => setShowPayment(false)}
                     />
                   ) : paymentMethod === "card" ? (
-                    // Square payment for PREPAID events
-                    <SquareCardPayment
-                      applicationId={process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!}
-                      locationId={process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!}
+                    // Stripe payment for PREPAID events (customer pays via Stripe)
+                    <StripeCheckout
                       total={total / 100}
-                      environment={
-                        process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT as "sandbox" | "production"
-                      }
+                      connectedAccountId={paymentConfig?.stripeConnectAccountId || ""}
+                      platformFee={platformFee + processingFee}
+                      orderId={orderId || undefined}
+                      orderNumber={`ORD-${Date.now()}`}
                       billingContact={{
                         givenName: buyerName.split(" ")[0],
                         familyName: buyerName.split(" ").slice(1).join(" "),
                         email: buyerEmail,
                       }}
-                      onPaymentSuccess={handlePaymentSuccess}
+                      onPaymentSuccess={(result) =>
+                        handlePaymentSuccess({ paymentIntentId: result.paymentIntentId })
+                      }
                       onPaymentError={handlePaymentError}
                       onBack={() => setShowPayment(false)}
                     />
                   ) : paymentMethod === "paypal" ? (
-                    // PayPal payment for PREPAID events
+                    // PayPal payment for customer ticket purchases
                     <div>
                       <PayPalPayment
                         amount={total}
@@ -916,15 +915,57 @@ export default function CheckoutPage() {
                         Back to Order Details
                       </button>
                     </div>
-                  ) : (
-                    // CashApp payment
-                    <CashAppQRPayment
-                      total={total / 100}
-                      onPaymentSuccess={handlePaymentSuccess}
-                      onPaymentError={handlePaymentError}
-                      onBack={() => setShowPayment(false)}
-                    />
-                  )}
+                  ) : paymentMethod === "cash" ? (
+                    // Cash payment (physical USD, staff validated)
+                    <div className="space-y-4">
+                      <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                        <h4 className="font-semibold text-amber-900 mb-2">Cash Payment Instructions</h4>
+                        <ol className="text-sm text-amber-800 space-y-2 list-decimal list-inside">
+                          <li>Your order will be held for 30 minutes</li>
+                          <li>Bring physical USD cash to the event</li>
+                          <li>Pay the staff member at the door</li>
+                          <li>Staff will validate your payment with their code</li>
+                          <li>Your tickets will be activated immediately</li>
+                        </ol>
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={async () => {
+                            try {
+                              // Complete cash order with PENDING status
+                              if (purchaseType === "bundle") {
+                                await completeBundleOrder({
+                                  orderId: orderId as Id<"orders">,
+                                  paymentId: "CASH_PENDING",
+                                  paymentMethod: "CASH",
+                                });
+                              } else {
+                                await completeOrder({
+                                  orderId: orderId as Id<"orders">,
+                                  paymentId: "CASH_PENDING",
+                                  paymentMethod: "CASH",
+                                });
+                              }
+                              setIsSuccess(true);
+                              toast.success("Cash order created! Pay at the door to activate tickets.");
+                            } catch (error: any) {
+                              console.error("Cash order error:", error);
+                              toast.error(error.message || "Failed to create cash order");
+                            }
+                          }}
+                          className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                        >
+                          Confirm Cash Payment
+                        </button>
+                        <button
+                          onClick={() => setShowPayment(false)}
+                          className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          Back
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </motion.div>

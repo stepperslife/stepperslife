@@ -213,7 +213,7 @@ export interface OrderPaymentInfo {
 export interface OrderCompletionRequest {
   orderId: string;
   paymentIntentId: string;
-  paymentMethod?: 'SQUARE' | 'PAYPAL' | 'STRIPE' | 'CASHAPP';
+  paymentMethod?: CustomerPaymentProvider; // Only customer payment methods (STRIPE, PAYPAL, CASH)
 }
 
 // ============================================================================
@@ -238,13 +238,41 @@ export type WebhookEvent = PayPalWebhookEvent | SquareWebhookEvent;
 // Payment Method Types
 // ============================================================================
 
-export type PaymentMethodType = 'card' | 'cashapp' | 'paypal';
+/**
+ * ORGANIZER Payment Providers
+ * Used when organizers purchase ticket credits FROM SteppersLife.com platform
+ * - SQUARE: Square credit card payment
+ * - CASHAPP: Cash App via Square SDK
+ * - PAYPAL: PayPal payment
+ */
+export type OrganizerPaymentProvider = 'SQUARE' | 'CASHAPP' | 'PAYPAL';
 
+/**
+ * CUSTOMER Payment Providers
+ * Used when customers purchase tickets FROM event organizers
+ * - STRIPE: Stripe credit card (includes Cash App via Stripe integration)
+ * - PAYPAL: PayPal payment with split payment support
+ * - CASH: Physical USD cash payment (at-door, staff validated)
+ */
+export type CustomerPaymentProvider = 'STRIPE' | 'PAYPAL' | 'CASH';
+
+/**
+ * Customer Payment Method Types
+ * - card: Credit/debit card via Stripe
+ * - paypal: PayPal payment
+ * - cash: Physical cash payment (USD)
+ */
+export type PaymentMethodType = 'card' | 'paypal' | 'cash';
+
+/**
+ * @deprecated Use OrganizerPaymentProvider or CustomerPaymentProvider instead
+ * This type mixes organizer and customer payment systems - being phased out
+ */
 export type PaymentProviderType = 'SQUARE' | 'PAYPAL' | 'STRIPE' | 'CASHAPP';
 
 export interface PaymentMethodConfig {
   type: PaymentMethodType;
-  provider: PaymentProviderType;
+  provider: CustomerPaymentProvider; // Changed from PaymentProviderType to CustomerPaymentProvider
   enabled: boolean;
   displayName: string;
 }

@@ -209,23 +209,24 @@ export default defineSchema({
     ),
 
     // HOW ORGANIZER PAYS STEPPERSLIFE (for PREPAY model only)
-    // Organizer purchases ticket credits via Square, CashApp, or PayPal
+    // Organizer purchases ticket credits FROM platform via Square, Cash App (Square SDK), or PayPal
+    // NOTE: This is SEPARATE from customer payment methods - organizers pay the platform for capacity
     organizerPaymentMethod: v.optional(
       v.union(
-        v.literal("SQUARE"),
-        v.literal("CASHAPP"),
-        v.literal("PAYPAL")
+        v.literal("SQUARE"),    // Square credit card payment
+        v.literal("CASHAPP"),   // Cash App via Square SDK (organizer-only)
+        v.literal("PAYPAL")     // PayPal payment to platform
       )
     ),
 
     // HOW CUSTOMERS PAY ORGANIZER (for ticket purchases)
     // Customer payment methods enabled for this event
+    // NOTE: Cash App via Stripe is included in STRIPE option, NOT a separate method
     customerPaymentMethods: v.array(
       v.union(
-        v.literal("CASH"), // Cash at door
-        v.literal("STRIPE"), // Online credit card via Stripe
-        v.literal("PAYPAL"), // Online PayPal
-        v.literal("CASHAPP") // Online CashApp (via Stripe integration)
+        v.literal("CASH"),     // Physical USD cash at door (staff validated, default)
+        v.literal("STRIPE"),   // Online credit/debit card via Stripe (includes Cash App via Stripe)
+        v.literal("PAYPAL")    // Online PayPal with split payment support
       )
     ),
 
@@ -610,11 +611,19 @@ export default defineSchema({
     processingFeeCents: v.number(),
     totalCents: v.number(),
 
-    // Payment
-    paymentId: v.optional(v.string()), // Square or Stripe payment ID
-    paymentMethod: v.optional(v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("TEST"))),
+    // Payment (CUSTOMER payments only - not organizer prepayments)
+    paymentId: v.optional(v.string()), // Stripe or PayPal payment ID (NOT Square - Square is organizer-only)
+    paymentMethod: v.optional(
+      v.union(
+        v.literal("STRIPE"),  // Customer paid via Stripe
+        v.literal("PAYPAL"),  // Customer paid via PayPal
+        v.literal("CASH"),    // Customer paid cash at door
+        v.literal("TEST")     // Test mode payment
+      )
+    ),
     paidAt: v.optional(v.number()),
     stripePaymentIntentId: v.optional(v.string()),
+    paypalOrderId: v.optional(v.string()), // PayPal order ID for customer payments
 
     // Staff referral
     soldByStaffId: v.optional(v.id("eventStaff")), // Staff member who made the sale
