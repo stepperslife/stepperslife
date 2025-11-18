@@ -112,8 +112,23 @@ export default function EditEventPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!eventName || !description) {
-      alert("Please fill in event name and description");
+    // Validation
+    const missingFields: string[] = [];
+    if (!eventName) missingFields.push("Event Name");
+    if (!description) missingFields.push("Description");
+
+    // Check if event has an existing image or user uploaded a new one
+    const hasExistingImage = event?.imageUrl || (event?.images && event.images.length > 0);
+    const hasNewImage = uploadedImageId !== null;
+
+    if (!hasExistingImage && !hasNewImage) {
+      missingFields.push("Event Image");
+    }
+
+    if (missingFields.length > 0) {
+      alert(
+        `Please fill in the following required fields:\n\n${missingFields.map((f) => `• ${f}`).join("\n")}`
+      );
       return;
     }
 
@@ -377,7 +392,9 @@ export default function EditEventPage() {
 
             {/* Image Upload */}
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Event Image</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                Event Image <span className="text-red-600">*</span>
+              </h2>
               {event.imageUrl && (
                 <div className="mb-4">
                   <p className="text-sm text-gray-600 mb-2">Current Image:</p>
@@ -388,9 +405,13 @@ export default function EditEventPage() {
                   />
                 </div>
               )}
-              <ImageUpload onImageUploaded={(storageId) => setUploadedImageId(storageId)} />
-              <p className="text-sm text-gray-500 mt-2">
-                Upload a new image to replace the current one
+              <ImageUpload
+                onImageUploaded={(storageId) => setUploadedImageId(storageId)}
+                currentImageUrl={event.imageUrl}
+                required={!event.imageUrl && (!event.images || event.images.length === 0)}
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                A professional event image is required and will be displayed on the event page, checkout, and payment confirmation.
               </p>
             </div>
 

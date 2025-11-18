@@ -54,6 +54,8 @@ export const getPublishedEventsDebug = query({
         endDate: e.endDate,
         daysFromNow: e.startDate ? Math.floor((e.startDate - now) / (1000 * 60 * 60 * 24)) : null,
         location: e.location,
+        categories: e.categories,
+        hasCategories: !!e.categories && e.categories.length > 0,
       })),
     };
   },

@@ -55,6 +55,13 @@ export const createEvent = mutation({
         );
       }
 
+      // VALIDATION: Require event image (either imageUrl OR images array)
+      if (!args.imageUrl && (!args.images || args.images.length === 0)) {
+        throw new Error(
+          "Event image is required. Please upload a professional event image that will be displayed on the event page, checkout, and payment confirmation."
+        );
+      }
+
       // Create the event
       const eventId = await ctx.db.insert("events", {
         organizerId: user._id,
@@ -418,6 +425,23 @@ export const updateEvent = mutation({
   handler: async (ctx, args) => {
     // Verify event ownership
     const { event } = await requireEventOwnership(ctx, args.eventId);
+
+    // VALIDATION: Ensure event has an image (existing or being added)
+    const hasExistingImage = event.imageUrl || (event.images && event.images.length > 0);
+    const isAddingImage = args.imageUrl || (args.images && args.images.length > 0);
+    const isRemovingImage = args.imageUrl === undefined && args.images && args.images.length === 0;
+
+    if (!hasExistingImage && !isAddingImage) {
+      throw new Error(
+        "Event image is required. Please upload a professional event image that will be displayed on the event page, checkout, and payment confirmation."
+      );
+    }
+
+    if (hasExistingImage && isRemovingImage) {
+      throw new Error(
+        "Cannot remove event image. Events must have an image displayed on the event page, checkout, and payment confirmation."
+      );
+    }
 
     // SAFEGUARD: Check if event has any ticket sales
     const hasTicketSales = event.status === "PUBLISHED" && event.eventType === "TICKETED_EVENT";

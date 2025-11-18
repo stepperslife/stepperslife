@@ -524,7 +524,7 @@ export const completeOrder = mutation({
   args: {
     orderId: v.id("orders"),
     paymentId: v.string(),
-    paymentMethod: v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("TEST")),
+    paymentMethod: v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("TEST"), v.literal("FREE")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -1082,7 +1082,7 @@ export const completeBundleOrder = mutation({
   args: {
     orderId: v.id("orders"),
     paymentId: v.string(),
-    paymentMethod: v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("TEST")),
+    paymentMethod: v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("TEST"), v.literal("FREE")),
   },
   handler: async (ctx, args) => {
     const order = await ctx.db.get(args.orderId);

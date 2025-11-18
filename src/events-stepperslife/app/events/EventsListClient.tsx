@@ -21,12 +21,14 @@ export default function EventsListClient() {
 
   const categories = useQuery(api.public.queries.getCategories, {});
 
-  // DEBUG: Log events state
+  // DEBUG: Log events state with more details
   console.log("[EventsListClient] Events state:", {
     events,
     eventsLength: events?.length,
     eventsIsUndefined: events === undefined,
     eventsIsArray: Array.isArray(events),
+    eventsType: typeof events,
+    firstEvent: events && Array.isArray(events) && events.length > 0 ? events[0].name : "N/A",
   });
 
   // Format date

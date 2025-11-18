@@ -12,6 +12,7 @@ interface ImageUploadProps {
   onImageRemoved?: () => void;
   currentImageId?: Id<"_storage">;
   currentImageUrl?: string;
+  required?: boolean;
 }
 
 export function ImageUpload({
@@ -19,6 +20,7 @@ export function ImageUpload({
   onImageRemoved,
   currentImageId,
   currentImageUrl,
+  required = false,
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
@@ -106,7 +108,9 @@ export function ImageUpload({
       ) : (
         <label
           htmlFor="image-upload"
-          className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100"
+          className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100 ${
+            required ? "border-red-300" : "border-gray-300"
+          }`}
         >
           <div className="flex flex-col items-center justify-center py-8">
             {isUploading ? (
@@ -116,12 +120,17 @@ export function ImageUpload({
               </>
             ) : (
               <>
-                <ImageIcon className="w-12 h-12 text-gray-400 mb-4" />
+                <ImageIcon className={`w-12 h-12 mb-4 ${required ? "text-red-400" : "text-gray-400"}`} />
                 <div className="flex items-center gap-2 mb-2">
                   <Upload className="w-5 h-5 text-primary" />
-                  <p className="text-sm font-medium text-gray-700">Click to upload event image</p>
+                  <p className="text-sm font-medium text-gray-700">
+                    Click to upload event image{required && " *"}
+                  </p>
                 </div>
                 <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                {required && (
+                  <p className="text-xs text-red-600 mt-2 font-medium">Required</p>
+                )}
               </>
             )}
           </div>

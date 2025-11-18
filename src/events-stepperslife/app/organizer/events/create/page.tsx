@@ -169,6 +169,7 @@ export default function CreateEventPage() {
     if (!startDate) missingFields.push("Start Date & Time");
     if (!city) missingFields.push("City");
     if (!state) missingFields.push("State");
+    if (!uploadedImageId) missingFields.push("Event Image");
 
     // Validate capacity for ticketed events (tickets will be created later)
     if (eventType === "TICKETED_EVENT" && (!capacity || parseInt(capacity) <= 0)) {
@@ -605,12 +606,16 @@ export default function CreateEventPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Event Image (Optional)
+                  Event Image <span className="text-red-600">*</span>
                 </label>
                 <ImageUpload
                   onImageUploaded={(storageId) => setUploadedImageId(storageId)}
                   onImageRemoved={() => setUploadedImageId(null)}
+                  required={true}
                 />
+                <p className="text-xs text-gray-500 mt-2">
+                  A professional event image is required and will be displayed on the event page, checkout, and payment confirmation.
+                </p>
               </div>
 
               <div className="bg-accent border border-border rounded-lg p-4">

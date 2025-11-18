@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, internalMutation } from "../_generated/server";
+import { isAdminEmail } from "../lib/roles";
 
 /**
  * Create or update user from OAuth sign-in
@@ -594,6 +595,9 @@ export const upsertUserFromGoogle = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
 
+    // Check if email is in admin list
+    const shouldBeAdmin = isAdminEmail(args.email);
+
     // Check if user already exists by Google ID
     let user = await ctx.db
       .query("users")
@@ -607,38 +611,55 @@ export const upsertUserFromGoogle = mutation({
         .withIndex("by_email", (q) => q.eq("email", args.email))
         .first();
 
-      // If found by email, link Google ID
+      // If found by email, link Google ID and ensure admin role if applicable
       if (user) {
-        await ctx.db.patch(user._id, {
+        const updates: any = {
           googleId: args.googleId,
           authProvider: "google",
           name: args.name,
           image: args.image,
           emailVerified: true,
           updatedAt: now,
-        });
+        };
+
+        // Grant admin role if email is in admin list
+        if (shouldBeAdmin && user.role !== "admin") {
+          updates.role = "admin";
+          updates.canCreateTicketedEvents = true;
+        }
+
+        await ctx.db.patch(user._id, updates);
         return user._id;
       }
     }
 
-    // If user exists with Google ID, just update
+    // If user exists with Google ID, update and ensure admin role if applicable
     if (user) {
-      await ctx.db.patch(user._id, {
+      const updates: any = {
         name: args.name,
         image: args.image,
         updatedAt: now,
-      });
+      };
+
+      // Grant admin role if email is in admin list
+      if (shouldBeAdmin && user.role !== "admin") {
+        updates.role = "admin";
+        updates.canCreateTicketedEvents = true;
+      }
+
+      await ctx.db.patch(user._id, updates);
       return user._id;
     }
 
-    // Create new user
+    // Create new user with admin role if email is in admin list
     const userId = await ctx.db.insert("users", {
       email: args.email,
       name: args.name,
       image: args.image,
       googleId: args.googleId,
       authProvider: "google",
-      role: "user",
+      role: shouldBeAdmin ? "admin" : "user",
+      canCreateTicketedEvents: shouldBeAdmin,
       emailVerified: true,
       welcomePopupShown: false,
       createdAt: now,

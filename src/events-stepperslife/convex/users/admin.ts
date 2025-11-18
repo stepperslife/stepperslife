@@ -1,5 +1,6 @@
-import { internalMutation } from "../_generated/server";
+import { internalMutation, mutation } from "../_generated/server";
 import { v } from "convex/values";
+import { ADMIN_EMAILS, isAdminEmail } from "../lib/roles";
 
 /**
  * Internal mutation to bulk delete users
@@ -50,6 +51,55 @@ export const bulkDeleteUsers = internalMutation({
       totalUsers: allUsers.length,
       deletedCount,
       remainingCount: remainingUsers.length,
+    };
+  },
+});
+
+/**
+ * Ensure admin emails have admin role
+ * This can be called from scripts or run manually
+ */
+export const ensureAdminAccess = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const updates = [];
+
+    for (const email of ADMIN_EMAILS) {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", email))
+        .first();
+
+      if (user) {
+        if (user.role !== "admin") {
+          await ctx.db.patch(user._id, {
+            role: "admin",
+            canCreateTicketedEvents: true,
+            updatedAt: Date.now(),
+          });
+          updates.push(`Updated ${email} to admin`);
+        } else {
+          updates.push(`${email} already admin`);
+        }
+      } else {
+        // Create admin user if doesn't exist
+        await ctx.db.insert("users", {
+          email,
+          name: email.split("@")[0],
+          role: "admin",
+          authProvider: "google",
+          canCreateTicketedEvents: true,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+        updates.push(`Created admin user for ${email}`);
+      }
+    }
+
+    return {
+      success: true,
+      adminEmails: ADMIN_EMAILS,
+      updates,
     };
   },
 });

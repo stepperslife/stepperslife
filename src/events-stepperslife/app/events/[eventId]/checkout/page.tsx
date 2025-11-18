@@ -84,9 +84,10 @@ export default function CheckoutPage() {
 
   const eventDetails = useQuery(api.public.queries.getPublicEventDetails, { eventId });
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const seatingChart = ENABLE_SEATING
-    ? useQuery(api.seating.queries.getPublicSeatingChart, { eventId })
-    : null;
+  const seatingChart = useQuery(
+    api.seating.queries.getPublicSeatingChart,
+    ENABLE_SEATING ? { eventId } : "skip"
+  );
   const paymentConfig = useQuery(api.events.queries.getPaymentConfig, { eventId });
   const staffMemberInfo = useQuery(
     api.staff.queries.getStaffByReferralCode,
@@ -113,20 +114,8 @@ export default function CheckoutPage() {
   // Only require eventDetails to show tickets, not authentication
   const isLoading = eventDetails === undefined;
 
-  if (isLoading || !eventDetails) {
-    return (
-      <>
-        <PublicHeader />
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        </div>
-        <PublicFooter />
-      </>
-    );
-  }
-
-  const selectedTier = eventDetails.ticketTiers?.find((tier: any) => tier._id === selectedTierId);
-  const selectedBundle = eventDetails.bundles?.find(
+  const selectedTier = eventDetails?.ticketTiers?.find((tier: any) => tier._id === selectedTierId);
+  const selectedBundle = eventDetails?.bundles?.find(
     (bundle: any) => bundle._id === selectedBundleId
   );
 
@@ -293,7 +282,36 @@ export default function CheckoutPage() {
       }
 
       setOrderId(newOrderId);
-      setShowPayment(true);
+
+      // If total is $0.00 (free order with 100% discount), skip payment and complete order immediately
+      if (total === 0) {
+        try {
+          // Complete the order directly without payment
+          if (purchaseType === "bundle") {
+            await completeBundleOrder({
+              orderId: newOrderId as Id<"orders">,
+              paymentId: "FREE_ORDER_NO_PAYMENT", // Free orders don't have payment IDs
+              paymentMethod: "FREE",
+            });
+          } else {
+            await completeOrder({
+              orderId: newOrderId as Id<"orders">,
+              paymentId: "FREE_ORDER_NO_PAYMENT",
+              paymentMethod: "FREE",
+            });
+          }
+
+          // Mark as success
+          setIsSuccess(true);
+          toast.success("Order completed successfully!");
+        } catch (error: any) {
+          console.error("Free order completion error:", error);
+          toast.error("Failed to complete free order. Please contact support.");
+        }
+      } else {
+        // Show payment UI for paid orders
+        setShowPayment(true);
+      }
     } catch (error: any) {
       console.error("Order creation error:", error);
       toast.error(error.message || "Failed to create order. Please try again.");
@@ -362,11 +380,19 @@ export default function CheckoutPage() {
     setOrderId(null);
   };
 
-  // Success screen
-  if (isSuccess) {
-    return (
-      <>
-        <PublicHeader />
+  // Render content based on state - all wrapped in same layout to maintain hook count
+  return (
+    <>
+      <PublicHeader />
+      {/* Loading State */}
+      {(isLoading || !eventDetails) && (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      )}
+
+      {/* Success State */}
+      {!isLoading && eventDetails && isSuccess && (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -419,30 +445,26 @@ export default function CheckoutPage() {
             </motion.div>
           </motion.div>
         </div>
-        <PublicFooter />
-      </>
-    );
-  }
+      )}
 
-  return (
-    <>
-      <PublicHeader />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-          {/* Header */}
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Link
-              href={`/events/${eventId}`}
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+      {/* Main Checkout Form */}
+      {!isLoading && eventDetails && !isSuccess && (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div className="container mx-auto px-4 py-8 max-w-4xl">
+            {/* Header */}
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3 }}
             >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Event
-            </Link>
-          </motion.div>
+              <Link
+                href={`/events/${eventId}`}
+                className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Event
+              </Link>
+            </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Left: Order Details */}
@@ -458,26 +480,43 @@ export default function CheckoutPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
-                className="bg-white rounded-lg shadow-md p-6 mb-6"
+                className="bg-white rounded-lg shadow-md overflow-hidden mb-6"
               >
-                <h3 className="font-semibold text-gray-900 mb-2">{eventDetails.name}</h3>
-                <p className="text-sm text-gray-600">
-                  {eventDetails.startDate &&
-                    format(new Date(eventDetails.startDate), "EEEE, MMMM d, yyyy 'at' h:mm a")}
-                </p>
-                <p className="text-sm text-gray-600 mt-1">
-                  {eventDetails.location &&
-                    typeof eventDetails.location === "object" &&
-                    eventDetails.location.venueName &&
-                    `${eventDetails.location.venueName}, `}
-                  {eventDetails.location &&
-                    typeof eventDetails.location === "object" &&
-                    eventDetails.location.city}
-                  ,{" "}
-                  {eventDetails.location &&
-                    typeof eventDetails.location === "object" &&
-                    eventDetails.location.state}
-                </p>
+                {/* Event Image - Now Required */}
+                <div className="w-full h-48 relative bg-gray-200">
+                  {eventDetails.imageUrl ? (
+                    <img
+                      src={eventDetails.imageUrl}
+                      alt={eventDetails.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
+                      <p className="text-gray-500 text-sm">Event Image</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-6">
+                  <h3 className="font-semibold text-gray-900 mb-2">{eventDetails.name}</h3>
+                  <p className="text-sm text-gray-600">
+                    {eventDetails.startDate &&
+                      format(new Date(eventDetails.startDate), "EEEE, MMMM d, yyyy 'at' h:mm a")}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {eventDetails.location &&
+                      typeof eventDetails.location === "object" &&
+                      eventDetails.location.venueName &&
+                      `${eventDetails.location.venueName}, `}
+                    {eventDetails.location &&
+                      typeof eventDetails.location === "object" &&
+                      eventDetails.location.city}
+                    ,{" "}
+                    {eventDetails.location &&
+                      typeof eventDetails.location === "object" &&
+                      eventDetails.location.state}
+                  </p>
+                </div>
               </motion.div>
 
               {/* Referral Code Banner */}
@@ -738,21 +777,6 @@ export default function CheckoutPage() {
                       )}
                   </div>
 
-                  {/* Quantity */}
-                  {(selectedTierId || selectedBundleId) && (
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                      <h3 className="font-semibold text-gray-900 mb-4">Quantity</h3>
-                      <input
-                        type="number"
-                        min="1"
-                        max="10"
-                        value={quantity}
-                        onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
-                      />
-                    </div>
-                  )}
-
                   {/* Seat Selection - Only for individual tickets */}
                   {ENABLE_SEATING &&
                     selectedTierId &&
@@ -779,115 +803,6 @@ export default function CheckoutPage() {
                         )}
                       </div>
                     )}
-
-                  {/* Buyer Info */}
-                  {(selectedTierId || selectedBundleId) && (
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                      <h3 className="font-semibold text-gray-900 mb-4">Your Information</h3>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Full Name
-                          </label>
-                          <input
-                            type="text"
-                            value={buyerName}
-                            onChange={(e) => setBuyerName(e.target.value)}
-                            placeholder="John Doe"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Email Address
-                          </label>
-                          <input
-                            type="email"
-                            value={buyerEmail}
-                            onChange={(e) => setBuyerEmail(e.target.value)}
-                            placeholder="john@example.com"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Discount Code */}
-                  {(selectedTierId || selectedBundleId) && (
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                      <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Tag className="w-5 h-5" />
-                        Discount Code
-                      </h3>
-
-                      {/* Applied Discount Display */}
-                      {appliedDiscount ? (
-                        <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-semibold text-green-900 text-lg">
-                                {appliedDiscount.code}
-                              </p>
-                              <p className="text-sm text-green-700 mt-1">
-                                {appliedDiscount.discountType === "PERCENTAGE"
-                                  ? `${appliedDiscount.discountValue}% off`
-                                  : `$${(appliedDiscount.discountValue / 100).toFixed(2)} off`}
-                                {" - "}
-                                You save ${(appliedDiscount.discountAmountCents / 100).toFixed(2)}
-                              </p>
-                            </div>
-                            <button
-                              onClick={handleRemoveDiscount}
-                              className="p-2 text-green-700 hover:bg-green-100 rounded-lg transition-colors"
-                              title="Remove discount"
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          {/* Discount Code Input */}
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              value={discountCode}
-                              onChange={(e) => {
-                                setDiscountCode(e.target.value.toUpperCase());
-                                setDiscountError(null);
-                              }}
-                              onKeyPress={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault();
-                                  handleApplyDiscount();
-                                }
-                              }}
-                              placeholder="Enter code"
-                              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400 uppercase"
-                            />
-                            <button
-                              onClick={handleApplyDiscount}
-                              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium whitespace-nowrap"
-                            >
-                              Apply
-                            </button>
-                          </div>
-
-                          {/* Discount Error Message */}
-                          {discountError && (
-                            <motion.p
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="text-sm text-red-600 mt-2 flex items-center gap-1"
-                            >
-                              {discountError}
-                            </motion.p>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  )}
                 </>
               ) : (
                 <div className="bg-white rounded-lg shadow-md p-6">
@@ -1014,17 +929,158 @@ export default function CheckoutPage() {
               )}
             </motion.div>
 
-            {/* Right: Order Summary */}
+            {/* Right: Buyer Info, Discount Code, and Order Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
+              className="space-y-6"
             >
+              {/* Quantity */}
+              {!showPayment && (selectedTierId || selectedBundleId) && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                  className="bg-white rounded-lg shadow-md p-6"
+                >
+                  <h3 className="font-semibold text-gray-900 mb-4">Quantity</h3>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={quantity}
+                    onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                  />
+                </motion.div>
+              )}
+
+              {/* Buyer Info */}
+              {!showPayment && (selectedTierId || selectedBundleId) && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.35 }}
+                  className="bg-white rounded-lg shadow-md p-6"
+                >
+                  <h3 className="font-semibold text-gray-900 mb-4">Your Information</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        value={buyerName}
+                        onChange={(e) => setBuyerName(e.target.value)}
+                        placeholder="John Doe"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={buyerEmail}
+                        onChange={(e) => setBuyerEmail(e.target.value)}
+                        placeholder="john@example.com"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Discount Code */}
+              {!showPayment && (selectedTierId || selectedBundleId) && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.35 }}
+                  className="bg-white rounded-lg shadow-md p-6"
+                >
+                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Tag className="w-5 h-5" />
+                    Discount Code
+                  </h3>
+
+                  {/* Applied Discount Display */}
+                  {appliedDiscount ? (
+                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-green-900 text-lg">
+                            {appliedDiscount.code}
+                          </p>
+                          <p className="text-sm text-green-700 mt-1">
+                            {appliedDiscount.discountType === "PERCENTAGE"
+                              ? `${appliedDiscount.discountValue}% off`
+                              : `$${(appliedDiscount.discountValue / 100).toFixed(2)} off`}
+                            {" - "}
+                            You save ${(appliedDiscount.discountAmountCents / 100).toFixed(2)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={handleRemoveDiscount}
+                          className="p-2 text-green-700 hover:bg-green-100 rounded-lg transition-colors"
+                          title="Remove discount"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Discount Code Input */}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={discountCode}
+                          onChange={(e) => {
+                            setDiscountCode(e.target.value.toUpperCase());
+                            setDiscountError(null);
+                          }}
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleApplyDiscount();
+                            }
+                          }}
+                          placeholder="Enter code"
+                          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400 uppercase"
+                        />
+                        <button
+                          onClick={handleApplyDiscount}
+                          className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium whitespace-nowrap"
+                        >
+                          Apply
+                        </button>
+                      </div>
+
+                      {/* Discount Error Message */}
+                      {discountError && (
+                        <motion.p
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="text-sm text-red-600 mt-2 flex items-center gap-1"
+                        >
+                          {discountError}
+                        </motion.p>
+                      )}
+                    </>
+                  )}
+                </motion.div>
+              )}
+
+              {/* Order Summary */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-                className="bg-white rounded-lg shadow-md p-6 sticky top-8"
+                transition={{ duration: 0.3, delay: 0.4 }}
+                className="bg-white rounded-lg shadow-md p-6"
               >
                 <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <Ticket className="w-5 h-5" />
@@ -1114,7 +1170,8 @@ export default function CheckoutPage() {
             </motion.div>
           </div>
         </div>
-      </div>
+        </div>
+      )}
       <PublicFooter />
     </>
   );

@@ -8,6 +8,22 @@
  */
 
 /**
+ * Platform administrator emails
+ * These emails are automatically granted admin access
+ */
+export const ADMIN_EMAILS = [
+  "iradwatkins@gmail.com",
+  "bobbygwatkins@gmail.com",
+] as const;
+
+/**
+ * Check if an email is an admin email
+ */
+export function isAdminEmail(email: string): boolean {
+  return ADMIN_EMAILS.includes(email.toLowerCase() as any);
+}
+
+/**
  * Main user roles for the platform
  */
 export const USER_ROLES = {
