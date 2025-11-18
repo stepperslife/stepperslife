@@ -5,7 +5,7 @@
 
 set -e
 
-VPS_HOST="events-vps"
+VPS_HOST="events-production"
 VPS_PATH="/root/websites/events-stepperslife"
 LOCAL_PATH="/Users/irawatkins/stepperslife-v2-docker/src/events-stepperslife"
 
