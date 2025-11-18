@@ -27,12 +27,14 @@ import {
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function OrganizerEventsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const statusFilter = searchParams.get("status") || "all"; // Get status from URL
 
   // Verify user authentication
   const currentUser = useQuery(api.users.queries.getCurrentUser);
@@ -66,10 +68,12 @@ export default function OrganizerEventsPage() {
     failedEvents: Array<{ eventId: string; reason: string }>;
   } | null>(null);
 
-  // Show loading while checking auth
-  // currentUser undefined = still loading
-  // currentUser null = not authenticated
-  if (currentUser === undefined) {
+  // Show loading while Convex queries are loading
+  // Layout already handles auth protection via REST API
+  // currentUser undefined = still loading from Convex
+  // currentUser null = Convex auth not ready yet, wait for it
+  // Note: Layout protects this route, so we don't need to redirect
+  if (currentUser === undefined || currentUser === null) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -78,12 +82,6 @@ export default function OrganizerEventsPage() {
         </div>
       </div>
     );
-  }
-
-  // Redirect if not authenticated (currentUser is null)
-  if (currentUser === null) {
-    router.push("/login");
-    return null;
   }
 
   // At this point, currentUser exists, but events might still be loading
@@ -100,10 +98,28 @@ export default function OrganizerEventsPage() {
     );
   }
 
-  // Calculate totals for dashboard
+  // Filter events based on status
+  const filteredEvents = events?.filter((event) => {
+    if (statusFilter === "all") return true;
+    if (statusFilter === "active") {
+      // Active events are those that haven't happened yet
+      return event.startDate && event.startDate > Date.now();
+    }
+    if (statusFilter === "past") {
+      // Past events are those that have already happened
+      return event.startDate && event.startDate <= Date.now();
+    }
+    if (statusFilter === "draft") {
+      // Draft events are those with DRAFT status
+      return event.status === "DRAFT";
+    }
+    return true;
+  }) || [];
+
+  // Calculate totals for dashboard (using filtered events)
   const totalTicketsAllocated =
-    events?.reduce((sum, event) => sum + (event.totalTickets || 0), 0) || 0;
-  const totalTicketsSold = events?.reduce((sum, event) => sum + (event.ticketsSold || 0), 0) || 0;
+    filteredEvents?.reduce((sum, event) => sum + (event.totalTickets || 0), 0) || 0;
+  const totalTicketsSold = filteredEvents?.reduce((sum, event) => sum + (event.ticketsSold || 0), 0) || 0;
   const percentageUsed = credits ? (credits.creditsUsed / credits.creditsTotal) * 100 : 0;
 
   // Helper: Check if event has tickets sold
@@ -111,21 +127,21 @@ export default function OrganizerEventsPage() {
     return event.ticketsSold > 0;
   };
 
-  // Quick select functions
+  // Quick select functions (use filteredEvents for current view)
   const selectAllEvents = () => {
-    if (!events) return;
-    setSelectedEvents(new Set(events.map((e) => e._id)));
+    if (!filteredEvents) return;
+    setSelectedEvents(new Set(filteredEvents.map((e) => e._id)));
   };
 
   const selectEventsWithTickets = () => {
-    if (!events) return;
-    const eventsWithTickets = events.filter((e) => hasTicketsSold(e));
+    if (!filteredEvents) return;
+    const eventsWithTickets = filteredEvents.filter((e) => hasTicketsSold(e));
     setSelectedEvents(new Set(eventsWithTickets.map((e) => e._id)));
   };
 
   const selectEventsWithoutTickets = () => {
-    if (!events) return;
-    const eventsWithoutTickets = events.filter((e) => !hasTicketsSold(e));
+    if (!filteredEvents) return;
+    const eventsWithoutTickets = filteredEvents.filter((e) => !hasTicketsSold(e));
     setSelectedEvents(new Set(eventsWithoutTickets.map((e) => e._id)));
   };
 
@@ -140,13 +156,13 @@ export default function OrganizerEventsPage() {
     setSelectedEvents(newSelection);
   };
 
-  // Handle select all
+  // Handle select all (use filteredEvents for current view)
   const toggleSelectAll = () => {
-    if (!events) return;
-    if (selectedEvents.size === events.length) {
+    if (!filteredEvents) return;
+    if (selectedEvents.size === filteredEvents.length) {
       setSelectedEvents(new Set());
     } else {
-      setSelectedEvents(new Set(events.map((e) => e._id)));
+      setSelectedEvents(new Set(filteredEvents.map((e) => e._id)));
     }
   };
 
@@ -558,7 +574,7 @@ export default function OrganizerEventsPage() {
           </motion.div>
         ) : (
           <div className="space-y-4">
-            {events.map((event, index) => {
+            {filteredEvents.map((event, index) => {
               const isUpcoming = event.startDate ? event.startDate > Date.now() : false;
               const isPast = event.endDate ? event.endDate < Date.now() : false;
 

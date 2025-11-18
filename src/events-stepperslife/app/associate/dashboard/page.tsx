@@ -3,96 +3,191 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Ticket, DollarSign, TrendingUp, User } from "lucide-react";
+import { Ticket, DollarSign, TrendingUp, Calendar, Users, Link as LinkIcon, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function AssociateDashboardPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   return (
     <div className="p-6 space-y-6">
-      {/* Welcome Section */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Associate Dashboard
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Track your ticket sales, earnings, and performance metrics
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight">Associate Dashboard</h1>
+        <p className="text-muted-foreground mt-2">Welcome back! Track your sales and earnings</p>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tickets Sold</CardTitle>
+            <CardTitle className="text-sm font-medium">Tickets Available</CardTitle>
             <Ticket className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">This month</p>
+            <p className="text-xs text-muted-foreground">Ready to sell</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Tickets Sold</CardTitle>
+            <TrendingUp className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">0</div>
+            <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$0.00</div>
+            <div className="text-2xl font-bold text-green-600">$0</div>
             <p className="text-xs text-muted-foreground">Commission earned</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sales Performance</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Active Events</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0%</div>
-            <p className="text-xs text-muted-foreground">Conversion rate</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Team Member</CardTitle>
-            <User className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">-</div>
-            <p className="text-xs text-muted-foreground">Not assigned</p>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">Currently selling</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Sales */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Sales</CardTitle>
-          <CardDescription>Your recent ticket sales and commission details</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
-            <Ticket className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No sales yet</p>
-            <p className="text-sm mt-2">Use your unique ticket link to start selling</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/associate/my-events">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Calendar className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">My Events</CardTitle>
+                    <CardDescription className="mt-1">View assigned events</CardDescription>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              </div>
+            </CardHeader>
+          </Link>
+        </Card>
 
-      {/* My Events */}
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/associate/my-tickets">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Ticket className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">My Tickets</CardTitle>
+                    <CardDescription className="mt-1">Manage inventory</CardDescription>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              </div>
+            </CardHeader>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/associate/earnings">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <DollarSign className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Earnings</CardTitle>
+                    <CardDescription className="mt-1">Track commissions</CardDescription>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              </div>
+            </CardHeader>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/associate/sales-performance">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Performance</CardTitle>
+                    <CardDescription className="mt-1">Sales analytics</CardDescription>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              </div>
+            </CardHeader>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/associate/my-ticket-link">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <LinkIcon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">My Link</CardTitle>
+                    <CardDescription className="mt-1">Share ticket link</CardDescription>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              </div>
+            </CardHeader>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/associate/my-team-member">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Users className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Team Member</CardTitle>
+                    <CardDescription className="mt-1">Contact your lead</CardDescription>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              </div>
+            </CardHeader>
+          </Link>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>My Events</CardTitle>
-          <CardDescription>Events you're selling tickets for</CardDescription>
+          <CardTitle>Recent Activity</CardTitle>
+          <CardDescription>Your latest sales and updates</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-12 text-muted-foreground">
-            <Ticket className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No events available</p>
-            <p className="text-sm mt-2">Contact your team member to get assigned to events</p>
+            <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>No recent activity</p>
+            <p className="text-sm mt-1">Start selling tickets to see your activity here</p>
           </div>
         </CardContent>
       </Card>

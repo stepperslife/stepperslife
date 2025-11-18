@@ -228,6 +228,36 @@ export const organizerNavigation: RoleNavigation = {
           ],
         },
         {
+          label: "Analytics",
+          href: "/organizer/analytics",
+          icon: TrendingUp,
+          description: "Advanced analytics and insights",
+        },
+        {
+          label: "Credits",
+          href: "/organizer/credits",
+          icon: Wallet,
+          description: "Manage and purchase credits",
+        },
+        {
+          label: "Bundles",
+          href: "/organizer/bundles",
+          icon: Package,
+          description: "Create ticket bundles and packages",
+        },
+        {
+          label: "Templates",
+          href: "/organizer/templates",
+          icon: FileText,
+          description: "Event templates and quick setup",
+        },
+        {
+          label: "Settlement",
+          href: "/organizer/settlement",
+          icon: Database,
+          description: "Financial settlement and reconciliation",
+        },
+        {
           label: "Payment Methods",
           href: "/organizer/payment-methods",
           icon: CreditCard,
