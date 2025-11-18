@@ -10,8 +10,8 @@ test.use({ baseURL: "http://localhost" });
  * Verifies basic homepage functionality and content
  */
 test.describe("Test 1 - Homepage Load Test", () => {
-  let consoleLogs: string[] = [];
-  let consoleErrors: string[] = [];
+  const consoleLogs: string[] = [];
+  const consoleErrors: string[] = [];
 
   test("should load homepage successfully with correct title and content", async ({
     page,

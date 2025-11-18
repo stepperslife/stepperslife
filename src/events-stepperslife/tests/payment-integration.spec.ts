@@ -8,7 +8,7 @@ test.describe('Payment Integration Tests', () => {
     console.log('\n=== Square SDK Integration Test ===\n');
 
     let squareSDKLoaded = false;
-    let squareErrors: string[] = [];
+    const squareErrors: string[] = [];
 
     // Listen for Square SDK loading
     page.on('console', msg => {
@@ -113,7 +113,7 @@ test.describe('Payment Integration Tests', () => {
     console.log('\n=== Stripe SDK Integration Test ===\n');
 
     let stripeSDKLoaded = false;
-    let stripeErrors: string[] = [];
+    const stripeErrors: string[] = [];
 
     page.on('console', msg => {
       const text = msg.text();

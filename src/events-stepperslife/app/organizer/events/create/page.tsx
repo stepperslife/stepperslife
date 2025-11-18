@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
-// TESTING MODE: No authentication
-// import { useSession } from "next-auth/react";
 import { api } from "@/convex/_generated/api";
 import { ArrowLeft, Calendar, MapPin, FileText, Users, Info, Ticket } from "lucide-react";
 import Link from "next/link";
@@ -126,31 +124,6 @@ export default function CreateEventPage() {
       alert("Auth test failed: " + error.message);
     }
   };
-
-  // TESTING MODE: Skip auth check temporarily
-  // if (status === "loading" || currentUser === undefined) {
-  //   return (
-  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-  //       <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-  //         <p className="text-gray-600">Loading...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
-  // // Redirect to login if not authenticated
-  // if (status === "unauthenticated") {
-  //   return (
-  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-  //       <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-  //         <p className="text-gray-600 mb-4">Please sign in to create an event.</p>
-  //         <Link href="/login?callbackUrl=/organizer/events/create" className="text-primary hover:underline font-medium">
-  //           Sign In
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   const handleCategoryToggle = (category: string) => {
     if (categories.includes(category)) {

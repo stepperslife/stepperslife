@@ -29,10 +29,10 @@ let creditAccountId: Id<"organizerCredits">;
 let event1Id: Id<"events">;
 let event2Id: Id<"events">;
 let event3Id: Id<"events">;
-let event1TeamMembers: Array<{ staffId: Id<"eventStaff">; name: string; email: string }> = [];
-let event2TeamMembers: Array<{ staffId: Id<"eventStaff">; name: string; email: string }> = [];
-let event3TeamMembers: Array<{ staffId: Id<"eventStaff">; name: string; email: string }> = [];
-let associates: Array<{ staffId: Id<"eventStaff">; name: string; commission: number }> = [];
+const event1TeamMembers: Array<{ staffId: Id<"eventStaff">; name: string; email: string }> = [];
+const event2TeamMembers: Array<{ staffId: Id<"eventStaff">; name: string; email: string }> = [];
+const event3TeamMembers: Array<{ staffId: Id<"eventStaff">; name: string; email: string }> = [];
+const associates: Array<{ staffId: Id<"eventStaff">; name: string; commission: number }> = [];
 
 test.describe("Comprehensive Organizer Workflow", () => {
   test.describe.configure({ mode: "serial" });

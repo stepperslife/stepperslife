@@ -27,8 +27,8 @@ const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3004'
 // Test state
 let convex: ConvexHttpClient;
 let organizerId: Id<"users">;
-let createdEventIds: Id<"events">[] = [];
-let testSummary = {
+const createdEventIds: Id<"events">[] = [];
+const testSummary = {
   totalEvents: 0,
   prepayEvents: 0,
   creditCardEvents: 0,

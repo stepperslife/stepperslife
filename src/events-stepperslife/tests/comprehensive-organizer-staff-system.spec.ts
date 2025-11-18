@@ -42,8 +42,8 @@ import {
 // Test state to share between tests
 let organizerEmail: string;
 let organizerPassword: string;
-let eventIds: string[] = [];
-let staffIds: Record<string, string[]> = {}; // eventId -> staffIds
+const eventIds: string[] = [];
+const staffIds: Record<string, string[]> = {}; // eventId -> staffIds
 let creditBalanceAfterPurchases: number;
 
 test.describe("Comprehensive Organizer/Staff/Payment System Tests", () => {

@@ -31,8 +31,8 @@ import {
 test.describe("Comprehensive Payment System Tests", () => {
   let prepayOrganizer: TestOrganizer;
   let creditCardOrganizer: TestOrganizer;
-  let prepayEvents: TestEvent[] = [];
-  let creditCardEvents: TestEvent[] = [];
+  const prepayEvents: TestEvent[] = [];
+  const creditCardEvents: TestEvent[] = [];
 
   // Cleanup before and after all tests
   test.beforeAll(async () => {
