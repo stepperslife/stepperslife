@@ -6,8 +6,6 @@ import { api } from "@/convex/_generated/api";
 export default function TestEventsPage() {
   const events = useQuery(api.public.queries.getPublishedEvents, {});
 
-  console.log("[TestEventsPage] Raw query result:", events);
-  console.log("[TestEventsPage] Events count:", events?.length);
 
   return (
     <div style={{ padding: "20px", fontFamily: "monospace" }}>

@@ -9,21 +9,9 @@ export default function TestConnectionPage() {
   const events = useQuery(api.public.queries.getPublishedEvents, {});
 
   useEffect(() => {
-    console.log("[TestConnection] Component mounted");
-    console.log("[TestConnection] Environment:", {
-      convexUrl: process.env.NEXT_PUBLIC_CONVEX_URL,
-      nodeEnv: process.env.NODE_ENV,
-    });
   }, []);
 
   useEffect(() => {
-    console.log("[TestConnection] Events state changed:", {
-      isUndefined: events === undefined,
-      isNull: events === null,
-      isArray: Array.isArray(events),
-      length: events?.length,
-    });
-
     if (events === undefined) {
       setConnectionStatus("Loading... (query undefined)");
     } else if (events === null) {

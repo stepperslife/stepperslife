@@ -4,26 +4,12 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bell, Users, Calendar, DollarSign, AlertTriangle, CheckCircle, Trash2, Send } from "lucide-react";
+import { Bell, CheckCircle, Trash2, Send } from "lucide-react";
+import { getNotificationIcon } from "@/lib/utils/notification-helpers";
 
 export default function AdminNotificationsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const notifications = [];
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "user":
-        return <Users className="h-5 w-5 text-blue-600" />;
-      case "event":
-        return <Calendar className="h-5 w-5 text-orange-600" />;
-      case "payment":
-        return <DollarSign className="h-5 w-5 text-green-600" />;
-      case "alert":
-        return <AlertTriangle className="h-5 w-5 text-red-600" />;
-      default:
-        return <Bell className="h-5 w-5 text-muted-foreground" />;
-    }
-  };
 
   return (
     <div className="p-6 space-y-6">

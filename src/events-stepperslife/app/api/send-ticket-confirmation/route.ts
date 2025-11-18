@@ -50,11 +50,6 @@ export async function POST(request: NextRequest) {
   try {
     const { email, orderDetails, tickets, event } = await request.json();
 
-    console.log("Processing ticket confirmation email:", {
-      email,
-      ticketCount: tickets?.length,
-      eventName: event?.name,
-    });
 
     // Validation
     if (!email || !orderDetails || !tickets || !event) {
@@ -323,7 +318,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log("Email sent successfully:", emailResponse);
 
     return NextResponse.json({
       success: true,

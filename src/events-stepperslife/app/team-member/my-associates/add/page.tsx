@@ -20,7 +20,6 @@ export default function AddAssociatePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Add associate:", formData);
   };
 
   return (

@@ -64,7 +64,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log(`[Stripe Connect] Created account: ${account.id} for ${email}`);
 
     // Save account ID to Convex
     try {
@@ -78,7 +77,6 @@ export async function POST(request: NextRequest) {
         stripeConnectedAccountId: account.id,
       });
 
-      console.log(`[Stripe Connect] Saved account ID to Convex for ${email}`);
     } catch (convexError: any) {
       console.error("[Stripe Connect] Failed to save to Convex:", convexError);
       // Don't fail the request - account was created, they can retry onboarding

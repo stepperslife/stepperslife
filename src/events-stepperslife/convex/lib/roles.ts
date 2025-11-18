@@ -14,6 +14,7 @@
 export const ADMIN_EMAILS = [
   "iradwatkins@gmail.com",
   "bobbygwatkins@gmail.com",
+  "admin-test@stepperslife.com", // Temporary for testing
 ] as const;
 
 /**

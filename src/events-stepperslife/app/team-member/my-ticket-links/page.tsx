@@ -89,7 +89,7 @@ export default function MyTicketLinksPage() {
           <div className="text-center py-12 text-muted-foreground">
             <LinkIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>No ticket links</p>
-          </CardContent>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -119,7 +119,7 @@ export default function SalesPerformancePage() {
           <div className="text-center py-12 text-muted-foreground">
             <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>No sales data yet</p>
-          </CardContent>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -22,7 +22,6 @@ export default function SupportPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement support ticket submission with Convex
-    console.log("Support ticket:", formData);
   };
 
   const faqs = [

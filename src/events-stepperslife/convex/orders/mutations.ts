@@ -17,7 +17,6 @@ export const markOrderPaid = mutation({
     }
 
     if (order.status === "COMPLETED") {
-      console.log(`[Orders] Order ${args.orderId} already marked as paid`);
       return { success: true, alreadyPaid: true };
     }
 
@@ -29,7 +28,6 @@ export const markOrderPaid = mutation({
       updatedAt: Date.now(),
     });
 
-    console.log(`[Orders] Order ${args.orderId} marked as COMPLETED`);
 
     return { success: true, alreadyPaid: false };
   },
@@ -51,7 +49,6 @@ export const markOrderFailed = mutation({
     }
 
     if (order.status === "FAILED") {
-      console.log(`[Orders] Order ${args.orderId} already marked as failed`);
       return { success: true, alreadyFailed: true };
     }
 
@@ -61,7 +58,6 @@ export const markOrderFailed = mutation({
       updatedAt: Date.now(),
     });
 
-    console.log(`[Orders] Order ${args.orderId} marked as FAILED: ${args.reason}`);
 
     return { success: true, alreadyFailed: false };
   },
@@ -105,7 +101,6 @@ export const markOrderRefunded = mutation({
     const order = orders[0];
 
     if (order.status === "REFUNDED") {
-      console.log(`[Orders] Order ${order._id} already marked as refunded`);
       return { success: true, alreadyRefunded: true };
     }
 
@@ -115,9 +110,6 @@ export const markOrderRefunded = mutation({
       updatedAt: Date.now(),
     });
 
-    console.log(
-      `[Orders] Order ${order._id} marked as REFUNDED - Amount: ${args.refundAmount} cents`
-    );
 
     // TODO: Release tickets back to inventory if needed
     // This would require fetching orderItems and updating ticket tier quantities

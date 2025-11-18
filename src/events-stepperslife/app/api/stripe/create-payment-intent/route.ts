@@ -86,7 +86,6 @@ export async function POST(request: NextRequest) {
         }
 
         stripeAccountId = paymentConfig.stripeConnectAccountId;
-        console.log(`[Stripe Connect] Using account from payment config: ${stripeAccountId}`);
       } catch (convexError: any) {
         console.error("[Stripe Connect] Failed to fetch payment config:", convexError);
         return NextResponse.json(
@@ -110,7 +109,6 @@ export async function POST(request: NextRequest) {
       // DIRECT CHARGE Pattern
       // Payment goes directly to organizer's connected account
       // Platform takes application_fee_amount
-      console.log(`[Stripe Connect] Creating DIRECT CHARGE for ${stripeAccountId}`);
 
       paymentIntent = await stripe.paymentIntents.create(
         {
@@ -135,7 +133,6 @@ export async function POST(request: NextRequest) {
       // DESTINATION CHARGE Pattern (Default)
       // Payment goes to platform first, then automatically transfers to organizer
       // Platform keeps application_fee_amount
-      console.log(`[Stripe Connect] Creating DESTINATION CHARGE for ${stripeAccountId}`);
 
       paymentIntent = await stripe.paymentIntents.create({
         amount: amount,

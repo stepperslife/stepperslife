@@ -74,7 +74,6 @@ export async function POST(request: NextRequest) {
       event = JSON.parse(body) as Stripe.Event;
     }
 
-    console.log(`[Stripe Webhook] Received event: ${event.type} (${event.id})`);
 
     // Handle the event
     switch (event.type) {
@@ -99,7 +98,6 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
@@ -116,7 +114,6 @@ export async function POST(request: NextRequest) {
  * Handle successful checkout session
  */
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-  console.log(`[Stripe Webhook] Checkout session completed: ${session.id}`);
 
   const orderId = session.metadata?.orderId;
   if (!orderId) {
@@ -131,7 +128,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       paymentIntentId: session.payment_intent as string,
     });
 
-    console.log(`[Stripe Webhook] Order ${orderId} marked as paid`);
   } catch (error: any) {
     console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error);
   }
@@ -141,7 +137,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
  * Handle successful payment intent
  */
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  console.log(`[Stripe Webhook] Payment intent succeeded: ${paymentIntent.id}`);
 
   const orderId = paymentIntent.metadata?.orderId;
   if (!orderId) {
@@ -156,7 +151,6 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       paymentIntentId: paymentIntent.id,
     });
 
-    console.log(`[Stripe Webhook] Order ${orderId} marked as paid via payment intent`);
   } catch (error: any) {
     console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error);
   }
@@ -166,7 +160,6 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
  * Handle failed payment intent
  */
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
-  console.log(`[Stripe Webhook] Payment intent failed: ${paymentIntent.id}`);
 
   const orderId = paymentIntent.metadata?.orderId;
   if (!orderId) {
@@ -181,7 +174,6 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       reason: paymentIntent.last_payment_error?.message || "Payment failed",
     });
 
-    console.log(`[Stripe Webhook] Order ${orderId} marked as failed`);
   } catch (error: any) {
     console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error);
   }
@@ -191,7 +183,6 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
  * Handle Connect account updates
  */
 async function handleAccountUpdated(account: Stripe.Account) {
-  console.log(`[Stripe Webhook] Account updated: ${account.id}`);
 
   // Check if account setup is complete
   const isComplete =
@@ -210,9 +201,6 @@ async function handleAccountUpdated(account: Stripe.Account) {
       requirementsCurrentlyDue: account.requirements?.currently_due || [],
     });
 
-    console.log(
-      `[Stripe Webhook] Account ${account.id} status updated - Complete: ${isComplete}`
-    );
   } catch (error: any) {
     console.error(`[Stripe Webhook] Failed to update account ${account.id}:`, error);
   }
@@ -222,7 +210,6 @@ async function handleAccountUpdated(account: Stripe.Account) {
  * Handle charge refunds
  */
 async function handleChargeRefunded(charge: Stripe.Charge) {
-  console.log(`[Stripe Webhook] Charge refunded: ${charge.id}`);
 
   const paymentIntentId = charge.payment_intent as string;
   if (!paymentIntentId) {
@@ -238,7 +225,6 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
       refundReason: charge.refunds?.data[0]?.reason || "requested_by_customer",
     });
 
-    console.log(`[Stripe Webhook] Order with payment ${paymentIntentId} marked as refunded`);
   } catch (error: any) {
     console.error(`[Stripe Webhook] Failed to process refund for ${paymentIntentId}:`, error);
   }

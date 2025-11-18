@@ -22,7 +22,6 @@ export default function PersonalInfoPage() {
 
   const handleSave = () => {
     // TODO: Implement save functionality with Convex
-    console.log("Saving:", formData);
   };
 
   return (

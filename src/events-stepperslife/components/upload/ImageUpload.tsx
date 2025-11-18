@@ -50,7 +50,6 @@ export function ImageUpload({
     setCompressionProgress(0);
 
     try {
-      console.log(`Original image size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
 
       // Compress image
       const compressionOptions = {
@@ -65,7 +64,6 @@ export function ImageUpload({
       };
 
       const compressedFile = await imageCompression(file, compressionOptions);
-      console.log(`Compressed image size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
 
       // Generate upload URL
       const uploadUrl = await generateUploadUrl();

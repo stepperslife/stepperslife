@@ -24,7 +24,6 @@ export default function ReportIssuePage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement issue submission with Convex
-    console.log("Issue report:", formData);
   };
 
   return (

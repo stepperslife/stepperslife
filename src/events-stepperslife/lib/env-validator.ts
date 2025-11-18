@@ -121,7 +121,6 @@ export function validateEnv() {
 
   // Log successful validation in development
   if (process.env.NODE_ENV === 'development') {
-    console.log('✅ Environment validation passed');
     if (warnings.length > 0) {
       console.warn(`⚠️  ${warnings.length} optional variable(s) not set`);
     }

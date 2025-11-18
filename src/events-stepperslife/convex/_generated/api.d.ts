@@ -40,6 +40,7 @@ import type * as events_mutations from "../events/mutations.js";
 import type * as events_queries from "../events/queries.js";
 import type * as files_mutations from "../files/mutations.js";
 import type * as files_queries from "../files/queries.js";
+import type * as fixTestRoles from "../fixTestRoles.js";
 import type * as flyers_mutations from "../flyers/mutations.js";
 import type * as flyers_queries from "../flyers/queries.js";
 import type * as lib_activationCodes from "../lib/activationCodes.js";
@@ -69,6 +70,7 @@ import type * as public_queries from "../public/queries.js";
 import type * as runLiveTicketTests from "../runLiveTicketTests.js";
 import type * as scanning_mutations from "../scanning/mutations.js";
 import type * as scanning_queries from "../scanning/queries.js";
+import type * as scripts_updateTestUserRoles from "../scripts/updateTestUserRoles.js";
 import type * as seating_mutations from "../seating/mutations.js";
 import type * as seating_queries from "../seating/queries.js";
 import type * as seating_social from "../seating/social.js";
@@ -101,6 +103,7 @@ import type * as testing_paymentTestHelpers from "../testing/paymentTestHelpers.
 import type * as testing_resetPaymentConfigs from "../testing/resetPaymentConfigs.js";
 import type * as testing_setupPaymentConfigs from "../testing/setupPaymentConfigs.js";
 import type * as testing_updateEventCategories from "../testing/updateEventCategories.js";
+import type * as testing_updateTestUserRoles from "../testing/updateTestUserRoles.js";
 import type * as tickets_mutations from "../tickets/mutations.js";
 import type * as tickets_queries from "../tickets/queries.js";
 import type * as transfers_mutations from "../transfers/mutations.js";
@@ -152,6 +155,7 @@ declare const fullApi: ApiFromModules<{
   "events/queries": typeof events_queries;
   "files/mutations": typeof files_mutations;
   "files/queries": typeof files_queries;
+  fixTestRoles: typeof fixTestRoles;
   "flyers/mutations": typeof flyers_mutations;
   "flyers/queries": typeof flyers_queries;
   "lib/activationCodes": typeof lib_activationCodes;
@@ -181,6 +185,7 @@ declare const fullApi: ApiFromModules<{
   runLiveTicketTests: typeof runLiveTicketTests;
   "scanning/mutations": typeof scanning_mutations;
   "scanning/queries": typeof scanning_queries;
+  "scripts/updateTestUserRoles": typeof scripts_updateTestUserRoles;
   "seating/mutations": typeof seating_mutations;
   "seating/queries": typeof seating_queries;
   "seating/social": typeof seating_social;
@@ -213,6 +218,7 @@ declare const fullApi: ApiFromModules<{
   "testing/resetPaymentConfigs": typeof testing_resetPaymentConfigs;
   "testing/setupPaymentConfigs": typeof testing_setupPaymentConfigs;
   "testing/updateEventCategories": typeof testing_updateEventCategories;
+  "testing/updateTestUserRoles": typeof testing_updateTestUserRoles;
   "tickets/mutations": typeof tickets_mutations;
   "tickets/queries": typeof tickets_queries;
   "transfers/mutations": typeof transfers_mutations;

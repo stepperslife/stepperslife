@@ -2,24 +2,34 @@
 
 import { ConvexReactClient } from "convex/react";
 import { ConvexProvider } from "convex/react";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useEffect, useRef } from "react";
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!;
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
-  const convex = useMemo(() => {
-    const client = new ConvexReactClient(convexUrl);
+  const convex = useMemo(() => new ConvexReactClient(convexUrl), []);
+  const authSetupRef = useRef(false);
+
+  // Configure authentication AFTER mount to avoid race conditions
+  useEffect(() => {
+    // Guard against multiple auth setup calls
+    if (authSetupRef.current) {
+      return;
+    }
+    authSetupRef.current = true;
 
     // Configure authentication token fetching
     // This fetches a Convex-compatible JWT from our API
-    client.setAuth(async () => {
+    convex.setAuth(async () => {
       try {
         // Only fetch tokens in browser context (not during SSR)
         if (typeof window === "undefined") {
           return null;
         }
 
-        const response = await fetch("/api/auth/convex-token", {
+        // Use absolute URL to avoid fetch errors
+        const url = `${window.location.origin}/api/auth/convex-token`;
+        const response = await fetch(url, {
           credentials: "include", // Include cookies (session_token)
         });
 
@@ -35,9 +45,7 @@ export function ConvexClientProvider({ children }: { children: ReactNode }) {
         return null;
       }
     });
-
-    return client;
-  }, []);
+  }, [convex]);
 
   return (
     <ConvexProvider client={convex}>

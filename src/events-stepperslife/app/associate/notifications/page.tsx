@@ -4,40 +4,13 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bell, Ticket, DollarSign, Calendar, Users, CheckCircle, Trash2 } from "lucide-react";
+import { Bell, Calendar, CheckCircle, Trash2, TrendingUp } from "lucide-react";
+import { formatTime } from "@/lib/utils/time-formatting";
+import { getNotificationIcon } from "@/lib/utils/notification-helpers";
 
 export default function AssociateNotificationsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const notifications = [];
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "ticket":
-        return <Ticket className="h-5 w-5 text-blue-600" />;
-      case "sale":
-        return <DollarSign className="h-5 w-5 text-green-600" />;
-      case "payout":
-        return <DollarSign className="h-5 w-5 text-green-600" />;
-      case "event":
-        return <Calendar className="h-5 w-5 text-orange-600" />;
-      case "team":
-        return <Users className="h-5 w-5 text-purple-600" />;
-      default:
-        return <Bell className="h-5 w-5 text-muted-foreground" />;
-    }
-  };
-
-  const formatTime = (timestamp: number) => {
-    const diff = Date.now() - timestamp;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
-  };
 
   return (
     <div className="p-6 space-y-6">
