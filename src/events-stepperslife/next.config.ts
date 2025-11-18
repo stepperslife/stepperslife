@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
+  output: 'standalone', // Enable standalone output for Docker deployment
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -51,8 +52,8 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net https://web.squarecdn.com https://sandbox.web.squarecdn.com https://js.sentry-cdn.com https://browser.sentry-cdn.com https://www.paypal.com https://www.paypalobjects.com https://js.stripe.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https: http://localhost:* https://lh3.googleusercontent.com https://images.unsplash.com https://unsplash.com https://dazzling-mockingbird-241.convex.cloud",
-              "connect-src 'self' https://dazzling-mockingbird-241.convex.cloud wss://dazzling-mockingbird-241.convex.cloud https://api.stripe.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://connect.squareup.com https://pci-connect.squareup.com https://api.resend.com https://www.paypal.com https://api.paypal.com https://*.sentry.io",
+              "img-src 'self' data: blob: https: http://localhost:* https://lh3.googleusercontent.com https://images.unsplash.com https://unsplash.com https://dazzling-mockingbird-241.convex.cloud https://neighborly-swordfish-681.convex.cloud",
+              "connect-src 'self' https://dazzling-mockingbird-241.convex.cloud wss://dazzling-mockingbird-241.convex.cloud https://neighborly-swordfish-681.convex.cloud wss://neighborly-swordfish-681.convex.cloud https://api.stripe.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://connect.squareup.com https://pci-connect.squareup.com https://api.resend.com https://www.paypal.com https://api.paypal.com https://*.sentry.io",
               "frame-src 'self' https://web.squarecdn.com https://sandbox.web.squarecdn.com https://www.paypal.com https://js.stripe.com",
               "object-src 'none'",
               "base-uri 'self'",
@@ -147,6 +148,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "dazzling-mockingbird-241.convex.cloud",
+        pathname: "/api/storage/**",
+      },
+      {
+        protocol: "https",
+        hostname: "neighborly-swordfish-681.convex.cloud",
         pathname: "/api/storage/**",
       },
     ],
