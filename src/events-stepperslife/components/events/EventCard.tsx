@@ -97,7 +97,7 @@ export function EventCard({ event }: EventCardProps) {
           )}
 
           {/* Categories */}
-          {event.categories.length > 0 && (
+          {event.categories && event.categories.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {event.categories.slice(0, 2).map((category) => (
                 <span

@@ -93,7 +93,7 @@ export function ListView({ events }: ListViewProps) {
               </div>
 
               {/* Categories */}
-              {event.categories.length > 0 && (
+              {event.categories && event.categories.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-4">
                   {event.categories.slice(0, 3).map((category: string) => (
                     <span

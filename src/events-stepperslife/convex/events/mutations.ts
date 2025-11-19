@@ -41,8 +41,12 @@ export const createEvent = mutation({
   },
   handler: async (ctx, args) => {
     try {
+      console.log("[createEvent] Starting event creation...");
+      console.log("[createEvent] Args:", JSON.stringify(args, null, 2));
+
       // Get authenticated user
       const user = await getCurrentUser(ctx);
+      console.log("[createEvent] Got user:", user?.email, "role:", user?.role);
 
       // Check if user can create ticketed events
       if (
@@ -56,6 +60,7 @@ export const createEvent = mutation({
       }
 
       // VALIDATION: Require event image (either imageUrl OR images array)
+      console.log("[createEvent] Checking images - imageUrl:", !!args.imageUrl, "images:", args.images?.length || 0);
       if (!args.imageUrl && (!args.images || args.images.length === 0)) {
         throw new Error(
           "Event image is required. Please upload a professional event image that will be displayed on the event page, checkout, and payment confirmation."

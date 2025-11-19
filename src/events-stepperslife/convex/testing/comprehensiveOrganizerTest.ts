@@ -37,8 +37,8 @@ export const createTestOrganizer = mutation({
       updatedAt: Date.now(),
     });
 
-    // Initialize credits with 300 FREE tickets (first event bonus)
-    const FIRST_EVENT_FREE_TICKETS = 300;
+    // Initialize credits with 1000 FREE credits ($1000 value for first event)
+    const FIRST_EVENT_FREE_TICKETS = 1000;
     const creditAccountId = await ctx.db.insert("organizerCredits", {
       organizerId,
       creditsTotal: FIRST_EVENT_FREE_TICKETS,

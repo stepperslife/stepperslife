@@ -28,7 +28,7 @@ export default defineConfig({
 
   use: {
     // Base URL for the application
-    baseURL: "http://127.0.0.1",
+    baseURL: "http://localhost",
 
     // Capture trace on first retry
     trace: "on-first-retry",

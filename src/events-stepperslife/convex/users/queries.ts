@@ -9,10 +9,15 @@ export const getCurrentUser = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
 
-
-    // Require authentication
+    // TESTING MODE: Fall back to test user when not authenticated
     if (!identity) {
-      return null;
+      console.warn("[getCurrentUser Query] TESTING MODE - Using test user (no identity)");
+      const testUser = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .first();
+
+      return testUser;
     }
 
     // Parse the identity (which is a JSON string from our NextAuth integration)

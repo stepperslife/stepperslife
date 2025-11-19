@@ -17,7 +17,7 @@ export default {
     },
     {
       // For production
-      domain: "https://events.stepperslife.com",
+      domain: "https://stepperslife.com/events",
       applicationID: "convex",
     },
   ],

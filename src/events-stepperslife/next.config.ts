@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
+  basePath: '/events', // Serve app under /events path
   output: 'standalone', // Enable standalone output for Docker deployment
   typescript: {
     ignoreBuildErrors: true,
@@ -49,7 +50,8 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net https://web.squarecdn.com https://sandbox.web.squarecdn.com https://js.sentry-cdn.com https://browser.sentry-cdn.com https://www.paypal.com https://www.paypalobjects.com https://js.stripe.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdn.jsdelivr.net https://web.squarecdn.com https://sandbox.web.squarecdn.com https://js.sentry-cdn.com https://browser.sentry-cdn.com https://www.paypal.com https://www.paypalobjects.com https://js.stripe.com",
+              "worker-src 'self' blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' data: https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http://localhost:* https://lh3.googleusercontent.com https://images.unsplash.com https://unsplash.com https://dazzling-mockingbird-241.convex.cloud https://neighborly-swordfish-681.convex.cloud",
@@ -142,8 +144,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "events.stepperslife.com",
-        pathname: "/api/**",
+        hostname: "stepperslife.com",
+        pathname: "/events/api/**",
       },
       {
         protocol: "https",

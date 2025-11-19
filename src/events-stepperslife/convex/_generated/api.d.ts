@@ -67,6 +67,7 @@ import type * as products_mutations from "../products/mutations.js";
 import type * as products_orders from "../products/orders.js";
 import type * as products_queries from "../products/queries.js";
 import type * as public_queries from "../public/queries.js";
+import type * as restoreProducts from "../restoreProducts.js";
 import type * as runLiveTicketTests from "../runLiveTicketTests.js";
 import type * as scanning_mutations from "../scanning/mutations.js";
 import type * as scanning_queries from "../scanning/queries.js";
@@ -182,6 +183,7 @@ declare const fullApi: ApiFromModules<{
   "products/orders": typeof products_orders;
   "products/queries": typeof products_queries;
   "public/queries": typeof public_queries;
+  restoreProducts: typeof restoreProducts;
   runLiveTicketTests: typeof runLiveTicketTests;
   "scanning/mutations": typeof scanning_mutations;
   "scanning/queries": typeof scanning_queries;

@@ -1,0 +1,287 @@
+version: '3.8'
+
+# ===================================
+# STEPPERSLIFE - BLUE-GREEN DEPLOYMENT
+# Docker Compose Configuration
+# ===================================
+#
+# This configuration enables blue-green deployment for zero-downtime updates.
+#
+# Blue: Current production (port 3001)
+# Green: New deployment (port 3002)
+#
+# Usage:
+#   # Deploy to green, keep blue running
+#   docker-compose -f docker-compose.blue-green.yml up -d events-green
+#
+#   # Switch traffic to green (update nginx upstream)
+#   ./switch-to-green.sh
+#
+#   # Rollback to blue if needed
+#   ./switch-to-blue.sh
+#
+# ===================================
+
+services:
+  # ===================================
+  # BLUE Environment (Current Production)
+  # ===================================
+  events-blue:
+    build:
+      context: .
+      dockerfile: src/dockerfile/Dockerfile.events
+      args:
+        NODE_ENV: production
+    container_name: events-blue
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://stepperslife.com/events}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET}
+      CONVEX_URL: ${CONVEX_URL:-https://neighborly-swordfish-681.convex.cloud}
+      NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-https://neighborly-swordfish-681.convex.cloud}
+      CONVEX_DEPLOYMENT: ${CONVEX_DEPLOYMENT:-prod:neighborly-swordfish-681}
+      SQUARE_ACCESS_TOKEN: ${SQUARE_ACCESS_TOKEN}
+      SQUARE_APPLICATION_ID: ${SQUARE_APPLICATION_ID}
+      SQUARE_LOCATION_ID: ${SQUARE_LOCATION_ID}
+      SQUARE_WEBHOOK_SIGNATURE_KEY: ${SQUARE_WEBHOOK_SIGNATURE_KEY}
+      NEXT_PUBLIC_SQUARE_APPLICATION_ID: ${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
+      NEXT_PUBLIC_SQUARE_LOCATION_ID: ${NEXT_PUBLIC_SQUARE_LOCATION_ID}
+      NEXT_PUBLIC_SQUARE_ENVIRONMENT: production
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_SECRET_KEY: ${PAYPAL_SECRET_KEY}
+      PAYPAL_WEBHOOK_ID: ${PAYPAL_WEBHOOK_ID}
+      NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      AUTH_GOOGLE_CLIENT_ID: ${AUTH_GOOGLE_CLIENT_ID}
+      AUTH_GOOGLE_CLIENT_SECRET: ${AUTH_GOOGLE_CLIENT_SECRET}
+      NEXT_PUBLIC_APP_URL: https://stepperslife.com/events
+      NEXT_PUBLIC_APP_DOMAIN: stepperslife.com
+      PRODUCT_IMAGE_STORAGE_PATH: /app/STEPFILES/product-images
+    ports:
+      - "3001:3000"
+    volumes:
+      - stepfiles-data:/app/STEPFILES
+      - app-logs-blue:/app/logs
+    networks:
+      - events-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/events/api/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===================================
+  # GREEN Environment (New Deployment)
+  # ===================================
+  events-green:
+    build:
+      context: .
+      dockerfile: src/dockerfile/Dockerfile.events
+      args:
+        NODE_ENV: production
+    container_name: events-green
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://stepperslife.com/events}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET}
+      CONVEX_URL: ${CONVEX_URL:-https://neighborly-swordfish-681.convex.cloud}
+      NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-https://neighborly-swordfish-681.convex.cloud}
+      CONVEX_DEPLOYMENT: ${CONVEX_DEPLOYMENT:-prod:neighborly-swordfish-681}
+      SQUARE_ACCESS_TOKEN: ${SQUARE_ACCESS_TOKEN}
+      SQUARE_APPLICATION_ID: ${SQUARE_APPLICATION_ID}
+      SQUARE_LOCATION_ID: ${SQUARE_LOCATION_ID}
+      SQUARE_WEBHOOK_SIGNATURE_KEY: ${SQUARE_WEBHOOK_SIGNATURE_KEY}
+      NEXT_PUBLIC_SQUARE_APPLICATION_ID: ${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
+      NEXT_PUBLIC_SQUARE_LOCATION_ID: ${NEXT_PUBLIC_SQUARE_LOCATION_ID}
+      NEXT_PUBLIC_SQUARE_ENVIRONMENT: production
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_SECRET_KEY: ${PAYPAL_SECRET_KEY}
+      PAYPAL_WEBHOOK_ID: ${PAYPAL_WEBHOOK_ID}
+      NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      AUTH_GOOGLE_CLIENT_ID: ${AUTH_GOOGLE_CLIENT_ID}
+      AUTH_GOOGLE_CLIENT_SECRET: ${AUTH_GOOGLE_CLIENT_SECRET}
+      NEXT_PUBLIC_APP_URL: https://stepperslife.com/events
+      NEXT_PUBLIC_APP_DOMAIN: stepperslife.com
+      PRODUCT_IMAGE_STORAGE_PATH: /app/STEPFILES/product-images
+    ports:
+      - "3002:3000"
+    volumes:
+      - stepfiles-data:/app/STEPFILES
+      - app-logs-green:/app/logs
+    networks:
+      - events-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/events/api/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===================================
+  # Nginx Reverse Proxy
+  # ===================================
+  nginx:
+    image: nginx:alpine
+    container_name: events-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - nginx-ssl:/etc/nginx/ssl:ro
+      - certbot-webroot:/var/www/certbot:ro
+      - nginx-logs:/var/log/nginx
+    networks:
+      - events-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ===================================
+  # Certbot for SSL
+  # ===================================
+  certbot:
+    image: certbot/certbot:latest
+    container_name: events-certbot
+    depends_on:
+      - nginx
+    volumes:
+      - nginx-ssl:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+# ===================================
+# Named Volumes
+# ===================================
+volumes:
+  stepfiles-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife-v2-docker/data/stepfiles
+      o: bind
+
+  nginx-ssl:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife-v2-docker/data/ssl
+      o: bind
+
+  certbot-webroot:
+    driver: local
+
+  app-logs-blue:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife-v2-docker/logs/app-blue
+      o: bind
+
+  app-logs-green:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife-v2-docker/logs/app-green
+      o: bind
+
+  nginx-logs:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife-v2-docker/logs/nginx
+      o: bind
+
+# ===================================
+# Network
+# ===================================
+networks:
+  events-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ===================================
+# Blue-Green Deployment Notes
+# ===================================
+#
+# Initial Setup:
+#   mkdir -p /root/stepperslife-v2-docker/logs/{app-blue,app-green,nginx}
+#   mkdir -p /root/stepperslife-v2-docker/data/{stepfiles,ssl}
+#
+# Deployment Workflow:
+#   1. Deploy to inactive environment (green if blue is active)
+#   2. Test green environment on port 3002
+#   3. Switch nginx upstream to green
+#   4. Keep blue running for quick rollback
+#
+# Traffic Switching:
+#   - Edit nginx/conf.d/upstream.conf to switch between blue/green
+#   - Reload nginx: docker exec events-nginx nginx -s reload
+#
+# Rollback:
+#   - Switch nginx back to previous environment
+#   - No container restart needed
+#
+# ===================================

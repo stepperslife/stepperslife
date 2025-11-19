@@ -1,0 +1,269 @@
+version: '3.8'
+
+# ===================================
+# STEPPERSLIFE EVENTS - PRODUCTION
+# Docker Compose Configuration
+# ===================================
+#
+# This is the PRODUCTION configuration for Docker deployment to VPS.
+#
+# Usage:
+#   docker-compose -f docker-compose.production.yml up -d
+#
+# Prerequisites:
+#   - .env.production file with all required variables
+#   - SSL certificates in ./nginx/ssl/
+#   - Docker and Docker Compose installed on VPS
+#
+# ===================================
+
+services:
+  # ===================================
+  # Next.js Events Application
+  # ===================================
+  events-app:
+    build:
+      context: .
+      dockerfile: src/dockerfile/Dockerfile.events
+      args:
+        NODE_ENV: production
+    container_name: events-stepperslife-app
+    environment:
+      # Application Environment
+      NODE_ENV: production
+      PORT: 3000
+
+      # Authentication & JWT
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://stepperslife.com/events}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET}
+
+      # Convex Database (Cloud) - PRODUCTION
+      CONVEX_URL: ${CONVEX_URL:-https://neighborly-swordfish-681.convex.cloud}
+      NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-https://neighborly-swordfish-681.convex.cloud}
+      CONVEX_DEPLOYMENT: ${CONVEX_DEPLOYMENT:-prod:neighborly-swordfish-681}
+
+      # Square Payment Processor
+      SQUARE_ACCESS_TOKEN: ${SQUARE_ACCESS_TOKEN}
+      SQUARE_APPLICATION_ID: ${SQUARE_APPLICATION_ID}
+      SQUARE_LOCATION_ID: ${SQUARE_LOCATION_ID}
+      SQUARE_WEBHOOK_SIGNATURE_KEY: ${SQUARE_WEBHOOK_SIGNATURE_KEY}
+      NEXT_PUBLIC_SQUARE_APPLICATION_ID: ${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
+      NEXT_PUBLIC_SQUARE_LOCATION_ID: ${NEXT_PUBLIC_SQUARE_LOCATION_ID}
+      NEXT_PUBLIC_SQUARE_ENVIRONMENT: production
+
+      # Stripe Payment Processor
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+
+      # PayPal Payment Processor
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_SECRET_KEY: ${PAYPAL_SECRET_KEY}
+      PAYPAL_WEBHOOK_ID: ${PAYPAL_WEBHOOK_ID}
+      NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+
+      # External APIs
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+
+      # Google OAuth
+      AUTH_GOOGLE_CLIENT_ID: ${AUTH_GOOGLE_CLIENT_ID}
+      AUTH_GOOGLE_CLIENT_SECRET: ${AUTH_GOOGLE_CLIENT_SECRET}
+
+      # App URLs
+      NEXT_PUBLIC_APP_URL: https://stepperslife.com/events
+      NEXT_PUBLIC_APP_DOMAIN: stepperslife.com
+
+      # File Storage
+      PRODUCT_IMAGE_STORAGE_PATH: /app/STEPFILES/product-images
+
+    ports:
+      - "3000:3000"  # Internal port only, Nginx proxies to this
+
+    volumes:
+      # Persistent storage for uploaded files
+      - stepfiles-data:/app/STEPFILES
+      # Application logs
+      - app-logs:/app/logs
+
+    networks:
+      - events-network
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===================================
+  # Nginx Reverse Proxy
+  # ===================================
+  nginx:
+    image: nginx:alpine
+    container_name: events-nginx
+    depends_on:
+      events-app:
+        condition: service_healthy
+
+    ports:
+      - "80:80"    # HTTP
+      - "443:443"  # HTTPS
+
+    volumes:
+      # Nginx configuration
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+
+      # SSL certificates (Let's Encrypt)
+      - nginx-ssl:/etc/nginx/ssl:ro
+      - certbot-webroot:/var/www/certbot:ro
+
+      # Nginx logs
+      - nginx-logs:/var/log/nginx
+
+    networks:
+      - events-network
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ===================================
+  # Certbot for SSL Certificate Management
+  # ===================================
+  certbot:
+    image: certbot/certbot:latest
+    container_name: events-certbot
+    depends_on:
+      - nginx
+
+    volumes:
+      - nginx-ssl:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+
+    # Run certificate renewal check once per day
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+# ===================================
+# Named Volumes for Persistence
+# ===================================
+volumes:
+  # Application data
+  stepfiles-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife-v2-docker/data/stepfiles
+      o: bind
+
+  # SSL certificates and Let's Encrypt data
+  nginx-ssl:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife-v2-docker/data/ssl
+      o: bind
+
+  # Certbot webroot for certificate validation
+  certbot-webroot:
+    driver: local
+
+  # Application logs
+  app-logs:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife-v2-docker/logs/app
+      o: bind
+
+  # Nginx logs
+  nginx-logs:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife-v2-docker/logs/nginx
+      o: bind
+
+# ===================================
+# Network Configuration
+# ===================================
+networks:
+  events-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ===================================
+# Production Notes
+# ===================================
+#
+# 1. Before first deployment, create required directories:
+#    mkdir -p /root/stepperslife-v2-docker/data/{stepfiles,ssl}
+#    mkdir -p /root/stepperslife-v2-docker/logs/{app,nginx}
+#
+# 2. SSL Certificate Setup (First Time):
+#    docker-compose -f docker-compose.production.yml run --rm certbot \
+#      certonly --webroot -w /var/www/certbot \
+#      -d stepperslife.com --email admin@stepperslife.com --agree-tos
+#
+# 3. Environment Variables:
+#    Copy .env.production.template to .env.production
+#    Fill in all production secrets
+#
+# 4. Health Checks:
+#    Both services have health checks
+#    Nginx waits for app to be healthy before starting
+#
+# 5. Resource Limits:
+#    App limited to 1.5 CPU, 1GB RAM
+#    Adjust based on VPS capacity
+#
+# 6. Logging:
+#    Logs automatically rotated (20MB app, 10MB nginx)
+#    View logs: docker-compose -f docker-compose.production.yml logs -f
+#
+# 7. Backup Strategy:
+#    - stepfiles-data: User uploads
+#    - nginx-ssl: SSL certificates
+#    - Convex: Handles database backups
+#
+# ===================================

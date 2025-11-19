@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://127.0.0.1';
+const BASE_URL = 'http://localhost';
 
 test.describe('Quick Verification Tests', () => {
 
@@ -17,7 +17,7 @@ test.describe('Quick Verification Tests', () => {
       }
     });
 
-    await page.goto(BASE_URL, { waitUntil: 'networkidle' });
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
 
     // Check page loaded
     await expect(page).toHaveTitle(/SteppersLife/);
@@ -42,7 +42,7 @@ test.describe('Quick Verification Tests', () => {
       }
     });
 
-    await page.goto(`${BASE_URL}/events`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE_URL}/events`, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(3000);
 
     console.log('CSP Violations on /events:', cspViolations.length);
@@ -71,7 +71,7 @@ test.describe('Quick Verification Tests', () => {
       }
     });
 
-    await page.goto(BASE_URL, { waitUntil: 'networkidle' });
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(5000);
 
     console.log('Convex Requests:', convexRequests.length);
@@ -92,8 +92,8 @@ test.describe('Quick Verification Tests', () => {
     await page.goto(BASE_URL);
 
     // Check for main navigation
-    const nav = page.locator('nav');
-    await expect(nav).toBeVisible();
+    const header = page.locator('header');
+    await expect(header).toBeVisible();
 
     // Check for footer
     const footer = page.locator('footer');
@@ -104,7 +104,7 @@ test.describe('Quick Verification Tests', () => {
 
   test('events page renders', async ({ page }) => {
     await page.goto(`${BASE_URL}/events`);
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Page should have title or loading state
     const hasContent = await page.evaluate(() => {

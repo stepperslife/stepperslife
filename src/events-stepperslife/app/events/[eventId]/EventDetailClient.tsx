@@ -236,7 +236,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     {eventDetails.eventType === "SAVE_THE_DATE"
                       ? "Save the Date"
                       : eventDetails.eventType === "FREE_EVENT"
-                        ? "Free Event"
+                        ? "Pay at the Door"
                         : "Ticketed Event"}
                   </span>
                 </div>

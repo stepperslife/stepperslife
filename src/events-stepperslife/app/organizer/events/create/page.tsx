@@ -323,8 +323,8 @@ export default function CreateEventPage() {
                     // canCreateTicketedEvents ? { type: "BALLROOM_EVENT" as EventType, label: "Ballroom Event", desc: "Table seating & tickets", icon: "💃" } : null,
                     {
                       type: "FREE_EVENT" as EventType,
-                      label: "Free Event",
-                      desc: "Free registration",
+                      label: "Pay at the Door",
+                      desc: "Pay at the door",
                       icon: "🎉",
                     },
                     {

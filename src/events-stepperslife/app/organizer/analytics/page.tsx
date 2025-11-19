@@ -142,7 +142,7 @@ export default function AnalyticsPage() {
                       {event.eventType === "TICKETED_EVENT"
                         ? "Ticketed Event"
                         : event.eventType === "FREE_EVENT"
-                          ? "Free Event"
+                          ? "Pay at the Door"
                           : "Save the Date"}
                     </p>
                   </div>

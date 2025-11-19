@@ -22,7 +22,7 @@ export const APP_CONFIG = {
    * Primary application domain (without protocol)
    */
   DOMAIN:
-    process.env.NEXT_PUBLIC_APP_DOMAIN || "events.stepperslife.com",
+    process.env.NEXT_PUBLIC_APP_DOMAIN || "stepperslife.com",
 
   /**
    * Cookie domain (includes subdomain wildcard)
