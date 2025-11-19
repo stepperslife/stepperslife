@@ -1,8 +1,5 @@
 "use client";
 
-// Force dynamic rendering to prevent prerender errors with Convex
-export const dynamic = 'force-dynamic';
-
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -39,10 +36,12 @@ import { PublicFooter } from "@/components/layout/PublicFooter";
 export default function MyTicketsPage() {
   // Check authentication status first
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [shouldFetch, setShouldFetch] = useState(false);
 
-  // Only fetch tickets if authenticated
+  // Only fetch tickets if authenticated - use skip pattern
   const tickets = useQuery(
-    isAuthenticated ? api.tickets.queries.getMyTickets : undefined
+    api.tickets.queries.getMyTickets,
+    shouldFetch ? {} : "skip"
   );
 
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
@@ -56,6 +55,9 @@ export default function MyTicketsPage() {
     fetch("/api/auth/me", { credentials: "same-origin" })
       .then((res) => {
         setIsAuthenticated(res.ok);
+        if (res.ok) {
+          setShouldFetch(true);
+        }
       })
       .catch(() => setIsAuthenticated(false));
   }, []);
