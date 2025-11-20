@@ -1,0 +1,68 @@
+FROM node:20-alpine AS base
+
+# Install dependencies for building
+FROM base AS deps
+WORKDIR /app
+
+# Copy package files
+COPY src/stores-stepperslife/package*.json ./
+RUN npm ci --legacy-peer-deps
+
+# Generate Prisma Client
+COPY src/stores-stepperslife/prisma ./prisma
+RUN npx prisma generate
+
+# Build the application
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY src/stores-stepperslife/ .
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV SKIP_ENV_VALIDATION=1
+RUN npm run build:unsafe || npm run build
+
+# Install production dependencies only
+FROM base AS prod-deps
+WORKDIR /app
+COPY src/stores-stepperslife/package*.json ./
+COPY src/stores-stepperslife/prisma ./prisma
+RUN npm ci --legacy-peer-deps --omit=dev --ignore-scripts
+RUN npx prisma generate
+
+# Production image
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Install tini for proper process management
+RUN apk add --no-cache tini
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy standalone output (Next.js standalone mode)
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Copy Prisma files for migrations
+COPY --from=builder /app/prisma ./prisma
+COPY --from=prod-deps /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=prod-deps /app/node_modules/@prisma ./node_modules/@prisma
+
+# Create directories for uploads
+RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Use tini as init and run standalone server
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node", "server.js"]

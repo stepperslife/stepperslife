@@ -52,7 +52,7 @@ export default function MyTicketsPage() {
 
   // Check authentication on mount
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "same-origin" })
+    fetch("/api/auth/me")
       .then((res) => {
         setIsAuthenticated(res.ok);
         if (res.ok) {
@@ -100,13 +100,13 @@ export default function MyTicketsPage() {
   const now = Date.now();
   const upcomingEvents = groupedTickets
     ? Object.values(groupedTickets).filter(
-        (group: any) => group.event.startDate && group.event.startDate >= now
-      )
+      (group: any) => group.event.startDate && group.event.startDate >= now
+    )
     : [];
   const pastEvents = groupedTickets
     ? Object.values(groupedTickets).filter(
-        (group: any) => !group.event.startDate || group.event.startDate < now
-      )
+      (group: any) => !group.event.startDate || group.event.startDate < now
+    )
     : [];
 
   const handleDownloadTicket = (ticketCode: string, eventName: string) => {
@@ -415,11 +415,10 @@ export default function MyTicketsPage() {
                           return (
                             <div
                               key={ticket._id}
-                              className={`border rounded-lg transition-all ${
-                                selectedTickets.includes(ticket._id)
-                                  ? "border-primary bg-accent"
-                                  : "border-gray-200"
-                              }`}
+                              className={`border rounded-lg transition-all ${selectedTickets.includes(ticket._id)
+                                ? "border-primary bg-accent"
+                                : "border-gray-200"
+                                }`}
                             >
                               <div className="p-4">
                                 <div className="flex justify-between items-start">

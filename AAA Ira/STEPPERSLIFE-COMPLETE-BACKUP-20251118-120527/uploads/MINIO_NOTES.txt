@@ -1,0 +1,16 @@
+STEPPERSLIFE MINIO/UPLOADS NOTES
+================================
+
+Current .env configuration:
+- MINIO_ENDPOINT=localhost
+- MINIO_PORT=9001
+- MINIO_BUCKET=stepperslife-uploads
+
+NOTE: No dedicated stepperslife MinIO container was found running.
+The port 9001 is a console port for other MinIO instances.
+
+For restoration:
+- Create a new MinIO container for stepperslife
+- Use ports like 9009 (API) and 9109 (console)
+- Update the .env with correct credentials
+- Create the 'stepperslife-uploads' bucket

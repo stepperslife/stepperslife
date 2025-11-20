@@ -1,0 +1,36 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	deleted:    PAYMENT-SETUP-COMPLETE.md
+	deleted:    SESSION-SUMMARY.md
+	deleted:    STRIPE-PAYPAL-SETUP-SUMMARY.md
+	deleted:    STRIPE-SETUP-GUIDE.md
+	deleted:    TEST-REPORT.md
+	deleted:    TEST-RESULTS-SUMMARY.md
+	deleted:    TESTING-SUMMARY.md
+	modified:   src/events-stepperslife/components/convex-client-provider.tsx
+	modified:   src/events-stepperslife/convex/_generated/api.d.ts
+	modified:   src/events-stepperslife/convex/lib/roles.ts
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	AAA TEST/AI agent to perform code cleaning tasks.rtf
+	AAA TEST/PAYMENT-SETUP-COMPLETE.md
+	AAA TEST/SESSION-SUMMARY.md
+	AAA TEST/STRIPE-PAYPAL-SETUP-SUMMARY.md
+	AAA TEST/STRIPE-SETUP-GUIDE.md
+	AAA TEST/TEST-REPORT.md
+	AAA TEST/TEST-RESULTS-SUMMARY.md
+	AAA TEST/TESTING-SUMMARY.md
+	AAA TEST/code_janitor.md
+	src/events-stepperslife/convex/fixTestRoles.ts
+	src/events-stepperslife/fix-test-roles.ts
+	src/events-stepperslife/test-results/html-report/
+	src/events-stepperslife/tests/debug-logs/
+	src/events-stepperslife/tests/debug-my-events-click.spec.ts
+	src/events-stepperslife/tests/debug-redirect-issue.spec.ts
+
+no changes added to commit (use "git add" and/or "git commit -a")

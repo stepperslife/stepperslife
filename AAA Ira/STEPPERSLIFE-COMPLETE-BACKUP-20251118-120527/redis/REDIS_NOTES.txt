@@ -1,0 +1,11 @@
+STEPPERSLIFE REDIS NOTES
+========================
+
+Current .env configuration: redis://localhost:6301
+
+NOTE: Port 6301 is actually cheapflyer-redis container.
+No dedicated stepperslife Redis container was found running.
+
+For restoration:
+- Create a new Redis container for stepperslife
+- Update the .env with correct port (e.g., 6309 or another unused port)

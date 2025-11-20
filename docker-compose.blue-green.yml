@@ -24,7 +24,7 @@ version: '3.8'
 
 services:
   # ===================================
-  # BLUE Environment (Current Production)
+  # SteppersLife Events Application - BLUE (Active)
   # ===================================
   events-blue:
     build:
@@ -32,6 +32,7 @@ services:
       dockerfile: src/dockerfile/Dockerfile.events
       args:
         NODE_ENV: production
+    image: stepperslife-events
     container_name: events-blue
     environment:
       NODE_ENV: production
@@ -69,9 +70,9 @@ services:
       - "3001:3000"
     volumes:
       - stepfiles-data:/app/STEPFILES
-      - app-logs-blue:/app/logs
+      - app-logs:/app/logs
     networks:
-      - events-network
+      - stepperslife-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/events/api/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
@@ -94,7 +95,7 @@ services:
           memory: 512M
 
   # ===================================
-  # GREEN Environment (New Deployment)
+  # SteppersLife Events Application - GREEN (Standby)
   # ===================================
   events-green:
     build:
@@ -102,6 +103,7 @@ services:
       dockerfile: src/dockerfile/Dockerfile.events
       args:
         NODE_ENV: production
+    image: stepperslife-events
     container_name: events-green
     environment:
       NODE_ENV: production
@@ -139,9 +141,9 @@ services:
       - "3002:3000"
     volumes:
       - stepfiles-data:/app/STEPFILES
-      - app-logs-green:/app/logs
+      - app-logs-standby:/app/logs
     networks:
-      - events-network
+      - stepperslife-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/events/api/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
@@ -164,9 +166,159 @@ services:
           memory: 512M
 
   # ===================================
+  # SteppersLife Store Application - BLUE (Active)
+  # ===================================
+  store-blue:
+    build:
+      context: .
+      dockerfile: src/dockerfile/Dockerfile.stores
+      args:
+        NODE_ENV: production
+    image: stepperslife-stores
+    container_name: store-blue
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # Application URLs
+      NEXT_PUBLIC_APP_URL: https://stepperslife.com/store
+      NEXTAUTH_URL: https://stepperslife.com/store
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      # Database connections
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-stepperslife_stores}?schema=public
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      # MinIO Storage
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: stepperslife-stores
+      MINIO_USE_SSL: false
+      MINIO_PUBLIC_ENDPOINT: https://storage.stepperslife.com
+      # Authentication
+      GOOGLE_CLIENT_ID: ${AUTH_GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${AUTH_GOOGLE_CLIENT_SECRET}
+      # Payment Processing
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET_STORES}
+      SQUARE_ACCESS_TOKEN: ${SQUARE_ACCESS_TOKEN}
+      SQUARE_APPLICATION_ID: ${SQUARE_APPLICATION_ID}
+      SQUARE_LOCATION_ID: ${SQUARE_LOCATION_ID}
+      SQUARE_ENVIRONMENT: production
+      # Email
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      EMAIL_FROM: "SteppersLife Stores <stores@stepperslife.com>"
+    ports:
+      - "3005:3000"
+    volumes:
+      - store-uploads:/app/uploads
+      - app-logs-stores:/app/logs
+    networks:
+      - stepperslife-network
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/store/api/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===================================
+  # SteppersLife Store Application - GREEN (Standby)
+  # ===================================
+  store-green:
+    build:
+      context: .
+      dockerfile: src/dockerfile/Dockerfile.stores
+      args:
+        NODE_ENV: production
+    image: stepperslife-stores
+    container_name: store-green
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # Application URLs
+      NEXT_PUBLIC_APP_URL: https://stepperslife.com/store
+      NEXTAUTH_URL: https://stepperslife.com/store
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      # Database connections
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-stepperslife_stores}?schema=public
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      # MinIO Storage
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: stepperslife-stores
+      MINIO_USE_SSL: false
+      MINIO_PUBLIC_ENDPOINT: https://storage.stepperslife.com
+      # Authentication
+      GOOGLE_CLIENT_ID: ${AUTH_GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${AUTH_GOOGLE_CLIENT_SECRET}
+      # Payment Processing
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET_STORES}
+      SQUARE_ACCESS_TOKEN: ${SQUARE_ACCESS_TOKEN}
+      SQUARE_APPLICATION_ID: ${SQUARE_APPLICATION_ID}
+      SQUARE_LOCATION_ID: ${SQUARE_LOCATION_ID}
+      SQUARE_ENVIRONMENT: production
+      # Email
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      EMAIL_FROM: "SteppersLife Stores <stores@stepperslife.com>"
+    ports:
+      - "3006:3000"
+    volumes:
+      - store-uploads:/app/uploads
+      - app-logs-stores-standby:/app/logs
+    networks:
+      - stepperslife-network
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/store/api/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===================================
   # Nginx Reverse Proxy
   # ===================================
-  nginx:
+  events-nginx:
     image: nginx:alpine
     container_name: events-nginx
     ports:
@@ -179,7 +331,7 @@ services:
       - certbot-webroot:/var/www/certbot:ro
       - nginx-logs:/var/log/nginx
     networks:
-      - events-network
+      - stepperslife-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
@@ -197,9 +349,9 @@ services:
   # ===================================
   certbot:
     image: certbot/certbot:latest
-    container_name: events-certbot
+    container_name: stepperslife-certbot
     depends_on:
-      - nginx
+      - events-nginx
     volumes:
       - nginx-ssl:/etc/letsencrypt
       - certbot-webroot:/var/www/certbot
@@ -210,6 +362,114 @@ services:
         max-size: "5m"
         max-file: "2"
 
+  # ===================================
+  # PostgreSQL Database (for Store System)
+  # ===================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: stepperslife-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-stepperslife_stores}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - stepperslife-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-stepperslife_stores}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===================================
+  # Redis Cache (for Store System)
+  # ===================================
+  redis:
+    image: redis:7-alpine
+    container_name: stepperslife-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - stepperslife-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # ===================================
+  # MinIO Object Storage (for Store System)
+  # ===================================
+  minio:
+    image: minio/minio:latest
+    container_name: stepperslife-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}
+      MINIO_DOMAIN: ${MINIO_DOMAIN:-storage.stepperslife.com}
+    ports:
+      - "9000:9000"  # API
+      - "9001:9001"  # Console
+    volumes:
+      - minio-data:/data
+    networks:
+      - stepperslife-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
 # ===================================
 # Named Volumes
 # ===================================
@@ -218,45 +478,87 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /root/stepperslife-v2-docker/data/stepfiles
+      device: /root/stepperslife/data/stepfiles
       o: bind
 
   nginx-ssl:
     driver: local
     driver_opts:
       type: none
-      device: /root/stepperslife-v2-docker/data/ssl
+      device: /root/stepperslife/data/ssl
       o: bind
 
   certbot-webroot:
     driver: local
 
-  app-logs-blue:
+  app-logs:
     driver: local
     driver_opts:
       type: none
-      device: /root/stepperslife-v2-docker/logs/app-blue
+      device: /root/stepperslife/logs/app
       o: bind
 
-  app-logs-green:
+  app-logs-standby:
     driver: local
     driver_opts:
       type: none
-      device: /root/stepperslife-v2-docker/logs/app-green
+      device: /root/stepperslife/logs/app-standby
       o: bind
 
   nginx-logs:
     driver: local
     driver_opts:
       type: none
-      device: /root/stepperslife-v2-docker/logs/nginx
+      device: /root/stepperslife/logs/nginx
+      o: bind
+
+  postgres-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife/data/postgres
+      o: bind
+
+  redis-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife/data/redis
+      o: bind
+
+  minio-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife/data/minio
+      o: bind
+
+  store-uploads:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife/data/store-uploads
+      o: bind
+
+  app-logs-stores:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife/logs/app-stores
+      o: bind
+
+  app-logs-stores-standby:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/stepperslife/logs/app-stores-standby
       o: bind
 
 # ===================================
 # Network
 # ===================================
 networks:
-  events-network:
+  stepperslife-network:
     driver: bridge
     ipam:
       config:

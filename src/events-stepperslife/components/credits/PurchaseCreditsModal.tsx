@@ -32,7 +32,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
 
   // Fetch current user ID
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "same-origin" })
+    fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => {
         if (data.user && data.user._id) {
@@ -157,11 +157,10 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
             <button
               key={pkg.credits}
               onClick={() => setSelectedPackage(pkg)}
-              className={`border-2 rounded-lg p-6 hover:shadow-lg transition-all text-center relative ${
-                selectedPackage.credits === pkg.credits
-                  ? "border-primary bg-accent"
-                  : "border-gray-200 hover:border-primary"
-              }`}
+              className={`border-2 rounded-lg p-6 hover:shadow-lg transition-all text-center relative ${selectedPackage.credits === pkg.credits
+                ? "border-primary bg-accent"
+                : "border-gray-200 hover:border-primary"
+                }`}
             >
               {pkg.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">
@@ -187,22 +186,20 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => setPaymentMethod("card")}
-              className={`flex items-center justify-center gap-2 p-4 border-2 rounded-lg transition-all ${
-                paymentMethod === "card"
-                  ? "border-primary bg-accent"
-                  : "border-gray-200 hover:border-primary"
-              }`}
+              className={`flex items-center justify-center gap-2 p-4 border-2 rounded-lg transition-all ${paymentMethod === "card"
+                ? "border-primary bg-accent"
+                : "border-gray-200 hover:border-primary"
+                }`}
             >
               <CreditCard className="w-5 h-5" />
               <span className="font-medium">Credit Card</span>
             </button>
             <button
               onClick={() => setPaymentMethod("paypal")}
-              className={`flex items-center justify-center gap-2 p-4 border-2 rounded-lg transition-all ${
-                paymentMethod === "paypal"
-                  ? "border-primary bg-accent"
-                  : "border-gray-200 hover:border-primary"
-              }`}
+              className={`flex items-center justify-center gap-2 p-4 border-2 rounded-lg transition-all ${paymentMethod === "paypal"
+                ? "border-primary bg-accent"
+                : "border-gray-200 hover:border-primary"
+                }`}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.794.68l-.04.22-.63 3.993-.028.16a.804.804 0 01-.794.68H7.72a.483.483 0 01-.477-.558L7.418 21l1.177-7.46.022-.14a.805.805 0 01.794-.68h1.659c3.238 0 5.774-1.314 6.514-5.12a3.936 3.936 0 00-.517.878z" />
