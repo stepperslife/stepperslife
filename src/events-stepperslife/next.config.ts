@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
-  basePath: '/events', // Serve app under /events path
   output: 'standalone', // Required for Docker deployment
   typescript: {
     ignoreBuildErrors: true,
@@ -145,7 +144,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "stepperslife.com",
-        pathname: "/events/api/**",
+        pathname: "/api/**",
       },
       {
         protocol: "https",
