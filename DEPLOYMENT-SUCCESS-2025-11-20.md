@@ -15,9 +15,13 @@ SteppersLife Events has been successfully deployed to the VPS using Docker conta
 - **Application:** SteppersLife Events Platform
 - **VPS IP:** 72.60.28.175
 - **Port:** 3004
-- **Access URL:** http://72.60.28.175:3004
+- **Access URL:** http://72.60.28.175:3004/events ✅
 - **Container Name:** stepperslife-events
 - **Network:** stepperslife_stepperslife-network
+
+⚠️ **IMPORTANT:** The application is configured with basePath `/events`
+- ✅ **Working URL:** http://72.60.28.175:3004/events
+- ❌ Root path (http://72.60.28.175:3004) returns 404 - this is expected!
 
 ### Docker Configuration
 
