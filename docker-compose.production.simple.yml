@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  # SteppersLife Events Application
+  events-app:
+    build:
+      context: .
+      dockerfile: src/dockerfile/Dockerfile.events
+      args:
+        NODE_ENV: production
+    container_name: stepperslife-events
+    restart: unless-stopped
+    environment:
+      # Node Environment
+      NODE_ENV: production
+      PORT: 3000
+
+      # Convex Database (Production)
+      CONVEX_URL: ${CONVEX_URL}
+      NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL}
+      CONVEX_DEPLOYMENT: ${CONVEX_DEPLOYMENT}
+
+      # App URLs
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXT_PUBLIC_APP_DOMAIN: ${NEXT_PUBLIC_APP_DOMAIN}
+
+      # Auth Secrets
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET}
+
+      # Stripe (Production Keys)
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+
+      # PayPal
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_SECRET_KEY: ${PAYPAL_SECRET_KEY}
+      NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${NEXT_PUBLIC_PAYPAL_CLIENT_ID}
+
+      # Square
+      SQUARE_ACCESS_TOKEN: ${SQUARE_ACCESS_TOKEN}
+      SQUARE_APPLICATION_ID: ${SQUARE_APPLICATION_ID}
+      SQUARE_LOCATION_ID: ${SQUARE_LOCATION_ID}
+      NEXT_PUBLIC_SQUARE_APPLICATION_ID: ${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
+      NEXT_PUBLIC_SQUARE_LOCATION_ID: ${NEXT_PUBLIC_SQUARE_LOCATION_ID}
+      NEXT_PUBLIC_SQUARE_ENVIRONMENT: ${NEXT_PUBLIC_SQUARE_ENVIRONMENT}
+
+      # Google OAuth
+      AUTH_GOOGLE_CLIENT_ID: ${AUTH_GOOGLE_CLIENT_ID}
+      AUTH_GOOGLE_CLIENT_SECRET: ${AUTH_GOOGLE_CLIENT_SECRET}
+
+      # Email Service
+      RESEND_API_KEY: ${RESEND_API_KEY}
+
+      # APIs
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+    ports:
+      - "3004:3000"
+    volumes:
+      - app_data:/app/data
+      - app_cache:/app/.next/cache
+    networks:
+      - stepperslife-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: stepperslife-nginx
+    restart: unless-stopped
+    depends_on:
+      events-app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+      - nginx_logs:/var/log/nginx
+    networks:
+      - stepperslife-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  app_data:
+    driver: local
+  app_cache:
+    driver: local
+  nginx_cache:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  stepperslife-network:
+    driver: bridge
