@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.11"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "playwright": "^1.56.1"
+  }
+}

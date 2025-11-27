@@ -1,0 +1,493 @@
+{
+  "clientName": "Thunder Client",
+  "collectionName": "Organizer & Staff System API Tests",
+  "collectionId": "organizer-staff-api",
+  "dateExported": "2025-01-17",
+  "version": "1.2",
+  "folders": [
+    {
+      "id": "auth-folder",
+      "name": "Authentication",
+      "containerId": "",
+      "created": "2025-01-17",
+      "sortNum": 10000
+    },
+    {
+      "id": "credits-folder",
+      "name": "Credit Purchases",
+      "containerId": "",
+      "created": "2025-01-17",
+      "sortNum": 20000
+    },
+    {
+      "id": "events-folder",
+      "name": "Event Management",
+      "containerId": "",
+      "created": "2025-01-17",
+      "sortNum": 30000
+    },
+    {
+      "id": "staff-folder",
+      "name": "Staff Management",
+      "containerId": "",
+      "created": "2025-01-17",
+      "sortNum": 40000
+    },
+    {
+      "id": "orders-folder",
+      "name": "Orders & Purchases",
+      "containerId": "",
+      "created": "2025-01-17",
+      "sortNum": 50000
+    }
+  ],
+  "requests": [
+    {
+      "id": "register-organizer",
+      "name": "Register Organizer",
+      "url": "http://localhost:3004/api/auth/register",
+      "method": "POST",
+      "sortNum": 10000,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Test Organizer\",\n  \"email\": \"test-organizer@example.com\",\n  \"password\": \"TestPass123!\",\n  \"role\": \"organizer\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "201"
+        },
+        {
+          "type": "json-query",
+          "value": "$.success",
+          "operator": "==",
+          "expected": "true"
+        }
+      ],
+      "folderId": "auth-folder"
+    },
+    {
+      "id": "login-organizer",
+      "name": "Login Organizer",
+      "url": "http://localhost:3004/api/auth/login",
+      "method": "POST",
+      "sortNum": 10100,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"test-organizer@example.com\",\n  \"password\": \"TestPass123!\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "value": "$.success",
+          "operator": "==",
+          "expected": "true"
+        },
+        {
+          "type": "set-env-var",
+          "value": "session_token",
+          "from": "cookie"
+        }
+      ],
+      "folderId": "auth-folder"
+    },
+    {
+      "id": "get-current-user",
+      "name": "Get Current User",
+      "url": "http://localhost:3004/api/auth/me",
+      "method": "GET",
+      "sortNum": 10200,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "value": "$.role",
+          "operator": "==",
+          "expected": "organizer"
+        }
+      ],
+      "folderId": "auth-folder"
+    },
+    {
+      "id": "purchase-credits-square",
+      "name": "Purchase 500 Credits - Square",
+      "url": "http://localhost:3004/api/credits/purchase-with-square",
+      "method": "POST",
+      "sortNum": 20000,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"amount\": 500,\n  \"nonce\": \"cnon:card-nonce-ok\",\n  \"verificationToken\": \"verf:verification-token\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "value": "$.success",
+          "operator": "==",
+          "expected": "true"
+        },
+        {
+          "type": "json-query",
+          "value": "$.creditsAdded",
+          "operator": "==",
+          "expected": "500"
+        }
+      ],
+      "folderId": "credits-folder"
+    },
+    {
+      "id": "purchase-credits-cashapp",
+      "name": "Purchase 500 Credits - Cash App",
+      "url": "http://localhost:3004/api/credits/purchase-with-cash-app",
+      "method": "POST",
+      "sortNum": 20100,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"amount\": 500,\n  \"paymentToken\": \"test-cash-app-token\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "value": "$.success",
+          "operator": "==",
+          "expected": "true"
+        },
+        {
+          "type": "json-query",
+          "value": "$.creditsAdded",
+          "operator": "==",
+          "expected": "500"
+        }
+      ],
+      "folderId": "credits-folder"
+    },
+    {
+      "id": "get-credit-balance",
+      "name": "Get Credit Balance",
+      "url": "http://localhost:3004/api/credits/balance",
+      "method": "GET",
+      "sortNum": 20200,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "value": "$.creditsRemaining",
+          "operator": ">=",
+          "expected": "0"
+        }
+      ],
+      "folderId": "credits-folder"
+    },
+    {
+      "id": "create-event",
+      "name": "Create Ticketed Event",
+      "url": "http://localhost:3004/api/events",
+      "method": "POST",
+      "sortNum": 30000,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Test Event 1\",\n  \"description\": \"First ticketed event\",\n  \"eventType\": \"TICKETED_EVENT\",\n  \"location\": {\n    \"city\": \"Chicago\",\n    \"state\": \"IL\",\n    \"country\": \"US\"\n  },\n  \"startDate\": \"2025-03-01T19:00:00Z\",\n  \"endDate\": \"2025-03-01T23:00:00Z\",\n  \"categories\": [\"Testing\", \"Music\"]\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "201"
+        },
+        {
+          "type": "json-query",
+          "value": "$.eventId",
+          "operator": "istype",
+          "expected": "string"
+        },
+        {
+          "type": "set-env-var",
+          "value": "eventId",
+          "from": "json",
+          "path": "$.eventId"
+        }
+      ],
+      "folderId": "events-folder"
+    },
+    {
+      "id": "configure-payment",
+      "name": "Configure Event Payment (PREPAY)",
+      "url": "http://localhost:3004/api/events/{{eventId}}/payment",
+      "method": "POST",
+      "sortNum": 30100,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"paymentModel\": \"PREPAY\",\n  \"creditsToAllocate\": 500\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "value": "$.success",
+          "operator": "==",
+          "expected": "true"
+        }
+      ],
+      "folderId": "events-folder"
+    },
+    {
+      "id": "add-staff",
+      "name": "Add Team Member to Event",
+      "url": "http://localhost:3004/api/events/{{eventId}}/staff",
+      "method": "POST",
+      "sortNum": 40000,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Team Member A1\",\n  \"email\": \"team-a1@example.com\",\n  \"role\": \"TEAM_MEMBERS\",\n  \"ticketAllocation\": 150,\n  \"commissionType\": \"PERCENTAGE\",\n  \"commissionValue\": 100,\n  \"canSellTickets\": true,\n  \"canAssignSubSellers\": true,\n  \"acceptCashInPerson\": true\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "201"
+        },
+        {
+          "type": "json-query",
+          "value": "$.staffId",
+          "operator": "istype",
+          "expected": "string"
+        },
+        {
+          "type": "set-env-var",
+          "value": "staffId",
+          "from": "json",
+          "path": "$.staffId"
+        }
+      ],
+      "folderId": "staff-folder"
+    },
+    {
+      "id": "add-associate",
+      "name": "Add Associate to Team Member",
+      "url": "http://localhost:3004/api/staff/{{staffId}}/associates",
+      "method": "POST",
+      "sortNum": 40100,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Associate 1\",\n  \"email\": \"associate-1@example.com\",\n  \"ticketAllocation\": 30,\n  \"commissionType\": \"FIXED\",\n  \"commissionValue\": 500\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "201"
+        },
+        {
+          "type": "json-query",
+          "value": "$.associateId",
+          "operator": "istype",
+          "expected": "string"
+        }
+      ],
+      "folderId": "staff-folder"
+    },
+    {
+      "id": "get-staff-list",
+      "name": "Get Event Staff List",
+      "url": "http://localhost:3004/api/events/{{eventId}}/staff",
+      "method": "GET",
+      "sortNum": 40200,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "value": "$.staff",
+          "operator": "istype",
+          "expected": "array"
+        }
+      ],
+      "folderId": "staff-folder"
+    },
+    {
+      "id": "create-order",
+      "name": "Create Order (Customer Purchase)",
+      "url": "http://localhost:3004/api/orders",
+      "method": "POST",
+      "sortNum": 50000,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"eventId\": \"{{eventId}}\",\n  \"quantity\": 2,\n  \"email\": \"customer@example.com\",\n  \"name\": \"Test Customer\",\n  \"paymentMethod\": \"STRIPE\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "201"
+        },
+        {
+          "type": "json-query",
+          "value": "$.orderId",
+          "operator": "istype",
+          "expected": "string"
+        },
+        {
+          "type": "set-env-var",
+          "value": "orderId",
+          "from": "json",
+          "path": "$.orderId"
+        }
+      ],
+      "folderId": "orders-folder"
+    },
+    {
+      "id": "get-order",
+      "name": "Get Order Details",
+      "url": "http://localhost:3004/api/orders/{{orderId}}",
+      "method": "GET",
+      "sortNum": 50100,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "value": "$.orderId",
+          "operator": "==",
+          "expected": "{{orderId}}"
+        }
+      ],
+      "folderId": "orders-folder"
+    },
+    {
+      "id": "get-settlement",
+      "name": "Get Event Settlement Dashboard",
+      "url": "http://localhost:3004/api/events/{{eventId}}/settlement",
+      "method": "GET",
+      "sortNum": 50200,
+      "created": "2025-01-17",
+      "modified": "2025-01-17",
+      "headers": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "value": "$.settlements",
+          "operator": "istype",
+          "expected": "array"
+        }
+      ],
+      "folderId": "orders-folder"
+    }
+  ]
+}

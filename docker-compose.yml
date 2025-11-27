@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # Next.js Events Application
+  events-app:
+    build:
+      context: .
+      dockerfile: src/dockerfile/Dockerfile.events
+    container_name: events-stepperslife-app
+    environment:
+      # Application
+      NODE_ENV: ${NODE_ENV:-development}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3004}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-secret-key-change-in-production}
+
+      # JWT Secrets (CRITICAL - must be consistent for auth to work)
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      AUTH_SECRET: ${AUTH_SECRET:-your-secret-key-change-in-production}
+
+      # Convex (Primary Database - Cloud)
+      CONVEX_URL: ${CONVEX_URL:-https://fearless-dragon-613.convex.cloud}
+      NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-https://fearless-dragon-613.convex.cloud}
+
+      # Payment Processors
+      SQUARE_ACCESS_TOKEN: ${SQUARE_ACCESS_TOKEN}
+      SQUARE_APPLICATION_ID: ${SQUARE_APPLICATION_ID}
+      SQUARE_LOCATION_ID: ${SQUARE_LOCATION_ID}
+      SQUARE_WEBHOOK_SIGNATURE_KEY: ${SQUARE_WEBHOOK_SIGNATURE_KEY}
+      NEXT_PUBLIC_SQUARE_APPLICATION_ID: ${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
+      NEXT_PUBLIC_SQUARE_LOCATION_ID: ${NEXT_PUBLIC_SQUARE_LOCATION_ID}
+      NEXT_PUBLIC_SQUARE_ENVIRONMENT: ${NEXT_PUBLIC_SQUARE_ENVIRONMENT:-production}
+
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_SECRET_KEY: ${PAYPAL_SECRET_KEY}
+      PAYPAL_WEBHOOK_ID: ${PAYPAL_WEBHOOK_ID}
+
+      # External APIs
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+
+      # Google OAuth
+      AUTH_GOOGLE_CLIENT_ID: ${AUTH_GOOGLE_CLIENT_ID}
+      AUTH_GOOGLE_CLIENT_SECRET: ${AUTH_GOOGLE_CLIENT_SECRET}
+
+      # App URLs
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3004}
+    ports:
+      - "3004:3000"
+    volumes:
+      - ./src/events-stepperslife:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - events-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: events-nginx
+    depends_on:
+      - events-app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - events-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  events-network:
+    driver: bridge
