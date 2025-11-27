@@ -17,7 +17,7 @@ export function PublicFooter() {
       id: "about",
       title: "About",
       content: (
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-muted-foreground">
           SteppersLife Events is your premier platform for discovering and attending stepping
           events.
         </p>
@@ -36,8 +36,9 @@ export function PublicFooter() {
       id: "resources",
       title: "Resources",
       links: [
-        { href: "/", label: "Browse Events" },
-        { href: "/shop", label: "Shop" },
+        { href: "/events", label: "Browse Events" },
+        { href: "/marketplace", label: "Marketplace" },
+        { href: "/restaurants", label: "Restaurants" },
         { href: "/my-tickets", label: "My Tickets" },
       ],
     },
@@ -52,19 +53,19 @@ export function PublicFooter() {
   ];
 
   return (
-    <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 pb-20 md:pb-0">
+    <footer className="bg-card border-t border-border pb-20 md:pb-0">
       <div className="container mx-auto px-4 py-8">
         {/* Mobile Collapsible Sections */}
         <div className="md:hidden space-y-2">
           {footerSections.map((section) => (
-            <div key={section.id} className="border-b border-gray-200 dark:border-gray-700">
+            <div key={section.id} className="border-b border-border">
               <button
                 onClick={() => toggleSection(section.id)}
                 className="w-full flex items-center justify-between py-3 text-left"
               >
-                <h3 className="font-semibold text-gray-900 dark:text-white">{section.title}</h3>
+                <h3 className="font-semibold text-foreground">{section.title}</h3>
                 <ChevronDown
-                  className={`w-5 h-5 text-gray-500 transition-transform ${
+                  className={`w-5 h-5 text-muted-foreground transition-transform ${
                     openSection === section.id ? "rotate-180" : ""
                   }`}
                 />
@@ -76,7 +77,7 @@ export function PublicFooter() {
                       {section.content ? (
                         section.content
                       ) : (
-                        <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <ul className="space-y-2 text-sm text-muted-foreground">
                           {section.links?.map((link) => (
                             <li key={link.href}>
                               <Link
@@ -101,8 +102,8 @@ export function PublicFooter() {
         <div className="hidden md:grid grid-cols-4 gap-8">
           {/* About Section */}
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">About</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <h3 className="font-semibold text-foreground mb-3">About</h3>
+            <p className="text-sm text-muted-foreground">
               SteppersLife Events is your premier platform for discovering and attending stepping
               events.
             </p>
@@ -110,8 +111,8 @@ export function PublicFooter() {
 
           {/* For Organizers */}
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">For Organizers</h3>
-            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <h3 className="font-semibold text-foreground mb-3">For Organizers</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link
                   href="/organizer/events/create"
@@ -135,16 +136,21 @@ export function PublicFooter() {
 
           {/* Resources */}
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Resources</h3>
-            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <h3 className="font-semibold text-foreground mb-3">Resources</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/" className="hover:text-primary transition-colors">
+                <Link href="/events" className="hover:text-primary transition-colors">
                   Browse Events
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="hover:text-primary transition-colors">
-                  Shop
+                <Link href="/marketplace" className="hover:text-primary transition-colors">
+                  Marketplace
+                </Link>
+              </li>
+              <li>
+                <Link href="/restaurants" className="hover:text-primary transition-colors">
+                  Restaurants
                 </Link>
               </li>
               <li>
@@ -157,8 +163,8 @@ export function PublicFooter() {
 
           {/* Legal */}
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Legal</h3>
-            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <h3 className="font-semibold text-foreground mb-3">Legal</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link href="/privacy" className="hover:text-primary transition-colors">
                   Privacy Policy
@@ -174,13 +180,13 @@ export function PublicFooter() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-8 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-center md:text-left">
+            <p className="text-sm text-muted-foreground text-center md:text-left">
               &copy; {currentYear} SteppersLife Events. All rights reserved.
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-              Made with <Heart className="w-4 h-4 text-red-500 fill-current" /> for the stepping
+            <p className="text-sm text-muted-foreground flex items-center gap-1">
+              Made with <Heart className="w-4 h-4 text-destructive fill-current" /> for the stepping
               community
             </p>
           </div>

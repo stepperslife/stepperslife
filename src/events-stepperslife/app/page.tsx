@@ -15,13 +15,39 @@ const convex = new ConvexHttpClient(convexUrl);
 export const dynamic = "force-dynamic";
 export const revalidate = 0; // Disable ISR caching
 
+// Helper function to fetch with timeout
+async function fetchWithTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number = 10000,
+  fallback: T
+): Promise<T> {
+  const timeoutPromise = new Promise<T>((_, reject) =>
+    setTimeout(() => reject(new Error("Query timeout")), timeoutMs)
+  );
+  
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } catch (error) {
+    console.error("[HomePage] Query error:", error);
+    return fallback;
+  }
+}
+
 // Server Component - fetches data at build time or on request
 export default async function Home() {
-  // Fetch upcoming events on the server
-  const events = await convex.query(api.public.queries.getPublishedEvents, { limit: 100 });
+  // Fetch upcoming events on the server with timeout and error handling
+  const events = await fetchWithTimeout(
+    convex.query(api.public.queries.getPublishedEvents, { limit: 100 }),
+    10000,
+    []
+  );
 
-  // Fetch active products on the server
-  const products = await convex.query(api.products.queries.getActiveProducts);
+  // Fetch active products on the server with timeout and error handling
+  const products = await fetchWithTimeout(
+    convex.query(api.products.queries.getActiveProducts),
+    10000,
+    []
+  );
 
   // Remove duplicates (just in case)
   const uniqueEvents = events.filter(
@@ -31,7 +57,7 @@ export default async function Home() {
   return (
     <>
       <PublicHeader />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         {/* Client Island: Interactive event browsing */}
         <Suspense fallback={<LoadingSkeleton />}>
           <HomePageContent initialEvents={uniqueEvents} />
@@ -53,10 +79,10 @@ export default async function Home() {
 function LoadingSkeleton() {
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="mb-8 h-32 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"></div>
+      <div className="mb-8 h-32 bg-muted rounded-lg animate-pulse"></div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="h-64 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"></div>
+          <div key={i} className="h-64 bg-muted rounded-lg animate-pulse"></div>
         ))}
       </div>
     </main>

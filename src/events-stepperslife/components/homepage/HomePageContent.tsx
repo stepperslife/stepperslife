@@ -71,7 +71,7 @@ export function HomePageContent({ initialEvents }: HomePageContentProps) {
 
       {/* Results Count and View Toggle */}
       <div className="flex items-center justify-between mb-6">
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-muted-foreground">
           {filteredEvents.length} {filteredEvents.length === 1 ? "event" : "events"} found
         </p>
         <ViewToggle currentView={viewMode} onViewChange={setViewMode} />

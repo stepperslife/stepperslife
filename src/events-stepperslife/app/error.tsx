@@ -18,7 +18,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="max-w-md w-full text-center p-8">
         <div className="mb-6">
           <svg
@@ -35,8 +35,8 @@ export default function Error({
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h2>
-        <p className="text-gray-600 mb-6">
+        <h2 className="text-2xl font-bold text-foreground mb-2">Something went wrong</h2>
+        <p className="text-muted-foreground mb-6">
           We apologize for the inconvenience. An error occurred while processing your request.
         </p>
         {process.env.NODE_ENV === "development" && error.message && (

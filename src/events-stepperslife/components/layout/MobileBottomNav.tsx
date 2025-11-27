@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, Calendar, ShoppingBag, Ticket, User } from "lucide-react";
+import { Home, Calendar, ShoppingBag, Utensils, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export function MobileBottomNav() {
@@ -34,17 +34,16 @@ export function MobileBottomNav() {
       activePatterns: [/^\/events/],
     },
     {
-      href: "/shop",
+      href: "/marketplace",
       icon: ShoppingBag,
       label: "Shop",
-      activePatterns: [/^\/shop/],
+      activePatterns: [/^\/marketplace/],
     },
     {
-      href: "/my-tickets",
-      icon: Ticket,
-      label: "Tickets",
-      activePatterns: [/^\/my-tickets/],
-      requiresAuth: true,
+      href: "/restaurants",
+      icon: Utensils,
+      label: "Food",
+      activePatterns: [/^\/restaurants/],
     },
     {
       href: isAuthenticated ? "/organizer/events" : "/login",
@@ -59,16 +58,11 @@ export function MobileBottomNav() {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50 safe-area-bottom">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 safe-area-bottom">
       <div className="flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.activePatterns);
-
-          // Skip auth-required items if not authenticated
-          if (item.requiresAuth && !isAuthenticated) {
-            return null;
-          }
 
           return (
             <Link
@@ -79,7 +73,7 @@ export function MobileBottomNav() {
               <div className="relative">
                 <Icon
                   className={`w-6 h-6 transition-colors ${
-                    active ? "text-primary" : "text-gray-500 dark:text-gray-400"
+                    active ? "text-primary" : "text-muted-foreground"
                   }`}
                 />
                 {active && (
@@ -88,7 +82,7 @@ export function MobileBottomNav() {
               </div>
               <span
                 className={`text-xs mt-1 transition-colors ${
-                  active ? "text-primary font-medium" : "text-gray-500 dark:text-gray-400"
+                  active ? "text-primary font-medium" : "text-muted-foreground"
                 }`}
               >
                 {item.label}

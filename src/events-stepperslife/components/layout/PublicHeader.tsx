@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Plus,
   LogOut,
@@ -14,7 +15,9 @@ import {
   Moon,
   Menu,
   X,
-  ShoppingBag,
+  ChevronDown,
+  ChefHat,
+  Utensils,
 } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -34,13 +37,12 @@ export function PublicHeader({
   const profileRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
-  // Prevent hydration mismatch for theme
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
@@ -52,21 +54,47 @@ export function PublicHeader({
   }, []);
 
   const navigationLinks = [
-    { href: "/", label: "Events" },
-    { href: "/shop", label: "Shop" },
-    { href: "/pricing", label: "Pricing" },
+    { href: "/events", label: "Events" },
+    { href: "/marketplace", label: "Marketplace" },
+    { href: "/restaurants", label: "Restaurants" },
   ];
 
+  const isActiveLink = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname?.startsWith(href);
+  };
+
+  // Context-aware CTA - changes based on current section
+  const getHeaderCTA = () => {
+    if (pathname?.startsWith("/restaurants") || pathname?.startsWith("/restaurateur")) {
+      return { 
+        href: "/restaurateur/apply", 
+        label: "Add Restaurant", 
+        shortLabel: "Add",
+        icon: ChefHat 
+      };
+    }
+    if (pathname?.startsWith("/marketplace")) {
+      return null; // No CTA for marketplace (admin-managed)
+    }
+    // Default: events and home
+    return { 
+      href: "/organizer/events/create", 
+      label: "Create Event", 
+      shortLabel: "Create",
+      icon: Plus 
+    };
+  };
+
+  const headerCTA = getHeaderCTA();
+
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50 animate-fade-in">
-      <div className="container mx-auto px-4 py-2">
-        <div className="flex items-center justify-between">
+    <header className="bg-card/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <div
-              className="relative w-auto h-19 sm:h-[91px] md:h-[106px] lg:h-[122px]"
-              style={{ aspectRatio: "3/1" }}
-            >
+          <Link href="/" className="flex items-center shrink-0">
+            <div className="relative h-10 w-32 sm:h-12 sm:w-40">
               {mounted && (
                 <Image
                   key={theme}
@@ -75,23 +103,27 @@ export function PublicHeader({
                       ? "/logos/stepperslife-logo-dark.svg"
                       : "/logos/stepperslife-logo-light.svg"
                   }
-                  alt="SteppersLife Events"
+                  alt="SteppersLife"
                   fill
-                  className="object-contain"
+                  className="object-contain object-left"
                   priority
                 />
               )}
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Centered */}
           {showNavigation && (
-            <nav className="hidden lg:flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-1">
               {navigationLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors font-medium"
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isActiveLink(link.href)
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -100,186 +132,181 @@ export function PublicHeader({
           )}
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-3">
-            {/* Theme Toggle Button - Hidden on mobile (forced light theme) */}
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
             {mounted && (
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="hidden md:block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                className="p-2 rounded-full hover:bg-accent transition-colors"
+                title={theme === "dark" ? "Light mode" : "Dark mode"}
               >
                 {theme === "dark" ? (
-                  <Sun className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  <Sun className="w-[18px] h-[18px] text-muted-foreground" />
                 ) : (
-                  <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  <Moon className="w-[18px] h-[18px] text-muted-foreground" />
                 )}
               </button>
             )}
 
-            {/* Shop Cart Icon (visible on all devices) */}
-            <Link
-              href="/shop"
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center min-h-[48px] min-w-[48px]"
-              title="Shop"
-              aria-label="Shop"
-            >
-              <ShoppingBag className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            </Link>
-
             {isAuthenticated ? (
               <>
+                {/* Context-Aware CTA Button */}
+                {showCreateButton && headerCTA && (
+                  <Link
+                    href={headerCTA.href}
+                    className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors"
+                  >
+                    <headerCTA.icon className="w-4 h-4" />
+                    <span className="hidden lg:inline">{headerCTA.label}</span>
+                  </Link>
+                )}
+
                 {/* Profile Dropdown */}
-                <div className="relative hidden sm:block" ref={profileRef}>
+                <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="flex items-center gap-2 p-1.5 pr-3 rounded-full hover:bg-accent transition-colors border border-border/50"
                   >
                     {user?.image ? (
                       <Image
                         src={user.image}
                         alt="Profile"
-                        width={32}
-                        height={32}
+                        width={28}
+                        height={28}
                         className="rounded-full"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                        <User className="w-4 h-4 text-white" />
+                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                        <User className="w-3.5 h-3.5 text-primary" />
                       </div>
                     )}
+                    <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${isProfileOpen ? "rotate-180" : ""}`} />
                   </button>
 
-                  <React.Fragment>
-                    {isProfileOpen && (
-                      <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
-                        {/* User Info */}
-                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                            {user?.name || "User"}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                            {user?.email}
-                          </p>
-                        </div>
+                  {isProfileOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-card rounded-xl shadow-lg border border-border py-1.5 z-50">
+                      <div className="px-4 py-3 border-b border-border">
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {user?.name || "User"}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {user?.email}
+                        </p>
+                      </div>
 
-                        {/* Menu Items */}
+                      <div className="py-1">
                         <Link
                           href="/my-tickets"
                           onClick={() => setIsProfileOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
                         >
-                          <Ticket className="w-4 h-4" />
+                          <Ticket className="w-4 h-4 text-muted-foreground" />
                           My Tickets
                         </Link>
                         <Link
                           href="/organizer/events"
                           onClick={() => setIsProfileOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
                         >
-                          <Calendar className="w-4 h-4" />
+                          <Calendar className="w-4 h-4 text-muted-foreground" />
                           My Events
                         </Link>
+                        {(user?.role === "restaurateur" || user?.role === "admin") && (
+                          <Link
+                            href="/restaurateur/dashboard"
+                            onClick={() => setIsProfileOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                          >
+                            <Utensils className="w-4 h-4 text-muted-foreground" />
+                            My Restaurant
+                          </Link>
+                        )}
                         {user?.role === "admin" && (
                           <Link
                             href="/admin"
                             onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
                           >
-                            <User className="w-4 h-4" />
+                            <User className="w-4 h-4 text-muted-foreground" />
                             Admin Panel
                           </Link>
                         )}
+                      </div>
 
-                        {/* Sign Out */}
+                      <div className="border-t border-border pt-1">
                         <button
                           onClick={() => {
                             setIsProfileOpen(false);
                             logout();
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-gray-100 dark:border-gray-700 mt-1"
+                          className="w-full flex items-center gap-3 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
                         >
                           <LogOut className="w-4 h-4" />
                           Sign Out
                         </button>
                       </div>
-                    )}
-                  </React.Fragment>
+                    </div>
+                  )}
                 </div>
-
-                {/* Create Event Button */}
-                {showCreateButton && (
-                  <div className="hidden sm:block">
-                    <Link
-                      href="/organizer/events/create"
-                      className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span className="hidden md:inline">Create Event</span>
-                    </Link>
-                  </div>
-                )}
               </>
             ) : (
-              <>
-                {/* Logged out navigation - Single Sign In button */}
-                <div className="hidden sm:block">
-                  <Link
-                    href="/login"
-                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                  >
-                    <LogIn className="w-4 h-4" />
-                    <span className="hidden md:inline">Sign In</span>
-                  </Link>
-                </div>
-              </>
+              <Link
+                href="/login"
+                className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                Sign In
+              </Link>
             )}
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="sm:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="md:hidden p-2 rounded-full hover:bg-accent transition-colors"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
-                <X className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                <X className="w-5 h-5 text-foreground" />
               ) : (
-                <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                <Menu className="w-5 h-5 text-foreground" />
               )}
             </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        <React.Fragment>
-          {isMobileMenuOpen && (
-            <div className="sm:hidden border-t border-gray-200 dark:border-gray-700 mt-4 pt-4 space-y-2">
-              {/* Navigation Links */}
-              {showNavigation &&
-                navigationLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-border py-4 space-y-1">
+            {showNavigation &&
+              navigationLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    isActiveLink(link.href)
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-accent"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
 
-              {/* Theme Toggle for Mobile */}
+            <div className="border-t border-border mt-3 pt-3">
               {mounted && (
                 <button
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors min-h-[48px]"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
                 >
                   {theme === "dark" ? (
                     <>
-                      <Sun className="w-5 h-5" />
+                      <Sun className="w-4 h-4" />
                       Light Mode
                     </>
                   ) : (
                     <>
-                      <Moon className="w-5 h-5" />
+                      <Moon className="w-4 h-4" />
                       Dark Mode
                     </>
                   )}
@@ -288,78 +315,70 @@ export function PublicHeader({
 
               {isAuthenticated ? (
                 <>
-                  {/* Mobile Profile Section */}
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
-                    <div className="px-4 py-2">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {user?.name || "User"}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
-                    </div>
-                    <Link
-                      href="/my-tickets"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                    >
-                      <Ticket className="w-4 h-4" />
-                      My Tickets
-                    </Link>
-                    <Link
-                      href="/organizer/events"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                    >
-                      <Calendar className="w-4 h-4" />
-                      My Events
-                    </Link>
-                    {user?.role === "admin" && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                      >
-                        <User className="w-4 h-4" />
-                        Admin Panel
-                      </Link>
-                    )}
-                    {showCreateButton && (
-                      <Link
-                        href="/organizer/events/create"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Create Event
-                      </Link>
-                    )}
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        logout();
-                      }}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
+                  <div className="px-4 py-2 mt-2">
+                    <p className="text-sm font-medium text-foreground">{user?.name || "User"}</p>
+                    <p className="text-xs text-muted-foreground">{user?.email}</p>
                   </div>
+                  <Link
+                    href="/my-tickets"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                  >
+                    <Ticket className="w-4 h-4" />
+                    My Tickets
+                  </Link>
+                  <Link
+                    href="/organizer/events"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    My Events
+                  </Link>
+                  {(user?.role === "restaurateur" || user?.role === "admin") && (
+                    <Link
+                      href="/restaurateur/dashboard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                    >
+                      <Utensils className="w-4 h-4" />
+                      My Restaurant
+                    </Link>
+                  )}
+                  {showCreateButton && headerCTA && (
+                    <Link
+                      href={headerCTA.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                    >
+                      <headerCTA.icon className="w-4 h-4" />
+                      {headerCTA.label}
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      logout();
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
                 </>
               ) : (
-                <>
-                  {/* Mobile menu - Single Sign In button */}
-                  <Link
-                    href="/login"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 bg-primary text-white hover:bg-primary/90 rounded-lg transition-colors font-medium min-h-[48px]"
-                  >
-                    <LogIn className="w-5 h-5" />
-                    Sign In
-                  </Link>
-                </>
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 mx-4 mt-2 px-4 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </Link>
               )}
             </div>
-          )}
-        </React.Fragment>
+          </div>
+        )}
       </div>
     </header>
   );
