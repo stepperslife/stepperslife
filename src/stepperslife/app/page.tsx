@@ -7,7 +7,6 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { EventsGrid } from "@/components/home/EventsGrid";
 import { RestaurantsShowcase } from "@/components/home/RestaurantsShowcase";
 import { ClassesSpotlight } from "@/components/home/ClassesSpotlight";
-import { StoresShowcase } from "@/components/home/StoresShowcase";
 import { ProductsSection } from "@/components/homepage/ProductsSection";
 
 // Initialize Convex client for server-side data fetching
@@ -77,11 +76,6 @@ export default async function HomePage() {
         {/* Marketplace/Products Section - /marketplace */}
         <Suspense fallback={<SectionSkeleton title="Marketplace" />}>
           <ProductsSection products={products} />
-        </Suspense>
-
-        {/* Stores Section - /shop */}
-        <Suspense fallback={<SectionSkeleton title="Shop" />}>
-          <StoresShowcase />
         </Suspense>
 
         {/* Classes Section - /classes (coming soon) */}

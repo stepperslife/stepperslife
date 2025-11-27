@@ -14,7 +14,7 @@ export function ShoppingCart() {
 
   const handleCheckout = () => {
     setIsCartOpen(false);
-    router.push("/shop/checkout");
+    router.push("/marketplace/checkout");
   };
 
   if (!isCartOpen) return null;
@@ -55,7 +55,7 @@ export function ShoppingCart() {
                 Add some products to get started
               </p>
               <Link
-                href="/shop"
+                href="/marketplace"
                 onClick={() => setIsCartOpen(false)}
                 className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
               >
@@ -166,7 +166,7 @@ export function ShoppingCart() {
 
             {/* Continue Shopping */}
             <Link
-              href="/shop"
+              href="/marketplace"
               onClick={() => setIsCartOpen(false)}
               className="block text-center text-primary hover:underline font-medium"
             >

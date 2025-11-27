@@ -77,9 +77,9 @@ for (let run = 1; run <= 3; run++) {
         expect(result).toBe(true);
       });
 
-      test('Shop page loads', async ({ page }) => {
-        await page.goto(`${BASE_URL}/shop`);
-        const result = await checkPageLoaded(page, 'Shop', `${BASE_URL}/shop`);
+      test('Marketplace page loads', async ({ page }) => {
+        await page.goto(`${BASE_URL}/marketplace`);
+        const result = await checkPageLoaded(page, 'Marketplace', `${BASE_URL}/marketplace`);
         expect(result).toBe(true);
       });
     });
