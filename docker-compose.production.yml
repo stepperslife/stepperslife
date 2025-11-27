@@ -1,11 +1,12 @@
 version: '3.8'
 
 # ===================================
-# STEPPERSLIFE EVENTS - PRODUCTION
+# STEPPERSLIFE - PRODUCTION
 # Docker Compose Configuration
 # ===================================
 #
 # This is the PRODUCTION configuration for Docker deployment to VPS.
+# Main app: stepperslife.com with modules at /events, /restaurants, /marketplace
 #
 # Usage:
 #   docker-compose -f docker-compose.production.yml up -d
@@ -19,22 +20,22 @@ version: '3.8'
 
 services:
   # ===================================
-  # Next.js Events Application
+  # Next.js SteppersLife Application
   # ===================================
-  events-app:
+  stepperslife-app:
     build:
       context: .
-      dockerfile: src/dockerfile/Dockerfile.events
+      dockerfile: src/dockerfile/Dockerfile.stepperslife
       args:
         NODE_ENV: production
-    container_name: events-stepperslife-app
+    container_name: stepperslife-app
     environment:
       # Application Environment
       NODE_ENV: production
       PORT: 3000
 
       # Authentication & JWT
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://stepperslife.com/events}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://stepperslife.com}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       JWT_SECRET: ${JWT_SECRET}
       AUTH_SECRET: ${AUTH_SECRET}
@@ -74,7 +75,7 @@ services:
       AUTH_GOOGLE_CLIENT_SECRET: ${AUTH_GOOGLE_CLIENT_SECRET}
 
       # App URLs
-      NEXT_PUBLIC_APP_URL: https://stepperslife.com/events
+      NEXT_PUBLIC_APP_URL: https://stepperslife.com
       NEXT_PUBLIC_APP_DOMAIN: stepperslife.com
 
       # File Storage
@@ -90,7 +91,7 @@ services:
       - app-logs:/app/logs
 
     networks:
-      - events-network
+      - stepperslife-network
 
     restart: unless-stopped
 
@@ -122,9 +123,9 @@ services:
   # ===================================
   nginx:
     image: nginx:alpine
-    container_name: events-nginx
+    container_name: stepperslife-nginx
     depends_on:
-      events-app:
+      stepperslife-app:
         condition: service_healthy
 
     ports:
@@ -144,7 +145,7 @@ services:
       - nginx-logs:/var/log/nginx
 
     networks:
-      - events-network
+      - stepperslife-network
 
     restart: unless-stopped
 
@@ -165,7 +166,7 @@ services:
   # ===================================
   certbot:
     image: certbot/certbot:latest
-    container_name: events-certbot
+    container_name: stepperslife-certbot
     depends_on:
       - nginx
 
@@ -226,7 +227,7 @@ volumes:
 # Network Configuration
 # ===================================
 networks:
-  events-network:
+  stepperslife-network:
     driver: bridge
     ipam:
       config:
