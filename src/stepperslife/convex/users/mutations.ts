@@ -814,3 +814,76 @@ export const deleteUser = mutation({
     return { success: true, deletedEmail: userToDelete.email };
   },
 });
+
+/**
+ * Bootstrap admin role for initial setup
+ * Uses a secret key instead of admin auth (for bootstrapping only)
+ * IMPORTANT: This should be disabled or removed in production after initial setup
+ */
+export const bootstrapAdmin = mutation({
+  args: {
+    email: v.string(),
+    secretKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Verify bootstrap secret
+    const validSecret = "stepperslife-admin-setup-2025";
+    if (args.secretKey !== validSecret) {
+      throw new Error("Invalid secret key");
+    }
+
+    // Only allow specific admin emails to be bootstrapped
+    const adminEmails = [
+      "iradwatkins@gmail.com",
+      "bobbygwatkins@gmail.com",
+      "admin-test@stepperslife.com",
+      "platformadmin@stepperslife.com",
+    ];
+
+    if (!adminEmails.includes(args.email.toLowerCase())) {
+      throw new Error("Email not in admin whitelist");
+    }
+
+    // Find user
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", args.email.toLowerCase()))
+      .first();
+
+    if (!user) {
+      throw new Error(`User not found: ${args.email}`);
+    }
+
+    // Update to admin role
+    await ctx.db.patch(user._id, {
+      role: "admin",
+      canCreateTicketedEvents: true,
+      updatedAt: Date.now(),
+    });
+
+    // Initialize admin credits if not exists
+    const existingCredits = await ctx.db
+      .query("organizerCredits")
+      .withIndex("by_organizer", (q) => q.eq("organizerId", user._id))
+      .first();
+
+    if (!existingCredits) {
+      await ctx.db.insert("organizerCredits", {
+        organizerId: user._id,
+        creditsTotal: 1000, // Admins get more credits
+        creditsUsed: 0,
+        creditsRemaining: 1000,
+        firstEventFreeUsed: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    }
+
+    return {
+      success: true,
+      email: user.email,
+      role: "admin",
+      message: "User upgraded to admin successfully",
+    };
+  },
+});
