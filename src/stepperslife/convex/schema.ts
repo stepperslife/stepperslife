@@ -1308,4 +1308,92 @@ export default defineSchema({
     .index("by_payment_status", ["paymentStatus"])
     .index("by_fulfillment_status", ["fulfillmentStatus"])
     .index("by_created_at", ["createdAt"]),
+
+  // ==========================================
+  // RESTAURANT MODULE - Food Ordering System
+  // ==========================================
+
+  // Restaurants - Restaurant profiles and settings
+  restaurants: defineTable({
+    name: v.string(),
+    slug: v.string(),
+    description: v.optional(v.string()),
+    ownerId: v.id("users"),
+    address: v.string(),
+    city: v.string(),
+    state: v.string(),
+    zipCode: v.string(),
+    phone: v.string(),
+    cuisine: v.array(v.string()),
+    logoUrl: v.optional(v.string()),
+    coverImageUrl: v.optional(v.string()),
+    operatingHours: v.optional(v.any()),
+    acceptingOrders: v.boolean(),
+    estimatedPickupTime: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_active", ["isActive"])
+    .index("by_slug", ["slug"])
+    .index("by_owner", ["ownerId"]),
+
+  // Menu Categories - Categories for organizing menu items
+  menuCategories: defineTable({
+    restaurantId: v.id("restaurants"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_restaurant", ["restaurantId"]),
+
+  // Menu Items - Individual food items
+  menuItems: defineTable({
+    restaurantId: v.id("restaurants"),
+    categoryId: v.optional(v.id("menuCategories")),
+    name: v.string(),
+    description: v.optional(v.string()),
+    price: v.number(),
+    imageUrl: v.optional(v.string()),
+    sortOrder: v.number(),
+    isAvailable: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_restaurant", ["restaurantId"])
+    .index("by_category", ["categoryId"]),
+
+  // Food Orders - Customer orders from restaurants
+  foodOrders: defineTable({
+    orderNumber: v.string(),
+    restaurantId: v.id("restaurants"),
+    customerId: v.optional(v.id("users")),
+    customerName: v.string(),
+    customerEmail: v.string(),
+    customerPhone: v.string(),
+    items: v.array(v.object({
+      menuItemId: v.id("menuItems"),
+      name: v.string(),
+      price: v.number(),
+      quantity: v.number(),
+      notes: v.optional(v.string()),
+    })),
+    subtotal: v.number(),
+    tax: v.number(),
+    total: v.number(),
+    pickupTime: v.optional(v.number()),
+    specialInstructions: v.optional(v.string()),
+    status: v.string(),
+    paymentStatus: v.string(),
+    paymentMethod: v.optional(v.string()),
+    placedAt: v.number(),
+    readyAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_restaurant", ["restaurantId"])
+    .index("by_customer", ["customerId"])
+    .index("by_order_number", ["orderNumber"]),
 });
