@@ -27,19 +27,19 @@ export default function BundlesRedirectPage() {
           </div>
 
           {/* Heading */}
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Ticket Bundles Moved
           </h1>
 
           {/* Description */}
-          <div className="text-lg text-gray-600 mb-8 space-y-4">
+          <div className="text-lg text-muted-foreground mb-8 space-y-4">
             <p>Ticket bundles are now managed within each event's settings.</p>
             <p className="text-base">To create or manage ticket bundles:</p>
           </div>
 
           {/* Steps */}
           <div className="bg-accent rounded-lg p-6 mb-8 text-left">
-            <ol className="space-y-3 text-gray-700">
+            <ol className="space-y-3 text-foreground">
               <li className="flex items-start">
                 <span className="font-semibold text-primary mr-2">1.</span>
                 <span>Go to your event</span>
@@ -63,7 +63,7 @@ export default function BundlesRedirectPage() {
           </div>
 
           {/* Redirect Message */}
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-muted-foreground mb-6">
             You'll be redirected to your events in a few seconds...
           </p>
 

@@ -48,8 +48,8 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Ticket Tiers</h3>
-          <p className="text-sm text-gray-600">Add different ticket types with varying prices</p>
+          <h3 className="text-lg font-semibold text-foreground">Ticket Tiers</h3>
+          <p className="text-sm text-muted-foreground">Add different ticket types with varying prices</p>
         </div>
         <button
           type="button"
@@ -62,10 +62,10 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
       </div>
 
       {tiers.length === 0 ? (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-          <Ticket className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600 mb-2">No ticket tiers yet</p>
-          <p className="text-sm text-gray-500 mb-4">
+        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+          <Ticket className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground mb-2">No ticket tiers yet</p>
+          <p className="text-sm text-muted-foreground mb-4">
             Add at least one ticket tier to enable ticketing
           </p>
           <button
@@ -80,13 +80,13 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
       ) : (
         <div className="space-y-4">
           {tiers.map((tier, index) => (
-            <div key={tier.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div key={tier.id} className="bg-muted border border-border rounded-lg p-4">
               <div className="flex items-start justify-between mb-3">
-                <h4 className="font-medium text-gray-900">Tier {index + 1}</h4>
+                <h4 className="font-medium text-foreground">Tier {index + 1}</h4>
                 <button
                   type="button"
                   onClick={() => removeTier(tier.id)}
-                  className="text-red-600 hover:text-red-700 p-1"
+                  className="text-destructive hover:text-destructive/90 p-1"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -95,7 +95,7 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Tier Name */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Tier Name *
                   </label>
                   <input
@@ -103,17 +103,17 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
                     value={tier.name}
                     onChange={(e) => updateTier(tier.id, "name", e.target.value)}
                     placeholder="e.g., General Admission, VIP, Early Bird"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </div>
 
                 {/* Price */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     {tier.isTablePackage ? "Price per Table (USD) *" : "Price (USD) *"}
                   </label>
                   <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                       type="number"
                       value={tier.price}
@@ -121,11 +121,11 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
                       placeholder={tier.isTablePackage ? "500.00" : "25.00"}
                       step="0.01"
                       min="0"
-                      className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                      className="w-full pl-9 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                     />
                   </div>
                   {tier.isTablePackage && tier.tableCapacity && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       ${(parseFloat(tier.price) / tier.tableCapacity || 0).toFixed(2)} per seat
                     </p>
                   )}
@@ -133,25 +133,25 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
 
                 {/* Quantity */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Quantity Available *
                   </label>
                   <div className="relative">
-                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                       type="number"
                       value={tier.quantity}
                       onChange={(e) => updateTier(tier.id, "quantity", e.target.value)}
                       placeholder="100"
                       min="1"
-                      className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                      className="w-full pl-9 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                     />
                   </div>
                 </div>
 
                 {/* Description */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Description (Optional)
                   </label>
                   <textarea
@@ -159,12 +159,12 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
                     onChange={(e) => updateTier(tier.id, "description", e.target.value)}
                     placeholder="Benefits included with this tier..."
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </div>
 
                 {/* Table Package Option */}
-                <div className="md:col-span-2 pt-3 border-t border-gray-200">
+                <div className="md:col-span-2 pt-3 border-t border-border">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -183,17 +183,17 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
                           )
                         );
                       }}
-                      className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                      className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
                     />
-                    <span className="text-sm font-medium text-gray-700">Sell as Table Package</span>
+                    <span className="text-sm font-medium text-foreground">Sell as Table Package</span>
                   </label>
-                  <p className="text-xs text-gray-500 mt-1 ml-6">
+                  <p className="text-xs text-muted-foreground mt-1 ml-6">
                     Customers purchase entire tables instead of individual seats
                   </p>
 
                   {tier.isTablePackage && (
                     <div className="mt-3 ml-6">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Table Capacity (Number of Seats) *
                       </label>
                       <select
@@ -207,7 +207,7 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
                             )
                           )
                         }
-                        className="w-full md:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                        className="w-full md:w-auto px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                       >
                         <option value="2">2 Seats (Couple)</option>
                         <option value="4">4 Seats (Small Table)</option>
@@ -216,7 +216,7 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
                         <option value="10">10 Seats (XL Table)</option>
                         <option value="12">12 Seats (XXL Table)</option>
                       </select>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Quantity field above represents number of tables available
                       </p>
                     </div>
@@ -225,7 +225,7 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
               </div>
 
               {/* Early Bird Pricing Section */}
-              <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="mt-4 pt-4 border-t border-border">
                 <PricingTierForm
                   tiers={tier.pricingTiers || []}
                   onChange={(pricingTiers) => updateTierPricing(tier.id, pricingTiers)}
@@ -241,7 +241,7 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
         <button
           type="button"
           onClick={addTier}
-          className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary hover:text-primary transition-colors"
+          className="w-full py-2 border-2 border-dashed border-border rounded-lg text-muted-foreground hover:border-primary hover:text-primary transition-colors"
         >
           <Plus className="w-4 h-4 inline mr-2" />
           Add Another Tier

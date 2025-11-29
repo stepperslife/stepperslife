@@ -50,9 +50,9 @@ export default function TotalScansPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Valid</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">{validScans}</p>
+                <p className="text-2xl font-bold mt-1 text-success">{validScans}</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -62,9 +62,9 @@ export default function TotalScansPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Invalid</p>
-                <p className="text-2xl font-bold mt-1 text-red-600">{invalidScans}</p>
+                <p className="text-2xl font-bold mt-1 text-destructive">{invalidScans}</p>
               </div>
-              <XCircle className="h-8 w-8 text-red-600" />
+              <XCircle className="h-8 w-8 text-destructive" />
             </div>
           </CardContent>
         </Card>
@@ -74,9 +74,9 @@ export default function TotalScansPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Duplicates</p>
-                <p className="text-2xl font-bold mt-1 text-yellow-600">{duplicateScans}</p>
+                <p className="text-2xl font-bold mt-1 text-warning">{duplicateScans}</p>
               </div>
-              <AlertCircle className="h-8 w-8 text-yellow-600" />
+              <AlertCircle className="h-8 w-8 text-warning" />
             </div>
           </CardContent>
         </Card>
@@ -105,7 +105,7 @@ export default function TotalScansPage() {
         </CardHeader>
         <CardContent>
           <div className="text-center">
-            <div className="text-5xl font-bold text-green-600 mb-2">
+            <div className="text-5xl font-bold text-success mb-2">
               {totalScans > 0 ? ((validScans / totalScans) * 100).toFixed(1) : "100"}%
             </div>
             <p className="text-muted-foreground">Success Rate</p>

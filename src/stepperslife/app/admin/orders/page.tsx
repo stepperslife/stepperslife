@@ -80,68 +80,68 @@ export default function OrdersManagementPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
-        <p className="text-gray-600 mt-1">Manage customer orders and fulfillment</p>
+        <h1 className="text-3xl font-bold text-foreground">Orders</h1>
+        <p className="text-muted-foreground mt-1">Manage customer orders and fulfillment</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-accent text-primary rounded-full flex items-center justify-center">
               <Package className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+              <p className="text-sm text-muted-foreground">Total Orders</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-warning/10 text-warning rounded-full flex items-center justify-center">
               <Clock className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Pending</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
+              <p className="text-sm text-muted-foreground">Pending</p>
+              <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-accent text-primary rounded-full flex items-center justify-center">
               <Package className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Processing</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.processing}</p>
+              <p className="text-sm text-muted-foreground">Processing</p>
+              <p className="text-2xl font-bold text-foreground">{stats.processing}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-accent text-primary rounded-full flex items-center justify-center">
               <Truck className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Shipped</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.shipped}</p>
+              <p className="text-sm text-muted-foreground">Shipped</p>
+              <p className="text-2xl font-bold text-foreground">{stats.shipped}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-success/10 text-success rounded-full flex items-center justify-center">
               <DollarSign className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Revenue</p>
+              <p className="text-2xl font-bold text-foreground">
                 ${(totalRevenue / 100).toLocaleString()}
               </p>
             </div>
@@ -150,13 +150,13 @@ export default function OrdersManagementPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-card rounded-lg shadow-md p-6">
         <div className="flex items-center gap-4">
-          <Filter className="w-5 h-5 text-gray-400" />
+          <Filter className="w-5 h-5 text-muted-foreground" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
           >
             <option value="all">All Orders</option>
             <option value="PENDING">Pending Only</option>
@@ -166,7 +166,7 @@ export default function OrdersManagementPage() {
             <option value="CANCELLED">Cancelled Only</option>
           </select>
 
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             Showing {allOrders.length} {allOrders.length === 1 ? "order" : "orders"}
           </span>
         </div>
@@ -174,68 +174,68 @@ export default function OrdersManagementPage() {
 
       {/* Orders Table */}
       {allOrders.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600">No orders found</p>
+        <div className="bg-card rounded-lg shadow-md p-12 text-center">
+          <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">No orders found</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-muted border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Order #
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Customer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Products
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Total
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Payment
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Fulfillment
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-border">
                 {allOrders.map((order) => (
-                  <tr key={order._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <tr key={order._id} className="hover:bg-muted">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                       {order.orderNumber}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm text-foreground">
                       <div>
                         <p className="font-medium">{order.customerName}</p>
-                        <p className="text-gray-500">{order.customerEmail}</p>
+                        <p className="text-muted-foreground">{order.customerEmail}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {order.items.length} {order.items.length === 1 ? "item" : "items"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                       ${(order.totalAmount / 100).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                           order.paymentStatus === "PAID"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-success/10 text-success"
                             : order.paymentStatus === "PENDING"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
+                              ? "bg-warning/10 text-warning"
+                              : "bg-destructive/10 text-destructive"
                         }`}
                       >
                         {order.paymentStatus === "PAID" && <CheckCircle2 className="w-3 h-3" />}
@@ -246,20 +246,20 @@ export default function OrdersManagementPage() {
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                           order.fulfillmentStatus === "DELIVERED"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-success/10 text-success"
                             : order.fulfillmentStatus === "SHIPPED"
                               ? "bg-accent text-accent-foreground"
                               : order.fulfillmentStatus === "PROCESSING"
                                 ? "bg-accent text-accent-foreground"
                                 : order.fulfillmentStatus === "CANCELLED"
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-yellow-100 text-yellow-800"
+                                  ? "bg-destructive/10 text-destructive"
+                                  : "bg-warning/10 text-warning"
                         }`}
                       >
                         {order.fulfillmentStatus}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {format(new Date(order.createdAt), "MMM d, yyyy")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -303,14 +303,14 @@ export default function OrdersManagementPage() {
       {/* Tracking Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+          <div className="bg-card rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
             <div className="flex items-center gap-3 mb-4">
               <Truck className="w-6 h-6 text-primary" />
-              <h3 className="text-xl font-bold text-gray-900">Add Tracking Information</h3>
+              <h3 className="text-xl font-bold text-foreground">Add Tracking Information</h3>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Tracking Number
                 </label>
                 <input
@@ -318,17 +318,17 @@ export default function OrdersManagementPage() {
                   value={trackingInfo.number}
                   onChange={(e) => setTrackingInfo({ ...trackingInfo, number: e.target.value })}
                   placeholder="1Z999AA10123456784"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-primary"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-primary"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tracking URL</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Tracking URL</label>
                 <input
                   type="url"
                   value={trackingInfo.url}
                   onChange={(e) => setTrackingInfo({ ...trackingInfo, url: e.target.value })}
                   placeholder="https://www.ups.com/track?..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-primary"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-primary"
                 />
               </div>
             </div>
@@ -344,7 +344,7 @@ export default function OrdersManagementPage() {
                   setSelectedOrder(null);
                   setTrackingInfo({ number: "", url: "" });
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 Cancel
               </button>

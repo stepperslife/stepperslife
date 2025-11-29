@@ -101,8 +101,8 @@ export default function EventsModerationPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Event Moderation</h1>
-        <p className="text-gray-600 mt-1">Manage and moderate all platform events</p>
+        <h1 className="text-3xl font-bold text-foreground">Event Moderation</h1>
+        <p className="text-muted-foreground mt-1">Manage and moderate all platform events</p>
       </div>
 
       {/* Stats Cards */}
@@ -113,69 +113,69 @@ export default function EventsModerationPage() {
               <Calendar className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-success/10 text-success rounded-full flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Published</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.published}</p>
+              <p className="text-sm text-muted-foreground">Published</p>
+              <p className="text-2xl font-bold text-foreground">{stats.published}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-warning/10 text-warning rounded-full flex items-center justify-center">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Draft</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.draft}</p>
+              <p className="text-sm text-muted-foreground">Draft</p>
+              <p className="text-2xl font-bold text-foreground">{stats.draft}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-destructive/10 text-destructive rounded-full flex items-center justify-center">
               <XCircle className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Cancelled</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.cancelled}</p>
+              <p className="text-sm text-muted-foreground">Cancelled</p>
+              <p className="text-2xl font-bold text-foreground">{stats.cancelled}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-accent text-primary rounded-full flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Completed</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.completed}</p>
+              <p className="text-sm text-muted-foreground">Completed</p>
+              <p className="text-2xl font-bold text-foreground">{stats.completed}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-card rounded-lg shadow-md p-6">
         <div className="flex items-center gap-4">
-          <Filter className="w-5 h-5 text-gray-400" />
+          <Filter className="w-5 h-5 text-muted-foreground" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
           >
             <option value="all">All Events</option>
             <option value="PUBLISHED">Published Only</option>
@@ -184,7 +184,7 @@ export default function EventsModerationPage() {
             <option value="COMPLETED">Completed Only</option>
           </select>
 
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             Showing {allEvents.length} {allEvents.length === 1 ? "event" : "events"}
           </span>
         </div>
@@ -192,17 +192,17 @@ export default function EventsModerationPage() {
 
       {/* Events Grid */}
       {allEvents.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600">No events found</p>
+        <div className="bg-card rounded-lg shadow-md p-12 text-center">
+          <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">No events found</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {allEvents.map((event) => (
-            <div key={event._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={event._id} className="bg-card rounded-lg shadow-md overflow-hidden">
               <div className="flex flex-col md:flex-row">
                 {/* Event Flyer - Thumbnail */}
-                <div className="md:w-48 md:h-48 flex-shrink-0 bg-gray-100">
+                <div className="md:w-48 md:h-48 flex-shrink-0 bg-muted">
                   {event.imageUrl ? (
                     <img
                       src={event.imageUrl}
@@ -212,8 +212,8 @@ export default function EventsModerationPage() {
                       title="Click to view full-size flyer"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-primary rounded-l-lg">
-                      <Calendar className="w-12 h-12 text-gray-400" />
+                    <div className="w-full h-full flex items-center justify-center bg-muted rounded-l-lg">
+                      <Calendar className="w-12 h-12 text-muted-foreground" />
                     </div>
                   )}
                 </div>
@@ -223,22 +223,22 @@ export default function EventsModerationPage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold text-gray-900">{event.name}</h3>
+                        <h3 className="text-xl font-bold text-foreground">{event.name}</h3>
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-medium ${
                             event.status === "PUBLISHED"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-success/10 text-success"
                               : event.status === "DRAFT"
-                                ? "bg-yellow-100 text-yellow-800"
+                                ? "bg-warning/10 text-warning"
                                 : event.status === "CANCELLED"
-                                  ? "bg-red-100 text-red-800"
+                                  ? "bg-destructive/10 text-destructive"
                                   : "bg-accent text-accent-foreground"
                           }`}
                         >
                           {event.status || "DRAFT"}
                         </span>
                         {event.isClaimable && !event.organizerId && (
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-success/10 text-success flex items-center gap-1">
                             <Gift className="w-3 h-3" />
                             Claimable
                           </span>
@@ -250,13 +250,13 @@ export default function EventsModerationPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-gray-600 mb-3 line-clamp-2">
+                      <p className="text-muted-foreground mb-3 line-clamp-2">
                         {event.description || "No description"}
                       </p>
 
                       {/* Event Details */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Clock className="w-4 h-4" />
                           <span>
                             {event.startDate
@@ -264,7 +264,7 @@ export default function EventsModerationPage() {
                               : "No date"}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <MapPin className="w-4 h-4" />
                           <span className="truncate">
                             {typeof event.location === "string"
@@ -274,22 +274,22 @@ export default function EventsModerationPage() {
                                 : "No location"}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Ticket className="w-4 h-4" />
                           <span>{event.ticketCount || 0} tickets sold</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <DollarSign className="w-4 h-4" />
                           <span>${((event.revenue || 0) / 100).toFixed(2)} revenue</span>
                         </div>
                       </div>
 
                       {/* Organizer Info */}
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <p className="text-sm text-gray-600">
+                      <div className="mt-3 pt-3 border-t border-border">
+                        <p className="text-sm text-muted-foreground">
                           <span className="font-medium">Organizer:</span> {event.organizerName}
                           {" • "}
-                          <span className="text-gray-500">{event.organizerEmail}</span>
+                          <span className="text-muted-foreground">{event.organizerEmail}</span>
                         </p>
                       </div>
                     </div>
@@ -367,7 +367,7 @@ export default function EventsModerationPage() {
                       </a>
                       <button
                         onClick={() => handleDeleteEvent(event._id, event.name)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                         title="Delete event"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -382,9 +382,9 @@ export default function EventsModerationPage() {
       )}
 
       {/* Help Text */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex gap-3">
-        <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-        <div className="text-sm text-yellow-800">
+      <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 flex gap-3">
+        <AlertCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+        <div className="text-sm text-warning">
           <p className="font-medium mb-1">Event Moderation Guidelines</p>
           <ul className="list-disc list-inside space-y-1">
             <li>Events with sold tickets cannot be deleted, only cancelled</li>
@@ -400,17 +400,17 @@ export default function EventsModerationPage() {
       {/* Claim Code Modal */}
       {claimModalEventId && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+          <div className="bg-card rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
             <div className="flex items-center gap-3 mb-4">
-              <Gift className="w-6 h-6 text-emerald-600" />
-              <h3 className="text-xl font-bold text-gray-900">Make Event Claimable</h3>
+              <Gift className="w-6 h-6 text-success" />
+              <h3 className="text-xl font-bold text-foreground">Make Event Claimable</h3>
             </div>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               This event will be available for organizers to claim ownership. You can optionally set
               a claim code for security.
             </p>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Claim Code (Optional)
               </label>
               <input
@@ -418,16 +418,16 @@ export default function EventsModerationPage() {
                 value={claimCode}
                 onChange={(e) => setClaimCode(e.target.value)}
                 placeholder="Enter a claim code or leave empty"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-success focus:border-success"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 If set, organizers must enter this code to claim the event
               </p>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={handleMakeClaimable}
-                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                className="flex-1 px-4 py-2 bg-success text-white rounded-lg hover:bg-success/90 transition-colors"
               >
                 Make Claimable
               </button>
@@ -436,7 +436,7 @@ export default function EventsModerationPage() {
                   setClaimModalEventId(null);
                   setClaimCode("");
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 Cancel
               </button>

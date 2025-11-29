@@ -17,27 +17,27 @@ export default function AdminSupportPage() {
     switch (status) {
       case "open":
         return (
-          <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700 flex items-center gap-1">
+          <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary flex items-center gap-1">
             <MessageCircle className="h-3 w-3" />
             Open
           </span>
         );
       case "in_progress":
         return (
-          <span className="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-700 flex items-center gap-1">
+          <span className="px-2 py-1 text-xs rounded-full bg-warning/10 text-warning flex items-center gap-1">
             <Clock className="h-3 w-3" />
             In Progress
           </span>
         );
       case "resolved":
         return (
-          <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 flex items-center gap-1">
+          <span className="px-2 py-1 text-xs rounded-full bg-success/10 text-success flex items-center gap-1">
             <CheckCircle className="h-3 w-3" />
             Resolved
           </span>
         );
       default:
-        return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">{status}</span>;
+        return <span className="px-2 py-1 text-xs rounded-full bg-muted text-foreground">{status}</span>;
     }
   };
 
@@ -54,9 +54,9 @@ export default function AdminSupportPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Open Tickets</p>
-                <p className="text-2xl font-bold mt-1 text-blue-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-primary">0</p>
               </div>
-              <MessageCircle className="h-8 w-8 text-blue-600" />
+              <MessageCircle className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -66,9 +66,9 @@ export default function AdminSupportPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">In Progress</p>
-                <p className="text-2xl font-bold mt-1 text-orange-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-warning">0</p>
               </div>
-              <Clock className="h-8 w-8 text-orange-600" />
+              <Clock className="h-8 w-8 text-warning" />
             </div>
           </CardContent>
         </Card>
@@ -78,9 +78,9 @@ export default function AdminSupportPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Resolved Today</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-success">0</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>

@@ -270,11 +270,11 @@ export default function MyTicketsPage() {
     return (
       <>
         <PublicHeader showCreateButton={false} />
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-muted flex items-center justify-center p-4">
           <div className="text-center">
-            <Ticket className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2 dark:text-white">Please sign in</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <Ticket className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2 text-foreground">Please sign in</h2>
+            <p className="text-muted-foreground mb-4">
               You need to be logged in to view your tickets
             </p>
             <Link
@@ -305,11 +305,11 @@ export default function MyTicketsPage() {
     return (
       <>
         <PublicHeader showCreateButton={false} />
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-muted flex items-center justify-center p-4">
           <div className="text-center">
-            <Ticket className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2 dark:text-white">No tickets yet</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <Ticket className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2 text-foreground">No tickets yet</h2>
+            <p className="text-muted-foreground mb-4">
               Your purchased tickets will appear here
             </p>
             <Link
@@ -338,12 +338,12 @@ export default function MyTicketsPage() {
   return (
     <>
       <PublicHeader showCreateButton={false} />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-muted">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Tickets</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
+              <h1 className="text-3xl font-bold text-foreground">My Tickets</h1>
+              <p className="text-muted-foreground mt-1">
                 View and manage your event tickets
               </p>
             </div>
@@ -351,7 +351,7 @@ export default function MyTicketsPage() {
             {/* Bundle Actions */}
             {selectedTickets.length > 0 && (
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   {selectedTickets.length} ticket{selectedTickets.length !== 1 ? "s" : ""} selected
                 </span>
                 <button
@@ -363,7 +363,7 @@ export default function MyTicketsPage() {
                 </button>
                 <button
                   onClick={() => setSelectedTickets([])}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border border-border rounded-lg hover:bg-muted"
                 >
                   Clear Selection
                 </button>
@@ -374,7 +374,7 @@ export default function MyTicketsPage() {
           {/* Upcoming Events Section */}
           {upcomingEvents.length > 0 && (
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Events</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Upcoming Events</h2>
               <div className="space-y-6">
                 {upcomingEvents.map(({ event, tickets: eventTickets }) => (
                   <motion.div
@@ -417,7 +417,7 @@ export default function MyTicketsPage() {
                               key={ticket._id}
                               className={`border rounded-lg transition-all ${selectedTickets.includes(ticket._id)
                                 ? "border-primary bg-accent"
-                                : "border-gray-200"
+                                : "border-border"
                                 }`}
                             >
                               <div className="p-4">
@@ -443,16 +443,16 @@ export default function MyTicketsPage() {
                                           </span>
                                         )}
                                         {ticket.status === "CANCELLED" && (
-                                          <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">
+                                          <span className="px-2 py-1 bg-destructive/10 text-destructive text-xs rounded-full">
                                             Cancelled
                                           </span>
                                         )}
                                       </div>
-                                      <div className="text-sm text-gray-600 mt-1">
+                                      <div className="text-sm text-muted-foreground mt-1">
                                         {ticket.attendeeEmail}
                                       </div>
                                       {ticket.tierName && (
-                                        <div className="text-sm text-gray-500 mt-1">
+                                        <div className="text-sm text-muted-foreground mt-1">
                                           {ticket.tierName}
                                         </div>
                                       )}
@@ -465,21 +465,21 @@ export default function MyTicketsPage() {
                                       <>
                                         <button
                                           onClick={() => handleEditTicket(ticket)}
-                                          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                          className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
                                           title="Edit ticket"
                                         >
                                           <Edit className="w-4 h-4" />
                                         </button>
                                         <button
                                           onClick={() => handleTransferTicket(ticket)}
-                                          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                          className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
                                           title="Transfer ticket"
                                         >
                                           <Send className="w-4 h-4" />
                                         </button>
                                         <button
                                           onClick={() => handleDeleteTicket(ticket)}
-                                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                          className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                                           title="Cancel ticket"
                                         >
                                           <Trash2 className="w-4 h-4" />
@@ -491,7 +491,7 @@ export default function MyTicketsPage() {
                                       onClick={() =>
                                         setExpandedTicket(isExpanded ? null : ticket._id)
                                       }
-                                      className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                      className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
                                     >
                                       {isExpanded ? (
                                         <ChevronUp className="w-4 h-4" />
@@ -519,7 +519,7 @@ export default function MyTicketsPage() {
                                           level="H"
                                           includeMargin={true}
                                         />
-                                        <p className="text-xs text-gray-500 mt-2">
+                                        <p className="text-xs text-muted-foreground mt-2">
                                           Ticket Code: {ticket.ticketCode}
                                         </p>
                                         <div className="flex gap-2 mt-4">
@@ -536,7 +536,7 @@ export default function MyTicketsPage() {
                                             onClick={() =>
                                               handleDownloadTicket(ticket.ticketCode, event.name)
                                             }
-                                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+                                            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted text-sm"
                                           >
                                             <Download className="w-4 h-4" />
                                             Download
@@ -592,7 +592,7 @@ export default function MyTicketsPage() {
           {/* Past Events Section */}
           {pastEvents.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Past Events</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Past Events</h2>
               <div className="space-y-6">
                 {pastEvents.map(({ event, tickets: eventTickets }) => (
                   <motion.div
@@ -620,24 +620,24 @@ export default function MyTicketsPage() {
                             )}
                           </div>
                         </div>
-                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                        <span className="bg-muted text-foreground px-3 py-1 rounded-full text-sm font-medium">
                           {eventTickets.length} ticket{eventTickets.length !== 1 ? "s" : ""}
                         </span>
                       </div>
 
                       <div className="space-y-3">
                         {eventTickets.map((ticket) => (
-                          <div key={ticket._id} className="border border-gray-200 rounded-lg p-4">
+                          <div key={ticket._id} className="border border-border rounded-lg p-4">
                             <div className="flex justify-between items-start">
                               <div>
                                 <div className="font-medium">
                                   {ticket.attendeeName || "Unnamed Ticket"}
                                 </div>
-                                <div className="text-sm text-gray-600 mt-1">
+                                <div className="text-sm text-muted-foreground mt-1">
                                   {ticket.attendeeEmail}
                                 </div>
                                 {ticket.status === "SCANNED" && (
-                                  <span className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                                  <span className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-success/10 text-success text-xs rounded-full">
                                     <Check className="w-3 h-3" />
                                     Scanned
                                   </span>
@@ -675,27 +675,27 @@ export default function MyTicketsPage() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Recipient's Name
                   </label>
                   <input
                     type="text"
                     value={transferName}
                     onChange={(e) => setTransferName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-primary"
                     placeholder="Enter recipient's name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Recipient's Email
                   </label>
                   <input
                     type="email"
                     value={transferEmail}
                     onChange={(e) => setTransferEmail(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-primary"
                     placeholder="Enter recipient's email"
                   />
                 </div>
@@ -710,7 +710,7 @@ export default function MyTicketsPage() {
                   </button>
                   <button
                     onClick={() => setTransferModalTicket(null)}
-                    className="flex-1 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50"
+                    className="flex-1 border border-border px-4 py-2 rounded-lg hover:bg-muted"
                   >
                     Cancel
                   </button>

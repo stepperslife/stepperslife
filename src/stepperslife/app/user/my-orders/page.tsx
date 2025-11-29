@@ -37,28 +37,28 @@ export default function MyOrdersPage() {
     switch (status) {
       case "completed":
         return (
-          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-success/10 text-success">
             <CheckCircle className="h-3 w-3" />
             Completed
           </span>
         );
       case "pending":
         return (
-          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
+          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-warning/10 text-warning">
             <Clock className="h-3 w-3" />
             Pending
           </span>
         );
       case "cancelled":
         return (
-          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
+          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-destructive/10 text-destructive">
             <XCircle className="h-3 w-3" />
             Cancelled
           </span>
         );
       default:
         return (
-          <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-muted text-foreground">
             {status}
           </span>
         );

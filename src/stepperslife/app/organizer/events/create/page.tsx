@@ -232,25 +232,25 @@ export default function CreateEventPage() {
   const totalSteps = 4;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-card shadow-sm border-b border-border">
         <div className="container mx-auto px-4 py-6">
           <Link
             href="/organizer/events"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Events
           </Link>
 
-          <h1 className="text-3xl font-bold text-gray-900">Create New Event</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Create New Event</h1>
+          <p className="text-muted-foreground mt-1">
             Step {step} of {totalSteps}
           </p>
 
           {/* Progress Bar */}
-          <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-primary transition-all duration-300"
               style={{ width: `${(step / totalSteps) * 100}%` }}
@@ -260,7 +260,7 @@ export default function CreateEventPage() {
           {/* Debug Button - Temporarily enabled for troubleshooting */}
           <button
             onClick={handleTestAuth}
-            className="mt-4 px-3 py-1 text-xs bg-yellow-500 text-white rounded hover:bg-yellow-600"
+            className="mt-4 px-3 py-1 text-xs bg-warning text-white rounded hover:bg-warning/90"
           >
             🔧 Test Auth
           </button>
@@ -269,37 +269,37 @@ export default function CreateEventPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
+        <div className="bg-card rounded-lg shadow-md p-6 md:p-8">
           {/* Step 1: Basic Information */}
           {step === 1 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Basic Information</h2>
-                <p className="text-gray-600">Tell us about your event</p>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Basic Information</h2>
+                <p className="text-muted-foreground">Tell us about your event</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Event Name *</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Event Name *</label>
                 <input
                   type="text"
                   value={eventName}
                   onChange={(e) => setEventName(e.target.value)}
                   placeholder="e.g., Chicago Summer Steppers Set 2025"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Event Type *</label>
+                <label className="block text-sm font-medium text-foreground mb-3">Event Type *</label>
 
                 {/* Show restriction notice if user cannot create ticketed events */}
                 {!canCreateTicketedEvents && (
-                  <div className="mb-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <div className="mb-4 bg-warning/10 border border-warning rounded-lg p-4">
                     <div className="flex items-start gap-2">
-                      <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <Info className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
                       <div className="text-sm">
-                        <p className="font-semibold text-amber-900">Account Restriction</p>
-                        <p className="text-amber-700 mt-1">
+                        <p className="font-semibold text-foreground">Account Restriction</p>
+                        <p className="text-muted-foreground mt-1">
                           Your account can only create <strong>Save The Date</strong> and{" "}
                           <strong>Free Events</strong>. Contact support to upgrade for ticketed
                           event access.
@@ -345,14 +345,14 @@ export default function CreateEventPage() {
                           className={`p-4 border-2 rounded-lg text-left transition-all ${
                             eventType === type
                               ? "border-primary bg-accent"
-                              : "border-gray-200 hover:border-gray-300"
+                              : "border-border hover:border-muted-foreground"
                           }`}
                         >
-                          <p className="font-semibold text-gray-900">
+                          <p className="font-semibold text-foreground">
                             <span className="mr-2">{icon}</span>
                             {label}
                           </p>
-                          <p className="text-xs text-gray-600 mt-1">{desc}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{desc}</p>
                         </button>
                       );
                     })}
@@ -360,7 +360,7 @@ export default function CreateEventPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Description *
                 </label>
                 <textarea
@@ -368,12 +368,12 @@ export default function CreateEventPage() {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Describe your event, what attendees can expect, special guests, etc..."
                   rows={6}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-foreground mb-3">
                   Categories (Select all that apply)
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -384,7 +384,7 @@ export default function CreateEventPage() {
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                         categories.includes(category)
                           ? "bg-primary text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          : "bg-muted text-foreground hover:bg-muted/80"
                       }`}
                     >
                       {category}
@@ -399,32 +399,32 @@ export default function CreateEventPage() {
           {step === 2 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Date & Time</h2>
-                <p className="text-gray-600">When is your event happening?</p>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Date & Time</h2>
+                <p className="text-muted-foreground">When is your event happening?</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Start Date & Time *
                   </label>
                   <input
                     type="datetime-local"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     End Date & Time
                   </label>
                   <input
                     type="datetime-local"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </div>
               </div>
@@ -452,23 +452,23 @@ export default function CreateEventPage() {
           {step === 3 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Location</h2>
-                <p className="text-gray-600">Where is your event taking place?</p>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Location</h2>
+                <p className="text-muted-foreground">Where is your event taking place?</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Venue Name</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Venue Name</label>
                 <input
                   type="text"
                   value={venueName}
                   onChange={(e) => setVenueName(e.target.value)}
                   placeholder="e.g., The Grand Ballroom"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Street Address
                 </label>
                 <input
@@ -476,52 +476,52 @@ export default function CreateEventPage() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="123 Main Street"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">City *</label>
                   <input
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="Chicago"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </div>
 
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">State *</label>
                   <input
                     type="text"
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                     placeholder="IL"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </div>
 
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">ZIP Code</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">ZIP Code</label>
                   <input
                     type="text"
                     value={zipCode}
                     onChange={(e) => setZipCode(e.target.value)}
                     placeholder="60601"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </div>
 
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Country</label>
                   <input
                     type="text"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                     placeholder="USA"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </div>
               </div>
@@ -532,14 +532,14 @@ export default function CreateEventPage() {
           {step === 4 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Additional Details</h2>
-                <p className="text-gray-600">Final touches for your event</p>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Additional Details</h2>
+                <p className="text-muted-foreground">Final touches for your event</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Event Capacity{" "}
-                  {eventType === "TICKETED_EVENT" && <span className="text-red-500">*</span>}
+                  {eventType === "TICKETED_EVENT" && <span className="text-destructive">*</span>}
                   {eventType !== "TICKETED_EVENT" && "(Optional)"}
                 </label>
                 <input
@@ -549,9 +549,9 @@ export default function CreateEventPage() {
                   placeholder="e.g., 500"
                   min="1"
                   required={eventType === "TICKETED_EVENT"}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {eventType === "TICKETED_EVENT"
                     ? "Maximum number of tickets available (required for ticket setup)"
                     : "Maximum number of attendees"}
@@ -561,7 +561,7 @@ export default function CreateEventPage() {
               {/* Door Price - Only for FREE_EVENT */}
               {eventType === "FREE_EVENT" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Door Price (Optional)
                   </label>
                   <input
@@ -569,24 +569,24 @@ export default function CreateEventPage() {
                     value={doorPrice}
                     onChange={(e) => setDoorPrice(e.target.value)}
                     placeholder="e.g., $20 at the door, Free, Donation"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Price information for attendees (e.g., "$20 at the door" or "Free admission")
                   </p>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Event Image <span className="text-red-600">*</span>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Event Image <span className="text-destructive">*</span>
                 </label>
                 <ImageUpload
                   onImageUploaded={(storageId) => setUploadedImageId(storageId)}
                   onImageRemoved={() => setUploadedImageId(null)}
                   required={true}
                 />
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-muted-foreground mt-2">
                   A professional event image is required and will be displayed on the event page, checkout, and payment confirmation.
                 </p>
               </div>
@@ -612,12 +612,12 @@ export default function CreateEventPage() {
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between pt-6 border-t mt-8">
+          <div className="flex items-center justify-between pt-6 border-t border-border mt-8">
             <button
               onClick={() => setStep(Math.max(1, step - 1))}
               disabled={step === 1}
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                step === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-100"
+                step === 1 ? "text-muted-foreground cursor-not-allowed" : "text-foreground hover:bg-muted"
               }`}
             >
               Previous
@@ -636,7 +636,7 @@ export default function CreateEventPage() {
                 disabled={isSubmitting}
                 className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
                   isSubmitting
-                    ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                    ? "bg-muted text-muted-foreground cursor-not-allowed"
                     : "bg-primary text-white hover:bg-primary/90"
                 }`}
               >

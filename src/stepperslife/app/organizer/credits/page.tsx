@@ -47,7 +47,7 @@ export default function CreditsPage() {
 
   if (!userId || credits === undefined) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -68,14 +68,14 @@ export default function CreditsPage() {
     }, 0) || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Ticket Credits</h1>
-              <p className="text-gray-600 mt-1">Manage your ticket allocation and purchases</p>
+              <h1 className="text-3xl font-bold text-foreground">Ticket Credits</h1>
+              <p className="text-muted-foreground mt-1">Manage your ticket allocation and purchases</p>
             </div>
             <button
               onClick={() => setShowPurchaseModal(true)}
@@ -164,28 +164,28 @@ export default function CreditsPage() {
                   <Ticket className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Total Allocated</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-muted-foreground">Total Allocated</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {totalTicketsAllocated.toLocaleString()}
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-gray-500">Tickets created across all events</p>
+              <p className="text-xs text-muted-foreground">Tickets created across all events</p>
             </div>
 
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-success" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Tickets Sold</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-muted-foreground">Tickets Sold</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {totalTicketsSold.toLocaleString()}
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-gray-500">Successful ticket sales</p>
+              <p className="text-xs text-muted-foreground">Successful ticket sales</p>
             </div>
 
             <div className="bg-white rounded-lg shadow-sm border p-6">
@@ -194,11 +194,11 @@ export default function CreditsPage() {
                   <Calendar className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Active Events</p>
-                  <p className="text-2xl font-bold text-gray-900">{events?.length || 0}</p>
+                  <p className="text-sm text-muted-foreground">Active Events</p>
+                  <p className="text-2xl font-bold text-foreground">{events?.length || 0}</p>
                 </div>
               </div>
-              <p className="text-xs text-gray-500">Events with ticket tiers</p>
+              <p className="text-xs text-muted-foreground">Events with ticket tiers</p>
             </div>
           </motion.div>
         </div>
@@ -212,8 +212,8 @@ export default function CreditsPage() {
         >
           <div className="bg-white rounded-lg shadow-sm border">
             <div className="p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-900">Credit Breakdown</h2>
-              <p className="text-gray-600 mt-1">Detailed view of your credit usage</p>
+              <h2 className="text-xl font-bold text-foreground">Credit Breakdown</h2>
+              <p className="text-muted-foreground mt-1">Detailed view of your credit usage</p>
             </div>
 
             <div className="p-6">
@@ -222,24 +222,24 @@ export default function CreditsPage() {
                   <div className="text-4xl font-bold text-primary mb-2">
                     {credits.creditsTotal.toLocaleString()}
                   </div>
-                  <p className="text-sm font-medium text-gray-700 mb-1">Total Credits</p>
-                  <p className="text-xs text-gray-500">Lifetime allocation</p>
+                  <p className="text-sm font-medium text-foreground mb-1">Total Credits</p>
+                  <p className="text-xs text-muted-foreground">Lifetime allocation</p>
                 </div>
 
-                <div className="text-center p-6 bg-red-50 rounded-lg">
-                  <div className="text-4xl font-bold text-red-600 mb-2">
+                <div className="text-center p-6 bg-destructive/10 rounded-lg">
+                  <div className="text-4xl font-bold text-destructive mb-2">
                     {credits.creditsUsed.toLocaleString()}
                   </div>
-                  <p className="text-sm font-medium text-gray-700 mb-1">Credits Used</p>
-                  <p className="text-xs text-gray-500">Allocated to ticket tiers</p>
+                  <p className="text-sm font-medium text-foreground mb-1">Credits Used</p>
+                  <p className="text-xs text-muted-foreground">Allocated to ticket tiers</p>
                 </div>
 
-                <div className="text-center p-6 bg-green-50 rounded-lg">
-                  <div className="text-4xl font-bold text-green-600 mb-2">
+                <div className="text-center p-6 bg-success/10 rounded-lg">
+                  <div className="text-4xl font-bold text-success mb-2">
                     {credits.creditsRemaining.toLocaleString()}
                   </div>
-                  <p className="text-sm font-medium text-gray-700 mb-1">Credits Remaining</p>
-                  <p className="text-xs text-gray-500">Available for new tiers</p>
+                  <p className="text-sm font-medium text-foreground mb-1">Credits Remaining</p>
+                  <p className="text-xs text-muted-foreground">Available for new tiers</p>
                 </div>
               </div>
 
@@ -248,27 +248,27 @@ export default function CreditsPage() {
                 <div className="flex items-start gap-3">
                   <DollarSign className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 mb-2">Pricing Information</h3>
+                    <h3 className="font-semibold text-foreground mb-2">Pricing Information</h3>
                     <div className="grid md:grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-600 mb-1">Cost per ticket credit:</p>
-                        <p className="font-semibold text-gray-900">$0.30 USD</p>
+                        <p className="text-muted-foreground mb-1">Cost per ticket credit:</p>
+                        <p className="font-semibold text-foreground">$0.30 USD</p>
                       </div>
                       <div>
-                        <p className="text-gray-600 mb-1">Value of remaining credits:</p>
-                        <p className="font-semibold text-gray-900">
+                        <p className="text-muted-foreground mb-1">Value of remaining credits:</p>
+                        <p className="font-semibold text-foreground">
                           ${(credits.creditsRemaining * 0.3).toFixed(2)} USD
                         </p>
                       </div>
                       <div>
-                        <p className="text-gray-600 mb-1">Total invested:</p>
-                        <p className="font-semibold text-gray-900">
+                        <p className="text-muted-foreground mb-1">Total invested:</p>
+                        <p className="font-semibold text-foreground">
                           ${(credits.creditsUsed * 0.3).toFixed(2)} USD
                         </p>
                       </div>
                       <div>
-                        <p className="text-gray-600 mb-1">Lifetime value:</p>
-                        <p className="font-semibold text-gray-900">
+                        <p className="text-muted-foreground mb-1">Lifetime value:</p>
+                        <p className="font-semibold text-foreground">
                           ${(credits.creditsTotal * 0.3).toFixed(2)} USD
                         </p>
                       </div>
@@ -290,8 +290,8 @@ export default function CreditsPage() {
           >
             <div className="bg-white rounded-lg shadow-sm border">
               <div className="p-6 border-b">
-                <h2 className="text-xl font-bold text-gray-900">Credit Usage by Event</h2>
-                <p className="text-gray-600 mt-1">See how your credits are allocated</p>
+                <h2 className="text-xl font-bold text-foreground">Credit Usage by Event</h2>
+                <p className="text-muted-foreground mt-1">See how your credits are allocated</p>
               </div>
 
               <div className="divide-y">
@@ -299,12 +299,12 @@ export default function CreditsPage() {
                   <Link
                     key={event._id}
                     href={`/organizer/events/${event._id}/tickets`}
-                    className="block p-6 hover:bg-gray-50 transition-colors"
+                    className="block p-6 hover:bg-muted transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-1">{event.name}</h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <h3 className="font-semibold text-foreground mb-1">{event.name}</h3>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Ticket className="w-4 h-4" />
                             {event.totalTickets || 0} tickets allocated
@@ -323,7 +323,7 @@ export default function CreditsPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold text-primary">{event.totalTickets || 0}</p>
-                        <p className="text-xs text-gray-500">credits used</p>
+                        <p className="text-xs text-muted-foreground">credits used</p>
                       </div>
                     </div>
                   </Link>
@@ -341,9 +341,9 @@ export default function CreditsPage() {
             transition={{ delay: 0.4 }}
             className="mt-8"
           >
-            <div className="bg-orange-600 rounded-lg shadow-lg p-8 text-white">
+            <div className="bg-warning rounded-lg shadow-lg p-8 text-white">
               <div className="flex items-start gap-4">
-                <AlertCircle className="w-8 h-8 flex-shrink-0" />
+                <AlertCircle className="w-8 h-8 shrink-0" />
                 <div className="flex-1">
                   <h3 className="text-2xl font-bold mb-2">Running Low on Credits</h3>
                   <p className="text-white/90 mb-4">
@@ -352,7 +352,7 @@ export default function CreditsPage() {
                   </p>
                   <button
                     onClick={() => setShowPurchaseModal(true)}
-                    className="px-6 py-3 bg-white text-orange-600 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                    className="px-6 py-3 bg-white text-warning rounded-lg font-semibold hover:bg-muted transition-colors"
                   >
                     Buy Credits Now
                   </button>

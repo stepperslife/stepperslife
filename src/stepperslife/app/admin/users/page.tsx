@@ -56,7 +56,7 @@ export default function UsersManagementPage() {
   if (!filteredUsers) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -72,74 +72,74 @@ export default function UsersManagementPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-        <p className="text-gray-600 mt-1">Manage all platform users and permissions</p>
+        <h1 className="text-3xl font-bold text-foreground">User Management</h1>
+        <p className="text-muted-foreground mt-1">Manage all platform users and permissions</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-accent text-primary rounded-full flex items-center justify-center">
               <UsersIcon className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+              <p className="text-sm text-muted-foreground">Total Users</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-destructive/10 text-destructive rounded-full flex items-center justify-center">
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Admins</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.admins}</p>
+              <p className="text-sm text-muted-foreground">Admins</p>
+              <p className="text-2xl font-bold text-foreground">{stats.admins}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-accent text-primary rounded-full flex items-center justify-center">
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Organizers</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.organizers}</p>
+              <p className="text-sm text-muted-foreground">Organizers</p>
+              <p className="text-2xl font-bold text-foreground">{stats.organizers}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-muted text-muted-foreground rounded-full flex items-center justify-center">
               <User className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Regular Users</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.users}</p>
+              <p className="text-sm text-muted-foreground">Regular Users</p>
+              <p className="text-2xl font-bold text-foreground">{stats.users}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-card rounded-lg shadow-md p-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search by name or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
           </div>
@@ -149,7 +149,7 @@ export default function UsersManagementPage() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value as typeof roleFilter)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             >
               <option value="all">All Roles</option>
               <option value="admin">Admins</option>
@@ -159,7 +159,7 @@ export default function UsersManagementPage() {
           </div>
         </div>
 
-        <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
+        <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
           <UsersIcon className="w-4 h-4" />
           <span>
             Showing {filteredUsers.length} {filteredUsers.length === 1 ? "user" : "users"}
@@ -168,46 +168,46 @@ export default function UsersManagementPage() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-card rounded-lg shadow-md overflow-hidden">
         {filteredUsers.length === 0 ? (
           <div className="text-center py-12">
-            <UsersIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-600">No users found</p>
+            <UsersIcon className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground">No users found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-muted border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Activity
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Joined
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-border">
                 {filteredUsers.map((user) => (
-                  <tr key={user._id} className="hover:bg-gray-50">
+                  <tr key={user._id} className="hover:bg-muted">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center ${
                             user.role === "admin"
-                              ? "bg-red-100 text-red-600"
+                              ? "bg-destructive/10 text-destructive"
                               : user.role === "organizer"
                                 ? "bg-accent text-primary"
-                                : "bg-gray-100 text-gray-600"
+                                : "bg-muted text-muted-foreground"
                           }`}
                         >
                           {user.role === "admin" ? (
@@ -219,8 +219,8 @@ export default function UsersManagementPage() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">{user.name || "Unnamed User"}</p>
-                          <p className="text-sm text-gray-600">{user.email}</p>
+                          <p className="font-medium text-foreground">{user.name || "Unnamed User"}</p>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
                         </div>
                       </div>
                     </td>
@@ -228,17 +228,17 @@ export default function UsersManagementPage() {
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                           user.role === "admin"
-                            ? "bg-red-100 text-red-800"
+                            ? "bg-destructive/10 text-destructive"
                             : user.role === "organizer"
                               ? "bg-accent text-accent-foreground"
-                              : "bg-gray-100 text-gray-800"
+                              : "bg-muted text-foreground"
                         }`}
                       >
                         {user.role || "user"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           <span>{(user as any).eventCount || 0}</span>
@@ -249,7 +249,7 @@ export default function UsersManagementPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {user.createdAt ? format(new Date(user.createdAt), "MMM d, yyyy") : "N/A"}
                     </td>
                     <td className="px-6 py-4">
@@ -263,7 +263,7 @@ export default function UsersManagementPage() {
                               e.target.value as "admin" | "organizer" | "user"
                             )
                           }
-                          className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent bg-white"
+                          className="px-3 py-1.5 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-card"
                         >
                           <option value="admin">Admin</option>
                           <option value="organizer">Organizer</option>
@@ -273,7 +273,7 @@ export default function UsersManagementPage() {
                         {/* Delete Button */}
                         <button
                           onClick={() => handleDeleteUser(user._id, user.name || user.email)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                           title="Delete user"
                         >
                           <Trash2 className="w-4 h-4" />

@@ -48,14 +48,14 @@ export default function TicketsPage() {
       title: "Total Tickets Created",
       value: totalTicketsAllocated.toLocaleString(),
       icon: Package,
-      color: "bg-blue-500",
+      color: "bg-primary",
       href: "/organizer/tickets/inventory",
     },
     {
       title: "Tickets Sold",
       value: totalTicketsSold.toLocaleString(),
       icon: ShoppingCart,
-      color: "bg-green-500",
+      color: "bg-success",
       href: "/organizer/tickets/sales",
     },
     {
@@ -69,7 +69,7 @@ export default function TicketsPage() {
       title: "Ticket Revenue",
       value: `$${ticketRevenue.toLocaleString()}`,
       icon: TrendingUp,
-      color: "bg-emerald-500",
+      color: "bg-success",
       href: "/organizer/tickets/sales",
     },
   ];
@@ -87,19 +87,19 @@ export default function TicketsPage() {
       description: "Manage your ticket inventory",
       icon: Package,
       href: "/organizer/tickets/inventory",
-      color: "bg-blue-500",
+      color: "bg-primary",
     },
     {
       title: "Sales Overview",
       description: "Track ticket sales and revenue",
       icon: TrendingUp,
       href: "/organizer/tickets/sales",
-      color: "bg-green-500",
+      color: "bg-success",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
@@ -110,8 +110,8 @@ export default function TicketsPage() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Tickets</h1>
-              <p className="text-gray-600 mt-1">Manage your ticket inventory and sales</p>
+              <h1 className="text-3xl font-bold text-foreground">Tickets</h1>
+              <p className="text-muted-foreground mt-1">Manage your ticket inventory and sales</p>
             </div>
             <Link
               href="/organizer/tickets/purchase"
@@ -144,8 +144,8 @@ export default function TicketsPage() {
                   <stat.icon className="w-6 h-6" />
                 </div>
               </div>
-              <h3 className="text-gray-600 text-sm font-medium mb-1">{stat.title}</h3>
-              <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+              <h3 className="text-muted-foreground text-sm font-medium mb-1">{stat.title}</h3>
+              <p className="text-3xl font-bold text-foreground">{stat.value}</p>
             </Link>
           ))}
         </motion.div>
@@ -157,7 +157,7 @@ export default function TicketsPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mb-8"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {quickActions.map((action, index) => (
               <Link
@@ -168,8 +168,8 @@ export default function TicketsPage() {
                 <div className={`${action.color} p-3 rounded-lg text-white w-fit mb-4`}>
                   <action.icon className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{action.title}</h3>
-                <p className="text-gray-600 mb-4">{action.description}</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">{action.title}</h3>
+                <p className="text-muted-foreground mb-4">{action.description}</p>
                 <div className="flex items-center text-primary font-medium">
                   Go to {action.title.toLowerCase()}
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -186,7 +186,7 @@ export default function TicketsPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Events with Tickets</h2>
+            <h2 className="text-2xl font-bold text-foreground">Events with Tickets</h2>
             <Link
               href="/organizer/events"
               className="text-primary hover:underline flex items-center gap-1"

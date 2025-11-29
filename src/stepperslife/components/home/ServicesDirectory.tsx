@@ -74,7 +74,7 @@ export function ServicesDirectory() {
                   <div className="mb-4 space-y-2 text-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <Star className="h-4 w-4 fill-warning text-warning" />
                         <span className="font-medium">
                           {service.averageRating}
                         </span>

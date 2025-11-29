@@ -384,33 +384,33 @@ export default function CheckoutPage() {
       <PublicHeader />
       {/* Loading State */}
       {(isLoading || !eventDetails) && (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="min-h-screen bg-muted flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>
       )}
 
       {/* Success State */}
       {!isLoading && eventDetails && isSuccess && (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-muted flex items-center justify-center p-4">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, type: "spring" }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md text-center"
+            className="bg-card rounded-lg shadow-lg p-8 max-w-md text-center"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+              className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4"
             >
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+              <CheckCircle2 className="w-10 h-10 text-success" />
             </motion.div>
             <motion.h2
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-2xl font-bold text-gray-900 mb-2"
+              className="text-2xl font-bold text-foreground mb-2"
             >
               Payment Successful!
             </motion.h2>
@@ -418,7 +418,7 @@ export default function CheckoutPage() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-gray-600 mb-6"
+              className="text-muted-foreground mb-6"
             >
               Your tickets have been purchased. Check your email for confirmation.
             </motion.p>
@@ -436,7 +436,7 @@ export default function CheckoutPage() {
               </Link>
               <Link
                 href={`/events/${eventId}`}
-                className="block w-full px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="block w-full px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 Back to Event
               </Link>
@@ -447,7 +447,7 @@ export default function CheckoutPage() {
 
       {/* Main Checkout Form */}
       {!isLoading && eventDetails && !isSuccess && (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-muted">
           <div className="container mx-auto px-4 py-8 max-w-4xl">
             {/* Header */}
             <motion.div
@@ -457,7 +457,7 @@ export default function CheckoutPage() {
             >
               <Link
                 href={`/events/${eventId}`}
-                className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Event
@@ -471,17 +471,17 @@ export default function CheckoutPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <h1 className="text-2xl font-bold text-gray-900 mb-6">Checkout</h1>
+              <h1 className="text-2xl font-bold text-foreground mb-6">Checkout</h1>
 
               {/* Event Info */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
-                className="bg-white rounded-lg shadow-md overflow-hidden mb-6"
+                className="bg-card rounded-lg shadow-md overflow-hidden mb-6"
               >
                 {/* Event Image - Now Required */}
-                <div className="w-full h-48 relative bg-gray-200">
+                <div className="w-full h-48 relative bg-muted">
                   {eventDetails.imageUrl ? (
                     <img
                       src={eventDetails.imageUrl}
@@ -490,18 +490,18 @@ export default function CheckoutPage() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
-                      <p className="text-gray-500 text-sm">Event Image</p>
+                      <p className="text-muted-foreground text-sm">Event Image</p>
                     </div>
                   )}
                 </div>
 
                 <div className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-2">{eventDetails.name}</h3>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="font-semibold text-foreground mb-2">{eventDetails.name}</h3>
+                  <p className="text-sm text-muted-foreground">
                     {eventDetails.startDate &&
                       format(new Date(eventDetails.startDate), "EEEE, MMMM d, yyyy 'at' h:mm a")}
                   </p>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {eventDetails.location &&
                       typeof eventDetails.location === "object" &&
                       eventDetails.location.venueName &&
@@ -544,12 +544,12 @@ export default function CheckoutPage() {
               {!showPayment ? (
                 <>
                   {/* Ticket/Bundle Selection */}
-                  <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-4">Select Tickets or Bundle</h3>
+                  <div className="bg-card rounded-lg shadow-md p-6 mb-6">
+                    <h3 className="font-semibold text-foreground mb-4">Select Tickets or Bundle</h3>
 
                     {/* Purchase Type Tabs */}
                     {eventDetails.bundles && eventDetails.bundles.length > 0 && (
-                      <div className="flex gap-2 mb-4 p-1 bg-gray-100 rounded-lg">
+                      <div className="flex gap-2 mb-4 p-1 bg-muted rounded-lg">
                         <button
                           onClick={() => {
                             setPurchaseType("tier");
@@ -557,8 +557,8 @@ export default function CheckoutPage() {
                           }}
                           className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
                             purchaseType === "tier"
-                              ? "bg-white text-primary shadow-sm"
-                              : "text-gray-600 hover:text-gray-900"
+                              ? "bg-card text-primary shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
                           <Ticket className="w-4 h-4 inline mr-2" />
@@ -571,8 +571,8 @@ export default function CheckoutPage() {
                           }}
                           className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
                             purchaseType === "bundle"
-                              ? "bg-white text-primary shadow-sm"
-                              : "text-gray-600 hover:text-gray-900"
+                              ? "bg-card text-primary shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
                           <Package className="w-4 h-4 inline mr-2" />
@@ -611,20 +611,20 @@ export default function CheckoutPage() {
                                 className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
                                   selectedTierId === tier._id
                                     ? showEarlyBird
-                                      ? "border-amber-500 bg-amber-50"
+                                      ? "border-warning bg-warning/10"
                                       : "border-primary bg-accent"
                                     : isSoldOut
-                                      ? "border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed"
-                                      : "border-gray-200 hover:border-gray-300"
+                                      ? "border-border bg-muted opacity-60 cursor-not-allowed"
+                                      : "border-border hover:border-border"
                                 }`}
                               >
                                 <div className="space-y-2">
                                   <div className="flex items-start justify-between">
                                     <div className="flex-1">
                                       <div className="flex items-center gap-2 mb-1">
-                                        <p className="font-semibold text-gray-900">{tier.name}</p>
+                                        <p className="font-semibold text-foreground">{tier.name}</p>
                                         {showEarlyBird && (
-                                          <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-amber-500 text-white rounded-full font-medium">
+                                          <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-warning text-white rounded-full font-medium">
                                             <Zap className="w-3 h-3" />
                                             {tier.currentTierName}
                                           </span>
@@ -637,19 +637,19 @@ export default function CheckoutPage() {
                                         />
                                       </div>
                                       {tier.description && (
-                                        <p className="text-sm text-gray-600 mt-1">
+                                        <p className="text-sm text-muted-foreground mt-1">
                                           {tier.description}
                                         </p>
                                       )}
                                     </div>
                                     <div className="text-right ml-4">
                                       <p
-                                        className={`text-lg font-bold ${showEarlyBird ? "text-amber-600" : "text-gray-900"}`}
+                                        className={`text-lg font-bold ${showEarlyBird ? "text-warning" : "text-foreground"}`}
                                       >
                                         ${(tier.currentPrice / 100).toFixed(2)}
                                       </p>
                                       {showEarlyBird && tier.price !== tier.currentPrice && (
-                                        <p className="text-xs text-gray-500 line-through">
+                                        <p className="text-xs text-muted-foreground line-through">
                                           ${(tier.price / 100).toFixed(2)}
                                         </p>
                                       )}
@@ -657,8 +657,8 @@ export default function CheckoutPage() {
                                   </div>
 
                                   {nextPriceIncrease && (
-                                    <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded text-xs">
-                                      <p className="text-orange-700 font-medium">
+                                    <div className="mt-2 p-2 bg-warning/10 border border-warning rounded text-xs">
+                                      <p className="text-warning font-medium">
                                         Price increases to $
                                         {(tier.nextPriceChange.price / 100).toFixed(2)} on{" "}
                                         {format(tier.nextPriceChange.date, "MMM d")}
@@ -675,14 +675,14 @@ export default function CheckoutPage() {
 
                                     {/* Stock Warning */}
                                     {isLowStock && (
-                                      <span className="text-orange-600 font-medium">
+                                      <span className="text-warning font-medium">
                                         Only {remaining} left!
                                       </span>
                                     )}
 
                                     {/* Quantity Info */}
                                     {!isLowStock && !isSoldOut && (
-                                      <span className="text-gray-500">{remaining} available</span>
+                                      <span className="text-muted-foreground">{remaining} available</span>
                                     )}
                                   </div>
                                 </div>
@@ -702,21 +702,21 @@ export default function CheckoutPage() {
                             className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
                               selectedBundleId === bundle._id
                                 ? "border-primary bg-accent"
-                                : "border-gray-200 hover:border-gray-300"
+                                : "border-border hover:border-border"
                             }`}
                           >
                             <div className="space-y-2">
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-1">
-                                    <p className="font-semibold text-gray-900">{bundle.name}</p>
-                                    <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-green-500 text-white rounded-full font-bold">
+                                    <p className="font-semibold text-foreground">{bundle.name}</p>
+                                    <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-success text-white rounded-full font-bold">
                                       <TrendingDown className="w-3 h-3" />
                                       Save {bundle.percentageSavings}%
                                     </span>
                                   </div>
                                   {bundle.description && (
-                                    <p className="text-sm text-gray-600 mt-1">
+                                    <p className="text-sm text-muted-foreground mt-1">
                                       {bundle.description}
                                     </p>
                                   )}
@@ -736,14 +736,14 @@ export default function CheckoutPage() {
                                     ${(bundle.price / 100).toFixed(2)}
                                   </p>
                                   {bundle.regularPrice && (
-                                    <p className="text-xs text-gray-500 line-through">
+                                    <p className="text-xs text-muted-foreground line-through">
                                       ${(bundle.regularPrice / 100).toFixed(2)}
                                     </p>
                                   )}
                                 </div>
                               </div>
 
-                              <div className="text-sm text-green-600 font-medium">
+                              <div className="text-sm text-success font-medium">
                                 {bundle.available} bundle{bundle.available !== 1 ? "s" : ""}{" "}
                                 available
                               </div>
@@ -764,11 +764,11 @@ export default function CheckoutPage() {
                         );
                       }) && (
                         <div className="text-center py-8">
-                          <Ticket className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                          <p className="text-gray-600 font-medium">
+                          <Ticket className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                          <p className="text-muted-foreground font-medium">
                             No tickets currently available
                           </p>
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-sm text-muted-foreground mt-1">
                             Check back later or contact the organizer
                           </p>
                         </div>

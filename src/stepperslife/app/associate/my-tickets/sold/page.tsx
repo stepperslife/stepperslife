@@ -63,7 +63,7 @@ export default function SoldTicketsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="font-semibold">{ticket.eventName}</h3>
-                      <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                      <span className="px-2 py-1 text-xs rounded-full bg-success/10 text-success">
                         Sold
                       </span>
                     </div>
@@ -82,7 +82,7 @@ export default function SoldTicketsPage() {
                   <div className="text-right">
                     <p className="text-xs text-muted-foreground">Quantity</p>
                     <p className="text-xl font-bold">{ticket.quantity || 1}</p>
-                    <p className="text-sm font-semibold text-green-600 mt-1">
+                    <p className="text-sm font-semibold text-success mt-1">
                       ${ticket.commission || "0.00"}
                     </p>
                     <p className="text-xs text-muted-foreground">Commission</p>

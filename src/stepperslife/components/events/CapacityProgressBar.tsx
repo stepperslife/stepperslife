@@ -33,27 +33,27 @@ export function CapacityProgressBar({
   let status: "success" | "warning" | "error" = "success";
   let statusIcon = CheckCircle;
   let statusMessage = "Capacity looks good";
-  let statusColor = "text-green-600 dark:text-green-400";
-  let barColor = "bg-green-500";
+  let statusColor = "text-success";
+  let barColor = "bg-success";
 
   if (isOver) {
     status = "error";
     statusIcon = AlertCircle;
     statusMessage = `Over capacity by ${allocated - capacity} tickets`;
-    statusColor = "text-red-600 dark:text-red-400";
-    barColor = "bg-red-500";
+    statusColor = "text-destructive";
+    barColor = "bg-destructive";
   } else if (isAtCapacity) {
     status = "success";
     statusIcon = CheckCircle;
     statusMessage = "Capacity fully allocated";
-    statusColor = "text-green-600 dark:text-green-400";
-    barColor = "bg-green-500";
+    statusColor = "text-success";
+    barColor = "bg-success";
   } else if (isNearCapacity) {
     status = "warning";
     statusIcon = AlertTriangle;
     statusMessage = `Only ${remaining} tickets remaining`;
-    statusColor = "text-yellow-600 dark:text-yellow-400";
-    barColor = "bg-yellow-500";
+    statusColor = "text-warning";
+    barColor = "bg-warning";
   }
 
   const StatusIcon = statusIcon;
@@ -66,14 +66,14 @@ export function CapacityProgressBar({
           <StatusIcon className={`w-5 h-5 ${statusColor}`} />
           <span className={`text-sm font-medium ${statusColor}`}>{statusMessage}</span>
         </div>
-        <div className="text-sm font-semibold text-gray-900 dark:text-white">
+        <div className="text-sm font-semibold text-foreground">
           {allocated.toLocaleString()}/{capacity.toLocaleString()} tickets
         </div>
       </div>
 
       {/* Progress bar */}
       <div className="relative">
-        <div className="w-full h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div className="w-full h-4 bg-muted rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${Math.min(percentage, 100)}%` }}
@@ -94,7 +94,7 @@ export function CapacityProgressBar({
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="absolute inset-0 bg-red-500/20 border-2 border-red-500 rounded-full"
+              className="absolute inset-0 bg-destructive/10 border-2 border-destructive rounded-full"
             />
           )}
         </div>
@@ -102,18 +102,18 @@ export function CapacityProgressBar({
         {/* Capacity marker line */}
         {!isOver && percentage > 0 && (
           <div
-            className="absolute top-0 h-4 w-0.5 bg-gray-400 dark:bg-gray-500"
+            className="absolute top-0 h-4 w-0.5 bg-muted-foreground"
             style={{ right: 0 }}
           />
         )}
       </div>
 
       {/* Details */}
-      <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
         <div className="flex items-center gap-4">
           {sold > 0 && (
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-green-600 dark:bg-green-500 rounded-sm opacity-70" />
+              <div className="w-3 h-3 bg-success rounded-sm opacity-70" />
               <span>{sold.toLocaleString()} sold</span>
             </div>
           )}
@@ -123,7 +123,7 @@ export function CapacityProgressBar({
           </div>
           {!isOver && remaining > 0 && (
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-gray-300 dark:bg-gray-600 rounded-sm" />
+              <div className="w-3 h-3 bg-muted rounded-sm" />
               <span>{remaining.toLocaleString()} remaining</span>
             </div>
           )}
@@ -135,8 +135,8 @@ export function CapacityProgressBar({
 
       {/* Breakdown by tier (optional) */}
       {showBreakdown && breakdown.length > 0 && (
-        <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-          <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div className="pt-3 border-t border-border">
+          <div className="text-xs font-medium text-foreground mb-2">
             Ticket Breakdown
           </div>
           <div className="space-y-1.5">
@@ -149,13 +149,13 @@ export function CapacityProgressBar({
                       className="w-2.5 h-2.5 rounded-sm"
                       style={{ backgroundColor: tier.color }}
                     />
-                    <span className="text-gray-700 dark:text-gray-300">{tier.name}</span>
+                    <span className="text-foreground">{tier.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <span className="text-muted-foreground">
                       {tier.quantity.toLocaleString()}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-500 w-10 text-right">
+                    <span className="text-muted-foreground w-10 text-right">
                       {Math.round(tierPercentage)}%
                     </span>
                   </div>
@@ -171,9 +171,9 @@ export function CapacityProgressBar({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3"
+          className="bg-destructive/10 border border-destructive rounded-lg p-3"
         >
-          <p className="text-sm text-red-700 dark:text-red-400">
+          <p className="text-sm text-destructive">
             <strong>Error:</strong> Total ticket allocation ({allocated.toLocaleString()}) exceeds
             event capacity ({capacity.toLocaleString()}). Please reduce ticket quantities by{" "}
             {(allocated - capacity).toLocaleString()} tickets.

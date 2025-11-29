@@ -113,7 +113,7 @@ export default function MyTeamPage() {
 
   if (myGlobalSubSellers === undefined) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -130,11 +130,11 @@ export default function MyTeamPage() {
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+        <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
           <Users className="w-8 h-8" />
           My Default Team
         </h1>
-        <p className="text-gray-600 mt-1">
+        <p className="text-muted-foreground mt-1">
           Manage your default sub-seller roster. These team members will be automatically assigned
           to events when you join them.
         </p>
@@ -142,9 +142,9 @@ export default function MyTeamPage() {
 
       {/* Success Message */}
       {success && (
-        <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-green-600" />
-          <span className="text-green-800">{success}</span>
+        <div className="mb-6 bg-success/10 border border-success rounded-lg p-4 flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5 text-success" />
+          <span className="text-success">{success}</span>
         </div>
       )}
 
@@ -178,57 +178,57 @@ export default function MyTeamPage() {
 
       {/* Sub-Sellers List */}
       {myGlobalSubSellers.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">No Default Sub-Sellers Yet</h3>
-          <p className="text-gray-600 mb-6">
+        <div className="bg-card rounded-lg shadow-md p-12 text-center">
+          <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-foreground mb-2">No Default Sub-Sellers Yet</h3>
+          <p className="text-muted-foreground mb-6">
             Add sub-sellers to your default team to have them automatically assigned when you join
             events.
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-muted border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Contact
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Commission Split
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Auto-Assign
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {myGlobalSubSellers.map((subSeller) => (
-                  <tr key={subSeller._id} className="hover:bg-gray-50">
+                  <tr key={subSeller._id} className="hover:bg-muted">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">{subSeller.name}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="font-medium text-foreground">{subSeller.name}</div>
+                      <div className="text-xs text-muted-foreground">
                         Referral: {subSeller.referralCode}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Mail className="w-4 h-4" />
                           {subSeller.email}
                         </div>
                         {subSeller.phone && (
-                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
                             <Phone className="w-4 h-4" />
                             {subSeller.phone}
                           </div>
@@ -241,9 +241,9 @@ export default function MyTeamPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-foreground">
                         <div className="flex items-center gap-1">
-                          <Percent className="w-4 h-4 text-green-600" />
+                          <Percent className="w-4 h-4 text-success" />
                           <span className="font-medium">
                             You: {subSeller.parentCommissionPercent}%
                           </span>
@@ -265,12 +265,12 @@ export default function MyTeamPage() {
                         className="flex items-center gap-2"
                       >
                         {subSeller.autoAssignToNewEvents ? (
-                          <div className="flex items-center gap-2 text-green-600">
+                          <div className="flex items-center gap-2 text-success">
                             <CheckCircle2 className="w-5 h-5" />
                             <span className="text-sm font-medium">Enabled</span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 text-gray-400">
+                          <div className="flex items-center gap-2 text-muted-foreground">
                             <XCircle className="w-5 h-5" />
                             <span className="text-sm font-medium">Disabled</span>
                           </div>
@@ -280,7 +280,7 @@ export default function MyTeamPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
                         onClick={() => handleRemoveSubSeller(subSeller._id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                         title="Remove sub-seller"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -312,67 +312,67 @@ export default function MyTeamPage() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Name <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Name <span className="text-destructive">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Email <span className="text-destructive">*</span>
                   </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="john@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Phone</label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Role</label>
                   <select
                     value={formData.role}
                     onChange={(e) =>
                       setFormData({ ...formData, role: e.target.value as StaffRole })
                     }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   >
                     <option value="SELLER">Seller</option>
                     <option value="SCANNER">Scanner</option>
                   </select>
                 </div>
 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">Commission Split</h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                <div className="bg-warning/10 border border-warning rounded-lg p-4">
+                  <h3 className="font-semibold text-foreground mb-2">Commission Split</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
                     Configure how commissions are split between you and your sub-seller
                   </p>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Your Commission %
                       </label>
                       <div className="relative">
@@ -384,17 +384,17 @@ export default function MyTeamPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, parentCommissionPercent: e.target.value })
                           }
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                          className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                           placeholder="50"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                           %
                         </span>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Sub-Seller Commission %
                       </label>
                       <div className="relative">
@@ -406,17 +406,17 @@ export default function MyTeamPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, subSellerCommissionPercent: e.target.value })
                           }
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                          className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                           placeholder="30"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                           %
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     Total must not exceed 100%. Remaining percentage goes to the event organizer.
                   </p>
                 </div>
@@ -432,10 +432,10 @@ export default function MyTeamPage() {
                       className="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-ring"
                     />
                     <div>
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-foreground">
                         Auto-assign to new events
                       </span>
-                      <p className="text-xs text-gray-600 mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         Automatically add this sub-seller when you join new events
                       </p>
                     </div>
@@ -456,7 +456,7 @@ export default function MyTeamPage() {
                     setShowAddSubSeller(false);
                     setError("");
                   }}
-                  className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition font-semibold"
+                  className="flex-1 bg-muted text-foreground py-3 rounded-lg hover:bg-muted/80 transition font-semibold"
                 >
                   Cancel
                 </button>

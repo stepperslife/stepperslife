@@ -50,9 +50,9 @@ export function CheckoutLayout({
   const progressPercent = ((currentStepIndex + 1) / STEPS.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header with Progress */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <div className="bg-card border-b border-border sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           {/* Breadcrumbs */}
           {breadcrumbs && breadcrumbs.length > 0 && (
@@ -60,7 +60,7 @@ export function CheckoutLayout({
               <ol className="flex items-center space-x-2 text-sm">
                 {breadcrumbs.map((crumb, index) => (
                   <li key={index} className="flex items-center">
-                    {index > 0 && <span className="mx-2 text-gray-400">/</span>}
+                    {index > 0 && <span className="mx-2 text-muted-foreground">/</span>}
                     {crumb.href ? (
                       <a
                         href={crumb.href}
@@ -69,7 +69,7 @@ export function CheckoutLayout({
                         {crumb.label}
                       </a>
                     ) : (
-                      <span className="text-gray-600">{crumb.label}</span>
+                      <span className="text-muted-foreground">{crumb.label}</span>
                     )}
                   </li>
                 ))}
@@ -95,8 +95,8 @@ export function CheckoutLayout({
                           w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm
                           transition-colors
                           ${isActive ? "bg-primary text-white" : ""}
-                          ${isCompleted ? "bg-green-500 text-white" : ""}
-                          ${!isActive && !isCompleted ? "bg-gray-200 text-gray-600" : ""}
+                          ${isCompleted ? "bg-success text-white" : ""}
+                          ${!isActive && !isCompleted ? "bg-muted text-muted-foreground" : ""}
                         `}
                       >
                         {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
@@ -105,18 +105,18 @@ export function CheckoutLayout({
                         className={`
                           mt-1 text-xs font-medium hidden sm:block
                           ${isActive ? "text-primary" : ""}
-                          ${isCompleted ? "text-green-600" : ""}
-                          ${!isActive && !isCompleted ? "text-gray-500" : ""}
+                          ${isCompleted ? "text-success" : ""}
+                          ${!isActive && !isCompleted ? "text-muted-foreground" : ""}
                         `}
                       >
                         {step.label}
                       </span>
                     </div>
                     {index < STEPS.length - 1 && (
-                      <div className="flex-1 h-1 bg-gray-200 mx-2 rounded-full overflow-hidden">
+                      <div className="flex-1 h-1 bg-muted mx-2 rounded-full overflow-hidden">
                         <div
                           className={`h-full transition-all ${
-                            isCompleted ? "bg-green-500 w-full" : "bg-gray-200 w-0"
+                            isCompleted ? "bg-success w-full" : "bg-muted w-0"
                           }`}
                         />
                       </div>
@@ -127,7 +127,7 @@ export function CheckoutLayout({
             </div>
 
             {/* Linear Progress Bar */}
-            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full bg-primary transition-all duration-500 ease-out"
                 style={{ width: `${progressPercent}%` }}
@@ -152,11 +152,11 @@ export function CheckoutLayout({
 
       {/* Security Badges Footer */}
       {showSecurityBadges && (
-        <div className="bg-white border-t border-gray-200 py-6 mt-12">
+        <div className="bg-card border-t border-border py-6 mt-12">
           <div className="container mx-auto px-4">
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-green-600" />
+                <Shield className="w-5 h-5 text-success" />
                 <span>Secure Checkout</span>
               </div>
               <div className="flex items-center gap-2">

@@ -220,8 +220,8 @@ export default function CheckoutPage() {
         <MarketplaceSubNav />
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
           <div className="bg-card rounded-xl shadow-lg p-8 max-w-md w-full text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+            <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="w-10 h-10 text-success" />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Order Placed Successfully!</h2>
             <p className="text-muted-foreground mb-4">
@@ -249,12 +249,12 @@ export default function CheckoutPage() {
                 </div>
               </div>
             ) : (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <div className="bg-success/10 border border-success rounded-lg p-4 mb-6">
                 <div className="flex items-start gap-3">
-                  <Truck className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <Truck className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                   <div className="text-left">
-                    <h3 className="font-semibold text-green-900 mb-1">Delivery Address</h3>
-                    <p className="text-sm text-green-700">
+                    <h3 className="font-semibold text-foreground mb-1">Delivery Address</h3>
+                    <p className="text-sm text-muted-foreground">
                       {formData.address1}, {formData.city}, {formData.state} {formData.zipCode}
                     </p>
                   </div>
@@ -446,8 +446,8 @@ export default function CheckoutPage() {
                       <Truck className="w-5 h-5 text-primary" />
                       Delivery Address
                     </h2>
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-                      <p className="text-sm text-amber-700">
+                    <div className="bg-warning/10 border border-warning rounded-lg p-4 mb-4">
+                      <p className="text-sm text-muted-foreground">
                         Shipping cost will be calculated based on the products in your cart and
                         confirmed after order placement.
                       </p>
@@ -606,7 +606,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-muted-foreground">
                     <span>Shipping</span>
                     <span
-                      className={shippingMethod === "PICKUP" ? "text-green-600 font-semibold" : ""}
+                      className={shippingMethod === "PICKUP" ? "text-success font-semibold" : ""}
                     >
                       {shippingMethod === "PICKUP" ? "FREE" : "TBD"}
                     </span>

@@ -129,21 +129,21 @@ function StripeConnectContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full text-center">
+    <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+      <div className="bg-card rounded-lg shadow-md p-8 max-w-md w-full text-center">
         {status === "loading" && (
           <>
             <Loader2 className="w-16 h-16 animate-spin text-primary mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Processing...</h1>
-            <p className="text-gray-600">Please wait while we process your request.</p>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Processing...</h1>
+            <p className="text-muted-foreground">Please wait while we process your request.</p>
           </>
         )}
 
         {status === "creating" && (
           <>
             <Loader2 className="w-16 h-16 animate-spin text-primary mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Creating Your Account</h1>
-            <p className="text-gray-600">
+            <h1 className="text-2xl font-bold text-foreground mb-2">Creating Your Account</h1>
+            <p className="text-muted-foreground">
               Setting up your Stripe Connect account...
               <br />
               You'll be redirected to Stripe to complete setup.
@@ -153,11 +153,11 @@ function StripeConnectContent() {
 
         {status === "success" && (
           <>
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-10 h-10 text-green-600" />
+            <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-10 h-10 text-success" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Account Connected!</h1>
-            <p className="text-gray-600 mb-6">
+            <h1 className="text-2xl font-bold text-foreground mb-2">Account Connected!</h1>
+            <p className="text-muted-foreground mb-6">
               Your Stripe account has been successfully connected.
               <br />
               Redirecting to settings...
@@ -170,11 +170,11 @@ function StripeConnectContent() {
 
         {status === "error" && (
           <>
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-10 h-10 text-red-600" />
+            <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-10 h-10 text-destructive" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Something Went Wrong</h1>
-            <p className="text-red-600 mb-6">{errorMessage}</p>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Something Went Wrong</h1>
+            <p className="text-destructive mb-6">{errorMessage}</p>
             <div className="space-y-3">
               <Button asChild className="w-full">
                 <Link href="/organizer/settings">Go to Settings</Link>
@@ -194,11 +194,11 @@ export default function StripeConnectPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full text-center">
+        <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+          <div className="bg-card rounded-lg shadow-md p-8 max-w-md w-full text-center">
             <Loader2 className="w-16 h-16 animate-spin text-primary mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Loading...</h1>
-            <p className="text-gray-600">Please wait...</p>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Loading...</h1>
+            <p className="text-muted-foreground">Please wait...</p>
           </div>
         </div>
       }

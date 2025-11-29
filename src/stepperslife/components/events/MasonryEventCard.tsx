@@ -57,7 +57,7 @@ export function MasonryEventCard({ event }: MasonryEventCardProps) {
         {/* Tickets Available Badge - Top Right */}
         {event.ticketsVisible && (
           <div className="absolute top-3 right-3">
-            <div className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full shadow-sm">
+            <div className="flex items-center gap-1 px-2 py-1 bg-success text-white text-xs font-semibold rounded-full shadow-sm">
               <Ticket className="w-3 h-3" />
               <span>Available</span>
             </div>
@@ -67,8 +67,8 @@ export function MasonryEventCard({ event }: MasonryEventCardProps) {
         {/* Date Badge - Bottom Left */}
         <div className="absolute bottom-3 left-3">
           <div className="flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm">
-            <Calendar className="w-4 h-4 text-gray-700" />
-            <span className="text-sm font-semibold text-gray-900">
+            <Calendar className="w-4 h-4 text-foreground" />
+            <span className="text-sm font-semibold text-foreground">
               {formatEventDate(event.startDate, event.timezone)}
             </span>
           </div>

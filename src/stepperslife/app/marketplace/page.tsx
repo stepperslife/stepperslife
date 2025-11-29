@@ -148,11 +148,11 @@ export default function ShopPage() {
                       {product.trackInventory && (
                         <div className="text-sm text-muted-foreground mb-4">
                           {product.inventoryQuantity > 0 ? (
-                            <span className="text-green-600 dark:text-green-400">
+                            <span className="text-success">
                               {product.inventoryQuantity} in stock
                             </span>
                           ) : (
-                            <span className="text-red-600 dark:text-red-400">Out of stock</span>
+                            <span className="text-destructive">Out of stock</span>
                           )}
                         </div>
                       )}

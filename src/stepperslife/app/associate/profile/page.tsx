@@ -22,10 +22,10 @@ export default function AssociateProfilePage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tickets Sold</CardTitle>
-            <Ticket className="h-4 w-4 text-green-600" />
+            <Ticket className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">0</div>
+            <div className="text-2xl font-bold text-success">0</div>
             <p className="text-xs text-muted-foreground">Total sales</p>
           </CardContent>
         </Card>
@@ -33,10 +33,10 @@ export default function AssociateProfilePage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
+            <DollarSign className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">$0.00</div>
+            <div className="text-2xl font-bold text-success">$0.00</div>
             <p className="text-xs text-muted-foreground">Commission</p>
           </CardContent>
         </Card>
@@ -129,7 +129,7 @@ export default function AssociateProfilePage() {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Pending Earnings</span>
-              <span className="font-semibold text-green-600">$0.00</span>
+              <span className="font-semibold text-success">$0.00</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Link Clicks</span>

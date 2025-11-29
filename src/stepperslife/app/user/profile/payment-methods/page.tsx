@@ -67,7 +67,7 @@ export default function PaymentMethodsPage() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-100 rounded">
+                    <div className="p-2 bg-muted rounded">
                       {getCardIcon(method.brand)}
                     </div>
                     <div>
@@ -76,8 +76,8 @@ export default function PaymentMethodsPage() {
                       </CardTitle>
                       {method.isDefault && (
                         <div className="flex items-center gap-1 mt-1">
-                          <Check className="h-3 w-3 text-green-600" />
-                          <span className="text-xs text-green-600">Default</span>
+                          <Check className="h-3 w-3 text-success" />
+                          <span className="text-xs text-success">Default</span>
                         </div>
                       )}
                     </div>
@@ -85,7 +85,7 @@ export default function PaymentMethodsPage() {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="text-red-500 hover:text-red-600"
+                    className="text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -112,7 +112,7 @@ export default function PaymentMethodsPage() {
       )}
 
       {/* Security Notice */}
-      <Card className="border-blue-200 bg-blue-50">
+      <Card className="border-primary bg-primary/10">
         <CardHeader>
           <CardTitle className="text-sm">Secure Payments</CardTitle>
         </CardHeader>

@@ -52,10 +52,10 @@ export default function InvalidTicketsPage() {
       ) : (
         <div className="space-y-3">
           {invalidTickets.map((ticket: any) => (
-            <Card key={ticket.id} className="border-red-200 bg-red-50/50">
+            <Card key={ticket.id} className="border-destructive bg-destructive/10">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
-                  <XCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                  <XCircle className="h-5 w-5 text-destructive mt-0.5" />
                   <div className="flex-1">
                     <div className="flex items-start justify-between">
                       <div>
@@ -63,7 +63,7 @@ export default function InvalidTicketsPage() {
                         <p className="text-sm text-muted-foreground mt-1">
                           Event: {ticket.eventName}
                         </p>
-                        <p className="text-sm text-red-600 mt-1">
+                        <p className="text-sm text-destructive mt-1">
                           Reason: {ticket.reason}
                         </p>
                       </div>

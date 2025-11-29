@@ -115,7 +115,7 @@ export default function VenueImageUploader({
     return (
       <button
         onClick={() => setIsExpanded(true)}
-        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-lg transition-all text-sm font-medium text-gray-600"
+        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-muted hover:bg-muted/80 border-2 border-dashed border-border hover:border-muted-foreground rounded-lg transition-all text-sm font-medium text-muted-foreground"
       >
         <ImageIcon className="w-4 h-4" />
         <span>Add Background Image (Optional)</span>
@@ -127,29 +127,29 @@ export default function VenueImageUploader({
   // Compact mode with image loaded: Show minimal indicator
   if (compact && preview) {
     return (
-      <div className="flex items-center justify-between px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-muted border border-border rounded-lg">
         <div className="flex items-center gap-2">
-          <ImageIcon className="w-4 h-4 text-gray-600" />
-          <span className="text-sm font-medium text-gray-700">Background Image Loaded</span>
+          <ImageIcon className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-foreground">Background Image Loaded</span>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 hover:bg-gray-200 rounded transition-colors"
+            className="p-1 hover:bg-muted/80 rounded transition-colors"
             title={isExpanded ? "Collapse" : "Expand preview"}
           >
             {isExpanded ? (
-              <ChevronUp className="w-4 h-4 text-gray-600" />
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-600" />
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
             )}
           </button>
           <button
             onClick={handleRemove}
-            className="p-1 hover:bg-red-50 rounded transition-colors"
+            className="p-1 hover:bg-destructive/10 rounded transition-colors"
             title="Remove image"
           >
-            <X className="w-4 h-4 text-red-600" />
+            <X className="w-4 h-4 text-destructive" />
           </button>
         </div>
       </div>
@@ -160,10 +160,10 @@ export default function VenueImageUploader({
     <div className="space-y-4">
       {compact && isExpanded && (
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-gray-900">Venue Background Image</h3>
+          <h3 className="text-sm font-semibold text-foreground">Venue Background Image</h3>
           <button
             onClick={() => setIsExpanded(false)}
-            className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1"
+            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
           >
             <ChevronUp className="w-3 h-3" />
             Collapse
@@ -174,10 +174,10 @@ export default function VenueImageUploader({
       {!compact && (
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-foreground">
               Step 1: Venue Floor Plan (Optional)
             </h3>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {preview
                 ? "Upload a venue image or floor plan to place sections visually"
                 : "You can design on a blank canvas below, or upload a floor plan image"}
@@ -195,7 +195,7 @@ export default function VenueImageUploader({
             {preview && (
               <button
                 onClick={handleRemove}
-                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
               >
                 <X className="w-4 h-4" />
                 Remove Image
@@ -212,12 +212,12 @@ export default function VenueImageUploader({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative rounded-lg border-2 border-gray-300 overflow-hidden bg-gray-50"
+            className="relative rounded-lg border-2 border-border overflow-hidden bg-muted"
           >
             <img src={preview} alt="Venue floor plan" className="w-full h-64 object-contain" />
             {isUploading && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <div className="bg-white rounded-lg p-4 flex items-center gap-3">
+                <div className="bg-card rounded-lg p-4 flex items-center gap-3">
                   <Loader2 className="w-5 h-5 animate-spin text-primary" />
                   <span className="text-sm font-medium">Uploading...</span>
                 </div>
@@ -237,13 +237,13 @@ export default function VenueImageUploader({
             className={`relative rounded-lg border-2 border-dashed transition-all cursor-pointer ${
               isDragging
                 ? "border-primary bg-accent"
-                : "border-gray-300 hover:border-blue-400 hover:bg-accent"
+                : "border-border hover:border-primary hover:bg-accent"
             }`}
           >
             <div className="flex flex-col items-center justify-center py-12 px-6">
               <div
                 className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors ${
-                  isDragging ? "bg-accent" : "bg-gray-100"
+                  isDragging ? "bg-accent" : "bg-muted"
                 }`}
               >
                 {isUploading ? (
@@ -251,25 +251,25 @@ export default function VenueImageUploader({
                 ) : isDragging ? (
                   <Upload className="w-8 h-8 text-primary" />
                 ) : (
-                  <ImageIcon className="w-8 h-8 text-gray-400" />
+                  <ImageIcon className="w-8 h-8 text-muted-foreground" />
                 )}
               </div>
 
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+              <h4 className="text-lg font-semibold text-foreground mb-2">
                 {isDragging ? "Drop image here" : "Upload venue floor plan"}
               </h4>
-              <p className="text-sm text-gray-600 text-center mb-4">
+              <p className="text-sm text-muted-foreground text-center mb-4">
                 Drag and drop an image, or click to browse
               </p>
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex-1 h-px bg-gray-300"></div>
-                <span className="text-xs font-medium text-gray-500">OR</span>
-                <div className="flex-1 h-px bg-gray-300"></div>
+                <div className="flex-1 h-px bg-border"></div>
+                <span className="text-xs font-medium text-muted-foreground">OR</span>
+                <div className="flex-1 h-px bg-border"></div>
               </div>
               <p className="text-sm font-medium text-primary">
                 Scroll down to start designing on a blank canvas →
               </p>
-              <p className="text-xs text-gray-500 mt-2">Supports PNG, JPG, and SVG files</p>
+              <p className="text-xs text-muted-foreground mt-2">Supports PNG, JPG, and SVG files</p>
             </div>
 
             <input

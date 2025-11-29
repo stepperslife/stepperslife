@@ -42,9 +42,9 @@ export default function AdminNotificationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Alerts</p>
-                <p className="text-2xl font-bold mt-1 text-red-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-destructive">0</p>
               </div>
-              <AlertTriangle className="h-8 w-8 text-red-600" />
+              <AlertTriangle className="h-8 w-8 text-destructive" />
             </div>
           </CardContent>
         </Card>
@@ -66,9 +66,9 @@ export default function AdminNotificationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Resolved</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-success">0</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>

@@ -95,8 +95,8 @@ export function OrganizerPrepayment({
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Complete Platform Fee Payment</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-foreground mb-2">Complete Platform Fee Payment</h2>
+        <p className="text-muted-foreground">
           Pay upfront for "{eventName}" and collect 100% of ticket sales
         </p>
       </div>
@@ -105,9 +105,9 @@ export function OrganizerPrepayment({
       <Card className="bg-accent border-2 border-border">
         <CardContent className="pt-6">
           <div className="text-center">
-            <p className="text-sm text-gray-600 mb-1">Total Platform Fee</p>
-            <p className="text-4xl font-bold text-gray-900 mb-2">${totalAmount.toFixed(2)}</p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground mb-1">Total Platform Fee</p>
+            <p className="text-4xl font-bold text-foreground mb-2">${totalAmount.toFixed(2)}</p>
+            <p className="text-sm text-muted-foreground">
               {estimatedTickets} tickets × ${pricePerTicket.toFixed(2)} each
             </p>
           </div>
@@ -116,8 +116,8 @@ export function OrganizerPrepayment({
             <div className="flex items-start gap-3">
               <DollarSign className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="font-semibold text-gray-900 mb-1">What happens after payment:</p>
-                <ul className="space-y-1 text-gray-600">
+                <p className="font-semibold text-foreground mb-1">What happens after payment:</p>
+                <ul className="space-y-1 text-muted-foreground">
                   <li>✓ Your event is activated immediately</li>
                   <li>✓ Customers can purchase tickets</li>
                   <li>✓ You receive 100% of ticket sales revenue</li>
@@ -134,29 +134,29 @@ export function OrganizerPrepayment({
         {/* Square Payment */}
         <button
           onClick={() => handlePaymentMethodSelect("square")}
-          className="bg-white rounded-lg border-2 border-gray-200 p-6 text-left hover:border-primary hover:shadow-lg transition-all"
+          className="bg-white rounded-lg border-2 border-border p-6 text-left hover:border-primary hover:shadow-lg transition-all"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center">
               <CreditCard className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Square</h3>
+              <h3 className="text-lg font-bold text-foreground">Square</h3>
               <p className="text-sm text-primary">Credit/Debit Card</p>
             </div>
           </div>
 
           <div className="space-y-2 mb-4">
-            <div className="flex items-center gap-2 text-sm text-gray-700">
-              <CheckCircle className="w-4 h-4 text-green-600" />
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <CheckCircle className="w-4 h-4 text-success" />
               Instant activation
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-700">
-              <CheckCircle className="w-4 h-4 text-green-600" />
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <CheckCircle className="w-4 h-4 text-success" />
               Secure payment processing
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-700">
-              <CheckCircle className="w-4 h-4 text-green-600" />
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <CheckCircle className="w-4 h-4 text-success" />
               All major cards accepted
             </div>
           </div>
@@ -169,41 +169,41 @@ export function OrganizerPrepayment({
         {/* CashApp Payment */}
         <button
           onClick={() => handlePaymentMethodSelect("cashapp")}
-          className="bg-white rounded-lg border-2 border-gray-200 p-6 text-left hover:border-green-600 hover:shadow-lg transition-all"
+          className="bg-white rounded-lg border-2 border-border p-6 text-left hover:border-success hover:shadow-lg transition-all"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Smartphone className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+              <Smartphone className="w-6 h-6 text-success" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">CashApp</h3>
-              <p className="text-sm text-green-600">Mobile Payment</p>
+              <h3 className="text-lg font-bold text-foreground">CashApp</h3>
+              <p className="text-sm text-success">Mobile Payment</p>
             </div>
           </div>
 
           <div className="space-y-2 mb-4">
-            <div className="flex items-center gap-2 text-sm text-gray-700">
-              <CheckCircle className="w-4 h-4 text-green-600" />
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <CheckCircle className="w-4 h-4 text-success" />
               Pay from your phone
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-700">
-              <CheckCircle className="w-4 h-4 text-green-600" />
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <CheckCircle className="w-4 h-4 text-success" />
               No card needed
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-700">
-              <AlertCircle className="w-4 h-4 text-orange-500" />
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <AlertCircle className="w-4 h-4 text-warning" />
               Manual verification (24hrs)
             </div>
           </div>
 
-          <div className="bg-green-50 rounded-lg p-3 text-center">
-            <p className="text-sm font-semibold text-green-900">Alternative Option</p>
+          <div className="bg-success/10 rounded-lg p-3 text-center">
+            <p className="text-sm font-semibold text-success">Alternative Option</p>
           </div>
         </button>
       </div>
 
       <div className="text-center">
-        <Button variant="ghost" onClick={onCancel} className="text-gray-600 hover:text-gray-900">
+        <Button variant="ghost" onClick={onCancel} className="text-muted-foreground hover:text-foreground">
           Cancel and Go Back
         </Button>
       </div>

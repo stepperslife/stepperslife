@@ -71,8 +71,8 @@ export default function ProductsManagementPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-600 mt-1">Manage your store products and inventory</p>
+          <h1 className="text-3xl font-bold text-foreground">Products</h1>
+          <p className="text-muted-foreground mt-1">Manage your store products and inventory</p>
         </div>
         <Link
           href="/admin/products/create"
@@ -85,63 +85,63 @@ export default function ProductsManagementPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-accent text-primary rounded-full flex items-center justify-center">
               <Package className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-success/10 text-success rounded-full flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Active</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.active}</p>
+              <p className="text-sm text-muted-foreground">Active</p>
+              <p className="text-2xl font-bold text-foreground">{stats.active}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-warning/10 text-warning rounded-full flex items-center justify-center">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Draft</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.draft}</p>
+              <p className="text-sm text-muted-foreground">Draft</p>
+              <p className="text-2xl font-bold text-foreground">{stats.draft}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-card rounded-lg shadow-md p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-muted text-muted-foreground rounded-full flex items-center justify-center">
               <Archive className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Archived</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.archived}</p>
+              <p className="text-sm text-muted-foreground">Archived</p>
+              <p className="text-2xl font-bold text-foreground">{stats.archived}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-card rounded-lg shadow-md p-6">
         <div className="flex items-center gap-4">
-          <Filter className="w-5 h-5 text-gray-400" />
+          <Filter className="w-5 h-5 text-muted-foreground" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
           >
             <option value="all">All Products</option>
             <option value="ACTIVE">Active Only</option>
@@ -149,7 +149,7 @@ export default function ProductsManagementPage() {
             <option value="ARCHIVED">Archived Only</option>
           </select>
 
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             Showing {allProducts.length} {allProducts.length === 1 ? "product" : "products"}
           </span>
         </div>
@@ -157,9 +157,9 @@ export default function ProductsManagementPage() {
 
       {/* Products Grid */}
       {allProducts.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600">No products found</p>
+        <div className="bg-card rounded-lg shadow-md p-12 text-center">
+          <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">No products found</p>
           <Link
             href="/admin/products/create"
             className="inline-flex items-center gap-2 mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
@@ -171,9 +171,9 @@ export default function ProductsManagementPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {allProducts.map((product) => (
-            <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={product._id} className="bg-card rounded-lg shadow-md overflow-hidden">
               {/* Product Image */}
-              <div className="aspect-square bg-gray-100 relative">
+              <div className="aspect-square bg-muted relative">
                 {product.primaryImage ? (
                   <img
                     src={product.primaryImage}
@@ -181,18 +181,18 @@ export default function ProductsManagementPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-primary">
-                    <Package className="w-16 h-16 text-gray-400" />
+                  <div className="w-full h-full flex items-center justify-center bg-muted">
+                    <Package className="w-16 h-16 text-muted-foreground" />
                   </div>
                 )}
                 <div className="absolute top-3 right-3">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                       product.status === "ACTIVE"
-                        ? "bg-green-100 text-green-800"
+                        ? "bg-success/10 text-success"
                         : product.status === "DRAFT"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
+                          ? "bg-warning/10 text-warning"
+                          : "bg-muted text-foreground"
                     }`}
                   >
                     {product.status}
@@ -202,24 +202,24 @@ export default function ProductsManagementPage() {
 
               {/* Product Info */}
               <div className="p-4">
-                <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1">
+                <h3 className="font-bold text-lg text-foreground mb-1 line-clamp-1">
                   {product.name}
                 </h3>
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
 
                 <div className="flex items-center gap-2 mb-3">
-                  <DollarSign className="w-4 h-4 text-gray-500" />
-                  <span className="text-lg font-bold text-gray-900">
+                  <DollarSign className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-lg font-bold text-foreground">
                     ${(product.price / 100).toFixed(2)}
                   </span>
                   {product.compareAtPrice && (
-                    <span className="text-sm text-gray-500 line-through">
+                    <span className="text-sm text-muted-foreground line-through">
                       ${(product.compareAtPrice / 100).toFixed(2)}
                     </span>
                   )}
                 </div>
 
-                <div className="text-sm text-gray-600 mb-3">
+                <div className="text-sm text-muted-foreground mb-3">
                   <span>Stock: {product.inventoryQuantity}</span>
                   {product.sku && <span> • SKU: {product.sku}</span>}
                 </div>
@@ -231,13 +231,13 @@ export default function ProductsManagementPage() {
                 )}
 
                 {/* Actions */}
-                <div className="space-y-2 mt-4 pt-4 border-t border-gray-200">
+                <div className="space-y-2 mt-4 pt-4 border-t border-border">
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/marketplace/${product._id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1 px-2 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs"
+                      className="flex-1 flex items-center justify-center gap-1 px-2 py-2 bg-success/10 text-success rounded-lg hover:bg-success/20 transition-colors text-xs"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       View
@@ -260,7 +260,7 @@ export default function ProductsManagementPage() {
                     </button>
                     <button
                       onClick={() => handleDeleteProduct(product._id, product.name)}
-                      className="flex-1 flex items-center justify-center gap-1 px-2 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs"
+                      className="flex-1 flex items-center justify-center gap-1 px-2 py-2 bg-destructive/10 text-destructive rounded-lg hover:bg-destructive/20 transition-colors text-xs"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Delete

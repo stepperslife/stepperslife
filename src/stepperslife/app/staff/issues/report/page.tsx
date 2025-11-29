@@ -132,13 +132,13 @@ export default function ReportIssuePage() {
       </Card>
 
       {/* Emergency Contact */}
-      <Card className="border-red-200 bg-red-50">
+      <Card className="border-destructive bg-destructive/10">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+            <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
             <div>
-              <h3 className="font-semibold text-red-900">Emergency or Urgent Issue?</h3>
-              <p className="text-sm text-red-800 mt-1">
+              <h3 className="font-semibold text-foreground">Emergency or Urgent Issue?</h3>
+              <p className="text-sm text-foreground mt-1">
                 For immediate assistance, contact your event supervisor directly.
               </p>
             </div>

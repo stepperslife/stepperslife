@@ -70,7 +70,7 @@ export function RestaurantsShowcase() {
 
                   <div className="space-y-2 text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      <Star className="h-3 w-3 fill-warning text-warning" />
                       <span className="font-medium">
                         {restaurant.averageRating}
                       </span>

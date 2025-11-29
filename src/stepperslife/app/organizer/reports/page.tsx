@@ -57,17 +57,17 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       <motion.header
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="bg-white shadow-sm border-b"
+        className="bg-card shadow-sm border-b border-border"
       >
         <div className="container mx-auto px-4 py-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
-            <p className="text-gray-600 mt-1">Comprehensive insights into your events performance</p>
+            <h1 className="text-3xl font-bold text-foreground">Reports & Analytics</h1>
+            <p className="text-muted-foreground mt-1">Comprehensive insights into your events performance</p>
           </div>
         </div>
       </motion.header>
@@ -83,14 +83,14 @@ export default function ReportsPage() {
             <Link
               key={index}
               href={report.href}
-              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all hover:-translate-y-1"
+              className="bg-card rounded-lg shadow-md p-6 hover:shadow-lg transition-all hover:-translate-y-1"
             >
               <div className={`${report.color} p-3 rounded-lg text-white w-fit mb-4`}>
                 <report.icon className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{report.title}</h3>
-              <p className="text-gray-600 mb-4">{report.description}</p>
-              <p className="text-sm text-gray-500 mb-4">{report.stats}</p>
+              <h3 className="text-xl font-bold text-foreground mb-2">{report.title}</h3>
+              <p className="text-muted-foreground mb-4">{report.description}</p>
+              <p className="text-sm text-muted-foreground mb-4">{report.stats}</p>
               <div className="flex items-center text-primary font-medium">
                 View report
                 <ArrowRight className="w-4 h-4 ml-2" />

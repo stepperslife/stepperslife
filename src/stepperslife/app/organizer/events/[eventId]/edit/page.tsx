@@ -165,7 +165,7 @@ export default function EditEventPage() {
 
   if (event === undefined || currentUser === null) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -191,21 +191,21 @@ export default function EditEventPage() {
   */
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-muted py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <Link
           href={`/organizer/events/${eventId}`}
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Event
         </Link>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
           <div className="bg-primary p-6">
             <h1 className="text-3xl font-bold text-white">Edit Event</h1>
-            <p className="text-blue-100 mt-2">Update your event details</p>
+            <p className="text-primary-foreground/80 mt-2">Update your event details</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-8">
@@ -213,38 +213,38 @@ export default function EditEventPage() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <FileText className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-bold text-gray-900">Basic Information</h2>
+                <h2 className="text-xl font-bold text-foreground">Basic Information</h2>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Event Name *
                   </label>
                   <input
                     type="text"
                     value={eventName}
                     onChange={(e) => setEventName(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Description *
                   </label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Categories</label>
                   <div className="flex flex-wrap gap-2">
                     {EVENT_CATEGORIES.map((category) => (
                       <button
@@ -254,7 +254,7 @@ export default function EditEventPage() {
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                           categories.includes(category)
                             ? "bg-primary text-white"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            : "bg-muted text-foreground hover:bg-muted/80"
                         }`}
                       >
                         {category}
@@ -269,31 +269,31 @@ export default function EditEventPage() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Calendar className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-bold text-gray-900">Date & Time</h2>
+                <h2 className="text-xl font-bold text-foreground">Date & Time</h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Start Date & Time
                   </label>
                   <input
                     type="datetime-local"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     End Date & Time
                   </label>
                   <input
                     type="datetime-local"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
               </div>
@@ -303,62 +303,62 @@ export default function EditEventPage() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <MapPin className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-bold text-gray-900">Location</h2>
+                <h2 className="text-xl font-bold text-foreground">Location</h2>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Venue Name</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Venue Name</label>
                   <input
                     type="text"
                     value={venueName}
                     onChange={(e) => setVenueName(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Street Address
                   </label>
                   <input
                     type="text"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">City *</label>
                     <input
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">State *</label>
                     <input
                       type="text"
                       value={state}
                       onChange={(e) => setState(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Zip Code</label>
                     <input
                       type="text"
                       value={zipCode}
                       onChange={(e) => setZipCode(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -367,22 +367,22 @@ export default function EditEventPage() {
 
             {/* Additional Details */}
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Additional Details</h2>
+              <h2 className="text-xl font-bold text-foreground mb-4">Additional Details</h2>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Event Capacity{" "}
-                  {event.eventType === "TICKETED_EVENT" && <span className="text-red-500">*</span>}
+                  {event.eventType === "TICKETED_EVENT" && <span className="text-destructive">*</span>}
                 </label>
                 <input
                   type="number"
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
                   min="1"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="Maximum number of attendees/tickets"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {event.eventType === "TICKETED_EVENT"
                     ? "Maximum number of tickets available (required for ticket setup)"
                     : "Maximum number of attendees (optional)"}
@@ -392,12 +392,12 @@ export default function EditEventPage() {
 
             {/* Image Upload */}
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Event Image <span className="text-red-600">*</span>
+              <h2 className="text-xl font-bold text-foreground mb-4">
+                Event Image <span className="text-destructive">*</span>
               </h2>
               {event.imageUrl && (
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2">Current Image:</p>
+                  <p className="text-sm text-muted-foreground mb-2">Current Image:</p>
                   <img
                     src={event.imageUrl}
                     alt="Current event image"
@@ -410,23 +410,23 @@ export default function EditEventPage() {
                 currentImageUrl={event.imageUrl}
                 required={!event.imageUrl && (!event.images || event.images.length === 0)}
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-muted-foreground mt-2">
                 A professional event image is required and will be displayed on the event page, checkout, and payment confirmation.
               </p>
             </div>
 
             {/* Submit Button */}
-            <div className="flex items-center justify-end gap-4 pt-6 border-t">
+            <div className="flex items-center justify-end gap-4 pt-6 border-t border-border">
               <Link
                 href={`/organizer/events/${eventId}`}
-                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-6 py-3 border border-border rounded-lg text-foreground hover:bg-muted transition-colors"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:bg-muted disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <>

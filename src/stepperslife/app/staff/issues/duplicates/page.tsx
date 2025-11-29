@@ -52,10 +52,10 @@ export default function DuplicateScansPage() {
       ) : (
         <div className="space-y-3">
           {duplicates.map((duplicate: any) => (
-            <Card key={duplicate.id} className="border-yellow-200 bg-yellow-50/50">
+            <Card key={duplicate.id} className="border-warning bg-warning/10">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
-                  <Copy className="h-5 w-5 text-yellow-600 mt-0.5" />
+                  <Copy className="h-5 w-5 text-warning mt-0.5" />
                   <div className="flex-1">
                     <div className="flex items-start justify-between">
                       <div>
@@ -64,10 +64,10 @@ export default function DuplicateScansPage() {
                           Event: {duplicate.eventName}
                         </p>
                         <div className="text-sm mt-2 space-y-1">
-                          <p className="text-yellow-700">
+                          <p className="text-warning">
                             First scanned: {formatTime(duplicate.firstScan)}
                           </p>
-                          <p className="text-yellow-700">
+                          <p className="text-warning">
                             Duplicate attempt: {formatTime(duplicate.duplicateScan)}
                           </p>
                         </div>

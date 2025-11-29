@@ -85,8 +85,8 @@ export default function AdminDashboard() {
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Platform Overview</h1>
-        <p className="text-gray-600 mt-1">Real-time platform analytics and system health</p>
+        <h1 className="text-3xl font-bold text-foreground">Platform Overview</h1>
+        <p className="text-muted-foreground mt-1">Real-time platform analytics and system health</p>
       </div>
 
       {/* Stats Grid */}
@@ -95,8 +95,8 @@ export default function AdminDashboard() {
           const Icon = stat.icon;
           const colorClasses = {
             blue: "bg-accent text-primary",
-            green: "bg-green-100 text-green-600",
-            orange: "bg-orange-100 text-orange-600",
+            green: "bg-success/10 text-success",
+            orange: "bg-warning/10 text-warning",
           }[stat.color];
 
           return (
@@ -114,10 +114,10 @@ export default function AdminDashboard() {
                   <Icon className="w-6 h-6" />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">{stat.name}</p>
-              <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-              <p className="text-xs text-gray-500 mt-1">{stat.subtext}</p>
-              <p className="text-xs text-gray-600 mt-2 flex items-center gap-1">
+              <p className="text-sm text-muted-foreground mb-1">{stat.name}</p>
+              <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+              <p className="text-xs text-muted-foreground mt-1">{stat.subtext}</p>
+              <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
                 {stat.change}
               </p>
@@ -144,15 +144,15 @@ export default function AdminDashboard() {
       </div>
 
       {/* Event Moderation Quick Access */}
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+      <div className="bg-card rounded-lg shadow-md">
+        <div className="p-6 border-b border-border">
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
             <Calendar className="w-5 h-5" />
             Event Moderation
           </h2>
         </div>
         <div className="p-6">
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Manage and moderate all platform events, update statuses, and review event content.
           </p>
           <Link
@@ -166,63 +166,63 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+      <div className="bg-card rounded-lg shadow-md">
+        <div className="p-6 border-b border-border">
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
             <Activity className="w-5 h-5" />
             Recent Orders
           </h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Order ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Event
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Customer
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Date
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-border">
               {recentActivity.orders.slice(0, 10).map((order) => (
-                <tr key={order._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
+                <tr key={order._id} className="hover:bg-muted">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-foreground">
                     {order._id.slice(0, 8)}...
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{order.eventName}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{order.buyerName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 text-sm text-foreground">{order.eventName}</td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">{order.buyerName}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                     ${(order.totalCents / 100).toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                         order.status === "COMPLETED"
-                          ? "bg-green-100 text-green-800"
+                          ? "bg-success/10 text-success"
                           : order.status === "PENDING"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-gray-100 text-gray-800"
+                            ? "bg-warning/10 text-warning"
+                            : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {order.status === "COMPLETED" && <CheckCircle2 className="w-3 h-3" />}
                       {order.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {format(new Date(order.createdAt), "MMM d, h:mm a")}
                   </td>
                 </tr>
@@ -236,29 +236,29 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link
           href="/admin/users"
-          className="bg-white border-2 border-border rounded-lg p-6 hover:border-primary transition-colors"
+          className="bg-card border-2 border-border rounded-lg p-6 hover:border-primary transition-colors"
         >
           <Users className="w-8 h-8 text-primary mb-3" />
-          <h3 className="font-semibold text-gray-900 mb-1">Manage Users</h3>
-          <p className="text-sm text-gray-600">View and moderate all platform users</p>
+          <h3 className="font-semibold text-foreground mb-1">Manage Users</h3>
+          <p className="text-sm text-muted-foreground">View and moderate all platform users</p>
         </Link>
 
         <Link
           href="/admin/events"
-          className="bg-white border-2 border-border rounded-lg p-6 hover:border-primary transition-colors"
+          className="bg-card border-2 border-border rounded-lg p-6 hover:border-primary transition-colors"
         >
           <Calendar className="w-8 h-8 text-primary mb-3" />
-          <h3 className="font-semibold text-gray-900 mb-1">Manage Events</h3>
-          <p className="text-sm text-gray-600">Moderate and manage all events</p>
+          <h3 className="font-semibold text-foreground mb-1">Manage Events</h3>
+          <p className="text-sm text-muted-foreground">Moderate and manage all events</p>
         </Link>
 
         <Link
           href="/admin/analytics"
-          className="bg-white border-2 border-border rounded-lg p-6 hover:border-primary transition-colors"
+          className="bg-card border-2 border-border rounded-lg p-6 hover:border-primary transition-colors"
         >
           <Activity className="w-8 h-8 text-primary mb-3" />
-          <h3 className="font-semibold text-gray-900 mb-1">View Analytics</h3>
-          <p className="text-sm text-gray-600">Detailed platform analytics and reports</p>
+          <h3 className="font-semibold text-foreground mb-1">View Analytics</h3>
+          <p className="text-sm text-muted-foreground">Detailed platform analytics and reports</p>
         </Link>
       </div>
     </div>

@@ -113,7 +113,7 @@ export function MarketplaceSection({ products }: MarketplaceSectionProps) {
                   {/* Rating */}
                   {product.averageRating && product.reviewCount > 0 ? (
                     <div className="mt-2 flex items-center gap-1 text-sm">
-                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      <Star className="h-3 w-3 fill-warning text-warning" />
                       <span className="font-medium">
                         {Number(product.averageRating).toFixed(1)}
                       </span>

@@ -54,7 +54,7 @@ export default function TransferAcceptancePage() {
 
   if (transfer === undefined || currentUser === undefined) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -62,11 +62,11 @@ export default function TransferAcceptancePage() {
 
   if (!transfer) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-muted flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-          <XCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Transfer Not Found</h1>
-          <p className="text-gray-600 mb-6">This transfer link is invalid or has expired.</p>
+          <XCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-2">Transfer Not Found</h1>
+          <p className="text-muted-foreground mb-6">This transfer link is invalid or has expired.</p>
           <Link
             href="/"
             className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
@@ -84,7 +84,7 @@ export default function TransferAcceptancePage() {
   // Success screen after accepting
   if (acceptanceResult?.success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-muted flex items-center justify-center p-4">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -95,12 +95,12 @@ export default function TransferAcceptancePage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+            className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4"
           >
-            <CheckCircle2 className="w-10 h-10 text-green-600" />
+            <CheckCircle2 className="w-10 h-10 text-success" />
           </motion.div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Transfer Complete!</h2>
-          <p className="text-gray-600 mb-6">{acceptanceResult.message}</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Transfer Complete!</h2>
+          <p className="text-muted-foreground mb-6">{acceptanceResult.message}</p>
           <Link
             href="/my-tickets"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
@@ -116,11 +116,11 @@ export default function TransferAcceptancePage() {
   // Error screen
   if (acceptanceResult && !acceptanceResult.success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-muted flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-          <XCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Transfer Failed</h1>
-          <p className="text-gray-600 mb-6">{acceptanceResult.message}</p>
+          <XCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-2">Transfer Failed</h1>
+          <p className="text-muted-foreground mb-6">{acceptanceResult.message}</p>
           <button
             onClick={() => setAcceptanceResult(null)}
             className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
@@ -133,7 +133,7 @@ export default function TransferAcceptancePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto">
           <motion.div
@@ -155,14 +155,14 @@ export default function TransferAcceptancePage() {
             <div className="p-6">
               {/* Status Alerts */}
               {transfer.status !== "PENDING" && (
-                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="mb-6 p-4 bg-warning/10 border border-warning/20 rounded-lg">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                    <AlertCircle className="w-5 h-5 text-warning mt-0.5" />
                     <div>
-                      <p className="font-semibold text-yellow-900">
+                      <p className="font-semibold text-warning">
                         Transfer {transfer.status.toLowerCase()}
                       </p>
-                      <p className="text-sm text-yellow-700 mt-1">
+                      <p className="text-sm text-warning mt-1">
                         This transfer has already been {transfer.status.toLowerCase()}.
                       </p>
                     </div>
@@ -171,12 +171,12 @@ export default function TransferAcceptancePage() {
               )}
 
               {isExpired && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                   <div className="flex items-start gap-3">
-                    <XCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                    <XCircle className="w-5 h-5 text-destructive mt-0.5" />
                     <div>
-                      <p className="font-semibold text-red-900">Transfer Expired</p>
-                      <p className="text-sm text-red-700 mt-1">
+                      <p className="font-semibold text-destructive">Transfer Expired</p>
+                      <p className="text-sm text-destructive mt-1">
                         This transfer expired on{" "}
                         {format(transfer.expiresAt, "MMM d, yyyy 'at' h:mm a")}
                       </p>
@@ -187,24 +187,24 @@ export default function TransferAcceptancePage() {
 
               {/* Event Details */}
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Event Details</h3>
+                <h3 className="font-semibold text-foreground mb-3">Event Details</h3>
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm text-gray-600">Event</p>
-                    <p className="font-medium text-gray-900">{transfer.event?.name}</p>
+                    <p className="text-sm text-muted-foreground">Event</p>
+                    <p className="font-medium text-foreground">{transfer.event?.name}</p>
                   </div>
                   {transfer.event?.startDate && (
                     <div>
-                      <p className="text-sm text-gray-600">Date & Time</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-muted-foreground">Date & Time</p>
+                      <p className="font-medium text-foreground">
                         {format(transfer.event.startDate, "EEEE, MMMM d, yyyy 'at' h:mm a")}
                       </p>
                     </div>
                   )}
                   {transfer.event?.location && typeof transfer.event.location === "object" && (
                     <div>
-                      <p className="text-sm text-gray-600">Location</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-muted-foreground">Location</p>
+                      <p className="font-medium text-foreground">
                         {transfer.event.location.venueName &&
                           `${transfer.event.location.venueName}, `}
                         {transfer.event.location.city}, {transfer.event.location.state}
@@ -215,22 +215,22 @@ export default function TransferAcceptancePage() {
               </div>
 
               {/* Ticket Details */}
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold text-gray-900 mb-3">Ticket Details</h3>
+              <div className="mb-6 p-4 bg-muted rounded-lg">
+                <h3 className="font-semibold text-foreground mb-3">Ticket Details</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Ticket Code</span>
-                    <span className="font-mono font-semibold text-gray-900">
+                    <span className="text-muted-foreground">Ticket Code</span>
+                    <span className="font-mono font-semibold text-foreground">
                       {transfer.ticket?.ticketCode}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">From</span>
-                    <span className="font-medium text-gray-900">{transfer.fromName}</span>
+                    <span className="text-muted-foreground">From</span>
+                    <span className="font-medium text-foreground">{transfer.fromName}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">To</span>
-                    <span className="font-medium text-gray-900">{transfer.toName}</span>
+                    <span className="text-muted-foreground">To</span>
+                    <span className="font-medium text-foreground">{transfer.toName}</span>
                   </div>
                 </div>
               </div>
@@ -252,8 +252,8 @@ export default function TransferAcceptancePage() {
 
               {/* Actions */}
               {!currentUser ? (
-                <div className="text-center p-6 bg-gray-50 rounded-lg">
-                  <p className="text-gray-600 mb-4">Please sign in to accept this transfer</p>
+                <div className="text-center p-6 bg-muted rounded-lg">
+                  <p className="text-muted-foreground mb-4">Please sign in to accept this transfer</p>
                   <Link
                     href={`/sign-in?redirect=/transfer/${transferToken}`}
                     className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
@@ -266,7 +266,7 @@ export default function TransferAcceptancePage() {
                   <button
                     onClick={handleAcceptTransfer}
                     disabled={isAccepting}
-                    className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3 bg-success text-white rounded-lg hover:bg-success/90 transition-colors font-medium disabled:bg-muted disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isAccepting ? (
                       <>
@@ -282,7 +282,7 @@ export default function TransferAcceptancePage() {
                   </button>
                   <Link
                     href="/"
-                    className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors font-medium"
                   >
                     Cancel
                   </Link>

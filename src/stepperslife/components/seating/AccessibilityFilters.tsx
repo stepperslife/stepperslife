@@ -27,10 +27,10 @@ export default function AccessibilityFilters({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+    <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
-        <Filter className="w-4 h-4 text-gray-600" />
-        <h3 className="text-sm font-semibold text-gray-900">Seat Filters</h3>
+        <Filter className="w-4 h-4 text-muted-foreground" />
+        <h3 className="text-sm font-semibold text-foreground">Seat Filters</h3>
       </div>
 
       <div className="space-y-2">
@@ -40,26 +40,26 @@ export default function AccessibilityFilters({
             type="checkbox"
             checked={filters.wheelchairOnly}
             onChange={() => toggleFilter("wheelchairOnly")}
-            className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-purple-500"
+            className="w-4 h-4 text-primary border-border rounded focus:ring-ring"
           />
           <Accessibility className="w-4 h-4 text-primary" />
-          <span className="text-sm text-gray-700 group-hover:text-gray-900">
+          <span className="text-sm text-foreground group-hover:text-foreground/80">
             Wheelchair Accessible Only
           </span>
         </label>
 
         {/* Show/Hide Filters */}
-        <div className="pl-6 space-y-2 border-l-2 border-gray-200">
+        <div className="pl-6 space-y-2 border-l-2 border-border">
           <label className="flex items-center gap-2 cursor-pointer group">
             <input
               type="checkbox"
               checked={filters.showWheelchair}
               onChange={() => toggleFilter("showWheelchair")}
               disabled={filters.wheelchairOnly}
-              className="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary disabled:opacity-50"
+              className="w-3.5 h-3.5 text-primary border-border rounded focus:ring-ring disabled:opacity-50"
             />
             <Accessibility className="w-3.5 h-3.5 text-primary" />
-            <span className="text-xs text-gray-600 group-hover:text-gray-800">
+            <span className="text-xs text-muted-foreground group-hover:text-foreground">
               Show Wheelchair Seats
             </span>
           </label>
@@ -70,10 +70,10 @@ export default function AccessibilityFilters({
               checked={filters.showVIP}
               onChange={() => toggleFilter("showVIP")}
               disabled={filters.wheelchairOnly}
-              className="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary disabled:opacity-50"
+              className="w-3.5 h-3.5 text-primary border-border rounded focus:ring-ring disabled:opacity-50"
             />
-            <Crown className="w-3.5 h-3.5 text-yellow-600" />
-            <span className="text-xs text-gray-600 group-hover:text-gray-800">Show VIP Seats</span>
+            <Crown className="w-3.5 h-3.5 text-warning" />
+            <span className="text-xs text-muted-foreground group-hover:text-foreground">Show VIP Seats</span>
           </label>
 
           <label className="flex items-center gap-2 cursor-pointer group">
@@ -82,10 +82,10 @@ export default function AccessibilityFilters({
               checked={filters.showStandard}
               onChange={() => toggleFilter("showStandard")}
               disabled={filters.wheelchairOnly}
-              className="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary disabled:opacity-50"
+              className="w-3.5 h-3.5 text-primary border-border rounded focus:ring-ring disabled:opacity-50"
             />
-            <User className="w-3.5 h-3.5 text-gray-600" />
-            <span className="text-xs text-gray-600 group-hover:text-gray-800">
+            <User className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground group-hover:text-foreground">
               Show Standard Seats
             </span>
           </label>
@@ -93,7 +93,7 @@ export default function AccessibilityFilters({
       </div>
 
       {filters.wheelchairOnly && (
-        <div className="mt-3 p-2 bg-accent border border-purple-200 rounded text-xs text-purple-800">
+        <div className="mt-3 p-2 bg-accent border border-primary/30 rounded text-xs text-accent-foreground">
           Only showing wheelchair accessible seats
         </div>
       )}

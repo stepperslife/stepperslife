@@ -21,7 +21,7 @@ export default function AssociateMyEventsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Events</CardTitle>
-            <Calendar className="h-4 w-4 text-green-600" />
+            <Calendar className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
@@ -43,10 +43,10 @@ export default function AssociateMyEventsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
-            <Ticket className="h-4 w-4 text-green-600" />
+            <Ticket className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">0</div>
+            <div className="text-2xl font-bold text-success">0</div>
             <p className="text-xs text-muted-foreground">Tickets sold</p>
           </CardContent>
         </Card>
@@ -58,8 +58,8 @@ export default function AssociateMyEventsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Calendar className="h-5 w-5 text-green-600" />
+                  <div className="p-2 bg-success/10 rounded-lg">
+                    <Calendar className="h-5 w-5 text-success" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Active Events</CardTitle>
@@ -77,8 +77,8 @@ export default function AssociateMyEventsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gray-100 rounded-lg">
-                    <Calendar className="h-5 w-5 text-gray-600" />
+                  <div className="p-2 bg-muted rounded-lg">
+                    <Calendar className="h-5 w-5 text-muted-foreground" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Past Events</CardTitle>
@@ -109,7 +109,7 @@ export default function AssociateMyEventsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="text-lg font-semibold">{event.name}</h3>
-                      <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                      <span className="px-2 py-1 text-xs rounded-full bg-success/10 text-success">
                         Active
                       </span>
                     </div>
@@ -129,7 +129,7 @@ export default function AssociateMyEventsPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-green-600">{event.ticketsSold || 0}</p>
+                    <p className="text-2xl font-bold text-success">{event.ticketsSold || 0}</p>
                     <p className="text-sm text-muted-foreground">tickets sold</p>
                     <Link
                       href={`/associate/my-events/details?id=${event.id}`}

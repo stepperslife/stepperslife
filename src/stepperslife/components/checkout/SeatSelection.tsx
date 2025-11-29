@@ -53,8 +53,8 @@ export default function SeatSelection({
 
   if (!seatingChart) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-        <p className="text-gray-600">Loading seating chart...</p>
+      <div className="bg-card rounded-lg border border-border p-8 text-center">
+        <p className="text-muted-foreground">Loading seating chart...</p>
       </div>
     );
   }
@@ -67,12 +67,12 @@ export default function SeatSelection({
 
   if (availableSections.length === 0) {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+      <div className="bg-warning/10 border border-warning rounded-lg p-6">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-warning mt-0.5" />
           <div>
-            <p className="font-semibold text-yellow-900">No Seating Available</p>
-            <p className="text-sm text-yellow-700 mt-1">
+            <p className="font-semibold text-foreground">No Seating Available</p>
+            <p className="text-sm text-muted-foreground mt-1">
               There are no seats available for this ticket tier.
             </p>
           </div>
@@ -210,18 +210,18 @@ export default function SeatSelection({
   return (
     <div className="space-y-6">
       {/* Selection Progress */}
-      <div className="bg-gray-50 border border-gray-300 rounded-lg p-4">
+      <div className="bg-muted border border-border rounded-lg p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="font-semibold text-gray-900">
+          <span className="font-semibold text-foreground">
             Select {requiredSeats} {requiredSeats === 1 ? "seat" : "seats"}
           </span>
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-muted-foreground">
             {selectedSeats.length} / {requiredSeats} selected
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-muted rounded-full h-2">
           <div
-            className="bg-green-600 h-2 rounded-full transition-all duration-300"
+            className="bg-success h-2 rounded-full transition-all duration-300"
             style={{ width: `${(selectedSeats.length / requiredSeats) * 100}%` }}
           ></div>
         </div>
@@ -234,17 +234,17 @@ export default function SeatSelection({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-green-50 border border-green-200 rounded-lg p-4"
+            className="bg-success/10 border border-success rounded-lg p-4"
           >
             <div className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-600 mt-0.5" />
+              <Check className="w-5 h-5 text-success mt-0.5" />
               <div className="flex-1">
-                <p className="font-semibold text-green-900 mb-2">Selected Seats:</p>
+                <p className="font-semibold text-foreground mb-2">Selected Seats:</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedSeats.map((seat, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
+                      className="px-3 py-1 bg-success/10 text-success rounded-full text-sm font-medium"
                     >
                       {seat.sectionName} -{" "}
                       {seat.rowId ? (
@@ -266,7 +266,7 @@ export default function SeatSelection({
       </AnimatePresence>
 
       {/* Seating Chart */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-card rounded-lg border border-border p-6">
         <div className="space-y-8">
           {availableSections.map((section) => (
             <div key={section.id}>
@@ -275,8 +275,8 @@ export default function SeatSelection({
                   className="w-6 h-6 rounded"
                   style={{ backgroundColor: section.color || "#3B82F6" }}
                 ></div>
-                <h3 className="text-lg font-bold text-gray-900">{section.name}</h3>
-                <span className="text-sm text-gray-600">
+                <h3 className="text-lg font-bold text-foreground">{section.name}</h3>
+                <span className="text-sm text-muted-foreground">
                   (
                   {(() => {
                     let available = 0;
@@ -305,7 +305,7 @@ export default function SeatSelection({
                 <div className="space-y-2 overflow-x-auto pb-2">
                   {section.rows.map((row) => (
                     <div key={row.id} className="flex items-center gap-2 min-w-max">
-                      <span className="w-12 text-sm font-medium text-gray-600 text-right flex-shrink-0">
+                      <span className="w-12 text-sm font-medium text-muted-foreground text-right flex-shrink-0">
                         Row {row.label}
                       </span>
                       <div className="flex gap-1">
@@ -336,16 +336,16 @@ export default function SeatSelection({
                               disabled={!isAvailable}
                               className={`w-10 h-10 rounded flex items-center justify-center text-xs font-medium transition-all border-2 ${
                                 isSelected
-                                  ? "bg-green-600 text-white border-green-700 scale-110"
+                                  ? "bg-success text-white border-success scale-110"
                                   : isReserved
-                                    ? "bg-gray-300 text-gray-600 border-gray-400 cursor-not-allowed"
+                                    ? "bg-muted text-muted-foreground border-border cursor-not-allowed"
                                     : isWheelchair
-                                      ? "bg-white text-black border-black hover:bg-green-50 cursor-pointer"
+                                      ? "bg-card text-foreground border-foreground hover:bg-success/10 cursor-pointer"
                                       : isVIP
-                                        ? "bg-white text-black border-yellow-600 hover:bg-green-50 cursor-pointer"
+                                        ? "bg-card text-foreground border-warning hover:bg-success/10 cursor-pointer"
                                         : isCompanion
-                                          ? "bg-white text-black border-black hover:bg-green-50 cursor-pointer"
-                                          : "bg-white text-gray-900 border-gray-900 hover:bg-green-50 cursor-pointer"
+                                          ? "bg-card text-foreground border-foreground hover:bg-success/10 cursor-pointer"
+                                          : "bg-card text-foreground border-foreground hover:bg-success/10 cursor-pointer"
                               }`}
                               title={
                                 isReserved
@@ -380,7 +380,7 @@ export default function SeatSelection({
               {/* Table-based seating */}
               {section.tables && section.tables.length > 0 && (
                 <div className="space-y-6">
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     {isTablePackage
                       ? `Purchase entire tables (${tableCapacity} seats each)`
                       : "Click on a seat at any table to select it"}
@@ -403,33 +403,33 @@ export default function SeatSelection({
                           className={`border-2 rounded-lg p-4 transition-all ${
                             isTablePackage
                               ? tableSelected
-                                ? "border-green-500 bg-green-50"
-                                : "border-gray-200 bg-gray-50 hover:border-primary/40"
-                              : "border-gray-200 bg-gray-50 hover:border-border"
+                                ? "border-success bg-success/10"
+                                : "border-border bg-muted hover:border-primary/40"
+                              : "border-border bg-muted hover:border-border"
                           }`}
                         >
-                          <h4 className="font-semibold text-gray-900 mb-3 text-center">
+                          <h4 className="font-semibold text-foreground mb-3 text-center">
                             Table {table.number}
                           </h4>
 
                           {isTablePackage ? (
                             /* Table Package Mode - Show "Buy This Table" Button */
                             <div className="space-y-3">
-                              <div className="bg-white rounded-lg p-3 border border-gray-200">
-                                <p className="text-sm text-gray-600 text-center mb-1">
+                              <div className="bg-card rounded-lg p-3 border border-border">
+                                <p className="text-sm text-muted-foreground text-center mb-1">
                                   {table.seats.length} seats
                                 </p>
                                 <p className="text-xs text-center">
                                   {availableSeatsAtTable === table.seats.length ? (
-                                    <span className="text-green-600 font-medium">
+                                    <span className="text-success font-medium">
                                       All seats available
                                     </span>
                                   ) : availableSeatsAtTable === 0 ? (
-                                    <span className="text-red-600 font-medium">
+                                    <span className="text-destructive font-medium">
                                       No seats available
                                     </span>
                                   ) : (
-                                    <span className="text-yellow-600 font-medium">
+                                    <span className="text-warning font-medium">
                                       Only {availableSeatsAtTable} seats available
                                     </span>
                                   )}
@@ -452,9 +452,9 @@ export default function SeatSelection({
                                 className={`w-full py-3 rounded-lg font-semibold transition-all ${
                                   tableFullyAvailable
                                     ? tableSelected
-                                      ? "bg-green-600 text-white hover:bg-green-700"
+                                      ? "bg-success text-white hover:bg-success/90"
                                       : "bg-primary text-white hover:bg-primary/90"
-                                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-muted text-muted-foreground cursor-not-allowed"
                                 }`}
                               >
                                 {tableSelected ? (
@@ -470,7 +470,7 @@ export default function SeatSelection({
                               </button>
 
                               {ticketTier?.price && tableFullyAvailable && (
-                                <p className="text-xs text-center text-gray-600">
+                                <p className="text-xs text-center text-muted-foreground">
                                   ${(ticketTier.price / 100).toFixed(2)} for {table.seats.length}{" "}
                                   seats
                                   <br />
@@ -515,16 +515,16 @@ export default function SeatSelection({
                                     disabled={!isAvailable}
                                     className={`w-12 h-12 rounded-full flex items-center justify-center text-xs font-medium transition-all border-2 ${
                                       isSelected
-                                        ? "bg-green-600 text-white border-green-700 scale-110"
+                                        ? "bg-success text-white border-success scale-110"
                                         : isReserved
-                                          ? "bg-gray-300 text-gray-600 border-gray-400 cursor-not-allowed"
+                                          ? "bg-muted text-muted-foreground border-border cursor-not-allowed"
                                           : isWheelchair
-                                            ? "bg-white text-black border-black hover:bg-green-50 cursor-pointer"
+                                            ? "bg-card text-foreground border-foreground hover:bg-success/10 cursor-pointer"
                                             : isVIP
-                                              ? "bg-white text-black border-yellow-600 hover:bg-green-50 cursor-pointer"
+                                              ? "bg-card text-foreground border-warning hover:bg-success/10 cursor-pointer"
                                               : isCompanion
-                                                ? "bg-white text-black border-black hover:bg-green-50 cursor-pointer"
-                                                : "bg-white text-gray-900 border-gray-900 hover:bg-green-50 cursor-pointer"
+                                                ? "bg-card text-foreground border-foreground hover:bg-success/10 cursor-pointer"
+                                                : "bg-card text-foreground border-foreground hover:bg-success/10 cursor-pointer"
                                     }`}
                                     title={
                                       isReserved
@@ -554,7 +554,7 @@ export default function SeatSelection({
                           )}
 
                           {!isTablePackage && (
-                            <p className="text-xs text-gray-600 text-center mt-3">
+                            <p className="text-xs text-muted-foreground text-center mt-3">
                               {table.seats.filter((s) => s.status === "AVAILABLE").length} of{" "}
                               {table.seats.length} available
                             </p>
@@ -571,44 +571,44 @@ export default function SeatSelection({
       </div>
 
       {/* Legend */}
-      <div className="bg-gray-50 rounded-lg p-4 border border-gray-300">
-        <h4 className="font-semibold text-gray-900 mb-3 text-sm">Legend</h4>
+      <div className="bg-muted rounded-lg p-4 border border-border">
+        <h4 className="font-semibold text-foreground mb-3 text-sm">Legend</h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white border-2 border-gray-900 rounded"></div>
-            <span className="text-gray-700">Available</span>
+            <div className="w-8 h-8 bg-card border-2 border-foreground rounded"></div>
+            <span className="text-muted-foreground">Available</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-green-600 border-2 border-green-700 rounded"></div>
-            <span className="text-gray-700">Selected</span>
+            <div className="w-8 h-8 bg-success border-2 border-success rounded"></div>
+            <span className="text-muted-foreground">Selected</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gray-300 border-2 border-gray-400 rounded"></div>
-            <span className="text-gray-700">Reserved</span>
+            <div className="w-8 h-8 bg-muted border-2 border-border rounded"></div>
+            <span className="text-muted-foreground">Reserved</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white border-2 border-black rounded flex items-center justify-center">
-              <Accessibility className="w-4 h-4 text-black" />
+            <div className="w-8 h-8 bg-card border-2 border-foreground rounded flex items-center justify-center">
+              <Accessibility className="w-4 h-4 text-foreground" />
             </div>
-            <span className="text-gray-700">Wheelchair</span>
+            <span className="text-muted-foreground">Wheelchair</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white border-2 border-yellow-600 rounded flex items-center justify-center">
-              <Crown className="w-4 h-4 text-yellow-600" />
+            <div className="w-8 h-8 bg-card border-2 border-warning rounded flex items-center justify-center">
+              <Crown className="w-4 h-4 text-warning" />
             </div>
-            <span className="text-gray-700">VIP</span>
+            <span className="text-muted-foreground">VIP</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white border-2 border-black rounded flex items-center justify-center">
-              <Users className="w-4 h-4 text-black" />
+            <div className="w-8 h-8 bg-card border-2 border-foreground rounded flex items-center justify-center">
+              <Users className="w-4 h-4 text-foreground" />
             </div>
-            <span className="text-gray-700">Companion</span>
+            <span className="text-muted-foreground">Companion</span>
           </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="text-center text-sm text-gray-600">
+      <div className="text-center text-sm text-muted-foreground">
         <p>
           {getAvailableSeatCount()} seats available • {selectedSeats.length} of {requiredSeats}{" "}
           required seats selected

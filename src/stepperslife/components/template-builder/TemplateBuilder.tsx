@@ -225,16 +225,16 @@ export default function TemplateBuilder({
   return (
     <div className="flex flex-col h-full">
       {/* Top toolbar */}
-      <div className="flex items-center justify-between p-4 bg-white border-b-2 border-gray-300">
+      <div className="flex items-center justify-between p-4 bg-card border-b-2 border-border">
         <div className="flex items-center gap-4">
-          <h2 className="text-xl font-bold text-gray-900">Visual Seating Builder</h2>
+          <h2 className="text-xl font-bold text-foreground">Visual Seating Builder</h2>
 
           {/* Undo/Redo */}
           <div className="flex items-center gap-1">
             <button
               onClick={handleUndo}
               disabled={historyIndex <= 0}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="Undo"
             >
               <Undo2 className="w-5 h-5" />
@@ -242,7 +242,7 @@ export default function TemplateBuilder({
             <button
               onClick={handleRedo}
               disabled={historyIndex >= history.length - 1}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="Redo"
             >
               <Redo2 className="w-5 h-5" />
@@ -253,7 +253,7 @@ export default function TemplateBuilder({
           <button
             onClick={handleClearAll}
             disabled={items.length === 0}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             title="Clear all"
           >
             <Trash2 className="w-5 h-5" />
@@ -270,8 +270,8 @@ export default function TemplateBuilder({
           </div>
 
           {/* Items counter */}
-          <div className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg">
-            <span className="text-sm font-medium text-gray-700">
+          <div className="px-4 py-2 bg-muted border border-border rounded-lg">
+            <span className="text-sm font-medium text-foreground">
               {items.length} {items.length === 1 ? "item" : "items"}
             </span>
           </div>
@@ -281,7 +281,7 @@ export default function TemplateBuilder({
             {onCancel && (
               <button
                 onClick={onCancel}
-                className="px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                className="px-4 py-2 border-2 border-border text-foreground rounded-lg hover:bg-muted transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -313,7 +313,7 @@ export default function TemplateBuilder({
       {/* Main content area */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left: Toolbar */}
-        <div className="w-64 flex-shrink-0 overflow-y-auto p-4 bg-gray-50 border-r-2 border-gray-300">
+        <div className="w-64 flex-shrink-0 overflow-y-auto p-4 bg-muted border-r-2 border-border">
           <Toolbar />
         </div>
 
@@ -332,7 +332,7 @@ export default function TemplateBuilder({
 
         {/* Right: Property Panel - Only show when item is selected */}
         {selectedItem && (
-          <div className="w-80 flex-shrink-0 overflow-y-auto p-4 bg-gray-50 border-l-2 border-gray-300">
+          <div className="w-80 flex-shrink-0 overflow-y-auto p-4 bg-muted border-l-2 border-border">
             <PropertyPanel
               selectedItem={selectedItem}
               onUpdateItem={handleUpdateItem}

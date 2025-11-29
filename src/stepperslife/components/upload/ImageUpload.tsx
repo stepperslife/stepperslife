@@ -115,11 +115,11 @@ export function ImageUpload({
       />
 
       {previewUrl ? (
-        <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-200">
+        <div className="relative w-full h-64 bg-muted rounded-lg overflow-hidden border-2 border-border">
           <Image src={previewUrl} alt="Event preview" fill className="object-cover" />
           <button
             onClick={handleRemove}
-            className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-lg"
+            className="absolute top-2 right-2 p-2 bg-destructive text-white rounded-full hover:bg-destructive/90 transition-colors shadow-lg"
           >
             <X className="w-4 h-4" />
           </button>
@@ -127,8 +127,8 @@ export function ImageUpload({
       ) : (
         <label
           htmlFor="image-upload"
-          className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100 ${
-            required ? "border-red-300" : "border-gray-300"
+          className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer bg-muted hover:bg-muted/80 ${
+            required ? "border-destructive" : "border-border"
           }`}
         >
           <div className="flex flex-col items-center justify-center py-8">
@@ -137,31 +137,31 @@ export function ImageUpload({
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
                 {compressionProgress > 0 && compressionProgress < 100 ? (
                   <>
-                    <p className="text-sm text-gray-600 mb-2">Optimizing image...</p>
-                    <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <p className="text-sm text-muted-foreground mb-2">Optimizing image...</p>
+                    <div className="w-48 h-2 bg-muted rounded-full overflow-hidden">
                       <div
                         className="h-full bg-primary transition-all duration-300"
                         style={{ width: `${compressionProgress}%` }}
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">{compressionProgress}%</p>
+                    <p className="text-xs text-muted-foreground mt-1">{compressionProgress}%</p>
                   </>
                 ) : (
-                  <p className="text-sm text-gray-600">Uploading...</p>
+                  <p className="text-sm text-muted-foreground">Uploading...</p>
                 )}
               </>
             ) : (
               <>
-                <ImageIcon className={`w-12 h-12 mb-4 ${required ? "text-red-400" : "text-gray-400"}`} />
+                <ImageIcon className={`w-12 h-12 mb-4 ${required ? "text-destructive" : "text-muted-foreground"}`} />
                 <div className="flex items-center gap-2 mb-2">
                   <Upload className="w-5 h-5 text-primary" />
-                  <p className="text-sm font-medium text-gray-700">
+                  <p className="text-sm font-medium text-foreground">
                     Click to upload event image{required && " *"}
                   </p>
                 </div>
-                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB (auto-optimized)</p>
+                <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB (auto-optimized)</p>
                 {required && (
-                  <p className="text-xs text-red-600 mt-2 font-medium">Required</p>
+                  <p className="text-xs text-destructive mt-2 font-medium">Required</p>
                 )}
               </>
             )}

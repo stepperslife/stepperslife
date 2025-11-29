@@ -12,7 +12,7 @@ export default function AnalyticsPage() {
   // Check if still loading
   if (userEvents === undefined) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -45,8 +45,8 @@ export default function AnalyticsPage() {
     <div className="p-8">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-        <p className="text-gray-600 mt-1">Track your event performance and insights</p>
+        <h1 className="text-3xl font-bold text-foreground">Analytics Dashboard</h1>
+        <p className="text-muted-foreground mt-1">Track your event performance and insights</p>
       </div>
 
       {/* Overview Cards */}
@@ -62,9 +62,9 @@ export default function AnalyticsPage() {
               <Calendar className="w-6 h-6 text-primary" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Total Events</p>
-          <p className="text-3xl font-bold text-gray-900">{totalEvents}</p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-sm text-muted-foreground mb-1">Total Events</p>
+          <p className="text-3xl font-bold text-foreground">{totalEvents}</p>
+          <p className="text-xs text-muted-foreground mt-1">
             {publishedEvents} published • {draftEvents} draft
           </p>
         </motion.div>
@@ -76,13 +76,13 @@ export default function AnalyticsPage() {
           className="bg-white rounded-lg shadow-md p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center">
+              <DollarSign className="w-6 h-6 text-success" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
-          <p className="text-3xl font-bold text-gray-900">${(totalRevenue / 100).toFixed(2)}</p>
-          <p className="text-xs text-gray-500 mt-1">Across all events</p>
+          <p className="text-sm text-muted-foreground mb-1">Total Revenue</p>
+          <p className="text-3xl font-bold text-foreground">${(totalRevenue / 100).toFixed(2)}</p>
+          <p className="text-xs text-muted-foreground mt-1">Across all events</p>
         </motion.div>
 
         <motion.div
@@ -96,9 +96,9 @@ export default function AnalyticsPage() {
               <Ticket className="w-6 h-6 text-primary" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Tickets Sold</p>
-          <p className="text-3xl font-bold text-gray-900">{totalTicketsSold}</p>
-          <p className="text-xs text-gray-500 mt-1">Total tickets</p>
+          <p className="text-sm text-muted-foreground mb-1">Tickets Sold</p>
+          <p className="text-3xl font-bold text-foreground">{totalTicketsSold}</p>
+          <p className="text-xs text-muted-foreground mt-1">Total tickets</p>
         </motion.div>
 
         <motion.div
@@ -108,13 +108,13 @@ export default function AnalyticsPage() {
           className="bg-white rounded-lg shadow-md p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-              <Users className="w-6 h-6 text-orange-600" />
+            <div className="w-12 h-12 bg-warning/10 rounded-full flex items-center justify-center">
+              <Users className="w-6 h-6 text-warning" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Total Attendees</p>
-          <p className="text-3xl font-bold text-gray-900">{totalAttendees}</p>
-          <p className="text-xs text-gray-500 mt-1">Across all events</p>
+          <p className="text-sm text-muted-foreground mb-1">Total Attendees</p>
+          <p className="text-3xl font-bold text-foreground">{totalAttendees}</p>
+          <p className="text-xs text-muted-foreground mt-1">Across all events</p>
         </motion.div>
       </div>
 
@@ -137,8 +137,8 @@ export default function AnalyticsPage() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{event.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <h3 className="font-semibold text-foreground">{event.name}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
                       {event.eventType === "TICKETED_EVENT"
                         ? "Ticketed Event"
                         : event.eventType === "FREE_EVENT"
@@ -148,14 +148,14 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="flex items-center gap-6 text-sm">
                     <div className="text-center">
-                      <p className="font-bold text-gray-900">{event.ticketsSold}</p>
-                      <p className="text-gray-600">Tickets</p>
+                      <p className="font-bold text-foreground">{event.ticketsSold}</p>
+                      <p className="text-muted-foreground">Tickets</p>
                     </div>
                     <div className="text-center">
-                      <p className="font-bold text-gray-900">${(event.revenue / 100).toFixed(2)}</p>
-                      <p className="text-gray-600">Revenue</p>
+                      <p className="font-bold text-foreground">${(event.revenue / 100).toFixed(2)}</p>
+                      <p className="text-muted-foreground">Revenue</p>
                     </div>
-                    <Eye className="w-5 h-5 text-gray-400" />
+                    <Eye className="w-5 h-5 text-muted-foreground" />
                   </div>
                 </div>
               </Link>
@@ -163,9 +163,9 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No Published Events Yet</h3>
-            <p className="text-gray-600 mb-6">Publish your first event to start seeing analytics</p>
+            <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-foreground mb-2">No Published Events Yet</h3>
+            <p className="text-muted-foreground mb-6">Publish your first event to start seeing analytics</p>
             <Link
               href="/organizer/events/create"
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
@@ -189,7 +189,7 @@ export default function AnalyticsPage() {
           <p className="text-3xl font-bold">
             ${totalTicketsSold > 0 ? (totalRevenue / totalTicketsSold / 100).toFixed(2) : "0.00"}
           </p>
-          <p className="text-blue-100 text-sm mt-2">Per ticket sold</p>
+          <p className="text-white/80 text-sm mt-2">Per ticket sold</p>
         </motion.div>
 
         <motion.div
@@ -202,7 +202,7 @@ export default function AnalyticsPage() {
           <p className="text-3xl font-bold">
             {totalOrders > 0 ? ((totalOrders / totalAttendees) * 100).toFixed(1) : "0"}%
           </p>
-          <p className="text-green-100 text-sm mt-2">Orders to attendees</p>
+          <p className="text-white/80 text-sm mt-2">Orders to attendees</p>
         </motion.div>
 
         <motion.div

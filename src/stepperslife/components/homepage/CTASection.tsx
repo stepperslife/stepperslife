@@ -37,10 +37,10 @@ export function CTASection() {
           </div>
 
           {/* Vendor CTA */}
-          <div className="rounded-lg border bg-gradient-to-br from-green-500/10 to-green-600/5 dark:from-green-500/20 dark:to-green-600/10 p-8">
+          <div className="rounded-lg border bg-gradient-to-br from-success/10 to-success/5 p-8">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/20 dark:bg-green-500/30">
-                <Store className="h-6 w-6 text-green-600 dark:text-green-400" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/20">
+                <Store className="h-6 w-6 text-success" />
               </div>
               <h3 className="text-2xl font-bold">Open Your Store</h3>
             </div>
@@ -53,7 +53,7 @@ export function CTASection() {
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/settings"
-                className="inline-flex h-12 items-center justify-center rounded-md bg-green-600 dark:bg-green-500 px-6 text-sm font-medium text-white hover:bg-green-700 dark:hover:bg-green-600"
+                className="inline-flex h-12 items-center justify-center rounded-md bg-success px-6 text-sm font-medium text-white hover:bg-success/90"
               >
                 Start Selling
               </Link>

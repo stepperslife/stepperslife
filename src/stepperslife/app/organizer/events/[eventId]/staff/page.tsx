@@ -44,8 +44,8 @@ function HierarchyNode({
   const hasSubSellers = staff.subSellers && staff.subSellers.length > 0;
 
   return (
-    <div className={`${level > 0 ? "ml-8 border-l-2 border-gray-300 pl-4" : ""}`}>
-      <div className="bg-white border border-gray-200 rounded-lg p-4 mb-2 hover:shadow-md transition-shadow">
+    <div className={`${level > 0 ? "ml-8 border-l-2 border-border pl-4" : ""}`}>
+      <div className="bg-card border border-border rounded-lg p-4 mb-2 hover:shadow-md transition-shadow">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3 flex-1">
             {hasSubSellers && (
@@ -61,22 +61,22 @@ function HierarchyNode({
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h4 className="font-semibold text-gray-900">{staff.name}</h4>
+                <h4 className="font-semibold text-foreground">{staff.name}</h4>
                 <span className="px-2 py-0.5 text-xs font-semibold bg-accent text-primary rounded-full">
                   {staff.role}
                 </span>
                 {staff.hierarchyLevel > 1 && (
-                  <span className="px-2 py-0.5 text-xs font-semibold bg-primary text-primary rounded-full">
+                  <span className="px-2 py-0.5 text-xs font-semibold bg-primary/10 text-primary rounded-full">
                     Level {staff.hierarchyLevel}
                   </span>
                 )}
                 {staff.canAssignSubSellers && (
-                  <span className="px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-700 rounded-full">
+                  <span className="px-2 py-0.5 text-xs font-semibold bg-success/10 text-success rounded-full">
                     Can Assign
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                 <Mail className="w-3 h-3" />
                 {staff.email}
               </div>
@@ -91,20 +91,20 @@ function HierarchyNode({
                 </div>
 
                 {/* Tickets Sold */}
-                <div className="flex items-center gap-2 text-sm bg-green-50 px-3 py-2 rounded-lg">
-                  <Ticket className="w-4 h-4 text-green-600" />
+                <div className="flex items-center gap-2 text-sm bg-success/10 px-3 py-2 rounded-lg">
+                  <Ticket className="w-4 h-4 text-success" />
                   <div className="flex flex-col">
-                    <span className="font-bold text-green-900">{staff.ticketsSold || 0}</span>
-                    <span className="text-xs text-green-600">sold</span>
+                    <span className="font-bold text-success">{staff.ticketsSold || 0}</span>
+                    <span className="text-xs text-success">sold</span>
                   </div>
                 </div>
 
                 {/* Tickets Remaining */}
-                <div className="flex items-center gap-2 text-sm bg-orange-50 px-3 py-2 rounded-lg">
-                  <TrendingDown className="w-4 h-4 text-orange-600" />
+                <div className="flex items-center gap-2 text-sm bg-warning/10 px-3 py-2 rounded-lg">
+                  <TrendingDown className="w-4 h-4 text-warning" />
                   <div className="flex flex-col">
-                    <span className="font-bold text-orange-900">{staff.ticketsRemaining || 0}</span>
-                    <span className="text-xs text-orange-600">remaining</span>
+                    <span className="font-bold text-warning">{staff.ticketsRemaining || 0}</span>
+                    <span className="text-xs text-warning">remaining</span>
                   </div>
                 </div>
 
@@ -124,7 +124,7 @@ function HierarchyNode({
                   <div className="flex items-center gap-2 text-sm bg-accent px-3 py-2 rounded-lg">
                     <Users className="w-4 h-4 text-primary" />
                     <div className="flex flex-col">
-                      <span className="font-bold text-indigo-900">{staff.subSellers.length}</span>
+                      <span className="font-bold text-primary">{staff.subSellers.length}</span>
                       <span className="text-xs text-primary">sub-sellers</span>
                     </div>
                   </div>
@@ -132,7 +132,7 @@ function HierarchyNode({
               </div>
               {staff.parentCommissionPercent !== undefined &&
                 staff.subSellerCommissionPercent !== undefined && (
-                  <div className="mt-2 text-xs text-gray-600">
+                  <div className="mt-2 text-xs text-muted-foreground">
                     Commission split: Parent {staff.parentCommissionPercent}% | Sub-seller{" "}
                     {staff.subSellerCommissionPercent}%
                   </div>
@@ -142,14 +142,14 @@ function HierarchyNode({
           <div className="flex gap-2">
             <button
               onClick={() => handleEditStaff(staff)}
-              className="p-2 text-gray-400 hover:text-primary hover:bg-accent rounded-lg transition-colors"
+              className="p-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-lg transition-colors"
               title="Edit staff member"
             >
               <Edit className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleRemoveStaff(staff._id)}
-              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
               title="Remove staff member"
             >
               <Trash2 className="w-4 h-4" />
@@ -248,7 +248,7 @@ export default function StaffManagementPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -257,9 +257,9 @@ export default function StaffManagementPage() {
   // Event not found
   if (event === null) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-          <p className="text-gray-600 mb-4">Event not found or has been deleted.</p>
+      <div className="min-h-screen bg-muted flex items-center justify-center">
+        <div className="bg-card rounded-lg shadow-md p-8 max-w-md text-center">
+          <p className="text-muted-foreground mb-4">Event not found or has been deleted.</p>
           <Link href="/organizer/events" className="text-primary hover:underline">
             Back to Events
           </Link>
@@ -540,13 +540,13 @@ export default function StaffManagementPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-card shadow-sm border-b border-border">
         <div className="container mx-auto px-4 py-6">
           <Link
             href={`/organizer/events`}
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Events
@@ -554,13 +554,13 @@ export default function StaffManagementPage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Staff Management</h1>
-              <p className="text-gray-600 mt-1">{event.name}</p>
+              <h1 className="text-3xl font-bold text-foreground">Staff Management</h1>
+              <p className="text-muted-foreground mt-1">{event.name}</p>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCopyRoster(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-white text-primary border-2 border-primary rounded-lg hover:bg-blue-50 transition-colors shadow-md hover:shadow-lg"
+                className="flex items-center gap-2 px-6 py-3 bg-card text-primary border-2 border-primary rounded-lg hover:bg-primary/10 transition-colors shadow-md hover:shadow-lg"
               >
                 <Copy className="w-5 h-5" />
                 Copy Roster
@@ -580,7 +580,7 @@ export default function StaffManagementPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {/* View Mode Switcher */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div className="bg-card rounded-lg shadow-md p-4 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
               <button
@@ -588,7 +588,7 @@ export default function StaffManagementPage() {
                 className={`px-4 py-2 rounded-lg font-medium transition ${
                   viewMode === "list"
                     ? "bg-primary text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    : "bg-muted text-foreground hover:bg-muted/80"
                 }`}
               >
                 List View
@@ -598,7 +598,7 @@ export default function StaffManagementPage() {
                 className={`px-4 py-2 rounded-lg font-medium transition ${
                   viewMode === "hierarchy"
                     ? "bg-primary text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    : "bg-muted text-foreground hover:bg-muted/80"
                 }`}
               >
                 Hierarchy Tree
@@ -609,29 +609,29 @@ export default function StaffManagementPage() {
 
         {/* Search Bar */}
         {viewMode === "list" && (
-          <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+          <div className="bg-card rounded-lg shadow-md p-4 mb-6">
             <div className="flex items-center gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search staff by name or email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               {filteredStaff.length > 0 && (
-                <label className="flex items-center gap-2 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+                <label className="flex items-center gap-2 px-4 py-3 bg-muted border border-border rounded-lg cursor-pointer hover:bg-muted/80 transition-colors">
                   <input
                     type="checkbox"
                     checked={
                       selectedStaff.size === filteredStaff.length && filteredStaff.length > 0
                     }
                     onChange={handleSelectAll}
-                    className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer"
+                    className="w-5 h-5 text-primary border-border rounded focus:ring-primary cursor-pointer"
                   />
-                  <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                  <span className="text-sm font-medium text-foreground whitespace-nowrap">
                     Select All
                   </span>
                 </label>
@@ -646,7 +646,7 @@ export default function StaffManagementPage() {
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-3">
                 <CheckSquare className="w-5 h-5 text-primary" />
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-foreground">
                   {selectedStaff.size} staff member{selectedStaff.size !== 1 ? "s" : ""} selected
                 </span>
                 <button
@@ -662,7 +662,7 @@ export default function StaffManagementPage() {
                     setBulkAction("allocations");
                     setShowBulkActions(true);
                   }}
-                  className="px-4 py-2 bg-white text-primary border border-primary rounded-lg hover:bg-blue-50 transition-colors text-sm font-medium"
+                  className="px-4 py-2 bg-card text-primary border border-primary rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
                 >
                   Set Allocations
                 </button>
@@ -671,7 +671,7 @@ export default function StaffManagementPage() {
                     setBulkAction("commission");
                     setShowBulkActions(true);
                   }}
-                  className="px-4 py-2 bg-white text-primary border border-primary rounded-lg hover:bg-blue-50 transition-colors text-sm font-medium"
+                  className="px-4 py-2 bg-card text-primary border border-primary rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
                 >
                   Set Commission
                 </button>
@@ -680,7 +680,7 @@ export default function StaffManagementPage() {
                     setBulkAction("deactivate");
                     setShowBulkActions(true);
                   }}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                  className="px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors text-sm font-medium"
                 >
                   Deactivate
                 </button>
@@ -692,8 +692,8 @@ export default function StaffManagementPage() {
         {/* Staff List or Hierarchy Tree */}
         {viewMode === "hierarchy" ? (
           // Hierarchy Tree View
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Staff Hierarchy Tree</h3>
+          <div className="bg-card rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-bold text-foreground mb-4">Staff Hierarchy Tree</h3>
             {hierarchyTree && hierarchyTree.length > 0 ? (
               <div className="space-y-4">
                 {hierarchyTree.map((staff) => (
@@ -706,18 +706,18 @@ export default function StaffManagementPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted-foreground">
                 No staff members yet. Add your first staff member to get started.
               </div>
             )}
           </div>
         ) : filteredStaff.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
+          <div className="bg-card rounded-lg shadow-md p-12 text-center">
             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
               <Users className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No staff members yet</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className="text-xl font-bold text-foreground mb-2">No staff members yet</h3>
+            <p className="text-muted-foreground mb-6">
               Add staff members to help sell tickets for this event
             </p>
             <button
@@ -733,8 +733,8 @@ export default function StaffManagementPage() {
             {filteredStaff.map((staff) => (
               <div
                 key={staff._id}
-                className={`bg-white rounded-lg shadow-md border-2 p-6 hover:shadow-lg transition-all ${
-                  selectedStaff.has(staff._id) ? "border-primary bg-blue-50/30" : "border-gray-200"
+                className={`bg-card rounded-lg shadow-md border-2 p-6 hover:shadow-lg transition-all ${
+                  selectedStaff.has(staff._id) ? "border-primary bg-primary/5" : "border-border"
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -744,20 +744,20 @@ export default function StaffManagementPage() {
                       type="checkbox"
                       checked={selectedStaff.has(staff._id)}
                       onChange={() => handleSelectStaff(staff._id)}
-                      className="mt-1 w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer"
+                      className="mt-1 w-5 h-5 text-primary border-border rounded focus:ring-primary cursor-pointer"
                     />
                     <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
                       <Users className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900">{staff.name}</h3>
+                      <h3 className="text-lg font-bold text-foreground">{staff.name}</h3>
                       <div className="space-y-1 mt-2">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Mail className="w-4 h-4" />
                           {staff.email}
                         </div>
                         {staff.phone && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Phone className="w-4 h-4" />
                             {staff.phone}
                           </div>
@@ -769,11 +769,11 @@ export default function StaffManagementPage() {
                           {staff.role}
                         </span>
                         {staff.hierarchyLevel && staff.hierarchyLevel > 1 && (
-                          <span className="px-3 py-1 text-xs font-semibold bg-primary text-primary rounded-full">
+                          <span className="px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full">
                             Level {staff.hierarchyLevel}
                           </span>
                         )}
-                        <div className="flex items-center gap-1 text-sm text-gray-700">
+                        <div className="flex items-center gap-1 text-sm text-foreground">
                           {staff.commissionType === "PERCENTAGE" ? (
                             <>
                               <Percent className="w-4 h-4" />
@@ -790,7 +790,7 @@ export default function StaffManagementPage() {
 
                       {/* Hierarchy Permissions */}
                       {staff.hierarchyLevel === 1 && (
-                        <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="mt-4 p-3 bg-muted rounded-lg border border-border">
                           <label className="flex items-center gap-3 cursor-pointer">
                             <input
                               type="checkbox"
@@ -804,10 +804,10 @@ export default function StaffManagementPage() {
                               className="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-ring"
                             />
                             <div className="flex-1">
-                              <span className="text-sm font-medium text-gray-900">
+                              <span className="text-sm font-medium text-foreground">
                                 Can assign sub-sellers
                               </span>
-                              <p className="text-xs text-gray-500 mt-0.5">
+                              <p className="text-xs text-muted-foreground mt-0.5">
                                 Allow this staff member to recruit and manage their own sales team
                               </p>
                             </div>
@@ -815,7 +815,7 @@ export default function StaffManagementPage() {
                         </div>
                       )}
 
-                      <div className="mt-3 text-sm text-gray-500">
+                      <div className="mt-3 text-sm text-muted-foreground">
                         Added {new Date(staff.createdAt).toLocaleDateString()}
                       </div>
                     </div>
@@ -824,14 +824,14 @@ export default function StaffManagementPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditStaff(staff)}
-                      className="p-2 text-gray-400 hover:text-primary hover:bg-accent rounded-lg transition-colors"
+                      className="p-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-lg transition-colors"
                       title="Edit staff member"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleRemoveStaff(staff._id)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                       title="Remove staff member"
                     >
                       <Trash2 className="w-5 h-5" />

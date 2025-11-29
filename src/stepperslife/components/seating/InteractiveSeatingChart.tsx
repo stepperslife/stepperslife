@@ -273,28 +273,28 @@ export default function InteractiveSeatingChart({
         </div>
 
         {/* Main Seating Chart */}
-        <div className="lg:col-span-3 bg-white rounded-lg border-2 border-gray-200 overflow-auto">
+        <div className="lg:col-span-3 bg-card rounded-lg border-2 border-border overflow-auto">
           {/* Legend */}
-          <div className="sticky top-0 z-10 bg-white border-b border-gray-200 p-3 md:p-4">
+          <div className="sticky top-0 z-10 bg-card border-b border-border p-3 md:p-4">
             <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm">
               <div className="flex items-center gap-1.5 md:gap-2">
-                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-green-500 border-2 border-gray-800"></div>
-                <span className="text-gray-700">Available</span>
+                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-success border-2 border-foreground"></div>
+                <span className="text-foreground">Available</span>
               </div>
               <div className="flex items-center gap-1.5 md:gap-2">
-                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-yellow-400 border-2 border-gray-800"></div>
-                <span className="text-gray-700">Selected</span>
+                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-warning border-2 border-foreground"></div>
+                <span className="text-foreground">Selected</span>
               </div>
               <div className="flex items-center gap-1.5 md:gap-2">
-                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-gray-400 border-2 border-gray-600 opacity-50"></div>
-                <span className="text-gray-700">Sold</span>
+                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-muted border-2 border-muted-foreground opacity-50"></div>
+                <span className="text-foreground">Sold</span>
               </div>
               <div className="flex items-center gap-1.5 md:gap-2">
-                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-blue-400 border-2 border-gray-800"></div>
-                <span className="text-gray-700">Reserved</span>
+                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-primary border-2 border-foreground"></div>
+                <span className="text-foreground">Reserved</span>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-2 md:hidden">
+            <p className="text-xs text-muted-foreground mt-2 md:hidden">
               💡 Tip: Pinch to zoom, drag to pan
             </p>
           </div>
@@ -435,7 +435,7 @@ export default function InteractiveSeatingChart({
             {/* Buy Table Buttons - Positioned below canvas */}
             {renderData.length > 0 && (
               <div className="mt-6 space-y-3">
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Quick Actions</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-2">Quick Actions</h3>
                 <div className="flex flex-wrap gap-3">
                   {renderData.map(({ tableId, tableNumber, table, seats }) => {
                     const availableSeats = seats.filter((s) => s.status === "available");
@@ -469,7 +469,7 @@ export default function InteractiveSeatingChart({
             {/* Tooltip */}
             {hoveredSeat && (
               <div
-                className="fixed z-50 bg-gray-900 text-white text-xs px-3 py-2 rounded-md shadow-lg pointer-events-none"
+                className="fixed z-50 bg-foreground text-background text-xs px-3 py-2 rounded-md shadow-lg pointer-events-none"
                 style={{
                   left: tooltipPos.x + 10,
                   top: tooltipPos.y + 10,
@@ -482,7 +482,7 @@ export default function InteractiveSeatingChart({
 
           {/* Empty state */}
           {renderData.length === 0 && (
-            <div className="flex flex-col items-center justify-center p-12 text-gray-500">
+            <div className="flex flex-col items-center justify-center p-12 text-muted-foreground">
               <div className="text-6xl mb-4">💃</div>
               <p className="text-lg font-semibold mb-2">No Seating Chart Available</p>
               <p className="text-sm">The organizer hasn't set up table seating yet.</p>

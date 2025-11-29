@@ -28,9 +28,9 @@ export default function TicketsSoldPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Sold</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-success">0</p>
               </div>
-              <Ticket className="h-8 w-8 text-green-600" />
+              <Ticket className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -52,9 +52,9 @@ export default function TicketsSoldPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Revenue</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">$0</p>
+                <p className="text-2xl font-bold mt-1 text-success">$0</p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -95,7 +95,7 @@ export default function TicketsSoldPage() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Commission</p>
-                      <p className="text-lg font-semibold text-green-600">${sale.commission || "0.00"}</p>
+                      <p className="text-lg font-semibold text-success">${sale.commission || "0.00"}</p>
                     </div>
                   </div>
                 </div>

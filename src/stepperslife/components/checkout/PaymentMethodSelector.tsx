@@ -83,12 +83,12 @@ export function PaymentMethodSelector({
   // If no methods available, show error state
   if (methods.length === 0) {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      <div className="bg-warning/10 border border-warning rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-semibold text-yellow-900 mb-1">No Payment Methods Available</h3>
-            <p className="text-sm text-yellow-800">
+            <h3 className="font-semibold text-foreground mb-1">No Payment Methods Available</h3>
+            <p className="text-sm text-muted-foreground">
               The organizer has not configured any payment methods for this event. Please contact
               the event organizer for assistance.
             </p>
@@ -100,7 +100,7 @@ export function PaymentMethodSelector({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Payment Method</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">Select Payment Method</h3>
 
       {/* Payment Method Options */}
       <div className="space-y-3">
@@ -125,7 +125,7 @@ export function PaymentMethodSelector({
                 ${
                   isSelected
                     ? "border-primary bg-accent/50"
-                    : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
+                    : "border-border bg-card hover:border-border hover:bg-muted"
                 }
               `}
               aria-pressed={isSelected}
@@ -136,7 +136,7 @@ export function PaymentMethodSelector({
                 <div
                   className={`
                     w-12 h-12 rounded-lg flex items-center justify-center shrink-0
-                    ${isSelected ? "bg-primary text-white" : "bg-gray-100 text-gray-600"}
+                    ${isSelected ? "bg-primary text-white" : "bg-muted text-muted-foreground"}
                   `}
                 >
                   <Icon className="w-6 h-6" />
@@ -146,7 +146,7 @@ export function PaymentMethodSelector({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h4
-                      className={`font-semibold ${isSelected ? "text-primary" : "text-gray-900"}`}
+                      className={`font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}
                     >
                       {getPaymentMethodDisplayName(method)}
                     </h4>
@@ -156,7 +156,7 @@ export function PaymentMethodSelector({
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600">{description}</p>
+                  <p className="text-sm text-muted-foreground">{description}</p>
 
                   {/* Cash-specific warnings */}
                   {method === "cash" && (
@@ -171,7 +171,7 @@ export function PaymentMethodSelector({
                 <div
                   className={`
                     w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0
-                    ${isSelected ? "border-primary" : "border-gray-300"}
+                    ${isSelected ? "border-primary" : "border-border"}
                   `}
                 >
                   {isSelected && <div className="w-3 h-3 rounded-full bg-primary"></div>}
@@ -184,8 +184,8 @@ export function PaymentMethodSelector({
 
       {/* Processor Info */}
       {availableMethods.merchantProcessor && (
-        <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <p className="text-xs text-gray-600 text-center">
+        <div className="mt-4 p-3 bg-muted border border-border rounded-lg">
+          <p className="text-xs text-muted-foreground text-center">
             Payments processed securely by{" "}
             <span className="font-semibold">
               {getMerchantProcessorDisplayName(availableMethods.merchantProcessor)}

@@ -53,7 +53,7 @@ export default function EarningsByEventPage() {
                   <div className="text-right space-y-2">
                     <div>
                       <p className="text-xs text-muted-foreground">Commission</p>
-                      <p className="text-2xl font-bold text-green-600">
+                      <p className="text-2xl font-bold text-success">
                         ${event.commission || "0.00"}
                       </p>
                     </div>

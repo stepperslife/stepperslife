@@ -39,11 +39,11 @@ export default function ScanTicketsPage() {
   const getScanResultIcon = () => {
     switch (scanResult.status) {
       case "success":
-        return <CheckCircle className="h-16 w-16 text-green-600" />;
+        return <CheckCircle className="h-16 w-16 text-success" />;
       case "error":
-        return <XCircle className="h-16 w-16 text-red-600" />;
+        return <XCircle className="h-16 w-16 text-destructive" />;
       case "warning":
-        return <AlertCircle className="h-16 w-16 text-yellow-600" />;
+        return <AlertCircle className="h-16 w-16 text-warning" />;
       default:
         return <QrCode className="h-16 w-16 text-muted-foreground" />;
     }
@@ -52,13 +52,13 @@ export default function ScanTicketsPage() {
   const getScanResultColor = () => {
     switch (scanResult.status) {
       case "success":
-        return "bg-green-50 border-green-200";
+        return "bg-success/10 border-success";
       case "error":
-        return "bg-red-50 border-red-200";
+        return "bg-destructive/10 border-destructive";
       case "warning":
-        return "bg-yellow-50 border-yellow-200";
+        return "bg-warning/10 border-warning";
       default:
-        return "bg-gray-50 border-gray-200";
+        return "bg-muted border-border";
     }
   };
 
@@ -91,9 +91,9 @@ export default function ScanTicketsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Valid Tickets</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-success">0</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -103,9 +103,9 @@ export default function ScanTicketsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Invalid Tickets</p>
-                <p className="text-2xl font-bold mt-1 text-red-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-destructive">0</p>
               </div>
-              <XCircle className="h-8 w-8 text-red-600" />
+              <XCircle className="h-8 w-8 text-destructive" />
             </div>
           </CardContent>
         </Card>

@@ -107,9 +107,9 @@ export default function CashOrdersPage() {
     const diff = holdExpiresAt - now;
     const minutes = diff / 1000 / 60;
 
-    if (minutes <= 5) return "text-red-600";
-    if (minutes <= 15) return "text-orange-600";
-    return "text-green-600";
+    if (minutes <= 5) return "text-destructive";
+    if (minutes <= 15) return "text-warning";
+    return "text-success";
   };
 
   if (staffPositions === undefined) {
@@ -117,7 +117,7 @@ export default function CashOrdersPage() {
       <div className="flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full"></div>
-          <p className="text-gray-600">Loading cash orders...</p>
+          <p className="text-muted-foreground">Loading cash orders...</p>
         </div>
       </div>
     );
@@ -126,10 +126,10 @@ export default function CashOrdersPage() {
   if (!staffPositions || staffPositions.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-yellow-900 mb-2">No Staff Positions Found</h3>
-          <p className="text-yellow-800">You are not assigned to any events as staff.</p>
+        <div className="bg-warning/10 border border-warning rounded-lg p-6 text-center">
+          <AlertCircle className="w-12 h-12 text-warning mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-warning mb-2">No Staff Positions Found</h3>
+          <p className="text-warning">You are not assigned to any events as staff.</p>
         </div>
       </div>
     );
@@ -145,12 +145,12 @@ export default function CashOrdersPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Cash Orders</h1>
-            <p className="text-gray-600 mt-1">Approve in-person cash payments</p>
+            <h1 className="text-3xl font-bold text-foreground">Cash Orders</h1>
+            <p className="text-muted-foreground mt-1">Approve in-person cash payments</p>
           </div>
           <button
             onClick={() => setRefreshKey((prev) => prev + 1)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-muted transition"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -160,11 +160,11 @@ export default function CashOrdersPage() {
         {/* Event Selector */}
         {staffPositions.length > 1 && (
           <div className="flex items-center gap-3 mb-4">
-            <label className="text-sm font-medium text-gray-700">Select Event:</label>
+            <label className="text-sm font-medium text-foreground">Select Event:</label>
             <select
               value={selectedEventId || ""}
               onChange={(e) => setSelectedEventId(e.target.value as Id<"events">)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               {staffPositions.map((pos) => (
                 <option key={pos.eventId} value={pos.eventId}>
@@ -199,10 +199,10 @@ export default function CashOrdersPage() {
 
       {/* Pending Orders List */}
       <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">
+        <h2 className="text-xl font-bold text-foreground mb-4">
           Pending Cash Payments
           {pendingOrders && pendingOrders.length > 0 && (
-            <span className="ml-2 text-orange-600">({pendingOrders.length})</span>
+            <span className="ml-2 text-warning">({pendingOrders.length})</span>
           )}
         </h2>
 
@@ -211,10 +211,10 @@ export default function CashOrdersPage() {
             <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
           </div>
         ) : pendingOrders.length === 0 ? (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-            <CheckCircle2 className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-600">No pending cash orders</p>
-            <p className="text-sm text-gray-500 mt-1">New orders will appear here automatically</p>
+          <div className="bg-muted border border-border rounded-lg p-8 text-center">
+            <CheckCircle2 className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground">No pending cash orders</p>
+            <p className="text-sm text-muted-foreground mt-1">New orders will appear here automatically</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -226,17 +226,17 @@ export default function CashOrdersPage() {
               return (
                 <div
                   key={order.orderId}
-                  className="bg-white border-2 border-orange-200 rounded-lg p-6 shadow-sm hover:shadow-md transition"
+                  className="bg-card border-2 border-warning rounded-lg p-6 shadow-sm hover:shadow-md transition"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-bold text-gray-900">{order.buyerName}</h3>
-                        <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full">
+                        <h3 className="text-lg font-bold text-foreground">{order.buyerName}</h3>
+                        <span className="px-3 py-1 bg-warning/10 text-warning text-xs font-semibold rounded-full">
                           CASH PENDING
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Phone className="w-4 h-4" />
                           {order.buyerPhone}
@@ -254,10 +254,10 @@ export default function CashOrdersPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-foreground">
                         ${(order.totalCents / 100).toFixed(2)}
                       </p>
-                      <p className="text-sm text-gray-600">{order.ticketCount} tickets</p>
+                      <p className="text-sm text-muted-foreground">{order.ticketCount} tickets</p>
                     </div>
                   </div>
 
@@ -272,9 +272,9 @@ export default function CashOrdersPage() {
                   </div>
 
                   {/* Order Details */}
-                  <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Order Details:</p>
-                    <div className="space-y-1 text-sm text-gray-600">
+                  <div className="bg-muted rounded-lg p-4 mb-4">
+                    <p className="text-sm font-medium text-foreground mb-2">Order Details:</p>
+                    <div className="space-y-1 text-sm text-muted-foreground">
                       <p>
                         <strong>Order #:</strong> {order.orderNumber}
                       </p>
@@ -292,17 +292,17 @@ export default function CashOrdersPage() {
 
                   {/* Generated Code Display */}
                   {isGeneratedCode && (
-                    <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4 mb-4">
+                    <div className="bg-success/10 border-2 border-success rounded-lg p-4 mb-4">
                       <div className="flex items-center gap-3">
-                        <Key className="w-6 h-6 text-green-600" />
+                        <Key className="w-6 h-6 text-success" />
                         <div className="flex-1">
-                          <p className="text-sm font-semibold text-green-900 mb-1">
+                          <p className="text-sm font-semibold text-success mb-1">
                             Activation Code Generated
                           </p>
-                          <p className="text-3xl font-mono font-bold text-green-700 tracking-wider">
+                          <p className="text-3xl font-mono font-bold text-success tracking-wider">
                             {generatedCode.code}
                           </p>
-                          <p className="text-xs text-green-700 mt-2">
+                          <p className="text-xs text-success mt-2">
                             Share this code with the customer to activate their tickets
                           </p>
                         </div>
@@ -316,7 +316,7 @@ export default function CashOrdersPage() {
                       <button
                         onClick={() => handleApprove(order.orderId, selectedStaffId)}
                         disabled={activatingOrderId === order.orderId}
-                        className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-success text-white rounded-lg hover:bg-success/90 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
                       >
                         {activatingOrderId === order.orderId ? (
                           <>

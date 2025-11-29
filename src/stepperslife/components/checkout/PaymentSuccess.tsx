@@ -100,13 +100,13 @@ export function PaymentSuccess({
     <div className="max-w-2xl mx-auto">
       {/* Success Icon */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4">
-          <CheckCircle2 className="w-12 h-12 text-green-600" />
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-success/10 rounded-full mb-4">
+          <CheckCircle2 className="w-12 h-12 text-success" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           {isCashOrder ? "Order Reserved!" : "Payment Successful!"}
         </h1>
-        <p className="text-lg text-gray-600">
+        <p className="text-lg text-muted-foreground">
           {isCashOrder
             ? "Your order is being held for cash payment"
             : "Your order has been confirmed"}
@@ -114,8 +114,8 @@ export function PaymentSuccess({
       </div>
 
       {/* Order Details Card */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Confirmation</h2>
+      <div className="bg-card rounded-lg shadow-md p-6 mb-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Order Confirmation</h2>
 
         {/* Order Number */}
         <div className="mb-4 p-3 bg-accent/50 border border-border rounded-lg">
@@ -125,12 +125,12 @@ export function PaymentSuccess({
 
         {/* Cash Order - Hold Expiration Warning */}
         {isCashOrder && confirmationDetails.holdExpiresAt && (
-          <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="mb-4 p-4 bg-warning/10 border border-warning rounded-lg">
             <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
+              <Clock className="w-5 h-5 text-warning shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-yellow-900 mb-1">Payment Hold</h3>
-                <p className="text-sm text-yellow-800">
+                <h3 className="font-semibold text-foreground mb-1">Payment Hold</h3>
+                <p className="text-sm text-muted-foreground">
                   Your order is reserved until{" "}
                   <strong>{formatTime(confirmationDetails.holdExpiresAt)}</strong>. Please complete
                   cash payment with staff before this time.
@@ -144,28 +144,28 @@ export function PaymentSuccess({
         <div className="space-y-3">
           {confirmationDetails.email && (
             <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+              <Mail className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
               <div>
-                <div className="text-sm text-gray-600">Confirmation sent to</div>
-                <div className="font-medium text-gray-900">{confirmationDetails.email}</div>
+                <div className="text-sm text-muted-foreground">Confirmation sent to</div>
+                <div className="font-medium text-foreground">{confirmationDetails.email}</div>
               </div>
             </div>
           )}
 
           <div className="flex items-start gap-3">
-            <Phone className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+            <Phone className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
             <div>
-              <div className="text-sm text-gray-600">Phone number</div>
-              <div className="font-medium text-gray-900">{confirmationDetails.phone}</div>
+              <div className="text-sm text-muted-foreground">Phone number</div>
+              <div className="font-medium text-foreground">{confirmationDetails.phone}</div>
             </div>
           </div>
 
           {isTicketOrder && confirmationDetails.ticketCount && (
             <div className="flex items-start gap-3">
-              <Ticket className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+              <Ticket className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
               <div>
-                <div className="text-sm text-gray-600">Tickets</div>
-                <div className="font-medium text-gray-900">
+                <div className="text-sm text-muted-foreground">Tickets</div>
+                <div className="font-medium text-foreground">
                   {confirmationDetails.ticketCount}{" "}
                   {confirmationDetails.ticketCount === 1 ? "ticket" : "tickets"}
                 </div>
@@ -175,10 +175,10 @@ export function PaymentSuccess({
 
           {orderType === "product" && confirmationDetails.deliveryMethod && (
             <div className="flex items-start gap-3">
-              <Package className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+              <Package className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
               <div>
-                <div className="text-sm text-gray-600">Delivery</div>
-                <div className="font-medium text-gray-900">
+                <div className="text-sm text-muted-foreground">Delivery</div>
+                <div className="font-medium text-foreground">
                   {confirmationDetails.deliveryMethod}
                 </div>
               </div>
@@ -260,7 +260,7 @@ export function PaymentSuccess({
                 ${
                   action.primary
                     ? "bg-primary text-white hover:bg-primary/90"
-                    : "bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400"
+                    : "bg-card text-foreground border-2 border-border hover:border-border"
                 }
               `}
             >
@@ -272,7 +272,7 @@ export function PaymentSuccess({
       </div>
 
       {/* Help Section */}
-      <div className="mt-8 text-center text-sm text-gray-600">
+      <div className="mt-8 text-center text-sm text-muted-foreground">
         <p>
           Need help?{" "}
           <Link href="/support" className="text-primary hover:underline font-medium">

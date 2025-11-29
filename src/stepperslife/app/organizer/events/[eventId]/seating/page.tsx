@@ -89,13 +89,13 @@ export default function SeatingChartBuilderPage() {
 
   // Seating chart feature is currently disabled
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+    <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-card rounded-lg shadow-lg p-8 text-center">
         <div className="mb-4">
-          <Grid className="w-16 h-16 text-gray-400 mx-auto" />
+          <Grid className="w-16 h-16 text-muted-foreground mx-auto" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Seating Chart Builder Coming Soon</h1>
-        <p className="text-gray-600 mb-6">
+        <h1 className="text-2xl font-bold text-foreground mb-2">Seating Chart Builder Coming Soon</h1>
+        <p className="text-muted-foreground mb-6">
           The visual seating chart builder is currently being enhanced and will be available soon.
         </p>
         <Link

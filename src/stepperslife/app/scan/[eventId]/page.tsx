@@ -192,44 +192,44 @@ export default function EventScanningPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-black/50 backdrop-blur-sm border-b border-white/10">
+      <div className="bg-card/50 backdrop-blur-sm border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.push("/scan")}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-6 h-6 text-white" />
+              <ArrowLeft className="w-6 h-6 text-foreground" />
             </button>
             <div>
-              <h1 className="text-lg font-bold text-white">Event Scanner</h1>
-              <p className="text-white/60 text-sm">Scan tickets to check in attendees</p>
+              <h1 className="text-lg font-bold text-foreground">Event Scanner</h1>
+              <p className="text-muted-foreground text-sm">Scan tickets to check in attendees</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Stats Bar */}
-      <div className="bg-black/30 border-b border-white/10">
+      <div className="bg-muted/30 border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-400">{stats.scanned}</div>
-              <div className="text-xs text-white/60">Scanned</div>
+              <div className="text-2xl font-bold text-success">{stats.scanned}</div>
+              <div className="text-xs text-muted-foreground">Scanned</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-400">{stats.remaining}</div>
-              <div className="text-xs text-white/60">Remaining</div>
+              <div className="text-2xl font-bold text-warning">{stats.remaining}</div>
+              <div className="text-xs text-muted-foreground">Remaining</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">{stats.total}</div>
-              <div className="text-xs text-white/60">Total</div>
+              <div className="text-2xl font-bold text-foreground">{stats.total}</div>
+              <div className="text-xs text-muted-foreground">Total</div>
             </div>
           </div>
           <div className="mt-3">
-            <div className="h-2 bg-black/50 rounded-full overflow-hidden">
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full bg-primary transition-all duration-500"
                 style={{ width: `${stats.percentageScanned}%` }}
@@ -250,12 +250,12 @@ export default function EventScanningPage() {
             </h2>
 
             {/* Video Preview - Simplified like demo */}
-            <div className="relative bg-black rounded-xl mb-4" style={{ minHeight: "300px" }}>
+            <div className="relative bg-card rounded-xl mb-4" style={{ minHeight: "300px" }}>
               {!isScanning && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <Camera className="w-20 h-20 text-white/40 mx-auto mb-4" />
-                    <p className="text-white/60 text-sm">Camera not active</p>
+                    <Camera className="w-20 h-20 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground text-sm">Camera not active</p>
                   </div>
                 </div>
               )}
@@ -280,7 +280,7 @@ export default function EventScanningPage() {
                 <button
                   onClick={startScanner}
                   disabled={isStarting}
-                  className="w-full px-6 py-4 bg-white text-primary rounded-xl font-bold text-lg hover:bg-accent transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-6 py-4 bg-card text-primary rounded-xl font-bold text-lg hover:bg-accent transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isStarting ? (
                     <>
@@ -296,14 +296,14 @@ export default function EventScanningPage() {
                 </button>
               ) : (
                 <>
-                  <div className="bg-green-500/20 border border-green-500 rounded-lg p-3">
-                    <p className="text-white text-sm text-center font-semibold">
+                  <div className="bg-success/20 border border-success rounded-lg p-3">
+                    <p className="text-foreground text-sm text-center font-semibold">
                       ✓ Scanner Active - Point at QR codes to scan
                     </p>
                   </div>
                   <button
                     onClick={stopScanner}
-                    className="w-full px-6 py-4 bg-red-500 text-white rounded-xl font-bold text-lg hover:bg-red-600 transition-all shadow-lg flex items-center justify-center gap-2"
+                    className="w-full px-6 py-4 bg-destructive text-destructive-foreground rounded-xl font-bold text-lg hover:bg-destructive/90 transition-all shadow-lg flex items-center justify-center gap-2"
                   >
                     <Square className="w-6 h-6" />
                     Stop Scanner
@@ -312,11 +312,11 @@ export default function EventScanningPage() {
               )}
 
               {scannerError && (
-                <div className="bg-red-500/20 border border-red-500 rounded-lg p-4">
-                  <p className="text-white text-sm text-center font-semibold mb-2">
+                <div className="bg-destructive/20 border border-destructive rounded-lg p-4">
+                  <p className="text-foreground text-sm text-center font-semibold mb-2">
                     {scannerError}
                   </p>
-                  <p className="text-white/80 text-xs text-center">
+                  <p className="text-muted-foreground text-xs text-center">
                     Make sure you're using HTTPS and have granted camera permissions.
                   </p>
                 </div>
@@ -326,7 +326,7 @@ export default function EventScanningPage() {
 
           {/* Manual Entry */}
           <div className="bg-primary rounded-2xl p-6 shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-4 text-center">
+            <h3 className="text-xl font-bold text-primary-foreground mb-4 text-center">
               Or Enter Code Manually
             </h3>
             <div className="space-y-3">
@@ -336,13 +336,13 @@ export default function EventScanningPage() {
                 onChange={(e) => setManualTicketCode(e.target.value.toUpperCase())}
                 onKeyPress={(e) => e.key === "Enter" && handleManualScan()}
                 placeholder="TKT-XXXXXXXX"
-                className="w-full px-4 py-3 text-center text-xl font-mono font-bold bg-white text-gray-900 rounded-lg focus:outline-none focus:ring-4 focus:ring-white/50 uppercase"
+                className="w-full px-4 py-3 text-center text-xl font-mono font-bold bg-card text-foreground rounded-lg focus:outline-none focus:ring-4 focus:ring-ring uppercase"
                 disabled={isProcessing}
               />
               <button
                 onClick={handleManualScan}
                 disabled={!manualTicketCode.trim() || isProcessing}
-                className="w-full px-6 py-3 bg-white text-primary rounded-lg font-bold hover:bg-accent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-6 py-3 bg-card text-primary rounded-lg font-bold hover:bg-accent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isProcessing ? "Checking..." : "Check In"}
               </button>
@@ -353,21 +353,21 @@ export default function EventScanningPage() {
           {lastScanResult && (
             <div
               className={`fixed inset-0 z-50 flex items-center justify-center animate-in fade-in ${
-                lastScanResult.success ? "bg-green-500" : "bg-red-500"
+                lastScanResult.success ? "bg-success" : "bg-destructive"
               }`}
             >
               <div className="text-center px-6 max-w-md">
                 {lastScanResult.success ? (
-                  <CheckCircle className="w-32 h-32 text-white mx-auto mb-6 animate-in zoom-in" />
+                  <CheckCircle className="w-32 h-32 text-success-foreground mx-auto mb-6 animate-in zoom-in" />
                 ) : (
-                  <XCircle className="w-32 h-32 text-white mx-auto mb-6 animate-in zoom-in" />
+                  <XCircle className="w-32 h-32 text-destructive-foreground mx-auto mb-6 animate-in zoom-in" />
                 )}
-                <h3 className="text-4xl font-bold text-white mb-4">
+                <h3 className="text-4xl font-bold text-foreground mb-4">
                   {lastScanResult.success ? "✓ Valid Ticket!" : "✗ Invalid"}
                 </h3>
-                <p className="text-white text-xl mb-6">{lastScanResult.message}</p>
+                <p className="text-foreground text-xl mb-6">{lastScanResult.message}</p>
                 {lastScanResult.ticket && (
-                  <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-white space-y-2">
+                  <div className="bg-card/20 backdrop-blur-sm rounded-xl p-6 text-foreground space-y-2">
                     {lastScanResult.ticket.attendeeName && (
                       <p className="text-2xl font-bold">{lastScanResult.ticket.attendeeName}</p>
                     )}
@@ -382,23 +382,23 @@ export default function EventScanningPage() {
 
           {/* Recent Scans */}
           {recentScans && recentScans.length > 0 && (
-            <div className="bg-black/30 rounded-lg p-4 border border-white/10">
-              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+            <div className="bg-muted/30 rounded-lg p-4 border border-border">
+              <h3 className="text-foreground font-semibold mb-3 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 Recent Scans
               </h3>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {recentScans.map((scan, index) => (
-                  <div key={index} className="bg-black/50 rounded p-3 text-sm">
+                  <div key={index} className="bg-card rounded p-3 text-sm">
                     <div className="flex items-center justify-between">
-                      <div className="text-white font-medium">{scan.attendeeName}</div>
-                      <div className="text-white/60 text-xs">
+                      <div className="text-foreground font-medium">{scan.attendeeName}</div>
+                      <div className="text-muted-foreground text-xs">
                         {scan.scannedAt && format(scan.scannedAt, "h:mm a")}
                       </div>
                     </div>
-                    <div className="text-white/40 text-xs mt-1">{scan.tierName}</div>
+                    <div className="text-muted-foreground text-xs mt-1">{scan.tierName}</div>
                     {scan.soldByStaffName && (
-                      <div className="text-primary/80 text-xs mt-1 flex items-center gap-1">
+                      <div className="text-primary text-xs mt-1 flex items-center gap-1">
                         <span>👤</span>
                         Sold by: {scan.soldByStaffName}
                         {scan.paymentMethod && scan.paymentMethod !== "ONLINE" && (

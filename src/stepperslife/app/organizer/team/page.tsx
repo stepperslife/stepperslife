@@ -104,7 +104,7 @@ export default function DefaultTeamPage() {
 
   if (!globalStaffWithPerformance) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -116,11 +116,11 @@ export default function DefaultTeamPage() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+        <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
           <Users className="w-8 h-8" />
           Default Team
         </h1>
-        <p className="text-gray-600 mt-1">
+        <p className="text-muted-foreground mt-1">
           Manage your default staff roster. These team members will be automatically assigned to all
           new events you create.
         </p>
@@ -128,9 +128,9 @@ export default function DefaultTeamPage() {
 
       {/* Success Message */}
       {success && (
-        <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-green-600" />
-          <span className="text-green-800">{success}</span>
+        <div className="mb-6 bg-success/10 border border-success rounded-lg p-4 flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5 text-success" />
+          <span className="text-success">{success}</span>
         </div>
       )}
 
@@ -167,9 +167,9 @@ export default function DefaultTeamPage() {
       {/* Staff List */}
       {globalStaff.length === 0 ? (
         <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">No Default Team Members Yet</h3>
-          <p className="text-gray-600 mb-6">
+          <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-foreground mb-2">No Default Team Members Yet</h3>
+          <p className="text-muted-foreground mb-6">
             Add staff members to your default team to speed up event creation.
           </p>
         </div>
@@ -177,52 +177,52 @@ export default function DefaultTeamPage() {
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-muted border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Contact
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Commission
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Events
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Total Sales
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Total Earned
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Auto-Assign
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {globalStaff.map((staff) => (
-                  <tr key={staff._id} className="hover:bg-gray-50">
+                  <tr key={staff._id} className="hover:bg-muted">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">{staff.name}</div>
-                      <div className="text-xs text-gray-500">Referral: {staff.referralCode}</div>
+                      <div className="font-medium text-foreground">{staff.name}</div>
+                      <div className="text-xs text-muted-foreground">Referral: {staff.referralCode}</div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Mail className="w-4 h-4" />
                           {staff.email}
                         </div>
                         {staff.phone && (
-                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
                             <Phone className="w-4 h-4" />
                             {staff.phone}
                           </div>
@@ -235,7 +235,7 @@ export default function DefaultTeamPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1 text-sm text-gray-900">
+                      <div className="flex items-center gap-1 text-sm text-foreground">
                         {staff.commissionType === "PERCENTAGE" ? (
                           <>
                             <Percent className="w-4 h-4" />
@@ -251,29 +251,29 @@ export default function DefaultTeamPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm">
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-foreground">
                           {staff.performance?.activeEventCount || 0} active
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-muted-foreground">
                           {staff.performance?.totalEventCount || 0} total
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm">
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-foreground">
                           {staff.performance?.totalTicketsSold || 0} tickets
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-muted-foreground">
                           Avg: {staff.performance?.avgTicketsPerEvent || 0}/event
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-green-600">
+                      <div className="text-sm font-semibold text-success">
                         ${((staff.performance?.totalCommissionEarned || 0) / 100).toFixed(2)}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         Net: ${((staff.performance?.netPayout || 0) / 100).toFixed(2)}
                       </div>
                     </td>
@@ -285,12 +285,12 @@ export default function DefaultTeamPage() {
                         className="flex items-center gap-2"
                       >
                         {staff.autoAssignToNewEvents ? (
-                          <div className="flex items-center gap-2 text-green-600">
+                          <div className="flex items-center gap-2 text-success">
                             <CheckCircle2 className="w-5 h-5" />
                             <span className="text-sm font-medium">Enabled</span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 text-gray-400">
+                          <div className="flex items-center gap-2 text-muted-foreground">
                             <XCircle className="w-5 h-5" />
                             <span className="text-sm font-medium">Disabled</span>
                           </div>
@@ -300,7 +300,7 @@ export default function DefaultTeamPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
                         onClick={() => handleRemoveStaff(staff._id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                         title="Remove staff member"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -318,77 +318,77 @@ export default function DefaultTeamPage() {
       {showAddStaff && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 sticky top-0 bg-white">
-              <h2 className="text-2xl font-bold text-gray-900">Add Default Staff Member</h2>
+            <div className="p-6 border-b border-border sticky top-0 bg-white">
+              <h2 className="text-2xl font-bold text-foreground">Add Default Staff Member</h2>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6">
               {error && (
-                <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-600" />
-                  <span className="text-red-800">{error}</span>
+                <div className="mb-4 bg-destructive/10 border border-destructive rounded-lg p-4 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-destructive" />
+                  <span className="text-destructive">{error}</span>
                 </div>
               )}
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Name <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Name <span className="text-destructive">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Email <span className="text-destructive">*</span>
                   </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="john@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Phone</label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Role</label>
                   <select
                     value={formData.role}
                     onChange={(e) =>
                       setFormData({ ...formData, role: e.target.value as StaffRole })
                     }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   >
                     <option value="TEAM_MEMBERS">Team Member (Seller)</option>
                     <option value="STAFF">Door Staff (Scanner)</option>
                   </select>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Team Members sell tickets with commission. Door Staff scan tickets at entry.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Commission Type
                   </label>
                   <select
@@ -399,7 +399,7 @@ export default function DefaultTeamPage() {
                         commissionType: e.target.value as "PERCENTAGE" | "FIXED",
                       })
                     }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   >
                     <option value="PERCENTAGE">Percentage</option>
                     <option value="FIXED">Fixed Amount</option>
@@ -407,7 +407,7 @@ export default function DefaultTeamPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Commission Value
                   </label>
                   <div className="relative">
@@ -419,16 +419,16 @@ export default function DefaultTeamPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, commissionValue: e.target.value })
                       }
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                      className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                       placeholder={formData.commissionType === "PERCENTAGE" ? "10" : "5.00"}
                     />
                     {formData.commissionType === "PERCENTAGE" && (
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                         %
                       </span>
                     )}
                     {formData.commissionType === "FIXED" && (
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                         $
                       </span>
                     )}
@@ -446,10 +446,10 @@ export default function DefaultTeamPage() {
                       className="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-ring"
                     />
                     <div>
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-foreground">
                         Auto-assign to new events
                       </span>
-                      <p className="text-xs text-gray-600 mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         Automatically add this staff member when you create new events
                       </p>
                     </div>
@@ -470,7 +470,7 @@ export default function DefaultTeamPage() {
                     setShowAddStaff(false);
                     setError("");
                   }}
-                  className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition font-semibold"
+                  className="flex-1 bg-muted text-foreground py-3 rounded-lg hover:bg-muted/80 transition font-semibold"
                 >
                   Cancel
                 </button>

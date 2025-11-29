@@ -69,11 +69,11 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
   if (eventDetails === undefined) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
             <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <p className="mt-4 text-gray-500">Loading event...</p>
+            <p className="mt-4 text-muted-foreground">Loading event...</p>
           </div>
         </div>
       </div>
@@ -82,12 +82,12 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
   if (eventDetails === null) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted">
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto text-center">
-            <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h1>
-            <p className="text-gray-600 mb-6">
+            <AlertCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-foreground mb-2">Event Not Found</h1>
+            <p className="text-muted-foreground mb-6">
               This event doesn't exist or is no longer available.
             </p>
             <Link
@@ -171,14 +171,14 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
     ) ?? false;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
+      <header className="bg-card shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-gray-700 hover:text-primary transition-colors"
+              className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               <span className="font-medium">Back to Events</span>
@@ -186,7 +186,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
             <button
               onClick={handleShare}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
             >
               <Share2 className="w-4 h-4" />
               <span className="hidden sm:inline">Share</span>
@@ -207,7 +207,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               transition={{ duration: 0.5 }}
               className="md:col-span-2"
             >
-              <div className="relative w-full bg-gray-200 rounded-xl overflow-hidden shadow-lg sticky top-24">
+              <div className="relative w-full bg-muted rounded-xl overflow-hidden shadow-lg sticky top-24">
                 {eventDetails.imageUrl ? (
                   <div onClick={() => setShowFlyerModal(true)} className="cursor-pointer">
                     <img
@@ -227,9 +227,9 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold shadow-lg ${
                       eventDetails.eventType === "SAVE_THE_DATE"
-                        ? "bg-yellow-500 text-white"
+                        ? "bg-warning text-white"
                         : eventDetails.eventType === "FREE_EVENT"
-                          ? "bg-green-500 text-white"
+                          ? "bg-success text-white"
                           : "bg-primary text-white"
                     }`}
                   >
@@ -244,7 +244,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 {/* Past Event Badge */}
                 {isPast && (
                   <div className="absolute top-4 right-4">
-                    <span className="px-3 py-1 bg-gray-700 text-white rounded-full text-xs font-semibold shadow-lg">
+                    <span className="px-3 py-1 bg-muted text-foreground rounded-full text-xs font-semibold shadow-lg">
                       Past Event
                     </span>
                   </div>
@@ -260,7 +260,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               className="md:col-span-3"
             >
               {/* Event Title */}
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 {eventDetails.name}
               </h1>
 
@@ -270,7 +270,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   {eventDetails.categories.map((category) => (
                     <span
                       key={category}
-                      className="px-3 py-1 bg-accent text-primary rounded-full text-sm"
+                      className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm"
                     >
                       {category}
                     </span>
@@ -279,16 +279,16 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               )}
 
               {/* Event Details Card */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+              <div className="bg-card rounded-lg border border-border p-6 mb-6">
                 {/* Date & Time */}
                 {eventDetails.startDate && (
-                  <div className="flex items-start gap-3 mb-4 pb-4 border-b border-gray-200">
-                    <Calendar className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div className="flex items-start gap-3 mb-4 pb-4 border-b border-border">
+                    <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-semibold text-foreground">
                         {formatEventDate(eventDetails.startDate, eventDetails.timezone)}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         {formatEventTime(eventDetails.startDate, eventDetails.timezone)}
                         {eventDetails.endDate &&
                           ` - ${formatEventTime(eventDetails.endDate, eventDetails.timezone)}`}
@@ -300,12 +300,12 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 {/* Location */}
                 {eventDetails.location && typeof eventDetails.location === "object" && (
                   <div className="flex items-start gap-3 mb-4">
-                    <MapPin className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <MapPin className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-semibold text-foreground">
                         {eventDetails.location.venueName}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         {eventDetails.location.address}
                         <br />
                         {eventDetails.location.city}, {eventDetails.location.state}{" "}
@@ -337,10 +337,10 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     transition={{ duration: 0.4, delay: 0.5 }}
                     className="mb-6"
                   >
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="bg-card rounded-lg border border-border p-6">
                       <div className="flex items-center gap-2 mb-4">
                         <Ticket className="w-5 h-5 text-primary" />
-                        <h3 className="text-lg font-semibold text-gray-900">Available Tickets</h3>
+                        <h3 className="text-lg font-semibold text-foreground">Available Tickets</h3>
                       </div>
                       <div className="space-y-3">
                         {eventDetails.ticketTiers.map((tier: any, index: number) => {
@@ -360,33 +360,33 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                               transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
                               className={`border rounded-lg p-4 hover:shadow-md transition-shadow ${
                                 showEarlyBird
-                                  ? "bg-amber-50 border-amber-200"
-                                  : "bg-accent border-blue-100"
+                                  ? "bg-warning/10 border-warning"
+                                  : "bg-primary/10 border-primary"
                               }`}
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-1">
-                                    <p className="font-semibold text-gray-900">{tier.name}</p>
+                                    <p className="font-semibold text-foreground">{tier.name}</p>
                                     {showEarlyBird && (
-                                      <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-amber-500 text-white rounded-full font-medium">
+                                      <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-warning text-white rounded-full font-medium">
                                         <Zap className="w-3 h-3" />
                                         {tier.currentTierName}
                                       </span>
                                     )}
                                   </div>
                                   {tier.description && (
-                                    <p className="text-sm text-gray-600">{tier.description}</p>
+                                    <p className="text-sm text-muted-foreground">{tier.description}</p>
                                   )}
                                 </div>
                                 <div className="text-right ml-2">
                                   <p
-                                    className={`font-bold text-xl ${showEarlyBird ? "text-amber-600" : "text-primary"}`}
+                                    className={`font-bold text-xl ${showEarlyBird ? "text-warning" : "text-primary"}`}
                                   >
                                     ${(tier.currentPrice / 100).toFixed(2)}
                                   </p>
                                   {showEarlyBird && tier.price !== tier.currentPrice && (
-                                    <p className="text-sm text-gray-500 line-through">
+                                    <p className="text-sm text-muted-foreground line-through">
                                       ${(tier.price / 100).toFixed(2)}
                                     </p>
                                   )}
@@ -394,8 +394,8 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                               </div>
 
                               {nextPriceIncrease && (
-                                <div className="mt-2 mb-2 p-2 bg-orange-50 border border-orange-200 rounded text-sm">
-                                  <p className="text-orange-700 font-medium">
+                                <div className="mt-2 mb-2 p-2 bg-warning/10 border border-warning rounded text-sm">
+                                  <p className="text-warning font-medium">
                                     Price increases to $
                                     {(tier.nextPriceChange.price / 100).toFixed(2)} on{" "}
                                     {format(tier.nextPriceChange.date, "MMM d, yyyy")}
@@ -408,8 +408,8 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                   <p
                                     className={`text-sm font-medium ${
                                       tier.quantity - tier.sold > 0
-                                        ? "text-green-600"
-                                        : "text-red-600"
+                                        ? "text-success"
+                                        : "text-destructive"
                                     }`}
                                   >
                                     {tier.quantity - tier.sold > 0
@@ -419,7 +419,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                   {isSoldOut && (
                                     <button
                                       onClick={() => handleJoinWaitlist(tier._id)}
-                                      className="flex items-center gap-1 px-3 py-1 bg-orange-500 text-white rounded text-sm font-medium hover:bg-orange-600 transition-colors"
+                                      className="flex items-center gap-1 px-3 py-1 bg-warning text-white rounded text-sm font-medium hover:bg-warning/90 transition-colors"
                                     >
                                       <Bell className="w-3 h-3" />
                                       Waitlist
@@ -445,12 +445,12 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     transition={{ duration: 0.4, delay: 0.7 }}
                     className="mb-6"
                   >
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="bg-card rounded-lg border border-border p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                           <Package className="w-5 h-5 text-primary" />
-                          <h3 className="text-lg font-semibold text-gray-900">Ticket Bundles</h3>
-                          <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">
+                          <h3 className="text-lg font-semibold text-foreground">Ticket Bundles</h3>
+                          <span className="text-xs px-2 py-0.5 bg-success/10 text-success rounded-full font-medium">
                             Save More
                           </span>
                         </div>
@@ -469,14 +469,14 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.3, delay: 0.8 + index * 0.1 }}
-                            className="bg-accent border border-purple-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer"
+                            className="bg-accent border border-accent rounded-lg p-4 hover:shadow-md transition-all cursor-pointer"
                             onClick={() => router.push(`/bundles/${bundle._id}`)}
                           >
                             <div className="flex justify-between items-start mb-2">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                  <p className="font-semibold text-gray-900">{bundle.name}</p>
-                                  <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-green-500 text-white rounded-full font-bold">
+                                  <p className="font-semibold text-foreground">{bundle.name}</p>
+                                  <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-success text-white rounded-full font-bold">
                                     <TrendingDown className="w-3 h-3" />
                                     Save {bundle.percentageSavings}%
                                   </span>
@@ -487,7 +487,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                   )}
                                 </div>
                                 {bundle.description && (
-                                  <p className="text-sm text-gray-600 mb-2">{bundle.description}</p>
+                                  <p className="text-sm text-muted-foreground mb-2">{bundle.description}</p>
                                 )}
 
                                 {/* Show events for multi-event bundles */}
@@ -495,14 +495,14 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                   bundle.events &&
                                   bundle.events.length > 0 && (
                                     <div className="mb-2">
-                                      <p className="text-xs text-gray-500 mb-1">
+                                      <p className="text-xs text-muted-foreground mb-1">
                                         Includes {bundle.events.length} events:
                                       </p>
                                       <div className="flex flex-wrap gap-1">
                                         {bundle.events.map((event: any) => (
                                           <span
                                             key={event._id}
-                                            className="text-xs px-2 py-0.5 bg-accent text-primary rounded border border-primary/30"
+                                            className="text-xs px-2 py-0.5 bg-accent text-accent-foreground rounded border border-border"
                                           >
                                             <Calendar className="w-3 h-3 inline mr-1" />
                                             {event.name}
@@ -517,14 +517,14 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                   {bundle.includedTiersDetails?.slice(0, 3).map((tier: any) => (
                                     <span
                                       key={tier.tierId}
-                                      className="text-xs px-2 py-0.5 bg-accent text-primary rounded"
+                                      className="text-xs px-2 py-0.5 bg-accent text-accent-foreground rounded"
                                     >
                                       {tier.quantity}x {tier.tierName}
                                     </span>
                                   ))}
                                   {bundle.includedTiersDetails &&
                                     bundle.includedTiersDetails.length > 3 && (
-                                      <span className="text-xs px-2 py-0.5 text-primary font-medium">
+                                      <span className="text-xs px-2 py-0.5 text-accent-foreground font-medium">
                                         +{bundle.includedTiersDetails.length - 3} more
                                       </span>
                                     )}
@@ -535,14 +535,14 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                   ${(bundle.price / 100).toFixed(2)}
                                 </p>
                                 {bundle.regularPrice && (
-                                  <p className="text-sm text-gray-500 line-through">
+                                  <p className="text-sm text-muted-foreground line-through">
                                     ${(bundle.regularPrice / 100).toFixed(2)}
                                   </p>
                                 )}
                               </div>
                             </div>
                             <div className="mt-2 flex items-center justify-between">
-                              <p className="text-sm font-medium text-green-600">
+                              <p className="text-sm font-medium text-success">
                                 {bundle.available} bundle{bundle.available !== 1 ? "s" : ""}{" "}
                                 available
                               </p>
@@ -565,14 +565,14 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   transition={{ duration: 0.4, delay: 0.5 }}
                   className="mb-6"
                 >
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 shadow-sm">
+                  <div className="bg-card rounded-lg border border-border p-6">
+                    <div className="bg-success/10 border border-success rounded-lg p-4 shadow-sm">
                       <div className="flex items-center gap-2 mb-2">
-                        <Ticket className="w-5 h-5 text-green-600" />
-                        <p className="font-semibold text-green-900">Door Price</p>
+                        <Ticket className="w-5 h-5 text-success" />
+                        <p className="font-semibold text-success">Door Price</p>
                       </div>
-                      <p className="text-green-800 font-bold text-lg">{eventDetails.doorPrice}</p>
-                      <p className="text-xs text-green-700 mt-1">Payment accepted at venue</p>
+                      <p className="text-success font-bold text-lg">{eventDetails.doorPrice}</p>
+                      <p className="text-xs text-success mt-1">Payment accepted at venue</p>
                     </div>
                   </div>
                 </motion.div>
@@ -606,7 +606,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   >
                     <button
                       onClick={() => handleJoinWaitlist()}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-semibold text-lg shadow-md hover:shadow-lg"
+                      className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-warning text-white rounded-lg hover:bg-warning/90 transition-colors font-semibold text-lg shadow-md hover:shadow-lg"
                     >
                       <Bell className="w-5 h-5" />
                       Join Waitlist
@@ -635,28 +635,28 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 >
                   <Link
                     href={`/events/${eventId}/register`}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-success text-white rounded-lg hover:bg-success/90 transition-colors font-semibold text-lg"
                   >
                     <Ticket className="w-5 h-5" />
                     Register Free
                   </Link>
                 </motion.div>
               ) : eventDetails.eventType === "SAVE_THE_DATE" ? (
-                <div className="text-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
-                  <Clock className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-                  <p className="text-sm text-yellow-800 font-medium">Tickets coming soon!</p>
-                  <p className="text-xs text-yellow-700 mt-1">Save this date on your calendar</p>
+                <div className="text-center p-4 bg-warning/10 border border-warning rounded-lg mb-6">
+                  <Clock className="w-8 h-8 text-warning mx-auto mb-2" />
+                  <p className="text-sm text-warning font-medium">Tickets coming soon!</p>
+                  <p className="text-xs text-warning mt-1">Save this date on your calendar</p>
                 </div>
               ) : isPast ? (
-                <div className="text-center p-4 bg-gray-50 border border-gray-200 rounded-lg mb-6">
-                  <p className="text-sm text-gray-600">This event has ended</p>
+                <div className="text-center p-4 bg-muted border border-border rounded-lg mb-6">
+                  <p className="text-sm text-muted-foreground">This event has ended</p>
                 </div>
               ) : null}
 
               {/* Ticket Info */}
               {!eventDetails.ticketsVisible && eventDetails.eventType === "TICKETED_EVENT" && (
-                <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg mb-6">
-                  <p className="text-xs text-gray-600">
+                <div className="p-3 bg-muted border border-border rounded-lg mb-6">
+                  <p className="text-xs text-muted-foreground">
                     Ticket sales have not started yet. Check back soon!
                   </p>
                 </div>
@@ -664,9 +664,9 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
               {/* Organizer */}
               {(eventDetails.organizer || eventDetails.organizerName) && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Organized By</h3>
-                  <p className="text-gray-700 font-medium text-xl">
+                <div className="bg-card rounded-lg border border-border p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-3">Organized By</h3>
+                  <p className="text-foreground font-medium text-xl">
                     {eventDetails.organizer?.name ||
                       eventDetails.organizerName ||
                       "Event Organizer"}
@@ -681,7 +681,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   )}
                   {/* Show credit line only for admin-posted events */}
                   {eventDetails.isClaimable && (
-                    <p className="text-[7pt] text-gray-400 mt-2">posted by stepperslife.com</p>
+                    <p className="text-[7pt] text-muted-foreground mt-2">posted by stepperslife.com</p>
                   )}
                 </div>
               )}
@@ -710,9 +710,9 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               transition={{ duration: 0.5, delay: 0.6 }}
               className="mt-8"
             >
-              <div className="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Event</h2>
-                <div className="prose max-w-none text-gray-700">
+              <div className="bg-card rounded-lg border border-border p-6 md:p-8">
+                <h2 className="text-2xl font-bold text-foreground mb-4">About This Event</h2>
+                <div className="prose max-w-none text-foreground">
                   <p className="whitespace-pre-wrap">{eventDetails.description}</p>
                 </div>
               </div>
@@ -735,11 +735,11 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <Users className="w-6 h-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-gray-900">Seating Chart</h2>
+                  <h2 className="text-2xl font-bold text-foreground">Seating Chart</h2>
                 </div>
                 <button
                   onClick={() => setShowSeatingModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -747,7 +747,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
               {/* Venue Image */}
               {seatingChart.venueImageUrl && (
-                <div className="mb-6 rounded-lg overflow-hidden border border-gray-200">
+                <div className="mb-6 rounded-lg overflow-hidden border border-border">
                   <img
                     src={seatingChart.venueImageUrl}
                     alt="Venue Layout"
@@ -766,7 +766,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     selectedSeats={[]}
                     className="min-h-[500px]"
                   />
-                  <p className="text-sm text-gray-500 mt-4 text-center">
+                  <p className="text-sm text-muted-foreground mt-4 text-center">
                     Click "Buy Tickets" below to select your seats
                   </p>
                 </div>
@@ -774,13 +774,13 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 /* Traditional Row/Section view for ROW_BASED layouts */
                 <div className="space-y-6">
                   {seatingChart.sections.map((section: any, sectionIndex: number) => (
-                    <div key={section.id} className="border border-gray-200 rounded-lg p-4">
+                    <div key={section.id} className="border border-border rounded-lg p-4">
                       <div className="flex items-center gap-3 mb-4">
                         <div
                           className="w-4 h-4 rounded"
                           style={{ backgroundColor: section.color || "#3B82F6" }}
                         ></div>
-                        <h3 className="text-lg font-bold text-gray-900">{section.name}</h3>
+                        <h3 className="text-lg font-bold text-foreground">{section.name}</h3>
                       </div>
 
                       {/* Row-based seating */}
@@ -788,7 +788,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                         <div className="space-y-2">
                           {section.rows.map((row: any) => (
                             <div key={row.id} className="flex items-center gap-2">
-                              <span className="w-8 text-sm font-medium text-gray-600 text-right">
+                              <span className="w-8 text-sm font-medium text-muted-foreground text-right">
                                 {row.label}
                               </span>
                               <div className="flex gap-1 flex-wrap">
@@ -797,10 +797,10 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                     key={seat.id}
                                     className={`w-8 h-8 rounded flex items-center justify-center text-xs font-medium border-2 ${
                                       seat.status === "RESERVED"
-                                        ? "bg-gray-300 text-gray-600 border-gray-400"
+                                        ? "bg-muted text-muted-foreground border-border"
                                         : seat.status === "UNAVAILABLE"
-                                          ? "bg-gray-200 text-gray-500 border-gray-400"
-                                          : "bg-white text-gray-900 border-gray-900"
+                                          ? "bg-muted text-muted-foreground border-border"
+                                          : "bg-card text-foreground border-foreground"
                                     }`}
                                     title={`Seat ${seat.number} - ${seat.status}`}
                                   >
@@ -819,9 +819,9 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                           {section.tables.map((table: any) => (
                             <div
                               key={table.id}
-                              className="border border-gray-200 rounded-lg p-3 bg-gray-50"
+                              className="border border-border rounded-lg p-3 bg-muted"
                             >
-                              <p className="font-semibold text-gray-900 mb-2">
+                              <p className="font-semibold text-foreground mb-2">
                                 Table {table.number}
                               </p>
                               <div className="flex gap-1 flex-wrap">
@@ -830,8 +830,8 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                     key={seat.id}
                                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border-2 ${
                                       seat.status === "RESERVED"
-                                        ? "bg-gray-300 text-gray-600 border-gray-400"
-                                        : "bg-white text-gray-900 border-gray-900"
+                                        ? "bg-muted text-muted-foreground border-border"
+                                        : "bg-card text-foreground border-foreground"
                                     }`}
                                     title={`Seat ${seat.number}`}
                                   >
@@ -850,20 +850,20 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
               {/* Legend - Only show for ROW_BASED layouts */}
               {seatingChart.layoutType !== "TABLE_BASED" && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h4 className="font-semibold text-gray-900 mb-3">Legend</h4>
+                <div className="mt-6 pt-6 border-t border-border">
+                  <h4 className="font-semibold text-foreground mb-3">Legend</h4>
                   <div className="flex flex-wrap gap-4 text-sm">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-white border-2 border-gray-900 rounded"></div>
-                      <span className="text-gray-700">Available</span>
+                      <div className="w-6 h-6 bg-card border-2 border-foreground rounded"></div>
+                      <span className="text-foreground">Available</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-gray-300 border-2 border-gray-400 rounded"></div>
-                      <span className="text-gray-700">Reserved</span>
+                      <div className="w-6 h-6 bg-muted border-2 border-border rounded"></div>
+                      <span className="text-foreground">Reserved</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-gray-200 border-2 border-gray-400 rounded"></div>
-                      <span className="text-gray-700">Unavailable</span>
+                      <div className="w-6 h-6 bg-muted border-2 border-border rounded"></div>
+                      <span className="text-foreground">Unavailable</span>
                     </div>
                   </div>
                 </div>
@@ -897,18 +897,18 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Bell className="w-6 h-6 text-orange-500" />
-                  <h2 className="text-xl font-bold text-gray-900">Join Waitlist</h2>
+                  <Bell className="w-6 h-6 text-warning" />
+                  <h2 className="text-xl font-bold text-foreground">Join Waitlist</h2>
                 </div>
                 <button
                   onClick={() => setShowWaitlistModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 We'll notify you when tickets become available for this event.
               </p>
 
@@ -916,7 +916,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 <div>
                   <label
                     htmlFor="waitlist-email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block text-sm font-medium text-foreground mb-1"
                   >
                     Email Address
                   </label>
@@ -925,7 +925,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     type="email"
                     value={waitlistEmail}
                     onChange={(e) => setWaitlistEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-warning focus:border-warning"
                     placeholder="your@email.com"
                     required
                   />
@@ -934,7 +934,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 <div>
                   <label
                     htmlFor="waitlist-name"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block text-sm font-medium text-foreground mb-1"
                   >
                     Full Name
                   </label>
@@ -943,7 +943,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     type="text"
                     value={waitlistName}
                     onChange={(e) => setWaitlistName(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-warning focus:border-warning"
                     placeholder="Your Name"
                     required
                   />
@@ -952,7 +952,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 <div>
                   <label
                     htmlFor="waitlist-quantity"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block text-sm font-medium text-foreground mb-1"
                   >
                     Number of Tickets
                   </label>
@@ -963,7 +963,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     max="10"
                     value={waitlistQuantity}
                     onChange={(e) => setWaitlistQuantity(parseInt(e.target.value) || 1)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-warning focus:border-warning"
                     required
                   />
                 </div>
@@ -973,7 +973,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 <button
                   onClick={handleSubmitWaitlist}
                   disabled={isJoiningWaitlist}
-                  className="flex-1 px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-warning text-white rounded-lg hover:bg-warning/90 transition-colors font-medium disabled:bg-muted disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isJoiningWaitlist ? (
                     <>
@@ -989,7 +989,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                 </button>
                 <button
                   onClick={() => setShowWaitlistModal(false)}
-                  className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  className="px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors font-medium"
                 >
                   Cancel
                 </button>

@@ -59,7 +59,7 @@ export function EventCard({ event }: EventCardProps) {
           {/* Tickets Available Badge */}
           {event.ticketsVisible && (
             <div className="absolute top-3 right-3">
-              <div className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full shadow-sm">
+              <div className="flex items-center gap-1 px-2 py-1 bg-success text-white text-xs font-semibold rounded-full shadow-sm">
                 <Ticket className="w-3 h-3" />
                 <span>Available</span>
               </div>
@@ -75,18 +75,18 @@ export function EventCard({ event }: EventCardProps) {
           </h3>
 
           {/* Date & Time - Always in EVENT's timezone */}
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="w-4 h-4" />
             <span>{formatEventDate(event.startDate, event.timezone)}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="w-4 h-4" />
             <span>{formatEventTime(event.startDate, event.timezone)}</span>
           </div>
 
           {/* Location */}
           {event.location && (event.location.city || event.location.state) && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="w-4 h-4" />
               <span>
                 {event.location.city && event.location.state
@@ -102,13 +102,13 @@ export function EventCard({ event }: EventCardProps) {
               {event.categories.slice(0, 2).map((category) => (
                 <span
                   key={category}
-                  className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full"
+                  className="px-2 py-1 text-xs bg-muted text-foreground rounded-full"
                 >
                   {category}
                 </span>
               ))}
               {event.categories.length > 2 && (
-                <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                <span className="px-2 py-1 text-xs bg-muted text-foreground rounded-full">
                   +{event.categories.length - 2}
                 </span>
               )}

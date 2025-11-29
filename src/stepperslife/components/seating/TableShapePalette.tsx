@@ -27,8 +27,8 @@ const tableShapes: TableShapeOption[] = [
     shape: "RECTANGULAR",
     label: "Rectangular",
     icon: <RectangleHorizontal className="w-5 h-5" />,
-    color: "text-green-700",
-    bgColor: "bg-green-100 hover:bg-green-200 border-green-300",
+    color: "text-success",
+    bgColor: "bg-success/10 hover:bg-success/20 border-success",
     description: "Long banquet-style tables",
   },
   {
@@ -43,8 +43,8 @@ const tableShapes: TableShapeOption[] = [
     shape: "CUSTOM",
     label: "Custom",
     icon: <Pentagon className="w-5 h-5" />,
-    color: "text-orange-700",
-    bgColor: "bg-orange-100 hover:bg-orange-200 border-orange-300",
+    color: "text-warning",
+    bgColor: "bg-warning/10 hover:bg-warning/20 border-warning",
     description: "Custom polygon shape",
   },
 ];
@@ -73,7 +73,7 @@ export default function TableShapePalette({
               className={`
                 relative p-2 rounded-lg border-2 transition-all
                 ${tableShape.bgColor}
-                ${isSelected ? "ring-2 ring-offset-2 ring-purple-500 scale-110" : ""}
+                ${isSelected ? "ring-2 ring-offset-2 ring-ring scale-110" : ""}
               `}
             >
               <span className={tableShape.color}>{tableShape.icon}</span>
@@ -85,12 +85,12 @@ export default function TableShapePalette({
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
+    <div className="bg-card rounded-lg border border-border p-4">
       <div className="flex items-center gap-2 mb-4">
         <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
           <Info className="w-5 h-5 text-primary" />
         </div>
-        <h3 className="font-semibold text-gray-900">Table Shapes</h3>
+        <h3 className="font-semibold text-foreground">Table Shapes</h3>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -105,7 +105,7 @@ export default function TableShapePalette({
               className={`
                 relative flex flex-col items-center p-4 rounded-lg border-2 transition-all
                 ${tableShape.bgColor}
-                ${isSelected ? "ring-2 ring-offset-2 ring-purple-500" : ""}
+                ${isSelected ? "ring-2 ring-offset-2 ring-ring" : ""}
               `}
             >
               {isSelected && (
@@ -118,15 +118,15 @@ export default function TableShapePalette({
               )}
 
               <span className={`${tableShape.color} mb-2`}>{tableShape.icon}</span>
-              <span className="text-xs font-semibold text-gray-900 mb-1">{tableShape.label}</span>
-              <span className="text-xs text-gray-600 text-center">{tableShape.description}</span>
+              <span className="text-xs font-semibold text-foreground mb-1">{tableShape.label}</span>
+              <span className="text-xs text-muted-foreground text-center">{tableShape.description}</span>
             </motion.button>
           );
         })}
       </div>
 
-      <div className="mt-4 pt-4 border-t border-gray-200">
-        <p className="text-xs text-gray-600">
+      <div className="mt-4 pt-4 border-t border-border">
+        <p className="text-xs text-muted-foreground">
           <strong>Tip:</strong> Select a shape, then click on the canvas to place a new table
         </p>
       </div>

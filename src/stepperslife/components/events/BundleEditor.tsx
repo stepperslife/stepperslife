@@ -264,15 +264,15 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
   };
 
   if (!tiers) {
-    return <div className="text-gray-600">Loading ticket tiers...</div>;
+    return <div className="text-muted-foreground">Loading ticket tiers...</div>;
   }
 
   if (tiers.length === 0) {
     return (
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-        <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-        <p className="text-gray-600 mb-2">No ticket tiers available</p>
-        <p className="text-sm text-gray-500">Create ticket tiers first before creating bundles</p>
+      <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+        <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+        <p className="text-muted-foreground mb-2">No ticket tiers available</p>
+        <p className="text-sm text-muted-foreground">Create ticket tiers first before creating bundles</p>
       </div>
     );
   }
@@ -282,8 +282,8 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Ticket Bundles</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="text-lg font-semibold text-foreground">Ticket Bundles</h3>
+          <p className="text-sm text-muted-foreground">
             Package multiple tickets together at a discounted price
           </p>
         </div>
@@ -306,10 +306,10 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
           className="bg-accent border-2 border-primary/30 rounded-lg p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-lg font-semibold text-gray-900">
+            <h4 className="text-lg font-semibold text-foreground">
               {editingBundleId ? "Edit Bundle" : "Create New Bundle"}
             </h4>
-            <button type="button" onClick={resetForm} className="text-gray-600 hover:text-gray-800">
+            <button type="button" onClick={resetForm} className="text-muted-foreground hover:text-foreground">
               Cancel
             </button>
           </div>
@@ -317,19 +317,19 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
           <div className="space-y-4">
             {/* Bundle Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Bundle Name *</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Bundle Name *</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="e.g., 3-Day Weekend Pass, VIP Package"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Description (Optional)
               </label>
               <textarea
@@ -337,13 +337,13 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Describe what's included in this bundle..."
                 rows={2}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
 
             {/* Included Tiers */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Included Tickets *
               </label>
 
@@ -355,11 +355,11 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                     return (
                       <div
                         key={includedTier.tierId}
-                        className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-3"
+                        className="flex items-center gap-3 bg-white border border-border rounded-lg p-3"
                       >
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900">{includedTier.tierName}</div>
-                          <div className="text-sm text-gray-600">
+                          <div className="font-medium text-foreground">{includedTier.tierName}</div>
+                          <div className="text-sm text-muted-foreground">
                             ${((tier?.price || 0) / 100).toFixed(2)} each
                             {includedTier.eventName && (
                               <span className="ml-2 px-2 py-0.5 bg-accent text-primary text-xs rounded">
@@ -369,7 +369,7 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <label className="text-sm text-gray-600">Qty:</label>
+                          <label className="text-sm text-muted-foreground">Qty:</label>
                           <input
                             type="number"
                             min="1"
@@ -377,13 +377,13 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                             onChange={(e) =>
                               updateTierQuantity(includedTier.tierId, parseInt(e.target.value) || 1)
                             }
-                            className="w-16 px-2 py-1 border border-gray-300 rounded text-center"
+                            className="w-16 px-2 py-1 border border-border rounded text-center"
                           />
                         </div>
                         <button
                           type="button"
                           onClick={() => removeTierFromBundle(includedTier.tierId)}
-                          className="text-red-600 hover:text-red-700 p-1"
+                          className="text-destructive hover:text-destructive/90 p-1"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -392,7 +392,7 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                   })}
                 </div>
               ) : (
-                <div className="text-sm text-gray-500 mb-3 p-3 bg-gray-50 rounded border border-gray-200">
+                <div className="text-sm text-muted-foreground mb-3 p-3 bg-muted rounded border border-border">
                   No tickets added yet. Select from available tiers below.
                 </div>
               )}
@@ -412,7 +412,7 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                     e.target.value = "";
                   }
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
                 defaultValue=""
               >
                 <option value="">+ Add Ticket Type</option>
@@ -430,28 +430,28 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Regular Price (Calculated) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Regular Price
                 </label>
                 <div className="relative">
-                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     type="text"
                     value={`$${(calculateRegularPrice() / 100).toFixed(2)}`}
                     disabled
-                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700"
+                    className="w-full pl-9 pr-3 py-2 border border-border rounded-lg bg-muted text-foreground"
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">If bought separately</p>
+                <p className="text-xs text-muted-foreground mt-1">If bought separately</p>
               </div>
 
               {/* Bundle Price */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Bundle Price (USD) *
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     type="number"
                     step="0.01"
@@ -459,25 +459,25 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     placeholder="0.00"
-                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                    className="w-full pl-9 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Your bundle price</p>
+                <p className="text-xs text-muted-foreground mt-1">Your bundle price</p>
               </div>
 
               {/* Savings */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Savings</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Savings</label>
                 <div className="relative">
-                  <TrendingDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-600" />
+                  <TrendingDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-success" />
                   <input
                     type="text"
                     value={`$${(calculateSavings() / 100).toFixed(2)} (${calculateSavingsPercentage()}%)`}
                     disabled
-                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg bg-green-50 text-green-700 font-medium"
+                    className="w-full pl-9 pr-3 py-2 border border-border rounded-lg bg-success/10 text-success font-medium"
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Customer saves</p>
+                <p className="text-xs text-muted-foreground mt-1">Customer saves</p>
               </div>
             </div>
 
@@ -485,7 +485,7 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Total Quantity */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Bundles Available *
                 </label>
                 <input
@@ -494,26 +494,26 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                   value={formData.totalQuantity}
                   onChange={(e) => setFormData({ ...formData, totalQuantity: e.target.value })}
                   placeholder="50"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
                 />
               </div>
 
               {/* Sale Start */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Sale Starts (Optional)
                 </label>
                 <input
                   type="date"
                   value={formData.saleStart}
                   onChange={(e) => setFormData({ ...formData, saleStart: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
                 />
               </div>
 
               {/* Sale End */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Sale Ends (Optional)
                 </label>
                 <input
@@ -521,7 +521,7 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                   value={formData.saleEnd}
                   onChange={(e) => setFormData({ ...formData, saleEnd: e.target.value })}
                   min={formData.saleStart}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
                 />
               </div>
             </div>
@@ -537,7 +537,7 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-6 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 Cancel
               </button>
@@ -549,56 +549,56 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
       {/* Existing Bundles List */}
       {bundles && bundles.length > 0 && (
         <div className="space-y-3">
-          <h4 className="font-medium text-gray-900">Existing Bundles</h4>
+          <h4 className="font-medium text-foreground">Existing Bundles</h4>
           {bundles.map((bundle) => (
             <div
               key={bundle._id}
               className={`border rounded-lg p-4 ${
-                bundle.isActive ? "bg-white border-gray-200" : "bg-gray-50 border-gray-300"
+                bundle.isActive ? "bg-white border-border" : "bg-muted border-border"
               }`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <Package className="w-5 h-5 text-primary" />
-                    <h5 className="font-semibold text-gray-900">{bundle.name}</h5>
+                    <h5 className="font-semibold text-foreground">{bundle.name}</h5>
                     {!bundle.isActive && (
-                      <span className="text-xs px-2 py-0.5 bg-gray-200 text-gray-600 rounded">
+                      <span className="text-xs px-2 py-0.5 bg-muted text-muted-foreground rounded">
                         Inactive
                       </span>
                     )}
                   </div>
 
                   {bundle.description && (
-                    <p className="text-sm text-gray-600 mb-2">{bundle.description}</p>
+                    <p className="text-sm text-muted-foreground mb-2">{bundle.description}</p>
                   )}
 
                   <div className="flex flex-wrap gap-4 text-sm">
                     <div>
-                      <span className="text-gray-500">Price:</span>{" "}
+                      <span className="text-muted-foreground">Price:</span>{" "}
                       <span className="font-semibold text-primary">
                         ${(bundle.price / 100).toFixed(2)}
                       </span>
                       {bundle.regularPrice && (
-                        <span className="text-gray-500 line-through ml-2">
+                        <span className="text-muted-foreground line-through ml-2">
                           ${(bundle.regularPrice / 100).toFixed(2)}
                         </span>
                       )}
                     </div>
                     <div>
-                      <span className="text-gray-500">Savings:</span>{" "}
-                      <span className="font-semibold text-green-600">
+                      <span className="text-muted-foreground">Savings:</span>{" "}
+                      <span className="font-semibold text-success">
                         {bundle.percentageSavings}%
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Available:</span>{" "}
+                      <span className="text-muted-foreground">Available:</span>{" "}
                       <span className="font-medium">
                         {bundle.available} / {bundle.totalQuantity}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Sold:</span>{" "}
+                      <span className="text-muted-foreground">Sold:</span>{" "}
                       <span className="font-medium">{bundle.sold}</span>
                     </div>
                   </div>
@@ -619,7 +619,7 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                   <button
                     type="button"
                     onClick={() => handleEdit(bundle)}
-                    className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50"
+                    className="px-3 py-1 text-sm border border-border rounded hover:bg-muted"
                     disabled={bundle.sold > 0}
                     title={bundle.sold > 0 ? "Cannot edit bundle with sales" : "Edit bundle"}
                   >
@@ -630,8 +630,8 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                     onClick={() => handleToggleActive(bundle)}
                     className={`px-3 py-1 text-sm rounded ${
                       bundle.isActive
-                        ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
-                        : "bg-green-100 text-green-700 hover:bg-green-200"
+                        ? "bg-warning/10 text-warning hover:bg-warning/20"
+                        : "bg-success/10 text-success hover:bg-success/20"
                     }`}
                   >
                     {bundle.isActive ? "Deactivate" : "Activate"}
@@ -640,7 +640,7 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
                     <button
                       type="button"
                       onClick={() => handleDelete(bundle._id)}
-                      className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200"
+                      className="px-3 py-1 text-sm bg-destructive/10 text-destructive rounded hover:bg-destructive/20"
                     >
                       Delete
                     </button>
@@ -654,10 +654,10 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
 
       {/* Empty State */}
       {bundles && bundles.length === 0 && !isCreating && (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-          <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600 mb-2">No bundles created yet</p>
-          <p className="text-sm text-gray-500 mb-4">
+        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+          <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground mb-2">No bundles created yet</p>
+          <p className="text-sm text-muted-foreground mb-4">
             Create bundles to package multiple tickets together at a discount
           </p>
           <button

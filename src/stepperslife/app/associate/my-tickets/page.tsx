@@ -31,10 +31,10 @@ export default function AssociateMyTicketsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Sold</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <TrendingUp className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">0</div>
+            <div className="text-2xl font-bold text-success">0</div>
             <p className="text-xs text-muted-foreground">Total sold</p>
           </CardContent>
         </Card>
@@ -57,8 +57,8 @@ export default function AssociateMyTicketsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Ticket className="h-5 w-5 text-blue-600" />
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Ticket className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Available Tickets</CardTitle>
@@ -76,8 +76,8 @@ export default function AssociateMyTicketsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
+                  <div className="p-2 bg-success/10 rounded-lg">
+                    <TrendingUp className="h-5 w-5 text-success" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Sold Tickets</CardTitle>
@@ -95,8 +95,8 @@ export default function AssociateMyTicketsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Package className="h-5 w-5 text-purple-600" />
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Package className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Inventory Overview</CardTitle>

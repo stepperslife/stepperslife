@@ -56,9 +56,9 @@ export default function TodayScansPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Valid</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-success">0</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -68,9 +68,9 @@ export default function TodayScansPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Invalid</p>
-                <p className="text-2xl font-bold mt-1 text-red-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-destructive">0</p>
               </div>
-              <XCircle className="h-8 w-8 text-red-600" />
+              <XCircle className="h-8 w-8 text-destructive" />
             </div>
           </CardContent>
         </Card>
@@ -94,9 +94,9 @@ export default function TodayScansPage() {
                 >
                   <div className="flex items-center gap-3">
                     {scan.valid ? (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                     ) : (
-                      <XCircle className="h-5 w-5 text-red-600" />
+                      <XCircle className="h-5 w-5 text-destructive" />
                     )}
                     <div>
                       <p className="font-medium">{scan.ticketNumber}</p>

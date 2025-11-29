@@ -103,7 +103,7 @@ export default function MySubSellersPage() {
 
   if (!staffPositions) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -111,11 +111,11 @@ export default function MySubSellersPage() {
 
   if (staffPositions.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="text-center">
-          <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Staff Positions</h2>
-          <p className="text-gray-600">You are not assigned as staff for any events yet.</p>
+          <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-foreground mb-2">No Staff Positions</h2>
+          <p className="text-muted-foreground">You are not assigned as staff for any events yet.</p>
         </div>
       </div>
     );
@@ -130,29 +130,29 @@ export default function MySubSellersPage() {
     <div className="container mx-auto px-4 py-8">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+        <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
           <Users className="w-8 h-8" />
           My Sub-Sellers
         </h1>
-        <p className="text-gray-600 mt-1">Manage your team of ticket sellers</p>
+        <p className="text-muted-foreground mt-1">Manage your team of ticket sellers</p>
       </div>
 
       {/* Success Message */}
       {success && (
-        <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-2">
-          <Check className="w-5 h-5 text-green-600" />
-          <span className="text-green-800">{success}</span>
+        <div className="mb-6 bg-success/10 border border-success rounded-lg p-4 flex items-center gap-2">
+          <Check className="w-5 h-5 text-success" />
+          <span className="text-success">{success}</span>
         </div>
       )}
 
       {/* Event Selector */}
       {staffPositions.length > 1 && (
-        <div className="mb-6 bg-white rounded-lg shadow-md p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Select Event</label>
+        <div className="mb-6 bg-card rounded-lg shadow-md p-6">
+          <label className="block text-sm font-medium text-foreground mb-2">Select Event</label>
           <select
             value={selectedEventId || ""}
             onChange={(e) => setSelectedEventId(e.target.value as Id<"events">)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+            className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
           >
             {staffPositions.map((pos) => (
               <option key={pos.eventId} value={pos.eventId}>
@@ -165,12 +165,12 @@ export default function MySubSellersPage() {
 
       {/* Permission Check */}
       {!canAssignSubSellers ? (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+        <div className="bg-warning/10 border border-warning rounded-lg p-6 mb-6">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-6 h-6 text-warning flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-yellow-900 mb-1">Permission Required</h3>
-              <p className="text-yellow-800">
+              <h3 className="font-semibold text-warning mb-1">Permission Required</h3>
+              <p className="text-warning">
                 You don't have permission to assign sub-sellers for this event. Please contact the
                 event organizer to enable this feature.
               </p>
@@ -181,34 +181,34 @@ export default function MySubSellersPage() {
         <>
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-card rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
                   <Users className="w-6 h-6 text-primary" />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">Total Sub-Sellers</p>
-              <p className="text-3xl font-bold text-gray-900">{subSellers?.length || 0}</p>
+              <p className="text-sm text-muted-foreground mb-1">Total Sub-Sellers</p>
+              <p className="text-3xl font-bold text-foreground">{subSellers?.length || 0}</p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-card rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <Ticket className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center">
+                  <Ticket className="w-6 h-6 text-success" />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">Available to Allocate</p>
-              <p className="text-3xl font-bold text-gray-900">{availableTickets}</p>
+              <p className="text-sm text-muted-foreground mb-1">Available to Allocate</p>
+              <p className="text-3xl font-bold text-foreground">{availableTickets}</p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-card rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-primary" />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">Sub-Seller Sales</p>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground mb-1">Sub-Seller Sales</p>
+              <p className="text-3xl font-bold text-foreground">
                 {subSellers?.reduce((sum, s) => sum + s.ticketsSold, 0) || 0}
               </p>
             </div>
@@ -227,51 +227,51 @@ export default function MySubSellersPage() {
 
           {/* Sub-Sellers List */}
           {subSellers && subSellers.length > 0 ? (
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="bg-card rounded-lg shadow-md overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
+                  <thead className="bg-muted border-b border-border">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Name
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Contact
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Allocated
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Sold
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Available
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Commission Split
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Earned
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-card divide-y divide-border">
                     {subSellers.map((subSeller) => (
-                      <tr key={subSeller._id} className="hover:bg-gray-50">
+                      <tr key={subSeller._id} className="hover:bg-muted">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-medium text-gray-900">{subSeller.name}</div>
-                          <div className="text-xs text-gray-500">
+                          <div className="font-medium text-foreground">{subSeller.name}</div>
+                          <div className="text-xs text-muted-foreground">
                             Level {subSeller.hierarchyLevel}
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
                               <Mail className="w-4 h-4" />
                               {subSeller.email}
                             </div>
                             {subSeller.phone && (
-                              <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <Phone className="w-4 h-4" />
                                 {subSeller.phone}
                               </div>
@@ -279,30 +279,30 @@ export default function MySubSellersPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-900">
+                          <span className="text-sm text-foreground">
                             {subSeller.allocatedTickets || 0}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-semibold text-gray-900">
+                          <span className="text-sm font-semibold text-foreground">
                             {subSeller.ticketsSold}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-900">
+                          <span className="text-sm text-foreground">
                             {subSeller.availableTickets}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
+                          <div className="text-sm text-foreground">
                             Parent: {subSeller.parentCommissionPercent}%
                           </div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-muted-foreground">
                             Sub-seller: {subSeller.subSellerCommissionPercent}%
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-semibold text-green-600">
+                          <span className="text-sm font-semibold text-success">
                             ${(subSeller.commissionEarned / 100).toFixed(2)}
                           </span>
                         </td>
@@ -313,10 +313,10 @@ export default function MySubSellersPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-md p-12 text-center">
-              <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Sub-Sellers Yet</h3>
-              <p className="text-gray-600 mb-6">
+            <div className="bg-card rounded-lg shadow-md p-12 text-center">
+              <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">No Sub-Sellers Yet</h3>
+              <p className="text-muted-foreground mb-6">
                 Start building your sales team by adding your first sub-seller.
               </p>
             </div>
@@ -327,15 +327,15 @@ export default function MySubSellersPage() {
       {/* Add Sub-Seller Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
-              <h2 className="text-2xl font-bold text-gray-900">Add Sub-Seller</h2>
+          <div className="bg-card rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-card">
+              <h2 className="text-2xl font-bold text-foreground">Add Sub-Seller</h2>
               <button
                 onClick={() => {
                   setShowAddModal(false);
                   setError("");
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -343,54 +343,54 @@ export default function MySubSellersPage() {
 
             <form onSubmit={handleSubmit} className="p-6">
               {error && (
-                <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-600" />
-                  <span className="text-red-800">{error}</span>
+                <div className="mb-4 bg-destructive/10 border border-destructive rounded-lg p-4 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-destructive" />
+                  <span className="text-destructive">{error}</span>
                 </div>
               )}
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Name <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Name <span className="text-destructive">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Email <span className="text-destructive">*</span>
                   </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="john@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Phone</label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Allocated Tickets
                   </label>
                   <input
@@ -399,10 +399,10 @@ export default function MySubSellersPage() {
                     max={availableTickets}
                     value={formData.allocatedTickets}
                     onChange={(e) => setFormData({ ...formData, allocatedTickets: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="0"
                   />
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     You have {availableTickets} tickets available to allocate
                   </p>
                 </div>
@@ -418,8 +418,8 @@ export default function MySubSellersPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Your Commission % <span className="text-red-500">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Your Commission % <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="number"
@@ -431,14 +431,14 @@ export default function MySubSellersPage() {
                         onChange={(e) =>
                           setFormData({ ...formData, parentCommissionPercent: e.target.value })
                         }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                        className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                         placeholder="40"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Sub-Seller Commission % <span className="text-red-500">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Sub-Seller Commission % <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="number"
@@ -450,7 +450,7 @@ export default function MySubSellersPage() {
                         onChange={(e) =>
                           setFormData({ ...formData, subSellerCommissionPercent: e.target.value })
                         }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                        className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                         placeholder="60"
                       />
                     </div>
@@ -458,14 +458,14 @@ export default function MySubSellersPage() {
 
                   {formData.parentCommissionPercent && formData.subSellerCommissionPercent && (
                     <div className="mt-3 text-sm">
-                      <p className="text-gray-700">
+                      <p className="text-foreground">
                         Total:{" "}
                         {parseFloat(formData.parentCommissionPercent) +
                           parseFloat(formData.subSellerCommissionPercent)}
                         %
                         {parseFloat(formData.parentCommissionPercent) +
                           parseFloat(formData.subSellerCommissionPercent) >
-                          100 && <span className="text-red-600 ml-2">(Exceeds 100%)</span>}
+                          100 && <span className="text-destructive ml-2">(Exceeds 100%)</span>}
                       </p>
                     </div>
                   )}
@@ -485,7 +485,7 @@ export default function MySubSellersPage() {
                     setShowAddModal(false);
                     setError("");
                   }}
-                  className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition font-semibold"
+                  className="flex-1 bg-muted text-foreground py-3 rounded-lg hover:bg-muted/80 transition font-semibold"
                 >
                   Cancel
                 </button>

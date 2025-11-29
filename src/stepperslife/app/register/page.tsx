@@ -128,7 +128,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-muted flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Logo */}
         <Link href="/" className="flex justify-center mb-6">
@@ -152,10 +152,10 @@ export default function RegisterPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-center text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-center text-3xl sm:text-4xl font-bold text-foreground mb-2">
             Create your account
           </h2>
-          <p className="text-center text-sm sm:text-base text-gray-600 dark:text-gray-400">
+          <p className="text-center text-sm sm:text-base text-muted-foreground">
             Join SteppersLife to discover and create amazing events
           </p>
         </motion.div>
@@ -167,17 +167,17 @@ export default function RegisterPage() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
       >
-        <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-gray-200 dark:border-gray-700">
+        <div className="bg-card py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-border">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Error Message */}
             {error && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-start gap-3"
+                className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-start gap-3"
               >
-                <XCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                <XCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm text-destructive">{error}</p>
               </motion.div>
             )}
 
@@ -185,13 +185,13 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                className="block text-sm font-medium text-foreground mb-2"
               >
                 Full Name
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <User className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
                   id="name"
@@ -201,7 +201,7 @@ export default function RegisterPage() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="block w-full pl-12 pr-4 py-3 sm:py-3.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base"
+                  className="block w-full pl-12 pr-4 py-3 sm:py-3.5 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder-muted-foreground text-base"
                   placeholder="John Doe"
                 />
               </div>

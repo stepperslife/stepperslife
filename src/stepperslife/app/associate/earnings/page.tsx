@@ -20,10 +20,10 @@ export default function AssociateEarningsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
+            <DollarSign className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">$0.00</div>
+            <div className="text-2xl font-bold text-success">$0.00</div>
             <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
@@ -42,10 +42,10 @@ export default function AssociateEarningsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <TrendingUp className="h-4 w-4 text-orange-600" />
+            <TrendingUp className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">$0.00</div>
+            <div className="text-2xl font-bold text-warning">$0.00</div>
             <p className="text-xs text-muted-foreground">Processing</p>
           </CardContent>
         </Card>
@@ -68,8 +68,8 @@ export default function AssociateEarningsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <DollarSign className="h-5 w-5 text-green-600" />
+                  <div className="p-2 bg-success/10 rounded-lg">
+                    <DollarSign className="h-5 w-5 text-success" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Total Earnings</CardTitle>
@@ -87,8 +87,8 @@ export default function AssociateEarningsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Calendar className="h-5 w-5 text-blue-600" />
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Calendar className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-base">By Event</CardTitle>
@@ -106,8 +106,8 @@ export default function AssociateEarningsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Percent className="h-5 w-5 text-purple-600" />
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Percent className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Commission Rate</CardTitle>
@@ -125,8 +125,8 @@ export default function AssociateEarningsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <TrendingUp className="h-5 w-5 text-orange-600" />
+                  <div className="p-2 bg-warning/10 rounded-lg">
+                    <TrendingUp className="h-5 w-5 text-warning" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Payout History</CardTitle>

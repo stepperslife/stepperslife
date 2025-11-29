@@ -27,9 +27,9 @@ export default function TotalEarningsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Earned</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">$0.00</p>
+                <p className="text-2xl font-bold mt-1 text-success">$0.00</p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -93,7 +93,7 @@ export default function TotalEarningsPage() {
             </div>
             <div className="flex items-center justify-between py-3">
               <span className="text-sm text-muted-foreground">All Time</span>
-              <span className="font-semibold text-green-600">$0.00</span>
+              <span className="font-semibold text-success">$0.00</span>
             </div>
           </div>
         </CardContent>

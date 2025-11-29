@@ -107,13 +107,13 @@ export default function LoginPage() {
 
             {/* Error and Success Messages */}
             {error && (
-              <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+              <div className="mb-4 bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg text-sm">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg text-sm">
+              <div className="mb-4 bg-success/10 border border-success text-success px-4 py-3 rounded-lg text-sm">
                 {success}
               </div>
             )}
@@ -178,8 +178,8 @@ export default function LoginPage() {
                     placeholder="you@example.com"
                   />
                 </div>
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 px-3 py-2 rounded-lg text-xs flex items-center gap-2">
-                  <Mail className="w-4 h-4 flex-shrink-0" />
+                <div className="bg-primary/10 border border-primary text-primary px-3 py-2 rounded-lg text-xs flex items-center gap-2">
+                  <Mail className="w-4 h-4 shrink-0" />
                   <span>
                     We'll send you a secure link to sign in instantly - no password needed!
                   </span>

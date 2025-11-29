@@ -77,7 +77,7 @@ export default function AddressesPage() {
                         {address.type} Address
                       </CardTitle>
                       {address.isDefault && (
-                        <span className="text-xs px-2 py-0.5 bg-green-100 text-green-800 rounded">
+                        <span className="text-xs px-2 py-0.5 bg-success/10 text-success rounded">
                           Default
                         </span>
                       )}
@@ -87,7 +87,7 @@ export default function AddressesPage() {
                     <Button size="icon" variant="ghost">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button size="icon" variant="ghost" className="text-red-500 hover:text-red-600">
+                    <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

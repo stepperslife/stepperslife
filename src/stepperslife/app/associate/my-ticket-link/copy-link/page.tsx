@@ -85,13 +85,13 @@ export default function CopyLinkPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-green-200 bg-green-50">
+      <Card className="border-border bg-success/10">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+            <CheckCircle className="h-5 w-5 text-success mt-0.5" />
             <div>
-              <h3 className="font-semibold text-green-900">Pro Tip</h3>
-              <p className="text-sm text-green-800 mt-1">
+              <h3 className="font-semibold text-foreground">Pro Tip</h3>
+              <p className="text-sm text-foreground mt-1">
                 Add a personal message when sharing your link! Tell people why they should attend and how to get tickets through you.
               </p>
             </div>

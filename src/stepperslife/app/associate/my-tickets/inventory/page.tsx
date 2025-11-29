@@ -42,7 +42,7 @@ export default function InventoryPage() {
                 <p className="text-sm font-medium text-muted-foreground">Available</p>
                 <p className="text-2xl font-bold mt-1">0</p>
               </div>
-              <Ticket className="h-8 w-8 text-blue-600" />
+              <Ticket className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -52,9 +52,9 @@ export default function InventoryPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Sold</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-success">0</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
+              <TrendingUp className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -88,11 +88,11 @@ export default function InventoryPage() {
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Available</p>
-                        <p className="text-xl font-bold text-blue-600">{item.available || 0}</p>
+                        <p className="text-xl font-bold text-primary">{item.available || 0}</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Sold</p>
-                        <p className="text-xl font-bold text-green-600">{item.sold || 0}</p>
+                        <p className="text-xl font-bold text-success">{item.sold || 0}</p>
                       </div>
                     </div>
                   </div>

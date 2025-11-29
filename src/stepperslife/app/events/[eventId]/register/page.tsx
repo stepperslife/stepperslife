@@ -81,7 +81,7 @@ export default function FreeEventRegisterPage() {
 
   if (!eventDetails) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -90,9 +90,9 @@ export default function FreeEventRegisterPage() {
   // Verify event is free
   if (eventDetails.eventType !== "FREE_EVENT") {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-muted flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             This is not a free event. Please use the checkout page to purchase tickets.
           </p>
           <Link
@@ -127,7 +127,7 @@ export default function FreeEventRegisterPage() {
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                 className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4"
               >
-                <CheckCircle2 className="w-12 h-12 text-green-600" />
+                <CheckCircle2 className="w-12 h-12 text-success" />
               </motion.div>
               <h1 className="text-3xl font-bold text-white mb-2">You're Registered!</h1>
               <p className="text-white/80">Your free ticket has been confirmed</p>
@@ -135,8 +135,8 @@ export default function FreeEventRegisterPage() {
 
             {/* Event Details */}
             <div className="p-8 border-b">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">{eventDetails.name}</h2>
-              <div className="space-y-3 text-gray-700">
+              <h2 className="text-2xl font-bold text-foreground mb-4">{eventDetails.name}</h2>
+              <div className="space-y-3 text-foreground">
                 {eventDetails.startDate && (
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5 text-primary" />
@@ -158,17 +158,17 @@ export default function FreeEventRegisterPage() {
             </div>
 
             {/* Ticket QR Code */}
-            <div className="p-8 bg-gray-50">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">Your Ticket</h3>
+            <div className="p-8 bg-muted">
+              <h3 className="text-lg font-bold text-foreground mb-4 text-center">Your Ticket</h3>
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex flex-col items-center">
-                  <div className="bg-white p-4 rounded-lg border-4 border-gray-200">
+                  <div className="bg-white p-4 rounded-lg border-4 border-border">
                     <QRCode value={ticketUrl} size={200} />
                   </div>
-                  <p className="text-sm text-gray-600 mt-4 font-mono">
+                  <p className="text-sm text-muted-foreground mt-4 font-mono">
                     {registrationData.ticketCode}
                   </p>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
                     Show this QR code at the event entrance
                   </p>
                 </div>
@@ -177,15 +177,15 @@ export default function FreeEventRegisterPage() {
 
             {/* Attendee Info */}
             <div className="p-8 border-t">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Registration Details</h3>
+              <h3 className="text-lg font-bold text-foreground mb-4">Registration Details</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <User className="w-5 h-5 text-gray-400" />
-                  <span className="text-gray-700">{attendeeName}</span>
+                  <User className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-foreground">{attendeeName}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-gray-400" />
-                  <span className="text-gray-700">{attendeeEmail}</span>
+                  <Mail className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-foreground">{attendeeEmail}</span>
                 </div>
               </div>
             </div>
@@ -208,7 +208,7 @@ export default function FreeEventRegisterPage() {
             )}
 
             {/* Actions */}
-            <div className="p-8 bg-gray-50 border-t space-y-3">
+            <div className="p-8 bg-muted border-t space-y-3">
               <Link
                 href="/my-tickets"
                 className="block w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-center font-medium"
@@ -220,11 +220,11 @@ export default function FreeEventRegisterPage() {
               </Link>
               <Link
                 href={`/events/${eventId}`}
-                className="block w-full px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors text-center"
+                className="block w-full px-6 py-3 border border-border rounded-lg hover:bg-card transition-colors text-center"
               >
                 Back to Event Page
               </Link>
-              <p className="text-sm text-gray-500 text-center mt-4">
+              <p className="text-sm text-muted-foreground text-center mt-4">
                 A confirmation email will be sent to {attendeeEmail}
               </p>
             </div>
@@ -236,11 +236,11 @@ export default function FreeEventRegisterPage() {
 
   // Registration Form
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-muted py-12">
       <div className="container mx-auto px-4 max-w-2xl">
         <Link
           href={`/events/${eventId}`}
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Event
@@ -256,8 +256,8 @@ export default function FreeEventRegisterPage() {
 
           {/* Event Info */}
           <div className="p-8 border-b bg-background">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">{eventDetails.name}</h2>
-            <div className="space-y-3 text-gray-700">
+            <h2 className="text-2xl font-bold text-foreground mb-4">{eventDetails.name}</h2>
+            <div className="space-y-3 text-foreground">
               {eventDetails.startDate && (
                 <div className="flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-primary" />
@@ -279,11 +279,11 @@ export default function FreeEventRegisterPage() {
 
             {/* Door Price Info */}
             {eventDetails.doorPrice && (
-              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm font-semibold text-green-900">
+              <div className="mt-4 p-4 bg-success/10 border border-success rounded-lg">
+                <p className="text-sm font-semibold text-success">
                   Door Price: {eventDetails.doorPrice}
                 </p>
-                <p className="text-xs text-green-700 mt-1">Payment accepted at venue</p>
+                <p className="text-xs text-success mt-1">Payment accepted at venue</p>
               </div>
             )}
           </div>
@@ -310,14 +310,14 @@ export default function FreeEventRegisterPage() {
           {/* Registration Form */}
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="text"
                   value={attendeeName}
                   onChange={(e) => setAttendeeName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="John Doe"
                   required
                 />
@@ -325,28 +325,28 @@ export default function FreeEventRegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Email Address *
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="email"
                   value={attendeeEmail}
                   onChange={(e) => setAttendeeEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="john@example.com"
                   required
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Your ticket will be sent to this email</p>
+              <p className="text-xs text-muted-foreground mt-1">Your ticket will be sent to this email</p>
             </div>
 
             <div className="pt-4">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full px-6 py-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold text-lg shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full px-6 py-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold text-lg shadow-lg hover:shadow-xl disabled:bg-muted disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>
@@ -362,7 +362,7 @@ export default function FreeEventRegisterPage() {
               </button>
             </div>
 
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               By registering, you agree to receive event updates via email
             </p>
           </form>

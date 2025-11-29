@@ -50,8 +50,8 @@ export default function ForgotPasswordPage() {
           <div className="w-full max-w-md">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
               <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-8 h-8 text-green-600 dark:text-green-400" />
+                <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail className="w-8 h-8 text-success" />
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   Check Your Email
@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
                 </p>
               </div>
 
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 px-4 py-3 rounded-lg text-sm mb-6">
+              <div className="bg-primary/10 border border-primary text-primary px-4 py-3 rounded-lg text-sm mb-6">
                 <p className="font-medium mb-1">Next steps:</p>
                 <ul className="list-disc list-inside space-y-1">
                   <li>Check your inbox for our email</li>
@@ -136,7 +136,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+                <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg text-sm">
                   {error}
                 </div>
               )}

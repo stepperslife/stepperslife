@@ -135,7 +135,7 @@ export default function SettingsPage() {
   // Check if still loading
   if (isLoading || !currentUser) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -145,41 +145,41 @@ export default function SettingsPage() {
     <div className="p-8">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-1">Manage your account and preferences</p>
+        <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+        <p className="text-muted-foreground mt-1">Manage your account and preferences</p>
       </div>
 
       <div className="max-w-4xl space-y-6">
         {/* Account Information */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
               <User className="w-5 h-5" />
               Account Information
             </h2>
           </div>
           <div className="p-6 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Name</label>
               <input
                 type="text"
                 value={currentUser.name || ""}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-muted"
                 disabled
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Email</label>
               <input
                 type="email"
                 value={currentUser.email}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-muted"
                 disabled
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
-              <div className="px-4 py-3 border border-gray-200 rounded-lg bg-gray-50">
+              <label className="block text-sm font-medium text-foreground mb-2">Role</label>
+              <div className="px-4 py-3 border border-border rounded-lg bg-muted">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent text-accent-foreground">
                   {currentUser.role === "organizer"
                     ? "Event Organizer"
@@ -187,38 +187,38 @@ export default function SettingsPage() {
                 </span>
               </div>
             </div>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Account settings are managed through your authentication provider.
             </p>
           </div>
         </div>
 
         {/* Payment Settings */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
               Payment Settings
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Configure how you receive ticket payments from customers
             </p>
           </div>
           <div className="p-6 space-y-6">
             {/* Stripe Payment Processor */}
-            <div className="border border-gray-200 rounded-lg p-4">
+            <div className="border border-border rounded-lg p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2">
                     Stripe Connect
                     {currentUser.stripeAccountSetupComplete && (
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      <CheckCircle2 className="w-4 h-4 text-success" />
                     )}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Accept credit card payments with automatic split payments
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Platform fee: 3.7% + $1.79 per ticket
                   </p>
                 </div>
@@ -240,21 +240,21 @@ export default function SettingsPage() {
               {currentUser.stripeAccountSetupComplete && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 px-3 py-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                    <div className="flex-1 px-3 py-2 bg-success/10 border border-success rounded text-sm text-success">
                       ✓ Setup Complete - Ready to Accept Payments
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <Link
                       href="/organizer/onboarding/refresh"
-                      className="px-3 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded border border-blue-200 transition-colors"
+                      className="px-3 py-2 text-sm text-primary hover:text-primary/90 hover:bg-primary/10 rounded border border-primary transition-colors"
                     >
                       Update Account
                     </Link>
                     <button
                       onClick={() => handleDisconnectProcessor("stripe")}
                       disabled={isProcessing}
-                      className="px-3 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded border border-red-200 transition-colors disabled:opacity-50"
+                      className="px-3 py-2 text-sm text-destructive hover:text-destructive/90 hover:bg-destructive/10 rounded border border-destructive transition-colors disabled:opacity-50"
                     >
                       Disconnect
                     </button>
@@ -265,7 +265,7 @@ export default function SettingsPage() {
               {/* Connected but Incomplete */}
               {currentUser.stripeConnectedAccountId && !currentUser.stripeAccountSetupComplete && (
                 <div className="space-y-2">
-                  <div className="px-3 py-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
+                  <div className="px-3 py-2 bg-warning/10 border border-warning rounded text-sm text-warning">
                     ⚠ Setup Incomplete - Additional Information Required
                   </div>
                   <Link
@@ -290,16 +290,16 @@ export default function SettingsPage() {
             </div>
 
             {/* PayPal Payment Processor */}
-            <div className="border border-gray-200 rounded-lg p-4">
+            <div className="border border-border rounded-lg p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2">
                     PayPal
                     {currentUser.paypalMerchantId && (
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      <CheckCircle2 className="w-4 h-4 text-success" />
                     )}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Accept PayPal payments from customers
                   </p>
                 </div>
@@ -316,13 +316,13 @@ export default function SettingsPage() {
               </div>
               {currentUser.paypalMerchantId ? (
                 <div className="flex items-center gap-3">
-                  <div className="flex-1 px-3 py-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                  <div className="flex-1 px-3 py-2 bg-success/10 border border-success rounded text-sm text-success">
                     Connected
                   </div>
                   <button
                     onClick={() => handleDisconnectProcessor("paypal")}
                     disabled={isProcessing}
-                    className="px-3 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded border border-red-200 transition-colors disabled:opacity-50"
+                    className="px-3 py-2 text-sm text-destructive hover:text-destructive/90 hover:bg-destructive/10 rounded border border-destructive transition-colors disabled:opacity-50"
                   >
                     Disconnect
                   </button>
@@ -339,11 +339,11 @@ export default function SettingsPage() {
             </div>
 
             {/* Cash Payments */}
-            <div className="border border-gray-200 rounded-lg p-4">
+            <div className="border border-border rounded-lg p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">Cash Payments</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <h3 className="font-semibold text-foreground">Cash Payments</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
                     Accept cash payments in person (no online processing)
                   </p>
                 </div>
@@ -360,9 +360,9 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-2">Credit Balance</h3>
-              <p className="text-sm text-gray-600 mb-4">
+            <div className="pt-4 border-t border-border">
+              <h3 className="font-semibold text-foreground mb-2">Credit Balance</h3>
+              <p className="text-sm text-muted-foreground mb-4">
                 Your pre-purchased ticket credits for the PREPAY payment model
               </p>
               <div className="flex items-center gap-4">
@@ -379,18 +379,18 @@ export default function SettingsPage() {
         </div>
 
         {/* Notification Preferences */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
               <Bell className="w-5 h-5" />
               Notifications
             </h2>
           </div>
           <div className="p-6 space-y-4">
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div className="flex items-center justify-between p-4 border border-border rounded-lg">
               <div>
-                <p className="font-semibold text-gray-900">Email Notifications</p>
-                <p className="text-sm text-gray-600">Receive updates about your events and sales</p>
+                <p className="font-semibold text-foreground">Email Notifications</p>
+                <p className="text-sm text-muted-foreground">Receive updates about your events and sales</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -403,10 +403,10 @@ export default function SettingsPage() {
               </label>
             </div>
 
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div className="flex items-center justify-between p-4 border border-border rounded-lg">
               <div>
-                <p className="font-semibold text-gray-900">Marketing Emails</p>
-                <p className="text-sm text-gray-600">Get tips and news about SteppersLife</p>
+                <p className="font-semibold text-foreground">Marketing Emails</p>
+                <p className="text-sm text-muted-foreground">Get tips and news about SteppersLife</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -415,20 +415,20 @@ export default function SettingsPage() {
                   onChange={(e) => setMarketingEmails(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Note: Notification settings will be saved when we implement the backend.
             </p>
           </div>
         </div>
 
         {/* Privacy & Security */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
               <Shield className="w-5 h-5" />
               Privacy & Security
             </h2>
@@ -436,25 +436,25 @@ export default function SettingsPage() {
           <div className="p-6 space-y-3">
             <Link
               href="/privacy"
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
             >
-              <span className="font-medium text-gray-900">Privacy Policy</span>
-              <ExternalLink className="w-4 h-4 text-gray-400" />
+              <span className="font-medium text-foreground">Privacy Policy</span>
+              <ExternalLink className="w-4 h-4 text-muted-foreground" />
             </Link>
             <Link
               href="/terms"
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
             >
-              <span className="font-medium text-gray-900">Terms of Service</span>
-              <ExternalLink className="w-4 h-4 text-gray-400" />
+              <span className="font-medium text-foreground">Terms of Service</span>
+              <ExternalLink className="w-4 h-4 text-muted-foreground" />
             </Link>
           </div>
         </div>
 
         {/* Help & Support */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
               <HelpCircle className="w-5 h-5" />
               Help & Support
             </h2>
@@ -462,20 +462,20 @@ export default function SettingsPage() {
           <div className="p-6 space-y-3">
             <Link
               href="/help"
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
             >
-              <span className="font-medium text-gray-900">Help Center</span>
-              <ExternalLink className="w-4 h-4 text-gray-400" />
+              <span className="font-medium text-foreground">Help Center</span>
+              <ExternalLink className="w-4 h-4 text-muted-foreground" />
             </Link>
             <a
               href="mailto:support@stepperslife.com"
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               <div>
-                <p className="font-medium text-gray-900">Contact Support</p>
-                <p className="text-sm text-gray-600">support@stepperslife.com</p>
+                <p className="font-medium text-foreground">Contact Support</p>
+                <p className="text-sm text-muted-foreground">support@stepperslife.com</p>
               </div>
-              <Mail className="w-4 h-4 text-gray-400" />
+              <Mail className="w-4 h-4 text-muted-foreground" />
             </a>
           </div>
         </div>

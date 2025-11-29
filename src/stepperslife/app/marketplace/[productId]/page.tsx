@@ -312,7 +312,7 @@ export default function ProductDetailPage() {
                         <span className="text-2xl text-muted-foreground line-through">
                           ${(product.compareAtPrice / 100).toFixed(2)}
                         </span>
-                        <span className="px-2 py-1 bg-red-600 text-white text-sm rounded-full font-semibold">
+                        <span className="px-2 py-1 bg-destructive text-white text-sm rounded-full font-semibold">
                           {Math.round(
                             (1 -
                               (currentVariant?.price ?? product.price) / product.compareAtPrice) *
@@ -345,12 +345,12 @@ export default function ProductDetailPage() {
               {product.trackInventory && (
                 <div>
                   {isOutOfStock ? (
-                    <div className="flex items-center gap-2 text-red-600">
+                    <div className="flex items-center gap-2 text-destructive">
                       <Package className="w-5 h-5" />
                       <span className="font-semibold">Out of Stock</span>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 text-green-600">
+                    <div className="flex items-center gap-2 text-success">
                       <Package className="w-5 h-5" />
                       <span className="font-semibold">{product.inventoryQuantity} in stock</span>
                     </div>
@@ -448,11 +448,11 @@ export default function ProductDetailPage() {
                                   <p className="text-sm text-foreground">
                                     <strong>{variant.name}</strong>
                                     {variant.inventoryQuantity > 0 ? (
-                                      <span className="text-green-600 ml-2">
+                                      <span className="text-success ml-2">
                                         ({variant.inventoryQuantity} available)
                                       </span>
                                     ) : (
-                                      <span className="text-red-600 ml-2">(Out of stock)</span>
+                                      <span className="text-destructive ml-2">(Out of stock)</span>
                                     )}
                                   </p>
                                 </div>

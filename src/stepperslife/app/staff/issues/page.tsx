@@ -41,10 +41,10 @@ export default function IssuesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Invalid Tickets</CardTitle>
-            <XCircle className="h-4 w-4 text-red-600" />
+            <XCircle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{invalidTickets}</div>
+            <div className="text-2xl font-bold text-destructive">{invalidTickets}</div>
             <p className="text-xs text-muted-foreground">Rejected entries</p>
           </CardContent>
         </Card>
@@ -52,10 +52,10 @@ export default function IssuesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Duplicate Scans</CardTitle>
-            <Copy className="h-4 w-4 text-yellow-600" />
+            <Copy className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{duplicateScans}</div>
+            <div className="text-2xl font-bold text-warning">{duplicateScans}</div>
             <p className="text-xs text-muted-foreground">Already scanned</p>
           </CardContent>
         </Card>
@@ -68,8 +68,8 @@ export default function IssuesPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-red-100 rounded-lg">
-                    <XCircle className="h-5 w-5 text-red-600" />
+                  <div className="p-2 bg-destructive/10 rounded-lg">
+                    <XCircle className="h-5 w-5 text-destructive" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Invalid Tickets</CardTitle>
@@ -89,8 +89,8 @@ export default function IssuesPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-yellow-100 rounded-lg">
-                    <Copy className="h-5 w-5 text-yellow-600" />
+                  <div className="p-2 bg-warning/10 rounded-lg">
+                    <Copy className="h-5 w-5 text-warning" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Duplicate Scans</CardTitle>

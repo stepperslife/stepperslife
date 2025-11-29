@@ -1450,12 +1450,12 @@ export default function SeatingTemplates({ onSelectTemplate, onClose }: SeatingT
     { id: "theater", name: "Theater", color: "bg-accent text-primary" },
     { id: "stadium", name: "Stadium", color: "bg-accent text-primary" },
     { id: "concert", name: "Concert", color: "bg-pink-100 text-pink-700" },
-    { id: "conference", name: "Conference", color: "bg-red-100 text-red-700" },
-    { id: "outdoor", name: "Outdoor", color: "bg-green-100 text-green-700" },
+    { id: "conference", name: "Conference", color: "bg-destructive/10 text-destructive" },
+    { id: "outdoor", name: "Outdoor", color: "bg-success/10 text-success" },
     { id: "wedding", name: "Wedding", color: "bg-pink-100 text-pink-700" },
     { id: "gala", name: "Gala", color: "bg-accent text-primary" },
-    { id: "banquet", name: "Banquet", color: "bg-orange-100 text-orange-700" },
-    { id: "custom", name: "Custom", color: "bg-gray-100 text-gray-700" },
+    { id: "banquet", name: "Banquet", color: "bg-warning/10 text-warning" },
+    { id: "custom", name: "Custom", color: "bg-muted text-muted-foreground" },
   ];
 
   return (
@@ -1488,14 +1488,14 @@ export default function SeatingTemplates({ onSelectTemplate, onClose }: SeatingT
                   }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="bg-white border-2 border-gray-200 rounded-lg p-6 text-left hover:border-primary hover:shadow-lg transition-all group"
+                  className="bg-card border-2 border-border rounded-lg p-6 text-left hover:border-primary hover:shadow-lg transition-all group"
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className="p-3 bg-accent rounded-lg text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                       {template.icon}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 mb-1">{template.name}</h3>
+                      <h3 className="font-bold text-foreground mb-1">{template.name}</h3>
                       <span
                         className={`inline-block px-2 py-1 rounded text-xs font-medium ${category?.color}`}
                       >
@@ -1504,10 +1504,10 @@ export default function SeatingTemplates({ onSelectTemplate, onClose }: SeatingT
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-4">{template.description}</p>
+                  <p className="text-sm text-muted-foreground mb-4">{template.description}</p>
 
                   <div className="flex items-center justify-between text-xs">
-                    <div className="text-gray-500">
+                    <div className="text-muted-foreground">
                       <span className="font-semibold">{template.sections.length}</span> sections
                     </div>
                     <div className="text-primary font-semibold">
@@ -1521,10 +1521,10 @@ export default function SeatingTemplates({ onSelectTemplate, onClose }: SeatingT
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 px-8 py-4 bg-gray-50 flex justify-end">
+        <div className="border-t border-border px-8 py-4 bg-muted flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+            className="px-6 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-muted transition-colors font-medium"
           >
             Cancel
           </button>

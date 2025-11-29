@@ -88,8 +88,8 @@ export function PricingTierForm({ tiers, onChange, basePrice }: PricingTierFormP
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="font-medium text-gray-900">Early Bird Pricing</h4>
-          <p className="text-sm text-gray-600">Prices automatically change based on date</p>
+          <h4 className="font-medium text-foreground">Early Bird Pricing</h4>
+          <p className="text-sm text-muted-foreground">Prices automatically change based on date</p>
         </div>
         {tiers.length === 0 && (
           <button
@@ -111,18 +111,18 @@ export function PricingTierForm({ tiers, onChange, basePrice }: PricingTierFormP
 
             return (
               <div key={tier.id}>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="bg-muted border border-border rounded-lg p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-accent text-primary rounded-full flex items-center justify-center text-xs font-bold">
                         {index + 1}
                       </div>
-                      <h5 className="font-medium text-gray-900">Pricing Tier {index + 1}</h5>
+                      <h5 className="font-medium text-foreground">Pricing Tier {index + 1}</h5>
                     </div>
                     <button
                       type="button"
                       onClick={() => removeTier(tier.id)}
-                      className="text-red-600 hover:text-red-700 p-1"
+                      className="text-destructive hover:text-destructive/90 p-1"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -131,7 +131,7 @@ export function PricingTierForm({ tiers, onChange, basePrice }: PricingTierFormP
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {/* Tier Name */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Tier Name
                       </label>
                       <input
@@ -139,17 +139,17 @@ export function PricingTierForm({ tiers, onChange, basePrice }: PricingTierFormP
                         value={tier.name}
                         onChange={(e) => updateTier(tier.id, "name", e.target.value)}
                         placeholder='e.g., "Early Bird", "Regular", "Last Chance"'
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                       />
                     </div>
 
                     {/* Price */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Price (USD)
                       </label>
                       <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <input
                           type="number"
                           step="0.01"
@@ -157,36 +157,36 @@ export function PricingTierForm({ tiers, onChange, basePrice }: PricingTierFormP
                           value={tier.price}
                           onChange={(e) => updateTier(tier.id, "price", e.target.value)}
                           placeholder="0.00"
-                          className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                          className="w-full pl-9 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                         />
                       </div>
                     </div>
 
                     {/* Available From */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Available From
                       </label>
                       <input
                         type="date"
                         value={tier.availableFrom}
                         onChange={(e) => updateTier(tier.id, "availableFrom", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                       />
                     </div>
 
                     {/* Available Until */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Available Until
-                        <span className="text-gray-500 text-xs ml-1">(optional for last tier)</span>
+                        <span className="text-muted-foreground text-xs ml-1">(optional for last tier)</span>
                       </label>
                       <input
                         type="date"
                         value={tier.availableUntil}
                         onChange={(e) => updateTier(tier.id, "availableUntil", e.target.value)}
                         min={tier.availableFrom}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -194,8 +194,8 @@ export function PricingTierForm({ tiers, onChange, basePrice }: PricingTierFormP
                   {/* Show savings indicator */}
                   {savings && (
                     <div className="mt-3 flex items-center gap-2 text-sm">
-                      <TrendingDown className="w-4 h-4 text-orange-500" />
-                      <span className="text-orange-600 font-medium">
+                      <TrendingDown className="w-4 h-4 text-warning" />
+                      <span className="text-warning font-medium">
                         Price increases by {savings} when this tier ends
                       </span>
                     </div>
@@ -205,7 +205,7 @@ export function PricingTierForm({ tiers, onChange, basePrice }: PricingTierFormP
                 {/* Arrow between tiers */}
                 {index < sortedTiers.length - 1 && (
                   <div className="flex items-center justify-center py-2">
-                    <div className="text-gray-400 text-sm">↓ Price Change ↓</div>
+                    <div className="text-muted-foreground text-sm">↓ Price Change ↓</div>
                   </div>
                 )}
               </div>
@@ -216,7 +216,7 @@ export function PricingTierForm({ tiers, onChange, basePrice }: PricingTierFormP
           <button
             type="button"
             onClick={addTier}
-            className="w-full py-2.5 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-primary transition-colors flex items-center justify-center gap-2"
+            className="w-full py-2.5 border-2 border-dashed border-border rounded-lg text-muted-foreground hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Add Another Pricing Tier
@@ -226,8 +226,8 @@ export function PricingTierForm({ tiers, onChange, basePrice }: PricingTierFormP
 
       {/* Preview/Summary */}
       {tiers.length > 0 && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-          <p className="text-sm text-green-800">
+        <div className="bg-success/10 border border-success rounded-lg p-3">
+          <p className="text-sm text-success">
             <strong>Preview:</strong> Customers will see different prices based on when they buy.{" "}
             {sortedTiers.length} pricing tier{sortedTiers.length !== 1 ? "s" : ""} configured.
           </p>

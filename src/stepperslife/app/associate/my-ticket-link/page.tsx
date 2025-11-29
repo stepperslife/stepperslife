@@ -31,10 +31,10 @@ export default function AssociateMyTicketLinkPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Conversions</CardTitle>
-            <BarChart3 className="h-4 w-4 text-green-600" />
+            <BarChart3 className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">0</div>
+            <div className="text-2xl font-bold text-success">0</div>
             <p className="text-xs text-muted-foreground">Sales from link</p>
           </CardContent>
         </Card>
@@ -53,10 +53,10 @@ export default function AssociateMyTicketLinkPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-            <BarChart3 className="h-4 w-4 text-green-600" />
+            <BarChart3 className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">$0</div>
+            <div className="text-2xl font-bold text-success">$0</div>
             <p className="text-xs text-muted-foreground">From link</p>
           </CardContent>
         </Card>
@@ -68,8 +68,8 @@ export default function AssociateMyTicketLinkPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Copy className="h-5 w-5 text-blue-600" />
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Copy className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Copy Link</CardTitle>
@@ -87,8 +87,8 @@ export default function AssociateMyTicketLinkPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Share2 className="h-5 w-5 text-green-600" />
+                  <div className="p-2 bg-success/10 rounded-lg">
+                    <Share2 className="h-5 w-5 text-success" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Share Link</CardTitle>
@@ -106,8 +106,8 @@ export default function AssociateMyTicketLinkPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <BarChart3 className="h-5 w-5 text-purple-600" />
+                  <div className="p-2 bg-accent rounded-lg">
+                    <BarChart3 className="h-5 w-5 text-accent-foreground" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Link Stats</CardTitle>
@@ -121,13 +121,13 @@ export default function AssociateMyTicketLinkPage() {
         </Card>
       </div>
 
-      <Card className="border-blue-200 bg-blue-50">
+      <Card className="border-border bg-muted">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <LinkIcon className="h-5 w-5 text-blue-600 mt-0.5" />
+            <LinkIcon className="h-5 w-5 text-primary mt-0.5" />
             <div>
-              <h3 className="font-semibold text-blue-900">About Your Ticket Link</h3>
-              <p className="text-sm text-blue-800 mt-1">
+              <h3 className="font-semibold text-foreground">About Your Ticket Link</h3>
+              <p className="text-sm text-foreground mt-1">
                 Your unique ticket link tracks all sales back to you. Share it with potential buyers via text, email, or social media to earn commission on every ticket sold.
               </p>
             </div>

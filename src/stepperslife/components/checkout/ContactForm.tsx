@@ -81,16 +81,16 @@ export function ContactForm({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">Contact Information</h3>
 
       {/* Name Field */}
       <div>
-        <label htmlFor="contact-name" className="block text-sm font-medium text-gray-700 mb-2">
-          Full Name <span className="text-red-500">*</span>
+        <label htmlFor="contact-name" className="block text-sm font-medium text-muted-foreground mb-2">
+          Full Name <span className="text-destructive">*</span>
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <User className="h-5 w-5 text-gray-400" />
+            <User className="h-5 w-5 text-muted-foreground" />
           </div>
           <input
             id="contact-name"
@@ -102,7 +102,7 @@ export function ContactForm({
               block w-full pl-10 pr-3 py-3 border rounded-lg
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
               disabled:opacity-50 disabled:cursor-not-allowed
-              ${errors.name ? "border-red-300 bg-red-50" : "border-gray-300"}
+              ${errors.name ? "border-destructive bg-destructive/10" : "border-border"}
             `}
             placeholder="John Doe"
             required
@@ -111,7 +111,7 @@ export function ContactForm({
           />
         </div>
         {errors.name && (
-          <div id="name-error" className="mt-1 flex items-center gap-1 text-sm text-red-600">
+          <div id="name-error" className="mt-1 flex items-center gap-1 text-sm text-destructive">
             <AlertCircle className="w-4 h-4" />
             <span>{errors.name}</span>
           </div>
@@ -120,17 +120,17 @@ export function ContactForm({
 
       {/* Email Field */}
       <div>
-        <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="contact-email" className="block text-sm font-medium text-muted-foreground mb-2">
           Email Address{" "}
           {emailRequired ? (
-            <span className="text-red-500">*</span>
+            <span className="text-destructive">*</span>
           ) : (
-            <span className="text-gray-500 font-normal">(Optional for cash payments)</span>
+            <span className="text-muted-foreground font-normal">(Optional for cash payments)</span>
           )}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Mail className="h-5 w-5 text-gray-400" />
+            <Mail className="h-5 w-5 text-muted-foreground" />
           </div>
           <input
             id="contact-email"
@@ -143,7 +143,7 @@ export function ContactForm({
               block w-full pl-10 pr-3 py-3 border rounded-lg
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
               disabled:opacity-50 disabled:cursor-not-allowed
-              ${errors.email ? "border-red-300 bg-red-50" : "border-gray-300"}
+              ${errors.email ? "border-destructive bg-destructive/10" : "border-border"}
             `}
             placeholder="john@example.com"
             required={emailRequired}
@@ -152,13 +152,13 @@ export function ContactForm({
           />
         </div>
         {errors.email && (
-          <div id="email-error" className="mt-1 flex items-center gap-1 text-sm text-red-600">
+          <div id="email-error" className="mt-1 flex items-center gap-1 text-sm text-destructive">
             <AlertCircle className="w-4 h-4" />
             <span>{errors.email}</span>
           </div>
         )}
         {emailRequired && (
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-muted-foreground">
             Your ticket confirmation and QR code will be sent to this email
           </p>
         )}
@@ -166,12 +166,12 @@ export function ContactForm({
 
       {/* Phone Field */}
       <div>
-        <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700 mb-2">
-          Phone Number <span className="text-red-500">*</span>
+        <label htmlFor="contact-phone" className="block text-sm font-medium text-muted-foreground mb-2">
+          Phone Number <span className="text-destructive">*</span>
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Phone className="h-5 w-5 text-gray-400" />
+            <Phone className="h-5 w-5 text-muted-foreground" />
           </div>
           <input
             id="contact-phone"
@@ -183,7 +183,7 @@ export function ContactForm({
               block w-full pl-10 pr-3 py-3 border rounded-lg
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
               disabled:opacity-50 disabled:cursor-not-allowed
-              ${errors.phone ? "border-red-300 bg-red-50" : "border-gray-300"}
+              ${errors.phone ? "border-destructive bg-destructive/10" : "border-border"}
             `}
             placeholder="(555) 123-4567"
             required
@@ -192,12 +192,12 @@ export function ContactForm({
           />
         </div>
         {errors.phone && (
-          <div id="phone-error" className="mt-1 flex items-center gap-1 text-sm text-red-600">
+          <div id="phone-error" className="mt-1 flex items-center gap-1 text-sm text-destructive">
             <AlertCircle className="w-4 h-4" />
             <span>{errors.phone}</span>
           </div>
         )}
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           Used for order confirmation and ticket transfer
         </p>
       </div>

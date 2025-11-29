@@ -67,7 +67,7 @@ export default function FavoritesPage() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="text-red-500 hover:text-red-600 hover:bg-red-50 -mr-2"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 -mr-2"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -110,11 +110,11 @@ export default function FavoritesPage() {
                   {event.ticketsRemaining !== undefined && (
                     <div className="text-xs text-center">
                       {event.ticketsRemaining > 0 ? (
-                        <span className="text-green-600">
+                        <span className="text-success">
                           {event.ticketsRemaining} tickets remaining
                         </span>
                       ) : (
-                        <span className="text-red-600">Sold out</span>
+                        <span className="text-destructive">Sold out</span>
                       )}
                     </div>
                   )}

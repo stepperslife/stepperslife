@@ -121,9 +121,9 @@ export default function EventDashboardPage() {
   // Check if user is the organizer
   if (!isLoading && event.organizerId !== currentUser?._id) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-          <p className="text-gray-600">You don't have permission to access this page.</p>
+      <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+        <div className="bg-card rounded-lg shadow-md p-8 max-w-md text-center">
+          <p className="text-muted-foreground">You don't have permission to access this page.</p>
           <Link href="/" className="mt-4 inline-block text-primary hover:underline">
             Go to Homepage
           </Link>
@@ -134,7 +134,7 @@ export default function EventDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
@@ -285,23 +285,23 @@ export default function EventDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-card border-b border-border">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-gray-900">{event.name}</h1>
+                <h1 className="text-3xl font-bold text-foreground">{event.name}</h1>
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${
                     event.status === "PUBLISHED"
-                      ? "bg-green-100 text-green-800"
+                      ? "bg-success/10 text-success"
                       : event.status === "DRAFT"
-                        ? "bg-yellow-100 text-yellow-800"
+                        ? "bg-warning/10 text-warning"
                         : event.status === "CANCELLED"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-gray-100 text-gray-800"
+                          ? "bg-destructive/10 text-destructive"
+                          : "bg-muted text-foreground"
                   }`}
                 >
                   {event.status}
@@ -312,13 +312,13 @@ export default function EventDashboardPage() {
                   </span>
                 )}
                 {isPast && (
-                  <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                  <span className="px-3 py-1 rounded-full text-sm font-medium bg-muted text-foreground">
                     Past Event
                   </span>
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 {event.startDate && (
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
@@ -344,7 +344,7 @@ export default function EventDashboardPage() {
                 <button
                   onClick={handlePublish}
                   disabled={isPublishing}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-success/90 transition-colors text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   {isPublishing ? "Publishing..." : "Publish Event"}
@@ -352,7 +352,7 @@ export default function EventDashboardPage() {
               )}
               <button
                 onClick={handleShare}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm font-medium"
               >
                 <Share2 className="w-4 h-4" />
                 Share
@@ -360,7 +360,7 @@ export default function EventDashboardPage() {
               <Link
                 href={`/events/${eventId}`}
                 target="_blank"
-                className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm font-medium"
               >
                 <ExternalLink className="w-4 h-4" />
                 View Public Page
@@ -389,13 +389,13 @@ export default function EventDashboardPage() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         {/* Tabs */}
-        <div className="flex items-center gap-1 mb-6 border-b border-gray-200">
+        <div className="flex items-center gap-1 mb-6 border-b border-border">
           <button
             onClick={() => setActiveTab("overview")}
             className={`px-6 py-3 font-medium transition-colors relative ${
               activeTab === "overview"
                 ? "text-primary border-b-2 border-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Overview
@@ -405,7 +405,7 @@ export default function EventDashboardPage() {
             className={`px-6 py-3 font-medium transition-colors relative ${
               activeTab === "orders"
                 ? "text-primary border-b-2 border-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Orders ({statistics.totalOrders})
@@ -415,7 +415,7 @@ export default function EventDashboardPage() {
             className={`px-6 py-3 font-medium transition-colors relative ${
               activeTab === "attendees"
                 ? "text-primary border-b-2 border-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Attendees ({statistics.totalAttendees})
@@ -438,7 +438,7 @@ export default function EventDashboardPage() {
             className={`px-6 py-3 font-medium transition-colors relative ${
               activeTab === "staff"
                 ? "text-primary border-b-2 border-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Staff ({eventStaff?.length || 0})
@@ -448,7 +448,7 @@ export default function EventDashboardPage() {
             className={`px-6 py-3 font-medium transition-colors relative ${
               activeTab === "discounts"
                 ? "text-primary border-b-2 border-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Discounts ({discountCodes?.length || 0})
@@ -458,7 +458,7 @@ export default function EventDashboardPage() {
             className={`px-6 py-3 font-medium transition-colors relative ${
               activeTab === "bundles"
                 ? "text-primary border-b-2 border-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Bundles ({bundles?.length || 0})
@@ -468,7 +468,7 @@ export default function EventDashboardPage() {
             className={`px-6 py-3 font-medium transition-colors relative ${
               activeTab === "waitlist"
                 ? "text-primary border-b-2 border-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Waitlist ({waitlistCount || 0})
@@ -487,13 +487,13 @@ export default function EventDashboardPage() {
                 className="bg-white rounded-lg shadow-md p-6"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-600">Total Revenue</span>
-                  <DollarSign className="w-5 h-5 text-green-600" />
+                  <span className="text-sm font-medium text-muted-foreground">Total Revenue</span>
+                  <DollarSign className="w-5 h-5 text-success" />
                 </div>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-3xl font-bold text-foreground">
                   ${(statistics.totalRevenue / 100).toFixed(2)}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   From {statistics.completedOrders} completed orders
                 </p>
               </motion.div>
@@ -505,18 +505,18 @@ export default function EventDashboardPage() {
                 className="bg-white rounded-lg shadow-md p-6"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-600">Tickets Sold</span>
+                  <span className="text-sm font-medium text-muted-foreground">Tickets Sold</span>
                   <Ticket className="w-5 h-5 text-primary" />
                 </div>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-3xl font-bold text-foreground">
                   {statistics.totalTicketsSold}
-                  <span className="text-lg text-gray-500">/{statistics.totalTicketsAvailable}</span>
+                  <span className="text-lg text-muted-foreground">/{statistics.totalTicketsAvailable}</span>
                 </p>
                 <div className="mt-2">
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                     <span>{statistics.percentageSold.toFixed(1)}% sold</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-2">
                     <div
                       className="bg-primary h-2 rounded-full transition-all duration-500"
                       style={{ width: `${Math.min(statistics.percentageSold, 100)}%` }}
@@ -532,17 +532,17 @@ export default function EventDashboardPage() {
                 className="bg-white rounded-lg shadow-md p-6"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-600">Total Orders</span>
+                  <span className="text-sm font-medium text-muted-foreground">Total Orders</span>
                   <BarChart3 className="w-5 h-5 text-primary" />
                 </div>
-                <p className="text-3xl font-bold text-gray-900">{statistics.totalOrders}</p>
+                <p className="text-3xl font-bold text-foreground">{statistics.totalOrders}</p>
                 <div className="flex items-center gap-4 mt-2 text-xs">
-                  <span className="text-green-600 flex items-center gap-1">
+                  <span className="text-success flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3" />
                     {statistics.completedOrders} completed
                   </span>
                   {statistics.pendingOrders > 0 && (
-                    <span className="text-yellow-600 flex items-center gap-1">
+                    <span className="text-warning flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {statistics.pendingOrders} pending
                     </span>
@@ -557,11 +557,11 @@ export default function EventDashboardPage() {
                 className="bg-white rounded-lg shadow-md p-6"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-600">Attendees</span>
+                  <span className="text-sm font-medium text-muted-foreground">Attendees</span>
                   <Users className="w-5 h-5 text-primary" />
                 </div>
-                <p className="text-3xl font-bold text-gray-900">{statistics.totalAttendees}</p>
-                <p className="text-xs text-gray-500 mt-1">Total registered attendees</p>
+                <p className="text-3xl font-bold text-foreground">{statistics.totalAttendees}</p>
+                <p className="text-xs text-muted-foreground mt-1">Total registered attendees</p>
               </motion.div>
             </div>
 
@@ -574,7 +574,7 @@ export default function EventDashboardPage() {
                 className="bg-white rounded-lg shadow-md p-6"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-gray-900">Ticket Tiers Performance</h2>
+                  <h2 className="text-xl font-bold text-foreground">Ticket Tiers Performance</h2>
                   <div className="flex items-center gap-3">
                     <Link
                       href={`/organizer/events/${eventId}/seating`}
@@ -594,36 +594,36 @@ export default function EventDashboardPage() {
 
                 <div className="space-y-4">
                   {statistics.salesByTier.map((tier) => (
-                    <div key={tier.tierId} className="border border-gray-200 rounded-lg p-4">
+                    <div key={tier.tierId} className="border border-border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-gray-900">{tier.name}</h3>
-                        <span className="text-sm font-medium text-gray-600">
+                        <h3 className="font-semibold text-foreground">{tier.name}</h3>
+                        <span className="text-sm font-medium text-muted-foreground">
                           ${(tier.revenue / 100).toFixed(2)} revenue
                         </span>
                       </div>
 
                       <div className="grid grid-cols-3 gap-4 mb-3 text-sm">
                         <div>
-                          <span className="text-gray-600">Sold:</span>
-                          <span className="font-medium text-gray-900 ml-2">
+                          <span className="text-muted-foreground">Sold:</span>
+                          <span className="font-medium text-foreground ml-2">
                             {tier.sold}/{tier.quantity}
                           </span>
                         </div>
                         <div>
-                          <span className="text-gray-600">Remaining:</span>
-                          <span className="font-medium text-gray-900 ml-2">
+                          <span className="text-muted-foreground">Remaining:</span>
+                          <span className="font-medium text-foreground ml-2">
                             {tier.quantity - tier.sold}
                           </span>
                         </div>
                         <div>
-                          <span className="text-gray-600">Progress:</span>
-                          <span className="font-medium text-gray-900 ml-2">
+                          <span className="text-muted-foreground">Progress:</span>
+                          <span className="font-medium text-foreground ml-2">
                             {tier.percentageSold.toFixed(1)}%
                           </span>
                         </div>
                       </div>
 
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-muted rounded-full h-2">
                         <div
                           className="bg-primary h-2 rounded-full transition-all duration-500"
                           style={{ width: `${Math.min(tier.percentageSold, 100)}%` }}
@@ -644,7 +644,7 @@ export default function EventDashboardPage() {
                 className="bg-white rounded-lg shadow-md p-6"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-gray-900">Recent Orders</h2>
+                  <h2 className="text-xl font-bold text-foreground">Recent Orders</h2>
                   <button
                     onClick={() => setActiveTab("orders")}
                     className="text-sm text-primary hover:underline"
@@ -657,20 +657,20 @@ export default function EventDashboardPage() {
                   {statistics.recentOrders.map((order) => (
                     <div
                       key={order._id}
-                      className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
                     >
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">{order.buyerName}</p>
-                        <p className="text-sm text-gray-600">{order.buyerEmail}</p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="font-medium text-foreground">{order.buyerName}</p>
+                        <p className="text-sm text-muted-foreground">{order.buyerEmail}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
                           {format(new Date(order.createdAt), "MMM d, yyyy 'at' h:mm a")}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-gray-900">
+                        <p className="font-bold text-foreground">
                           ${(order.totalCents / 100).toFixed(2)}
                         </p>
-                        <p className="text-sm text-green-600 flex items-center gap-1 justify-end">
+                        <p className="text-sm text-success flex items-center gap-1 justify-end">
                           <CheckCircle2 className="w-3 h-3" />
                           Completed
                         </p>
@@ -689,9 +689,9 @@ export default function EventDashboardPage() {
                 transition={{ duration: 0.3 }}
                 className="bg-white rounded-lg shadow-md p-12 text-center"
               >
-                <Ticket className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-2">No Sales Yet</h3>
-                <p className="text-gray-600 mb-6">Share your event link to start selling tickets</p>
+                <Ticket className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-foreground mb-2">No Sales Yet</h3>
+                <p className="text-muted-foreground mb-6">Share your event link to start selling tickets</p>
                 <button
                   onClick={handleShare}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
@@ -707,10 +707,10 @@ export default function EventDashboardPage() {
         {/* Orders Tab */}
         {activeTab === "orders" && (
           <div className="bg-white rounded-lg shadow-md">
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-border">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">All Orders</h2>
-                <button className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                <h2 className="text-xl font-bold text-foreground">All Orders</h2>
+                <button className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm font-medium">
                   <Download className="w-4 h-4" />
                   Export CSV
                 </button>
@@ -724,50 +724,50 @@ export default function EventDashboardPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Order ID
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Customer
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Tickets
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Amount
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Date
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-border">
                   {orders && orders.length > 0 ? (
                     orders.map((order) => (
-                      <tr key={order._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <tr key={order._id} className="hover:bg-muted">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                           {order._id.slice(0, 8)}...
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{order.buyerName}</div>
-                          <div className="text-sm text-gray-500">{order.buyerEmail}</div>
+                          <div className="text-sm font-medium text-foreground">{order.buyerName}</div>
+                          <div className="text-sm text-muted-foreground">{order.buyerEmail}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                           {order.ticketCount} tickets
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                           ${(order.totalCents / 100).toFixed(2)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                               order.status === "COMPLETED"
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-success/10 text-success"
                                 : order.status === "PENDING"
-                                  ? "bg-yellow-100 text-yellow-800"
+                                  ? "bg-warning/10 text-warning"
                                   : order.status === "FAILED"
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-gray-100 text-gray-800"
+                                    ? "bg-destructive/10 text-destructive"
+                                    : "bg-muted text-foreground"
                             }`}
                           >
                             {order.status === "COMPLETED" && <CheckCircle2 className="w-3 h-3" />}
@@ -776,7 +776,7 @@ export default function EventDashboardPage() {
                             {order.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                           {format(new Date(order.createdAt), "MMM d, yyyy h:mm a")}
                         </td>
                       </tr>

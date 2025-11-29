@@ -146,35 +146,35 @@ export default function StaffTransfersPage() {
     switch (status) {
       case "PENDING":
         return (
-          <Badge variant="outline" className="bg-yellow-50">
+          <Badge variant="outline" className="bg-warning/10">
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </Badge>
         );
       case "ACCEPTED":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700">
+          <Badge variant="outline" className="bg-success/10 text-success">
             <CheckCircle className="w-3 h-3 mr-1" />
             Accepted
           </Badge>
         );
       case "REJECTED":
         return (
-          <Badge variant="outline" className="bg-red-50 text-red-700">
+          <Badge variant="outline" className="bg-destructive/10 text-destructive">
             <XCircle className="w-3 h-3 mr-1" />
             Rejected
           </Badge>
         );
       case "CANCELLED":
         return (
-          <Badge variant="outline" className="bg-gray-50">
+          <Badge variant="outline" className="bg-muted">
             <XCircle className="w-3 h-3 mr-1" />
             Cancelled
           </Badge>
         );
       case "AUTO_EXPIRED":
         return (
-          <Badge variant="outline" className="bg-gray-50">
+          <Badge variant="outline" className="bg-muted">
             <AlertCircle className="w-3 h-3 mr-1" />
             Expired
           </Badge>
@@ -233,7 +233,7 @@ export default function StaffTransfersPage() {
                 </div>
                 <span className="text-xl font-bold text-primary">{myBalance} tickets</span>
               </div>
-              <div className="mt-2 text-sm text-gray-600">
+              <div className="mt-2 text-sm text-muted-foreground">
                 <span>Sold: {myStaffRecord.ticketsSold || 0}</span>
                 <span className="mx-2">•</span>
                 <span>Available: {myBalance - (myStaffRecord.ticketsSold || 0)}</span>
@@ -277,20 +277,20 @@ export default function StaffTransfersPage() {
             <TabsContent value={selectedTab} className="mt-6">
               <div className="space-y-4">
                 {myTransfers?.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">No transfers found</div>
+                  <div className="text-center py-8 text-muted-foreground">No transfers found</div>
                 ) : (
                   myTransfers?.map((transfer) => (
                     <div
                       key={transfer._id}
-                      className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                      className="border rounded-lg p-4 hover:bg-muted transition-colors"
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             {transfer.direction === "sent" ? (
-                              <ArrowUpRight className="w-4 h-4 text-red-500" />
+                              <ArrowUpRight className="w-4 h-4 text-destructive" />
                             ) : (
-                              <ArrowDownLeft className="w-4 h-4 text-green-500" />
+                              <ArrowDownLeft className="w-4 h-4 text-success" />
                             )}
                             <span className="font-medium">
                               {transfer.direction === "sent"
@@ -300,7 +300,7 @@ export default function StaffTransfersPage() {
                             {getStatusBadge(transfer.status)}
                           </div>
 
-                          <div className="text-sm text-gray-600 space-y-1">
+                          <div className="text-sm text-muted-foreground space-y-1">
                             <div>
                               <span className="font-medium">{transfer.ticketQuantity} tickets</span>
                               <span className="mx-2">•</span>
@@ -310,7 +310,7 @@ export default function StaffTransfersPage() {
                             {transfer.notes && (
                               <div className="italic">Notes: {transfer.notes}</div>
                             )}
-                            <div className="text-xs text-gray-400">
+                            <div className="text-xs text-muted-foreground">
                               Requested:{" "}
                               {format(new Date(transfer.requestedAt), "MMM d, yyyy h:mm a")}
                             </div>
@@ -425,7 +425,7 @@ export default function StaffTransfersPage() {
                       {transferQty > 0 && (
                         <div className="flex items-center justify-between text-sm mt-1">
                           <span className="text-primary">After Transfer:</span>
-                          <span className="font-bold text-green-600">
+                          <span className="font-bold text-success">
                             {newRecipientBalance} tickets
                           </span>
                         </div>
@@ -449,18 +449,18 @@ export default function StaffTransfersPage() {
 
               {/* Your balance after transfer */}
               {transferQuantity && parseInt(transferQuantity) > 0 && (
-                <div className="mt-2 p-2 bg-amber-50 rounded border border-amber-200">
-                  <div className="text-xs font-medium text-amber-900 mb-1">
+                <div className="mt-2 p-2 bg-warning/10 rounded border border-warning">
+                  <div className="text-xs font-medium text-warning mb-1">
                     Your Balance After Transfer
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-amber-700">Current:</span>
+                    <span className="text-warning">Current:</span>
                     <span className="font-semibold">{myBalance} tickets</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-amber-700">After:</span>
+                    <span className="text-warning">After:</span>
                     <span
-                      className={`font-bold ${myBalance - parseInt(transferQuantity) < 10 ? "text-red-600" : "text-amber-900"}`}
+                      className={`font-bold ${myBalance - parseInt(transferQuantity) < 10 ? "text-destructive" : "text-warning"}`}
                     >
                       {myBalance - parseInt(transferQuantity)} tickets
                       {myBalance - parseInt(transferQuantity) < 10 && " ⚠️"}

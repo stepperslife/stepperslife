@@ -72,19 +72,19 @@ function CollapsibleSection({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-gray-200 last:border-0">
+    <div className="border-b border-border last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-6 py-3 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-3 hover:bg-muted transition-colors"
       >
         <div className="flex items-center gap-2">
           {icon}
-          <span className="text-sm font-semibold text-gray-900">{title}</span>
+          <span className="text-sm font-semibold text-foreground">{title}</span>
         </div>
         {isOpen ? (
-          <ChevronDown className="w-4 h-4 text-gray-500" />
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
         ) : (
-          <ChevronRight className="w-4 h-4 text-gray-500" />
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
         )}
       </button>
       <AnimatePresence>
@@ -174,7 +174,7 @@ export default function PropertiesPanel({
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 300 }}
         transition={{ duration: 0.3 }}
-        className="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl border-l border-gray-200 overflow-y-auto z-40"
+        className="fixed right-0 top-0 h-full w-96 bg-card shadow-2xl border-l border-border overflow-y-auto z-40"
       >
         {/* Header */}
         <div className="bg-primary px-6 py-4 text-white sticky top-0 z-10">
@@ -192,12 +192,12 @@ export default function PropertiesPanel({
         {/* Content */}
         <div>
           {/* Basic Info Section */}
-          <CollapsibleSection title="Basic Info" icon={<Hash className="w-4 h-4 text-gray-600" />}>
+          <CollapsibleSection title="Basic Info" icon={<Hash className="w-4 h-4 text-muted-foreground" />}>
             {isTable ? (
               <>
                 {/* Table Number/Name */}
                 <div className="mb-4">
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  <label className="block text-xs font-medium text-foreground mb-1.5">
                     Table Number / Name
                   </label>
                   <input
@@ -205,13 +205,13 @@ export default function PropertiesPanel({
                     value={(data as Table).number}
                     onChange={(e) => onUpdate({ number: e.target.value })}
                     placeholder="e.g., 1, VIP 1, Head Table"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
                 </div>
 
                 {/* Shape Selection */}
                 <div className="mb-4">
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  <label className="block text-xs font-medium text-foreground mb-1.5">
                     Table Shape
                   </label>
                   <TableShapePalette
@@ -223,7 +223,7 @@ export default function PropertiesPanel({
 
                 {/* Capacity */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  <label className="block text-xs font-medium text-foreground mb-1.5">
                     Seating Capacity
                   </label>
                   <input
@@ -232,9 +232,9 @@ export default function PropertiesPanel({
                     max="100"
                     value={(data as Table).capacity}
                     onChange={(e) => handleTableCapacityChange(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Number of seats around this table (1-100)
                   </p>
                 </div>
@@ -243,27 +243,27 @@ export default function PropertiesPanel({
               <>
                 {/* Section Name */}
                 <div className="mb-4">
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  <label className="block text-xs font-medium text-foreground mb-1.5">
                     Section Name
                   </label>
                   <input
                     type="text"
                     value={(data as Section).name}
                     onChange={(e) => onUpdate({ name: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
                 </div>
 
                 {/* Section Color */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  <label className="block text-xs font-medium text-foreground mb-1.5">
                     Section Color
                   </label>
                   <input
                     type="color"
                     value={(data as Section).color || "#3B82F6"}
                     onChange={(e) => onUpdate({ color: e.target.value })}
-                    className="w-full h-10 px-2 border border-gray-300 rounded-lg cursor-pointer"
+                    className="w-full h-10 px-2 border border-border rounded-lg cursor-pointer"
                   />
                 </div>
               </>
@@ -273,30 +273,30 @@ export default function PropertiesPanel({
           {/* Position & Size Section */}
           <CollapsibleSection
             title="Position & Size"
-            icon={<RotateCw className="w-4 h-4 text-gray-600" />}
+            icon={<RotateCw className="w-4 h-4 text-muted-foreground" />}
           >
             {/* Position */}
             <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+              <label className="block text-xs font-medium text-foreground mb-1.5">
                 Position (pixels)
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">X</label>
+                  <label className="block text-xs text-muted-foreground mb-1">X</label>
                   <input
                     type="number"
                     value={Math.round(data.x || 0)}
                     onChange={(e) => onUpdate({ x: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Y</label>
+                  <label className="block text-xs text-muted-foreground mb-1">Y</label>
                   <input
                     type="number"
                     value={Math.round(data.y || 0)}
                     onChange={(e) => onUpdate({ y: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
                 </div>
               </div>
@@ -304,28 +304,28 @@ export default function PropertiesPanel({
 
             {/* Dimensions */}
             <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+              <label className="block text-xs font-medium text-foreground mb-1.5">
                 Dimensions (pixels)
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Width</label>
+                  <label className="block text-xs text-muted-foreground mb-1">Width</label>
                   <input
                     type="number"
                     min={isTable ? "60" : "100"}
                     value={Math.round(data.width || 0)}
                     onChange={(e) => onUpdate({ width: parseInt(e.target.value) || 100 })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Height</label>
+                  <label className="block text-xs text-muted-foreground mb-1">Height</label>
                   <input
                     type="number"
                     min={isTable ? "60" : "80"}
                     value={Math.round(data.height || 0)}
                     onChange={(e) => onUpdate({ height: parseInt(e.target.value) || 100 })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   />
                 </div>
               </div>
@@ -333,7 +333,7 @@ export default function PropertiesPanel({
 
             {/* Rotation */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">Rotation</label>
+              <label className="block text-xs font-medium text-foreground mb-1.5">Rotation</label>
               <div className="flex items-center gap-3">
                 <input
                   type="range"
@@ -344,15 +344,15 @@ export default function PropertiesPanel({
                   onChange={(e) => onUpdate({ rotation: parseInt(e.target.value) })}
                   className="flex-1"
                 />
-                <span className="text-xs font-medium text-gray-700 w-10 text-right">
+                <span className="text-xs font-medium text-foreground w-10 text-right">
                   {data.rotation || 0}°
                 </span>
                 <button
                   onClick={handleRotate}
-                  className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="p-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors"
                   title="Rotate 15°"
                 >
-                  <RotateCw className="w-4 h-4 text-gray-700" />
+                  <RotateCw className="w-4 h-4 text-foreground" />
                 </button>
               </div>
             </div>
@@ -362,10 +362,10 @@ export default function PropertiesPanel({
           {isTable && (data as Table).shape === "ROUND" && (
             <CollapsibleSection
               title="Seating Arrangement"
-              icon={<Users className="w-4 h-4 text-gray-600" />}
+              icon={<Users className="w-4 h-4 text-muted-foreground" />}
             >
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                <label className="block text-xs font-medium text-foreground mb-1.5">
                   Seat Pattern
                 </label>
                 <select
@@ -387,14 +387,14 @@ export default function PropertiesPanel({
                     };
                     onUpdate({ seatArc: arcMap[e.target.value as keyof typeof arcMap] });
                   }}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                 >
                   <option value="full">Full Circle (360°)</option>
                   <option value="three-quarter">3/4 Circle (270°)</option>
                   <option value="half">Half Circle (180°)</option>
                   <option value="crescent">Cabaret/Crescent (135°)</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Cabaret/Crescent style seats guests on one side only
                 </p>
               </div>
@@ -427,7 +427,7 @@ export default function PropertiesPanel({
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Available:</span>
-                  <span className="font-medium text-green-700">
+                  <span className="font-medium text-success">
                     {(data as Table).seats?.filter((s) => s.status === "AVAILABLE").length || 0}
                   </span>
                 </div>
@@ -437,10 +437,10 @@ export default function PropertiesPanel({
         </div>
 
         {/* Actions */}
-        <div className="p-6 border-t border-gray-200 space-y-3 bg-gray-50">
+        <div className="p-6 border-t border-border space-y-3 bg-muted">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+            className="w-full px-4 py-2.5 bg-card border border-border text-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm font-medium"
           >
             Done Editing
           </button>
@@ -451,7 +451,7 @@ export default function PropertiesPanel({
                 onClose();
               }
             }}
-            className="w-full px-4 py-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
+            className="w-full px-4 py-2.5 bg-destructive/10 border border-destructive text-destructive rounded-lg hover:bg-destructive/20 transition-colors text-sm font-medium"
           >
             Delete {isTable ? "Table" : "Section"}
           </button>

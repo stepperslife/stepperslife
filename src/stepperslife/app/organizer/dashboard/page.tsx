@@ -39,14 +39,14 @@ export default function OrganizerDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
@@ -57,8 +57,8 @@ export default function OrganizerDashboardPage() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-600 mt-1">Overview of your events and credits</p>
+              <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+              <p className="text-muted-foreground mt-1">Overview of your events and credits</p>
             </div>
             <Link
               href="/organizer/events/create"
@@ -128,7 +128,7 @@ export default function OrganizerDashboardPage() {
                     </div>
                   )}
                   {credits.creditsRemaining <= 100 && credits.creditsRemaining > 0 && (
-                    <div className="bg-orange-500 rounded-lg px-4 py-2">
+                    <div className="bg-warning rounded-lg px-4 py-2">
                       <p className="text-sm font-semibold">Running low!</p>
                     </div>
                   )}
@@ -151,8 +151,8 @@ export default function OrganizerDashboardPage() {
                 <Calendar className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Events</p>
-                <p className="text-3xl font-bold text-gray-900">{events?.length || 0}</p>
+                <p className="text-sm text-muted-foreground">Total Events</p>
+                <p className="text-3xl font-bold text-foreground">{events?.length || 0}</p>
               </div>
             </div>
             <Link
@@ -169,43 +169,43 @@ export default function OrganizerDashboardPage() {
                 <Ticket className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Allocated</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-sm text-muted-foreground">Total Allocated</p>
+                <p className="text-3xl font-bold text-foreground">
                   {totalTicketsAllocated.toLocaleString()}
                 </p>
               </div>
             </div>
-            <p className="text-xs text-gray-500">Tickets created across all events</p>
+            <p className="text-xs text-muted-foreground">Tickets created across all events</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-success" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Tickets Sold</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-sm text-muted-foreground">Tickets Sold</p>
+                <p className="text-3xl font-bold text-foreground">
                   {totalTicketsSold.toLocaleString()}
                 </p>
               </div>
             </div>
-            <p className="text-xs text-gray-500">Successful ticket sales</p>
+            <p className="text-xs text-muted-foreground">Successful ticket sales</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-emerald-600" />
+              <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-success" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-sm text-muted-foreground">Total Revenue</p>
+                <p className="text-3xl font-bold text-foreground">
                   ${(totalRevenue / 100).toFixed(2)}
                 </p>
               </div>
             </div>
-            <p className="text-xs text-gray-500">Gross ticket sales</p>
+            <p className="text-xs text-muted-foreground">Gross ticket sales</p>
           </div>
         </motion.div>
 
@@ -220,7 +220,7 @@ export default function OrganizerDashboardPage() {
           >
             <div className="p-6 border-b">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Upcoming Events</h2>
+                <h2 className="text-xl font-bold text-foreground">Upcoming Events</h2>
                 <Link href="/organizer/events" className="text-sm text-primary hover:underline">
                   View all
                 </Link>
@@ -228,17 +228,17 @@ export default function OrganizerDashboardPage() {
             </div>
             <div className="p-6">
               {upcomingEvents.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">No upcoming events</p>
+                <p className="text-muted-foreground text-center py-8">No upcoming events</p>
               ) : (
                 <div className="space-y-4">
                   {upcomingEvents.map((event) => (
                     <Link
                       key={event._id}
                       href={`/organizer/events/${event._id}`}
-                      className="block p-4 hover:bg-gray-50 rounded-lg transition-colors border"
+                      className="block p-4 hover:bg-muted rounded-lg transition-colors border"
                     >
-                      <h3 className="font-semibold text-gray-900 mb-1">{event.name}</h3>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <h3 className="font-semibold text-foreground mb-1">{event.name}</h3>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         {event.startDate && (
                           <span className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
@@ -268,7 +268,7 @@ export default function OrganizerDashboardPage() {
           >
             <div className="p-6 border-b">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Recent Events</h2>
+                <h2 className="text-xl font-bold text-foreground">Recent Events</h2>
                 <Link href="/organizer/events" className="text-sm text-primary hover:underline">
                   View all
                 </Link>
@@ -277,7 +277,7 @@ export default function OrganizerDashboardPage() {
             <div className="p-6">
               {recentEvents.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500 mb-4">No events yet</p>
+                  <p className="text-muted-foreground mb-4">No events yet</p>
                   <Link
                     href="/organizer/events/create"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
@@ -292,12 +292,12 @@ export default function OrganizerDashboardPage() {
                     <Link
                       key={event._id}
                       href={`/organizer/events/${event._id}`}
-                      className="block p-4 hover:bg-gray-50 rounded-lg transition-colors border"
+                      className="block p-4 hover:bg-muted rounded-lg transition-colors border"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 mb-1">{event.name}</h3>
-                          <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <h3 className="font-semibold text-foreground mb-1">{event.name}</h3>
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
                             {event.ticketTierCount !== undefined && (
                               <span className="flex items-center gap-1">
                                 <Ticket className="w-4 h-4" />
@@ -308,7 +308,7 @@ export default function OrganizerDashboardPage() {
                           </div>
                         </div>
                         {event.startDate && event.startDate > Date.now() && (
-                          <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-700 rounded-full">
+                          <span className="px-2 py-1 text-xs font-semibold bg-success/10 text-success rounded-full">
                             Upcoming
                           </span>
                         )}
@@ -328,7 +328,7 @@ export default function OrganizerDashboardPage() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-8"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               href="/organizer/events/create"
@@ -338,8 +338,8 @@ export default function OrganizerDashboardPage() {
                 <Plus className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Create Event</h3>
-                <p className="text-sm text-gray-600">Start a new event</p>
+                <h3 className="font-semibold text-foreground">Create Event</h3>
+                <p className="text-sm text-muted-foreground">Start a new event</p>
               </div>
             </Link>
 
@@ -351,8 +351,8 @@ export default function OrganizerDashboardPage() {
                 <Calendar className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Manage Events</h3>
-                <p className="text-sm text-gray-600">View all your events</p>
+                <h3 className="font-semibold text-foreground">Manage Events</h3>
+                <p className="text-sm text-muted-foreground">View all your events</p>
               </div>
             </Link>
 
@@ -364,8 +364,8 @@ export default function OrganizerDashboardPage() {
                 <TrendingUp className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">View Analytics</h3>
-                <p className="text-sm text-gray-600">Check your stats</p>
+                <h3 className="font-semibold text-foreground">View Analytics</h3>
+                <p className="text-sm text-muted-foreground">Check your stats</p>
               </div>
             </Link>
           </div>

@@ -14,20 +14,20 @@ export default function PayoutHistoryPage() {
     switch (status) {
       case "completed":
         return (
-          <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 flex items-center gap-1">
+          <span className="px-2 py-1 text-xs rounded-full bg-success/10 text-success flex items-center gap-1">
             <CheckCircle className="h-3 w-3" />
             Completed
           </span>
         );
       case "pending":
         return (
-          <span className="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-700 flex items-center gap-1">
+          <span className="px-2 py-1 text-xs rounded-full bg-warning/10 text-warning flex items-center gap-1">
             <Clock className="h-3 w-3" />
             Pending
           </span>
         );
       default:
-        return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">{status}</span>;
+        return <span className="px-2 py-1 text-xs rounded-full bg-muted text-muted-foreground">{status}</span>;
     }
   };
 
@@ -49,9 +49,9 @@ export default function PayoutHistoryPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Paid Out</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">$0.00</p>
+                <p className="text-2xl font-bold mt-1 text-success">$0.00</p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -61,9 +61,9 @@ export default function PayoutHistoryPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Pending Payout</p>
-                <p className="text-2xl font-bold mt-1 text-orange-600">$0.00</p>
+                <p className="text-2xl font-bold mt-1 text-warning">$0.00</p>
               </div>
-              <Clock className="h-8 w-8 text-orange-600" />
+              <Clock className="h-8 w-8 text-warning" />
             </div>
           </CardContent>
         </Card>
@@ -116,7 +116,7 @@ export default function PayoutHistoryPage() {
                   </div>
 
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-green-600">${payout.amount || "0.00"}</p>
+                    <p className="text-2xl font-bold text-success">${payout.amount || "0.00"}</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {payout.ticketsSold || 0} tickets
                     </p>

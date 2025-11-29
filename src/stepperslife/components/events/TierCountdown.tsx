@@ -21,7 +21,7 @@ export function TierCountdown({ endDate, className = "" }: TierCountdownProps) {
 
   if (timeLeft.expired) {
     return (
-      <div className={`flex items-center gap-1 text-red-600 ${className}`}>
+      <div className={`flex items-center gap-1 text-destructive ${className}`}>
         <Clock className="w-4 h-4" />
         <span className="text-sm font-medium">Expired</span>
       </div>
@@ -30,15 +30,15 @@ export function TierCountdown({ endDate, className = "" }: TierCountdownProps) {
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <Clock className="w-4 h-4 text-orange-600" />
+      <Clock className="w-4 h-4 text-warning" />
       <div className="flex items-center gap-1 text-sm font-medium">
-        {timeLeft.days > 0 && <span className="text-gray-900">{timeLeft.days}d </span>}
+        {timeLeft.days > 0 && <span className="text-foreground">{timeLeft.days}d </span>}
         {(timeLeft.days > 0 || timeLeft.hours > 0) && (
-          <span className="text-gray-900">{timeLeft.hours}h </span>
+          <span className="text-foreground">{timeLeft.hours}h </span>
         )}
-        <span className="text-gray-900">{timeLeft.minutes}m </span>
-        <span className="text-orange-600">{timeLeft.seconds}s</span>
-        <span className="text-gray-600 ml-1">left</span>
+        <span className="text-foreground">{timeLeft.minutes}m </span>
+        <span className="text-warning">{timeLeft.seconds}s</span>
+        <span className="text-muted-foreground ml-1">left</span>
       </div>
     </div>
   );
@@ -93,7 +93,7 @@ export function TierAvailabilityBadge({
 
   if (isSoldOut) {
     return (
-      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-foreground">
         Sold Out
       </span>
     );
@@ -109,7 +109,7 @@ export function TierAvailabilityBadge({
 
   if (isExpired) {
     return (
-      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-destructive/10 text-destructive">
         Expired
       </span>
     );
@@ -118,7 +118,7 @@ export function TierAvailabilityBadge({
   if (isActive && saleEnd && saleEnd - now < 24 * 60 * 60 * 1000) {
     // Less than 24 hours left
     return (
-      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 animate-pulse">
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-warning/10 text-warning animate-pulse">
         Ending Soon!
       </span>
     );
@@ -126,14 +126,14 @@ export function TierAvailabilityBadge({
 
   if (isActive && saleEnd) {
     return (
-      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
         Early Bird
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
       Available
     </span>
   );

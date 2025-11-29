@@ -129,8 +129,8 @@ export function EventsGrid({ events }: EventsGridProps) {
                     <div className="absolute left-3 top-3">
                       <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
                         event.eventType === "FREE_EVENT"
-                          ? "bg-green-600 text-white"
-                          : "bg-purple-600 text-white"
+                          ? "bg-success text-white"
+                          : "bg-primary text-white"
                       }`}>
                         {eventTypeBadge}
                       </span>

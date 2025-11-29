@@ -39,9 +39,9 @@ export default function LinkStatsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Conversions</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-success">0</p>
               </div>
-              <ShoppingCart className="h-8 w-8 text-green-600" />
+              <ShoppingCart className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -51,9 +51,9 @@ export default function LinkStatsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Revenue</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">$0</p>
+                <p className="text-2xl font-bold mt-1 text-success">$0</p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -99,13 +99,13 @@ export default function LinkStatsPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-blue-200 bg-blue-50">
+      <Card className="border-border bg-muted">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <TrendingUp className="h-5 w-5 text-blue-600 mt-0.5" />
+            <TrendingUp className="h-5 w-5 text-primary mt-0.5" />
             <div>
-              <h3 className="font-semibold text-blue-900">Understanding Your Stats</h3>
-              <ul className="text-sm text-blue-800 mt-2 space-y-1 list-disc list-inside">
+              <h3 className="font-semibold text-foreground">Understanding Your Stats</h3>
+              <ul className="text-sm text-foreground mt-2 space-y-1 list-disc list-inside">
                 <li><strong>Clicks:</strong> Number of times your link was visited</li>
                 <li><strong>Conversions:</strong> Tickets purchased through your link</li>
                 <li><strong>Conversion Rate:</strong> Percentage of clicks that became sales</li>

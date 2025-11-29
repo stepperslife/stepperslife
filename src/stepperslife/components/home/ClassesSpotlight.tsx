@@ -76,7 +76,7 @@ export function ClassesSpotlight() {
                         <span>{course.totalLessons} lessons</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <Star className="h-4 w-4 fill-warning text-warning" />
                         <span className="font-medium">
                           {course.averageRating}
                         </span>

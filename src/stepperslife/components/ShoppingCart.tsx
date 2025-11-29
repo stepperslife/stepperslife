@@ -28,18 +28,18 @@ export function ShoppingCart() {
       />
 
       {/* Cart Drawer */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl z-50 flex flex-col">
+      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-card shadow-2xl z-50 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center gap-3">
             <ShoppingBag className="w-6 h-6 text-primary" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Shopping Cart</h2>
+            <h2 className="text-2xl font-bold text-foreground">Shopping Cart</h2>
           </div>
           <button
             onClick={() => setIsCartOpen(false)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
           >
-            <X className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+            <X className="w-6 h-6 text-muted-foreground" />
           </button>
         </div>
 
@@ -47,11 +47,11 @@ export function ShoppingCart() {
         <div className="flex-1 overflow-y-auto p-6">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <Package className="w-16 h-16 text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <Package className="w-16 h-16 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Your cart is empty
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Add some products to get started
               </p>
               <Link
@@ -67,10 +67,10 @@ export function ShoppingCart() {
               {items.map((item) => (
                 <div
                   key={item.productId}
-                  className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                  className="flex gap-4 p-4 bg-muted rounded-lg"
                 >
                   {/* Product Image */}
-                  <div className="relative w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="relative w-20 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
                     {item.productImage ? (
                       <Image
                         src={item.productImage}
@@ -80,31 +80,31 @@ export function ShoppingCart() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-8 h-8 text-gray-400" />
+                        <Package className="w-8 h-8 text-muted-foreground" />
                       </div>
                     )}
                   </div>
 
                   {/* Product Details */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1">
+                    <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
                       {item.productName}
                     </h3>
                     {item.variantName && (
-                      <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">
+                      <p className="text-xs text-muted-foreground mb-1">
                         {item.variantName}
                       </p>
                     )}
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    <p className="text-sm text-muted-foreground mb-2">
                       ${(item.productPrice / 100).toFixed(2)} each
                     </p>
 
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
+                      <div className="flex items-center border border-input rounded-lg">
                         <button
                           onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-lg"
+                          className="p-1 hover:bg-muted rounded-l-lg"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
@@ -113,7 +113,7 @@ export function ShoppingCart() {
                         </span>
                         <button
                           onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-lg"
+                          className="p-1 hover:bg-muted rounded-r-lg"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
@@ -121,7 +121,7 @@ export function ShoppingCart() {
 
                       <button
                         onClick={() => removeFromCart(item.productId)}
-                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                         title="Remove from cart"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -131,7 +131,7 @@ export function ShoppingCart() {
 
                   {/* Item Total */}
                   <div className="text-right">
-                    <p className="font-bold text-gray-900 dark:text-white">
+                    <p className="font-bold text-foreground">
                       ${((item.productPrice * item.quantity) / 100).toFixed(2)}
                     </p>
                   </div>
@@ -143,16 +143,16 @@ export function ShoppingCart() {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="border-t border-gray-200 dark:border-gray-800 p-6 space-y-4">
+          <div className="border-t border-border p-6 space-y-4">
             {/* Subtotal */}
             <div className="flex items-center justify-between text-lg">
-              <span className="text-gray-700 dark:text-gray-300">Subtotal</span>
-              <span className="font-bold text-gray-900 dark:text-white">
+              <span className="text-muted-foreground">Subtotal</span>
+              <span className="font-bold text-foreground">
                 ${(getSubtotal() / 100).toFixed(2)}
               </span>
             </div>
 
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Shipping and taxes calculated at checkout
             </p>
 

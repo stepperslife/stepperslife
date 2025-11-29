@@ -122,7 +122,7 @@ export function EventsSection({ events }: EventsSectionProps) {
                   {event.eventType === 'TICKETED_EVENT' && (
                     <div className="mt-3 text-sm">
                       {availableTickets > 0 ? (
-                        <span className="text-green-600 dark:text-green-400">
+                        <span className="text-success">
                           {availableTickets} tickets available
                         </span>
                       ) : (

@@ -30,7 +30,7 @@ export function FirstEventCongratsModal({
           <div className="flex items-center justify-center mb-4">
             <div className="relative">
               <Gift className="h-16 w-16 text-primary" />
-              <Sparkles className="h-6 w-6 text-yellow-400 absolute -top-1 -right-1 animate-pulse" />
+              <Sparkles className="h-6 w-6 text-warning absolute -top-1 -right-1 animate-pulse" />
             </div>
           </div>
           <DialogTitle className="text-center text-2xl">🎉 Congratulations!</DialogTitle>
@@ -69,11 +69,11 @@ export function FirstEventCongratsModal({
                 </ul>
               </div>
 
-              <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
-                <p className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
+              <div className="bg-warning/10 p-4 rounded-lg border border-warning">
+                <p className="font-semibold text-warning mb-1">
                   ⚠️ Important:
                 </p>
-                <p className="text-amber-800 dark:text-amber-200 text-xs">
+                <p className="text-warning text-xs">
                   These free tickets are <strong>for your first event only</strong>. Any unused
                   tickets will expire when this event ends. For additional events, tickets are just
                   $0.30 each.

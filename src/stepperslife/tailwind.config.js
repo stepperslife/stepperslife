@@ -39,6 +39,18 @@ module.exports = {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
+        success: {
+          DEFAULT: 'var(--success)',
+          foreground: 'var(--success-foreground)',
+        },
+        warning: {
+          DEFAULT: 'var(--warning)',
+          foreground: 'var(--warning-foreground)',
+        },
+        info: {
+          DEFAULT: 'var(--info)',
+          foreground: 'var(--info-foreground)',
+        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -73,11 +85,11 @@ module.exports = {
       keyframes: {
         'pulse-glow': {
           '0%, 100%': {
-            boxShadow: '0 0 0 0 rgba(234, 88, 12, 0.7)',
+            boxShadow: '0 0 0 0 rgba(30, 157, 241, 0.7)',
             transform: 'scale(1)',
           },
           '50%': {
-            boxShadow: '0 0 15px 5px rgba(234, 88, 12, 0.3)',
+            boxShadow: '0 0 15px 5px rgba(30, 157, 241, 0.3)',
             transform: 'scale(1.02)',
           },
         },

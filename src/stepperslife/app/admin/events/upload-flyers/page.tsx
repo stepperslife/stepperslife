@@ -377,26 +377,26 @@ export default function BulkFlyerUploadPage() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 flex items-center gap-3">
                 <Zap className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                 AI Flyer Manager
               </h1>
-              <p className="text-base sm:text-lg text-gray-600">
+              <p className="text-base sm:text-lg text-muted-foreground">
                 Upload flyers, review AI-extracted data, and publish events
               </p>
             </div>
 
             {/* Auto-Process Toggle */}
-            <div className="flex items-center gap-3 bg-white rounded-xl shadow-md border-2 border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
+            <div className="flex items-center gap-3 bg-white rounded-xl shadow-md border-2 border-border px-4 py-3 sm:px-6 sm:py-4">
               <div className="text-right">
-                <p className="text-sm font-bold text-gray-700">Auto-Process</p>
-                <p className="text-xs text-gray-500">{autoProcess ? "ON" : "OFF"}</p>
+                <p className="text-sm font-bold text-foreground">Auto-Process</p>
+                <p className="text-xs text-muted-foreground">{autoProcess ? "ON" : "OFF"}</p>
               </div>
               <button
                 onClick={() => setAutoProcess(!autoProcess)}
                 className={`
                   relative w-14 h-8 sm:w-16 sm:h-9 rounded-full transition-all duration-300 flex items-center
-                  ${autoProcess ? "bg-green-600" : "bg-gray-300"}
+                  ${autoProcess ? "bg-success" : "bg-muted"}
                 `}
               >
                 <div
@@ -408,7 +408,7 @@ export default function BulkFlyerUploadPage() {
                 {autoProcess ? (
                   <ToggleRight className="absolute right-1 w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 ) : (
-                  <ToggleLeft className="absolute left-1 w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                  <ToggleLeft className="absolute left-1 w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
                 )}
               </button>
             </div>
@@ -419,22 +419,22 @@ export default function BulkFlyerUploadPage() {
         <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-8">
           {flyerStats && (
             <>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4">
+              <div className="bg-white rounded-xl shadow-sm border border-border p-3 sm:p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                  <p className="text-xs sm:text-sm font-medium text-gray-600">AI Processed</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">AI Processed</p>
                 </div>
                 <p className="text-xl sm:text-3xl font-bold text-primary">
                   {flyerStats.flyers.aiProcessed}
                 </p>
               </div>
 
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4">
+              <div className="bg-white rounded-xl shadow-sm border border-border p-3 sm:p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Package className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
-                  <p className="text-xs sm:text-sm font-medium text-gray-600">Events Created</p>
+                  <Package className="w-4 h-4 sm:w-5 sm:h-5 text-warning" />
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Events Created</p>
                 </div>
-                <p className="text-xl sm:text-3xl font-bold text-orange-600">
+                <p className="text-xl sm:text-3xl font-bold text-warning">
                   {flyerStats.flyers.eventsCreated}
                 </p>
               </div>
@@ -443,8 +443,8 @@ export default function BulkFlyerUploadPage() {
         </div>
 
         {/* Upload Dropzone */}
-        <div className="bg-white rounded-xl shadow-sm border-2 border-gray-200 p-4 sm:p-6 mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-white rounded-xl shadow-sm border-2 border-border p-4 sm:p-6 mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
             <Upload className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
             Upload New Flyers
           </h2>
@@ -456,13 +456,13 @@ export default function BulkFlyerUploadPage() {
               ${
                 isDragActive
                   ? "border-primary bg-accent scale-[1.02]"
-                  : "border-gray-300 hover:border-primary hover:bg-gray-50"
+                  : "border-border hover:border-primary hover:bg-muted"
               }
             `}
           >
             <input {...getInputProps()} />
             <Upload
-              className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 ${isDragActive ? "text-primary" : "text-gray-400"}`}
+              className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 ${isDragActive ? "text-primary" : "text-muted-foreground"}`}
             />
             {isDragActive ? (
               <p className="text-lg sm:text-xl text-primary font-semibold">
@@ -470,31 +470,31 @@ export default function BulkFlyerUploadPage() {
               </p>
             ) : (
               <>
-                <p className="text-lg sm:text-xl text-gray-700 font-semibold mb-2">
+                <p className="text-lg sm:text-xl text-foreground font-semibold mb-2">
                   Drag & Drop Flyers
                 </p>
-                <p className="text-xs sm:text-sm text-gray-500 mb-3">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-3">
                   or click to browse your computer
                 </p>
-                <p className="text-xs text-gray-400">JPG, PNG, WEBP • Multiple files OK</p>
+                <p className="text-xs text-muted-foreground">JPG, PNG, WEBP • Multiple files OK</p>
               </>
             )}
           </div>
 
           {/* Duplicate Flyer Alert - Auto-dismisses after 5 seconds */}
           {duplicateHash && duplicateFlyer && (
-            <div className="mt-6 bg-amber-50 border-2 border-amber-400 rounded-xl p-4 shadow-lg animate-fade-in">
+            <div className="mt-6 bg-warning/10 border-2 border-warning rounded-xl p-4 shadow-lg animate-fade-in">
               <div className="flex items-start gap-3">
-                <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="w-6 h-6 text-warning shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-amber-900 mb-1">
+                  <h3 className="text-lg font-bold text-warning mb-1">
                     Duplicate Flyer Detected
                   </h3>
-                  <p className="text-sm text-amber-800 mb-2">
+                  <p className="text-sm text-warning mb-2">
                     This flyer has already been uploaded. The duplicate flyer can be found in the
                     draft section below.
                   </p>
-                  <p className="text-xs text-amber-700 italic">
+                  <p className="text-xs text-warning italic">
                     This message will automatically dismiss in 5 seconds...
                   </p>
                 </div>
@@ -503,7 +503,7 @@ export default function BulkFlyerUploadPage() {
                     setDuplicateHash(null);
                     setDuplicateFile(null);
                   }}
-                  className="text-amber-600 hover:text-amber-800 transition-colors"
+                  className="text-warning hover:text-warning/80 transition-colors"
                   title="Dismiss"
                 >
                   <X className="w-5 h-5" />
@@ -517,7 +517,7 @@ export default function BulkFlyerUploadPage() {
               {flyers.map((flyer) => (
                 <div
                   key={flyer.id}
-                  className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                  className="flex items-center gap-4 p-3 bg-muted rounded-lg border border-border"
                 >
                   <img
                     src={flyer.preview}
@@ -525,12 +525,12 @@ export default function BulkFlyerUploadPage() {
                     className="w-16 h-16 object-cover rounded-lg"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{flyer.file.name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-medium text-foreground truncate">{flyer.file.name}</p>
+                    <p className="text-xs text-muted-foreground">
                       {(flyer.file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                     {flyer.errorMessage && (
-                      <p className="text-xs text-red-600 mt-1">{flyer.errorMessage}</p>
+                      <p className="text-xs text-destructive mt-1">{flyer.errorMessage}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
@@ -547,7 +547,7 @@ export default function BulkFlyerUploadPage() {
                         )}
                         <button
                           onClick={() => removeFlyer(flyer.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                          className="p-2 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <X className="w-5 h-5" />
                         </button>
@@ -567,11 +567,11 @@ export default function BulkFlyerUploadPage() {
                     )}
                     {flyer.status === "success" && (
                       <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                        <span className="text-sm text-green-600">Ready for review!</span>
+                        <CheckCircle className="w-5 h-5 text-success" />
+                        <span className="text-sm text-success">Ready for review!</span>
                       </div>
                     )}
-                    {flyer.status === "error" && <AlertCircle className="w-5 h-5 text-red-600" />}
+                    {flyer.status === "error" && <AlertCircle className="w-5 h-5 text-destructive" />}
                   </div>
                 </div>
               ))}
@@ -581,15 +581,15 @@ export default function BulkFlyerUploadPage() {
 
         {/* Draft Flyers - Full Width Layout */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl font-bold text-foreground mb-6">
             Draft Flyers Awaiting Review ({draftFlyers?.length || 0})
           </h2>
 
           {!draftFlyers || draftFlyers.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm border-2 border-gray-200 p-16 text-center">
-              <Sparkles className="w-20 h-20 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg mb-2">No draft flyers</p>
-              <p className="text-sm text-gray-400">Upload flyers above to get started</p>
+            <div className="bg-white rounded-xl shadow-sm border-2 border-border p-16 text-center">
+              <Sparkles className="w-20 h-20 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground text-lg mb-2">No draft flyers</p>
+              <p className="text-sm text-muted-foreground">Upload flyers above to get started</p>
             </div>
           ) : (
             <div className="space-y-8">
@@ -603,7 +603,7 @@ export default function BulkFlyerUploadPage() {
                     id={`flyer-${flyer._id}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden hover:shadow-xl transition-all"
+                    className="bg-white rounded-xl shadow-lg border-2 border-border overflow-hidden hover:shadow-xl transition-all"
                   >
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-0">
                       {/* Flyer Image - Left Side */}
@@ -616,7 +616,7 @@ export default function BulkFlyerUploadPage() {
                             onClick={() => window.open(flyer.filepath, "_blank")}
                             title="Click to view full-size flyer"
                           />
-                          <p className="text-xs text-gray-500 text-center mt-3">Click to enlarge</p>
+                          <p className="text-xs text-muted-foreground text-center mt-3">Click to enlarge</p>
                         </div>
                       </div>
 
@@ -625,8 +625,8 @@ export default function BulkFlyerUploadPage() {
                         <div className="space-y-6">
                           {/* Event Name */}
                           <div>
-                            <label className="text-sm font-semibold text-gray-700 block mb-2">
-                              Event Name <span className="text-red-500">*</span>
+                            <label className="text-sm font-semibold text-foreground block mb-2">
+                              Event Name <span className="text-destructive">*</span>
                             </label>
                             <input
                               type="text"
@@ -635,15 +635,15 @@ export default function BulkFlyerUploadPage() {
                                 isEditing && updateField(flyer._id, "eventName", e.target.value)
                               }
                               disabled={!isEditing}
-                              className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                              className="w-full px-4 py-3 text-base border-2 border-border rounded-lg disabled:bg-muted disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-ring transition-all"
                             />
                           </div>
 
                           {/* Date & Time */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
-                                Start Date <span className="text-red-500">*</span>
+                              <label className="text-sm font-semibold text-foreground block mb-2">
+                                Start Date <span className="text-destructive">*</span>
                               </label>
                               <input
                                 type="text"
@@ -652,13 +652,13 @@ export default function BulkFlyerUploadPage() {
                                   isEditing && updateField(flyer._id, "eventDate", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border-border rounded-lg disabled:bg-muted disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-ring transition-all"
                                 placeholder="e.g. Saturday, December 27, 2025"
                               />
                             </div>
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
-                                Start Time <span className="text-red-500">*</span>
+                              <label className="text-sm font-semibold text-foreground block mb-2">
+                                Start Time <span className="text-destructive">*</span>
                               </label>
                               <input
                                 type="text"
@@ -667,7 +667,7 @@ export default function BulkFlyerUploadPage() {
                                   isEditing && updateField(flyer._id, "eventTime", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border-border rounded-lg disabled:bg-muted disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-ring transition-all"
                                 placeholder="e.g. 7:00 PM"
                               />
                             </div>
@@ -716,15 +716,15 @@ export default function BulkFlyerUploadPage() {
                           </div>
 
                           {/* Location Section Header */}
-                          <div className="pt-4 border-t-2 border-gray-200">
-                            <h3 className="text-lg font-bold text-gray-800 mb-4">
+                          <div className="pt-4 border-t-2 border-border">
+                            <h3 className="text-lg font-bold text-foreground mb-4">
                               Location Details
                             </h3>
                           </div>
 
                           {/* Venue Name */}
                           <div>
-                            <label className="text-sm font-semibold text-gray-700 block mb-2">
+                            <label className="text-sm font-semibold text-foreground block mb-2">
                               Venue Name
                             </label>
                             <input
@@ -734,7 +734,7 @@ export default function BulkFlyerUploadPage() {
                                 isEditing && updateField(flyer._id, "venueName", e.target.value)
                               }
                               disabled={!isEditing}
-                              className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                              className="w-full px-4 py-3 text-base border-2 border-border rounded-lg disabled:bg-muted disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-ring transition-all"
                             />
                           </div>
 
@@ -911,10 +911,10 @@ export default function BulkFlyerUploadPage() {
                           {/* Event Type */}
                           {data?.eventType && (
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 Event Type
                               </label>
-                              <span className="inline-block px-4 py-2 bg-green-100 text-green-700 text-base font-semibold rounded-lg">
+                              <span className="inline-block px-4 py-2 bg-success/10 text-success text-base font-semibold rounded-lg">
                                 {data.eventType}
                               </span>
                             </div>
@@ -927,13 +927,13 @@ export default function BulkFlyerUploadPage() {
                             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                               <button
                                 onClick={() => handleSaveEdit(flyer._id)}
-                                className="flex-1 px-4 py-2.5 sm:py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-all shadow-sm hover:shadow-md text-sm sm:text-base"
+                                className="flex-1 px-4 py-2.5 sm:py-2 bg-success text-white rounded-lg font-semibold hover:bg-success/90 transition-all shadow-sm hover:shadow-md text-sm sm:text-base"
                               >
                                 Save Changes
                               </button>
                               <button
                                 onClick={() => setEditingFlyerId(null)}
-                                className="px-4 py-2.5 sm:py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all text-sm sm:text-base"
+                                className="px-4 py-2.5 sm:py-2 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted/80 transition-all text-sm sm:text-base"
                               >
                                 Cancel
                               </button>
@@ -942,7 +942,7 @@ export default function BulkFlyerUploadPage() {
                             <>
                               <button
                                 onClick={() => handlePublish(flyer._id)}
-                                className="w-full px-4 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-base sm:text-lg"
+                                className="w-full px-4 py-3 bg-success text-white rounded-lg font-bold hover:bg-success/90 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-base sm:text-lg"
                               >
                                 <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                                 Publish Event

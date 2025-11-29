@@ -86,7 +86,7 @@ export default function ShareLinkPage() {
               className="justify-start h-auto py-4"
               onClick={() => handleShare("whatsapp")}
             >
-              <MessageCircle className="h-5 w-5 mr-3 text-green-600" />
+              <MessageCircle className="h-5 w-5 mr-3 text-success" />
               <div className="text-left">
                 <p className="font-semibold">WhatsApp</p>
                 <p className="text-xs text-muted-foreground">Share via WhatsApp</p>
@@ -98,7 +98,7 @@ export default function ShareLinkPage() {
               className="justify-start h-auto py-4"
               onClick={() => handleShare("facebook")}
             >
-              <Facebook className="h-5 w-5 mr-3 text-blue-600" />
+              <Facebook className="h-5 w-5 mr-3 text-primary" />
               <div className="text-left">
                 <p className="font-semibold">Facebook</p>
                 <p className="text-xs text-muted-foreground">Share on Facebook</p>
@@ -110,7 +110,7 @@ export default function ShareLinkPage() {
               className="justify-start h-auto py-4"
               onClick={() => handleShare("twitter")}
             >
-              <Twitter className="h-5 w-5 mr-3 text-blue-400" />
+              <Twitter className="h-5 w-5 mr-3 text-primary" />
               <div className="text-left">
                 <p className="font-semibold">Twitter / X</p>
                 <p className="text-xs text-muted-foreground">Tweet your link</p>
@@ -140,7 +140,7 @@ export default function ShareLinkPage() {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-              <Instagram className="h-5 w-5 text-pink-600 mt-0.5" />
+              <Instagram className="h-5 w-5 text-accent-foreground mt-0.5" />
               <div>
                 <p className="font-semibold">Social Media Stories</p>
                 <p className="text-sm text-muted-foreground">
@@ -150,7 +150,7 @@ export default function ShareLinkPage() {
             </div>
 
             <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-              <MessageCircle className="h-5 w-5 text-green-600 mt-0.5" />
+              <MessageCircle className="h-5 w-5 text-success mt-0.5" />
               <div>
                 <p className="font-semibold">Direct Messages</p>
                 <p className="text-sm text-muted-foreground">
@@ -160,7 +160,7 @@ export default function ShareLinkPage() {
             </div>
 
             <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-              <Mail className="h-5 w-5 text-blue-600 mt-0.5" />
+              <Mail className="h-5 w-5 text-primary mt-0.5" />
               <div>
                 <p className="font-semibold">Email Lists</p>
                 <p className="text-sm text-muted-foreground">

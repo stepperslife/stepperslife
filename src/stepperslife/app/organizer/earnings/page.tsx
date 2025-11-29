@@ -45,21 +45,21 @@ export default function EarningsPage() {
       title: "Total Revenue",
       value: `$${totalRevenue.toLocaleString()}`,
       icon: DollarSign,
-      color: "bg-green-500",
+      color: "bg-success",
       description: "All-time ticket sales",
     },
     {
       title: "Pending Payout",
       value: `$${pendingPayout.toLocaleString()}`,
       icon: Clock,
-      color: "bg-yellow-500",
+      color: "bg-warning",
       description: "Ready for payout",
     },
     {
       title: "Total Paid Out",
       value: `$${totalPaidOut.toLocaleString()}`,
       icon: Wallet,
-      color: "bg-blue-500",
+      color: "bg-primary",
       description: "Successfully transferred",
     },
   ];
@@ -89,7 +89,7 @@ export default function EarningsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
@@ -100,8 +100,8 @@ export default function EarningsPage() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Earnings</h1>
-              <p className="text-gray-600 mt-1">Track your revenue and payouts</p>
+              <h1 className="text-3xl font-bold text-foreground">Earnings</h1>
+              <p className="text-muted-foreground mt-1">Track your revenue and payouts</p>
             </div>
             <Link
               href="/organizer/earnings/payouts"
@@ -130,9 +130,9 @@ export default function EarningsPage() {
                   <stat.icon className="w-6 h-6" />
                 </div>
               </div>
-              <h3 className="text-gray-600 text-sm font-medium mb-1">{stat.title}</h3>
-              <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
-              <p className="text-sm text-gray-500">{stat.description}</p>
+              <h3 className="text-muted-foreground text-sm font-medium mb-1">{stat.title}</h3>
+              <p className="text-3xl font-bold text-foreground mb-1">{stat.value}</p>
+              <p className="text-sm text-muted-foreground">{stat.description}</p>
             </div>
           ))}
         </motion.div>
@@ -180,7 +180,7 @@ export default function EarningsPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mb-8"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {quickActions.map((action, index) => (
               <Link
@@ -191,8 +191,8 @@ export default function EarningsPage() {
                 <div className={`${action.color} p-3 rounded-lg text-white w-fit mb-4`}>
                   <action.icon className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{action.title}</h3>
-                <p className="text-gray-600 mb-4">{action.description}</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">{action.title}</h3>
+                <p className="text-muted-foreground mb-4">{action.description}</p>
                 <div className="flex items-center text-primary font-medium">
                   View {action.title.toLowerCase()}
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -211,7 +211,7 @@ export default function EarningsPage() {
         >
           <div className="px-6 py-4 border-b">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Revenue by Event</h2>
+              <h2 className="text-xl font-bold text-foreground">Revenue by Event</h2>
               <Link
                 href="/organizer/earnings/transactions"
                 className="text-primary hover:underline flex items-center gap-1 text-sm"
@@ -225,18 +225,18 @@ export default function EarningsPage() {
           {events && events.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-muted">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Event
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Tickets Sold
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Revenue
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
@@ -247,7 +247,7 @@ export default function EarningsPage() {
                     const ticketsSold = event.ticketsSold || 0;
 
                     return (
-                      <tr key={event._id} className="hover:bg-gray-50">
+                      <tr key={event._id} className="hover:bg-muted">
                         <td className="px-6 py-4">
                           <Link
                             href={`/organizer/events/${event._id}`}
@@ -256,14 +256,14 @@ export default function EarningsPage() {
                             {event.title}
                           </Link>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                           {ticketsSold.toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                           ${revenue.toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
+                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-warning/10 text-warning">
                             Pending
                           </span>
                         </td>
@@ -275,9 +275,9 @@ export default function EarningsPage() {
             </div>
           ) : (
             <div className="p-12 text-center">
-              <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-900 mb-2">No earnings yet</h3>
-              <p className="text-gray-600 mb-6">
+              <DollarSign className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-foreground mb-2">No earnings yet</h3>
+              <p className="text-muted-foreground mb-6">
                 Start selling tickets to track your earnings
               </p>
               <Link

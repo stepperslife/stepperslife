@@ -27,10 +27,10 @@ export default function TicketValidationPage() {
 
   if (ticketData === undefined) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-600">Validating ticket...</p>
+          <p className="mt-4 text-muted-foreground">Validating ticket...</p>
         </div>
       </div>
     );
@@ -38,15 +38,15 @@ export default function TicketValidationPage() {
 
   if (!ticketData) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted">
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <XCircle className="w-10 h-10 text-red-600" />
+              <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <XCircle className="w-10 h-10 text-destructive" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">Ticket Not Found</h1>
-              <p className="text-gray-600 mb-6">
+              <h1 className="text-2xl font-bold text-foreground mb-2">Ticket Not Found</h1>
+              <p className="text-muted-foreground mb-6">
                 The ticket code <span className="font-mono font-semibold">{ticketCode}</span> could
                 not be found.
               </p>
@@ -75,7 +75,7 @@ export default function TicketValidationPage() {
         <div className="container mx-auto px-4 py-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-gray-700 hover:text-primary transition-colors"
+            className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             <span className="font-medium">Back to Events</span>
@@ -117,7 +117,7 @@ export default function TicketValidationPage() {
               {/* Event Card */}
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 {event.imageUrl && (
-                  <div className="h-48 bg-gray-200">
+                  <div className="h-48 bg-muted">
                     <img
                       src={event.imageUrl}
                       alt={event.name}
@@ -126,19 +126,19 @@ export default function TicketValidationPage() {
                   </div>
                 )}
                 <div className="p-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{event.name}</h2>
+                  <h2 className="text-2xl font-bold text-foreground mb-4">{event.name}</h2>
 
-                  {event.description && <p className="text-gray-600 mb-6">{event.description}</p>}
+                  {event.description && <p className="text-muted-foreground mb-6">{event.description}</p>}
 
                   <div className="space-y-3">
                     {event.startDate && (
                       <div className="flex items-start gap-3">
                         <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <div>
-                          <p className="font-semibold text-gray-900">
+                          <p className="font-semibold text-foreground">
                             {format(event.startDate, "EEEE, MMMM d, yyyy")}
                           </p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             {format(event.startDate, "h:mm a")}
                             {event.endDate && ` - ${format(event.endDate, "h:mm a")}`}
                           </p>
@@ -151,11 +151,11 @@ export default function TicketValidationPage() {
                         <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <div>
                           {event.location.venueName && (
-                            <p className="font-semibold text-gray-900">
+                            <p className="font-semibold text-foreground">
                               {event.location.venueName}
                             </p>
                           )}
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             {event.location.address && `${event.location.address}, `}
                             {event.location.city}, {event.location.state} {event.location.zipCode}
                           </p>
@@ -169,17 +169,17 @@ export default function TicketValidationPage() {
               {/* Attendee Info */}
               {attendee && (
                 <div className="bg-white rounded-lg shadow-lg p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Attendee Information</h3>
+                  <h3 className="text-lg font-bold text-foreground mb-4">Attendee Information</h3>
                   <div className="space-y-2">
                     <div>
-                      <p className="text-sm text-gray-500">Name</p>
-                      <p className="font-semibold text-gray-900">
+                      <p className="text-sm text-muted-foreground">Name</p>
+                      <p className="font-semibold text-foreground">
                         {attendee.name || "Not provided"}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-semibold text-gray-900">{attendee.email}</p>
+                      <p className="text-sm text-muted-foreground">Email</p>
+                      <p className="font-semibold text-foreground">{attendee.email}</p>
                     </div>
                   </div>
                 </div>
@@ -190,9 +190,9 @@ export default function TicketValidationPage() {
             <div className="space-y-6">
               {/* QR Code */}
               <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">Ticket QR Code</h3>
+                <h3 className="text-lg font-bold text-foreground mb-4 text-center">Ticket QR Code</h3>
                 <div className="flex justify-center mb-4">
-                  <div className="p-4 bg-white border-4 border-gray-200 rounded-lg">
+                  <div className="p-4 bg-white border-4 border-border rounded-lg">
                     <QRCodeSVG
                       value={`https://events.stepperslife.com/ticket/${ticket.ticketCode}`}
                       size={200}
@@ -201,16 +201,16 @@ export default function TicketValidationPage() {
                     />
                   </div>
                 </div>
-                <p className="text-center text-sm text-gray-500">Scan at event entrance</p>
+                <p className="text-center text-sm text-muted-foreground">Scan at event entrance</p>
               </div>
 
               {/* Ticket Details */}
               <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Ticket Details</h3>
+                <h3 className="text-lg font-bold text-foreground mb-4">Ticket Details</h3>
                 <dl className="space-y-3">
                   <div>
-                    <dt className="text-sm text-gray-500">Ticket Code</dt>
-                    <dd className="font-mono text-lg font-bold text-gray-900">
+                    <dt className="text-sm text-muted-foreground">Ticket Code</dt>
+                    <dd className="font-mono text-lg font-bold text-foreground">
                       {ticket.ticketCode}
                     </dd>
                   </div>
@@ -218,13 +218,13 @@ export default function TicketValidationPage() {
                   {tier && (
                     <>
                       <div>
-                        <dt className="text-sm text-gray-500">Ticket Type</dt>
-                        <dd className="font-semibold text-gray-900">{tier.name}</dd>
+                        <dt className="text-sm text-muted-foreground">Ticket Type</dt>
+                        <dd className="font-semibold text-foreground">{tier.name}</dd>
                       </div>
                       {tier.price && (
                         <div>
-                          <dt className="text-sm text-gray-500">Price</dt>
-                          <dd className="font-semibold text-gray-900">
+                          <dt className="text-sm text-muted-foreground">Price</dt>
+                          <dd className="font-semibold text-foreground">
                             ${(tier.price / 100).toFixed(2)}
                           </dd>
                         </div>
@@ -245,16 +245,16 @@ export default function TicketValidationPage() {
                   )}
 
                   <div>
-                    <dt className="text-sm text-gray-500">Status</dt>
-                    <dd className={`font-semibold ${isValid ? "text-green-600" : "text-red-600"}`}>
+                    <dt className="text-sm text-muted-foreground">Status</dt>
+                    <dd className={`font-semibold ${isValid ? "text-success" : "text-destructive"}`}>
                       {ticket.status}
                     </dd>
                   </div>
 
                   {order?.paidAt && (
                     <div>
-                      <dt className="text-sm text-gray-500">Purchased</dt>
-                      <dd className="text-gray-900">
+                      <dt className="text-sm text-muted-foreground">Purchased</dt>
+                      <dd className="text-foreground">
                         {format(order.paidAt, "MMM d, yyyy 'at' h:mm a")}
                       </dd>
                     </div>
@@ -262,8 +262,8 @@ export default function TicketValidationPage() {
 
                   {ticket.scannedAt && (
                     <div>
-                      <dt className="text-sm text-gray-500">Scanned</dt>
-                      <dd className="text-gray-900 flex items-center gap-2">
+                      <dt className="text-sm text-muted-foreground">Scanned</dt>
+                      <dd className="text-foreground flex items-center gap-2">
                         <Clock className="w-4 h-4" />
                         {format(ticket.scannedAt, "MMM d, yyyy 'at' h:mm a")}
                       </dd>

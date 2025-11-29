@@ -59,7 +59,7 @@ export function ProductsSection({ products }: ProductsSectionProps) {
                   </div>
                 )}
                 {product.compareAtPrice && product.compareAtPrice > product.price && (
-                  <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-md text-xs font-bold">
+                  <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-bold">
                     SALE
                   </div>
                 )}
@@ -84,7 +84,7 @@ export function ProductsSection({ products }: ProductsSectionProps) {
                   </div>
                   {product.trackInventory && (
                     <span
-                      className={`text-xs ${product.inventoryQuantity && product.inventoryQuantity > 0 ? "text-green-600" : "text-red-600"}`}
+                      className={`text-xs ${product.inventoryQuantity && product.inventoryQuantity > 0 ? "text-success" : "text-destructive"}`}
                     >
                       {product.inventoryQuantity && product.inventoryQuantity > 0
                         ? `${product.inventoryQuantity} in stock`
