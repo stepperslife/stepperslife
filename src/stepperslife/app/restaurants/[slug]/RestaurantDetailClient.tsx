@@ -5,6 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { MapPin, Phone, Clock, Utensils, Plus, Minus, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -17,10 +18,11 @@ interface CartItem {
 }
 
 export default function RestaurantDetailClient({ slug }: { slug: string }) {
+  const router = useRouter();
   const restaurant = useQuery(api.restaurants.getBySlug, { slug });
   const menuItems = restaurant ? useQuery(api.menuItems.getByRestaurant, { restaurantId: restaurant._id }) : undefined;
   const categories = restaurant ? useQuery(api.menuItems.getCategories, { restaurantId: restaurant._id }) : undefined;
-  
+
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
 
@@ -83,6 +85,11 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
 
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleCheckout = () => {
+    const cartParam = encodeURIComponent(JSON.stringify(cart));
+    router.push(`/restaurants/${slug}/checkout?cart=${cartParam}`);
+  };
 
   // Group menu items by category
   const itemsByCategory = menuItems?.reduce((acc, item) => {
@@ -299,7 +306,10 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                         <span>Total</span>
                         <span>${(cartTotal / 100).toFixed(2)}</span>
                       </div>
-                      <button className="w-full mt-4 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700">
+                      <button
+                        onClick={handleCheckout}
+                        className="w-full mt-4 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700"
+                      >
                         Proceed to Checkout
                       </button>
                     </div>

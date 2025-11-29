@@ -43,6 +43,14 @@ export const getByOrderNumber = query({
   },
 });
 
+// Get order by ID
+export const getById = query({
+  args: { id: v.id("foodOrders") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
 // Create food order
 export const create = mutation({
   args: {

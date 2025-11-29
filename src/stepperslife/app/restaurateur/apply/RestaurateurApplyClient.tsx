@@ -3,10 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/useAuth";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { Id } from "@/convex/_generated/dataModel";
 import {
   ChefHat,
   MapPin,
@@ -71,6 +74,7 @@ export default function RestaurateurApplyClient() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const applyMutation = useMutation(api.restaurants.apply);
 
   const [formData, setFormData] = useState<FormData>({
     contactName: "",
@@ -131,12 +135,35 @@ export default function RestaurateurApplyClient() {
       return;
     }
 
+    if (!user?._id) {
+      toast.error("You must be signed in to submit an application");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // TODO: Call Convex mutation to save restaurant application
-      // For now, simulate submission
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Parse estimated pickup time to number (extract first number from string like "15-20 minutes")
+      const pickupMatch = formData.estimatedPickupTime.match(/\d+/);
+      const estimatedPickupTime = pickupMatch ? parseInt(pickupMatch[0], 10) : 30;
+
+      await applyMutation({
+        ownerId: user._id as Id<"users">,
+        name: formData.restaurantName,
+        description: formData.description || undefined,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        phone: formData.contactPhone,
+        cuisine: formData.cuisineTypes,
+        contactName: formData.contactName,
+        contactEmail: formData.contactEmail,
+        website: formData.website || undefined,
+        hoursOfOperation: formData.hoursOfOperation || undefined,
+        estimatedPickupTime,
+        additionalNotes: formData.additionalNotes || undefined,
+      });
 
       setSubmitted(true);
       toast.success("Application submitted successfully!");

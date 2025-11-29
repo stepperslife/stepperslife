@@ -64,41 +64,41 @@ export default function RestaurateurDashboardClient() {
     );
   }
 
-  // Dashboard placeholder - TODO: Check if user has restaurateur role and approved restaurant
+  // Dashboard items
   const dashboardItems = [
     {
       icon: ClipboardList,
       title: "Orders",
       description: "View and manage incoming orders",
-      href: "#",
-      comingSoon: true,
+      href: "/restaurateur/dashboard/orders",
+      comingSoon: false,
     },
     {
       icon: Utensils,
       title: "Menu",
       description: "Edit your menu items and prices",
-      href: "#",
+      href: "/restaurateur/dashboard/menu",
       comingSoon: true,
     },
     {
       icon: BarChart3,
       title: "Analytics",
       description: "Track your sales and performance",
-      href: "#",
+      href: "/restaurateur/dashboard/analytics",
       comingSoon: true,
     },
     {
       icon: Clock,
       title: "Hours",
       description: "Set your operating hours",
-      href: "#",
+      href: "/restaurateur/dashboard/hours",
       comingSoon: true,
     },
     {
       icon: Settings,
       title: "Settings",
       description: "Manage restaurant settings",
-      href: "#",
+      href: "/restaurateur/dashboard/settings",
       comingSoon: true,
     },
   ];
@@ -144,28 +144,44 @@ export default function RestaurateurDashboardClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {dashboardItems.map((item) => {
               const Icon = item.icon;
-              return (
-                <div
-                  key={item.title}
-                  className="bg-card rounded-xl border border-border p-6 opacity-60"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-6 h-6 text-orange-600" />
+              const CardContent = (
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-foreground">{item.title}</h3>
+                      {item.comingSoon && (
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">
+                          Coming Soon
+                        </span>
+                      )}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-foreground">{item.title}</h3>
-                        {item.comingSoon && (
-                          <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">
-                            Coming Soon
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{item.description}</p>
-                    </div>
+                    <p className="text-sm text-muted-foreground">{item.description}</p>
                   </div>
                 </div>
+              );
+
+              if (item.comingSoon) {
+                return (
+                  <div
+                    key={item.title}
+                    className="bg-card rounded-xl border border-border p-6 opacity-60"
+                  >
+                    {CardContent}
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.title}
+                  href={item.href}
+                  className="bg-card rounded-xl border border-border p-6 hover:border-orange-300 hover:shadow-md transition-all"
+                >
+                  {CardContent}
+                </Link>
               );
             })}
           </div>
