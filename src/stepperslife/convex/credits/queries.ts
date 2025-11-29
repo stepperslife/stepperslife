@@ -34,15 +34,78 @@ export const getCreditBalance = query({
 
 /**
  * Get current user's credit balance
- * This query should not be used directly - use getCreditBalance with user ID instead
- * Kept for backward compatibility but returns null
+ * Works with both Convex auth and testing mode fallback
  */
 export const getMyCredits = query({
   args: {},
   handler: async (ctx) => {
-    // This query doesn't work with custom JWT auth
-    // Frontend should use getCreditBalance with user ID from /api/auth/me
-    return null;
+    const identity = await ctx.auth.getUserIdentity();
+
+    let user;
+    if (!identity) {
+      // TESTING MODE: Fall back to test user
+      user = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .first();
+    } else {
+      // Parse the identity
+      let userInfo;
+      try {
+        userInfo = typeof identity === "string" ? JSON.parse(identity) : identity;
+      } catch (error) {
+        userInfo = identity;
+      }
+
+      const email = userInfo.email || identity.email;
+      if (!email) {
+        return {
+          creditsTotal: 300,
+          creditsUsed: 0,
+          creditsRemaining: 300,
+          firstEventFreeUsed: false,
+          hasFirstEventFree: true,
+        };
+      }
+
+      user = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", email))
+        .first();
+    }
+
+    if (!user) {
+      // Return default credits for new organizers
+      return {
+        creditsTotal: 300,
+        creditsUsed: 0,
+        creditsRemaining: 300,
+        firstEventFreeUsed: false,
+        hasFirstEventFree: true,
+      };
+    }
+
+    // Get actual credits from organizerCredits table
+    const credits = await ctx.db
+      .query("organizerCredits")
+      .withIndex("by_organizer", (q) => q.eq("organizerId", user._id))
+      .first();
+
+    if (!credits) {
+      // Return default structure if not initialized
+      return {
+        creditsTotal: 300,
+        creditsUsed: 0,
+        creditsRemaining: 300,
+        firstEventFreeUsed: false,
+        hasFirstEventFree: true,
+      };
+    }
+
+    return {
+      ...credits,
+      hasFirstEventFree: !credits.firstEventFreeUsed,
+    };
   },
 });
 

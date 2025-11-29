@@ -71,9 +71,9 @@ export default function OrganizerEventsPage() {
   // Show loading while Convex queries are loading
   // Layout already handles auth protection via REST API
   // currentUser undefined = still loading from Convex
-  // currentUser null = Convex auth not ready yet, wait for it
+  // currentUser null = Convex auth not ready yet, but we can proceed with empty events
   // Note: Layout protects this route, so we don't need to redirect
-  if (currentUser === undefined || currentUser === null) {
+  if (currentUser === undefined) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -84,7 +84,9 @@ export default function OrganizerEventsPage() {
     );
   }
 
-  // At this point, currentUser exists, but events might still be loading
+  // At this point, currentUser may be null (Convex auth issue) or defined
+  // Events and credits might still be loading (undefined)
+  // We'll handle null currentUser by showing no events
   const isLoading = events === undefined || credits === undefined;
 
   if (isLoading) {
@@ -116,11 +118,22 @@ export default function OrganizerEventsPage() {
     return true;
   }) || [];
 
+  // Default credits if null (for new users or when Convex auth not ready)
+  const effectiveCredits = credits || {
+    creditsTotal: 300,
+    creditsUsed: 0,
+    creditsRemaining: 300,
+    firstEventFreeUsed: false,
+    hasFirstEventFree: true,
+  };
+
   // Calculate totals for dashboard (using filtered events)
   const totalTicketsAllocated =
     filteredEvents?.reduce((sum, event) => sum + (event.totalTickets || 0), 0) || 0;
   const totalTicketsSold = filteredEvents?.reduce((sum, event) => sum + (event.ticketsSold || 0), 0) || 0;
-  const percentageUsed = credits ? (credits.creditsUsed / credits.creditsTotal) * 100 : 0;
+  const percentageUsed = effectiveCredits.creditsTotal > 0
+    ? (effectiveCredits.creditsUsed / effectiveCredits.creditsTotal) * 100
+    : 0;
 
   // Helper: Check if event has tickets sold
   const hasTicketsSold = (event: any) => {
@@ -277,9 +290,9 @@ export default function OrganizerEventsPage() {
       {/* Main Content - Mobile Optimized */}
       <main className="container mx-auto px-4 py-4 md:py-8">
         {/* Welcome Banner for New Organizers - Mobile Optimized */}
-        {credits &&
-          credits.creditsRemaining === 300 &&
-          credits.creditsUsed === 0 &&
+        {effectiveCredits &&
+          effectiveCredits.creditsRemaining === 300 &&
+          effectiveCredits.creditsUsed === 0 &&
           showWelcomeBanner && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -328,7 +341,7 @@ export default function OrganizerEventsPage() {
           )}
 
         {/* Credit Dashboard - Mobile Optimized */}
-        {credits && (
+        {effectiveCredits && (
           <div className="mb-4 md:mb-8 space-y-3 md:space-y-6">
             {/* Main Credit Balance Card */}
             <motion.div
@@ -349,7 +362,7 @@ export default function OrganizerEventsPage() {
 
                     <div className="mb-4 md:mb-6">
                       <div className="text-3xl md:text-5xl lg:text-6xl font-bold mb-1 md:mb-2">
-                        {credits.creditsRemaining.toLocaleString()}
+                        {effectiveCredits.creditsRemaining.toLocaleString()}
                       </div>
                       <p className="text-base md:text-xl text-white/90">tickets available</p>
                     </div>
@@ -358,8 +371,8 @@ export default function OrganizerEventsPage() {
                     <div className="space-y-1.5 md:space-y-2">
                       <div className="flex items-center justify-between text-xs md:text-sm">
                         <span>
-                          Usage: {credits.creditsUsed.toLocaleString()} /{" "}
-                          {credits.creditsTotal.toLocaleString()}
+                          Usage: {effectiveCredits.creditsUsed.toLocaleString()} /{" "}
+                          {effectiveCredits.creditsTotal.toLocaleString()}
                         </span>
                         <span>{percentageUsed.toFixed(1)}% used</span>
                       </div>
@@ -376,7 +389,7 @@ export default function OrganizerEventsPage() {
                     <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1.5 md:px-4 md:py-2 flex-1 lg:flex-none">
                       <p className="text-xs md:text-sm font-medium text-center">$0.30 per ticket</p>
                     </div>
-                    {credits.creditsTotal === 300 && credits.creditsUsed === 0 && (
+                    {effectiveCredits.creditsTotal === 300 && effectiveCredits.creditsUsed === 0 && (
                       <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-3 py-1.5 md:px-4 md:py-2 flex-1 lg:flex-none">
                         <div className="flex items-center justify-center gap-1.5 md:gap-2 text-xs md:text-sm">
                           <Check className="w-3 h-3 md:w-4 md:h-4" />
@@ -384,7 +397,7 @@ export default function OrganizerEventsPage() {
                         </div>
                       </div>
                     )}
-                    {credits.creditsRemaining <= 100 && credits.creditsRemaining > 0 && (
+                    {effectiveCredits.creditsRemaining <= 100 && effectiveCredits.creditsRemaining > 0 && (
                       <div className="bg-orange-500 rounded-lg px-3 py-1.5 md:px-4 md:py-2 flex-1 lg:flex-none">
                         <p className="text-xs md:text-sm font-semibold text-center">Running low!</p>
                       </div>
