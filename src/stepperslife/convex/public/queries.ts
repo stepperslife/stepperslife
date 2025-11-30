@@ -503,3 +503,14 @@ export const getCategories = query({
     return categories;
   },
 });
+
+/**
+ * Get all active restaurants (public API)
+ */
+export const getActiveRestaurants = query({
+  args: {},
+  handler: async (ctx) => {
+    const allRestaurants = await ctx.db.query("restaurants").collect();
+    return allRestaurants.filter((r) => r.isActive === true);
+  },
+});

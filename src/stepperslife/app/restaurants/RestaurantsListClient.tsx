@@ -9,7 +9,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export default function RestaurantsListClient() {
-  const restaurants = useQuery(api.restaurants.getAll);
+  const restaurants = useQuery(api.public.queries.getActiveRestaurants);
 
   // Loading state
   if (restaurants === undefined) {
