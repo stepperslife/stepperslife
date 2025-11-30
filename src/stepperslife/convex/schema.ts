@@ -1503,4 +1503,82 @@ export default defineSchema({
   })
     .index("by_vendor", ["vendorId"])
     .index("by_status", ["status"]),
+
+  // ==========================================
+  // PUSH NOTIFICATIONS MODULE - PWA Notifications
+  // ==========================================
+
+  // Push Subscriptions - Browser/device push notification subscriptions
+  pushSubscriptions: defineTable({
+    // Who owns this subscription (one of these should be set)
+    userId: v.optional(v.id("users")),
+    staffId: v.optional(v.id("eventStaff")),
+    restaurantId: v.optional(v.id("restaurants")), // For restaurant staff notifications
+
+    // Web Push subscription data
+    endpoint: v.string(),
+    keys: v.object({
+      p256dh: v.string(),
+      auth: v.string(),
+    }),
+
+    // Device info
+    userAgent: v.optional(v.string()),
+    deviceType: v.optional(v.string()), // "mobile", "desktop", "tablet"
+
+    // Notification preferences
+    notifyOnCashOrders: v.optional(v.boolean()),
+    notifyOnOnlineSales: v.optional(v.boolean()),
+    notifyOnFoodOrders: v.optional(v.boolean()), // For restaurant orders
+
+    // Status tracking
+    isActive: v.boolean(),
+    failureCount: v.number(),
+    lastUsed: v.optional(v.number()),
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_endpoint", ["endpoint"])
+    .index("by_user", ["userId"])
+    .index("by_staff", ["staffId"])
+    .index("by_restaurant", ["restaurantId"]),
+
+  // Notification Log - History of all sent notifications
+  notificationLog: defineTable({
+    // Who received the notification
+    userId: v.optional(v.id("users")),
+    staffId: v.optional(v.id("eventStaff")),
+    restaurantId: v.optional(v.id("restaurants")),
+
+    // Notification content
+    type: v.string(), // "CASH_ORDER", "ONLINE_SALE", "FOOD_ORDER", "ORDER_UPDATE"
+    title: v.string(),
+    body: v.string(),
+
+    // Related entities
+    orderId: v.optional(v.id("orders")),
+    eventId: v.optional(v.id("events")),
+    foodOrderId: v.optional(v.id("foodOrders")),
+
+    // Delivery status
+    status: v.union(
+      v.literal("SENT"),
+      v.literal("DELIVERED"),
+      v.literal("FAILED"),
+      v.literal("CLICKED")
+    ),
+    error: v.optional(v.string()),
+
+    // Timestamps
+    sentAt: v.number(),
+    deliveredAt: v.optional(v.number()),
+    clickedAt: v.optional(v.number()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_staff", ["staffId"])
+    .index("by_restaurant", ["restaurantId"])
+    .index("by_type", ["type"])
+    .index("by_status", ["status"]),
 });

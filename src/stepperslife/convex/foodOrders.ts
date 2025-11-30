@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { query, mutation, action } from "./_generated/server";
+import { api, internal } from "./_generated/api";
 
 // Generate order number
 function generateOrderNumber(): string {
@@ -51,7 +52,7 @@ export const getById = query({
   },
 });
 
-// Create food order
+// Create food order (internal mutation - returns order details)
 export const create = mutation({
   args: {
     restaurantId: v.id("restaurants"),
@@ -76,14 +77,72 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const orderNumber = generateOrderNumber();
     const now = Date.now();
-    
-    return await ctx.db.insert("foodOrders", {
+
+    const orderId = await ctx.db.insert("foodOrders", {
       ...args,
       orderNumber,
       status: "PENDING",
       paymentStatus: "pending",
       placedAt: now,
     });
+
+    // Return order details for notification
+    return {
+      orderId,
+      orderNumber,
+      restaurantId: args.restaurantId,
+      customerName: args.customerName,
+      total: args.total,
+      itemCount: args.items.reduce((sum, item) => sum + item.quantity, 0),
+    };
+  },
+});
+
+// Create food order with notification (action that calls mutation + triggers notification)
+export const createWithNotification = action({
+  args: {
+    restaurantId: v.id("restaurants"),
+    customerId: v.optional(v.id("users")),
+    customerName: v.string(),
+    customerEmail: v.string(),
+    customerPhone: v.string(),
+    items: v.array(v.object({
+      menuItemId: v.id("menuItems"),
+      name: v.string(),
+      price: v.number(),
+      quantity: v.number(),
+      notes: v.optional(v.string()),
+    })),
+    subtotal: v.number(),
+    tax: v.number(),
+    total: v.number(),
+    pickupTime: v.optional(v.number()),
+    specialInstructions: v.optional(v.string()),
+    paymentMethod: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Create the order
+    const orderResult = await ctx.runMutation(api.foodOrders.create, args);
+
+    // Trigger notification to restaurant
+    try {
+      await ctx.runAction(
+        api.notifications.restaurantNotifications.notifyNewFoodOrder,
+        {
+          foodOrderId: orderResult.orderId,
+          restaurantId: orderResult.restaurantId,
+          orderNumber: orderResult.orderNumber,
+          customerName: orderResult.customerName,
+          totalCents: orderResult.total, // total is already in cents
+          itemCount: orderResult.itemCount,
+        }
+      );
+    } catch (error) {
+      // Don't fail the order if notification fails
+      console.error("Failed to send order notification:", error);
+    }
+
+    return orderResult;
   },
 });
 

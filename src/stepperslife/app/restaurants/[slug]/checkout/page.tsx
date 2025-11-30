@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -25,7 +25,7 @@ export default function RestaurantCheckoutPage() {
   const slug = params.slug as string;
 
   const restaurant = useQuery(api.restaurants.getBySlug, { slug });
-  const createOrder = useMutation(api.foodOrders.create);
+  const createOrder = useAction(api.foodOrders.createWithNotification);
 
   // Parse cart from URL params
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -106,8 +106,8 @@ export default function RestaurantCheckoutPage() {
         quantity: item.quantity,
       }));
 
-      // Submit order
-      const orderId = await createOrder({
+      // Submit order (with notification)
+      const result = await createOrder({
         restaurantId: restaurant._id,
         customerName: customerName.trim(),
         customerEmail: customerEmail.trim(),
@@ -120,9 +120,8 @@ export default function RestaurantCheckoutPage() {
         paymentMethod: "pay_at_pickup",
       });
 
-      // Get the order to retrieve the order number
-      // Redirect to confirmation page
-      router.push(`/restaurants/${slug}/order-confirmation?orderId=${orderId}`);
+      // Redirect to confirmation page with order ID
+      router.push(`/restaurants/${slug}/order-confirmation?orderId=${result.orderId}`);
     } catch (err: any) {
       setError(err.message || "Failed to place order. Please try again.");
       setIsSubmitting(false);

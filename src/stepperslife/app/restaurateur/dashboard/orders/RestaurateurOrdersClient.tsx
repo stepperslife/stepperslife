@@ -19,14 +19,18 @@ import {
   RefreshCw,
   AlertCircle,
   LogIn,
+  Bell,
+  BellOff,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY_FOR_PICKUP" | "COMPLETED" | "CANCELLED";
 
-const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; bgColor: string; icon: typeof Clock }> = {
-  PENDING: { label: "New Order", color: "text-yellow-700", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: Clock },
+const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; bgColor: string; icon: typeof Clock; pulse?: boolean }> = {
+  PENDING: { label: "New Order", color: "text-yellow-700", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: Clock, pulse: true },
   CONFIRMED: { label: "Confirmed", color: "text-blue-700", bgColor: "bg-blue-100 dark:bg-blue-900/30", icon: CheckCircle },
   PREPARING: { label: "Preparing", color: "text-orange-700", bgColor: "bg-orange-100 dark:bg-orange-900/30", icon: ChefHat },
   READY_FOR_PICKUP: { label: "Ready", color: "text-green-700", bgColor: "bg-green-100 dark:bg-green-900/30", icon: Package },
@@ -40,6 +44,15 @@ export default function RestaurateurOrdersClient() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [selectedRestaurant, setSelectedRestaurant] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
+
+  // Audio and notification states
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | null>(null);
+  const previousOrderCountRef = useRef<number>(0);
+  const previousPendingOrderIdsRef = useRef<Set<string>>(new Set());
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isFirstLoadRef = useRef(true);
 
   // Get restaurants owned by user
   const restaurants = useQuery(
@@ -55,6 +68,118 @@ export default function RestaurateurOrdersClient() {
 
   const updateStatus = useMutation(api.foodOrders.updateStatus);
   const updatePaymentStatus = useMutation(api.foodOrders.updatePaymentStatus);
+
+  // Initialize audio element
+  useEffect(() => {
+    // Create audio element with a simple beep sound (base64 encoded)
+    audioRef.current = new Audio();
+    // Use a data URL for a simple notification sound
+    audioRef.current.src = "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fZmVoaWRfW15hX2BhYWFgYGBhYWJiY2NkZGRjY2NiYmFhYGBeXl1cW1pZWFhXV1dXV1hYWVlZWltbXF1eX2BhYmNkZWZnZ2hoaWlpaWlpaWhoZ2dmZWRjYmFgX15dXFtaWVhXVlVUU1NSUVFQUFBQUFBRUVJSU1NUVVZXWFlbXF1fYGJjZWdoamtsbW5vb29vbm5tbGtqaGdmZGNhYF5dW1pYV1VTUlBPTk1MS0tLS0tLTExNTk9QUVNUVVZYWV1gYWJkZ2lqbG1ub3Bxc3NycnJxcG9ubGtpZ2ZkYmBfXVtZV1VTUU9OTEtKSUhIR0dHSEhISUpKTE1OT1FSVFZYWltdX2FjZWdpamxub3BxcXFxcXBwb25sa2lpZ2VkYmBfXVtZV1VTUQ==";
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  // Check notification permission on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setNotificationPermission(Notification.permission);
+      setNotificationsEnabled(Notification.permission === "granted");
+    }
+  }, []);
+
+  // Play notification sound
+  const playNotificationSound = useCallback(() => {
+    if (soundEnabled && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch((e) => {
+        console.log("Audio play failed:", e);
+      });
+    }
+  }, [soundEnabled]);
+
+  // Show browser notification
+  const showBrowserNotification = useCallback((title: string, body: string) => {
+    if (notificationsEnabled && Notification.permission === "granted") {
+      const notification = new Notification(title, {
+        body,
+        icon: "/logos/logo.png",
+        badge: "/logos/logo.png",
+        tag: "new-food-order",
+        requireInteraction: true,
+      });
+
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+
+      // Auto-close after 10 seconds
+      setTimeout(() => notification.close(), 10000);
+    }
+  }, [notificationsEnabled]);
+
+  // Request notification permission
+  const requestNotificationPermission = async () => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+      setNotificationsEnabled(permission === "granted");
+    }
+  };
+
+  // Watch for new orders and trigger alerts
+  useEffect(() => {
+    if (!orders || isFirstLoadRef.current) {
+      // On first load, just set the initial state without alerting
+      if (orders) {
+        const pendingOrders = orders.filter(o => o.status === "PENDING");
+        previousOrderCountRef.current = orders.length;
+        previousPendingOrderIdsRef.current = new Set(pendingOrders.map(o => o._id));
+        isFirstLoadRef.current = false;
+      }
+      return;
+    }
+
+    const pendingOrders = orders.filter(o => o.status === "PENDING");
+    const currentPendingIds = new Set(pendingOrders.map(o => o._id));
+
+    // Find new pending orders (orders that weren't in the previous set)
+    const newPendingOrders = pendingOrders.filter(
+      o => !previousPendingOrderIdsRef.current.has(o._id)
+    );
+
+    if (newPendingOrders.length > 0) {
+      // New order(s) arrived!
+      playNotificationSound();
+
+      // Show browser notification for each new order
+      newPendingOrders.forEach(order => {
+        const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+        showBrowserNotification(
+          "🍽️ New Food Order!",
+          `${order.customerName} ordered ${itemCount} item${itemCount > 1 ? "s" : ""} - $${(order.total / 100).toFixed(2)}`
+        );
+      });
+
+      // Update page title to indicate new orders
+      const pendingCount = pendingOrders.length;
+      if (pendingCount > 0) {
+        document.title = `(${pendingCount}) New Orders - SteppersLife`;
+      }
+    } else if (pendingOrders.length === 0) {
+      // All orders processed, reset title
+      document.title = "Order Management - SteppersLife";
+    }
+
+    // Update refs for next comparison
+    previousOrderCountRef.current = orders.length;
+    previousPendingOrderIdsRef.current = currentPendingIds;
+  }, [orders, playNotificationSound, showBrowserNotification]);
 
   // Loading state
   if (authLoading) {
@@ -176,13 +301,49 @@ export default function RestaurateurOrdersClient() {
                   <p className="text-white/80">{activeOrders} active orders</p>
                 </div>
               </div>
-              <button
-                onClick={() => window.location.reload()}
-                className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors"
-              >
-                <RefreshCw className="w-4 h-4" />
-                Refresh
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Sound Toggle */}
+                <button
+                  onClick={() => setSoundEnabled(!soundEnabled)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                    soundEnabled ? "bg-white/20 text-white" : "bg-white/10 text-white/60"
+                  }`}
+                  title={soundEnabled ? "Mute sounds" : "Enable sounds"}
+                >
+                  {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                </button>
+
+                {/* Notification Toggle */}
+                {notificationPermission !== "granted" ? (
+                  <button
+                    onClick={requestNotificationPermission}
+                    className="flex items-center gap-2 px-3 py-2 bg-yellow-500/80 text-white rounded-lg hover:bg-yellow-500 transition-colors"
+                    title="Enable browser notifications"
+                  >
+                    <Bell className="w-4 h-4" />
+                    <span className="hidden sm:inline">Enable Alerts</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                      notificationsEnabled ? "bg-white/20 text-white" : "bg-white/10 text-white/60"
+                    }`}
+                    title={notificationsEnabled ? "Disable notifications" : "Enable notifications"}
+                  >
+                    {notificationsEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+                  </button>
+                )}
+
+                {/* Refresh Button */}
+                <button
+                  onClick={() => window.location.reload()}
+                  className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span className="hidden sm:inline">Refresh</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -283,7 +444,7 @@ export default function RestaurateurOrdersClient() {
                           <span className="font-mono font-bold text-lg">
                             #{order.orderNumber}
                           </span>
-                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${statusConfig.bgColor} ${statusConfig.color}`}>
+                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${statusConfig.bgColor} ${statusConfig.color} ${statusConfig.pulse ? "animate-pulse" : ""}`}>
                             <StatusIcon className="w-4 h-4" />
                             {statusConfig.label}
                           </span>
