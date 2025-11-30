@@ -130,7 +130,9 @@ export const addStaffMember = mutation({
       // Hierarchy fields
       assignedByStaffId: args.assignedByStaffId,
       hierarchyLevel,
-      canAssignSubSellers: false, // Default disabled, organizer can enable
+      // TEAM_MEMBERS are business partners - they can assign sub-sellers (Associates) by default
+      // STAFF and ASSOCIATES cannot assign sub-sellers unless explicitly enabled
+      canAssignSubSellers: args.role === "TEAM_MEMBERS" ? true : false,
       maxSubSellers: undefined,
       parentCommissionPercent: undefined,
       subSellerCommissionPercent: undefined,
@@ -806,8 +808,11 @@ export const assignSubSellerForTesting = mutation({
 });
 
 /**
- * Assign a sub-seller (staff member can assign their own sellers)
- * This creates a hierarchical relationship where support staff can delegate ticket selling
+ * Assign a sub-seller (Team Members can assign their own Associates)
+ * This creates a hierarchical relationship where Team Members (business partners) delegate ticket selling
+ *
+ * IMPORTANT: Team Members can assign Associates WITHOUT organizer permission
+ * Associates are the default role for sub-sellers
  */
 export const assignSubSeller = mutation({
   args: {
@@ -815,11 +820,12 @@ export const assignSubSeller = mutation({
     name: v.string(),
     email: v.string(),
     phone: v.optional(v.string()),
-    role: v.union(v.literal("TEAM_MEMBERS"), v.literal("STAFF")),
+    // Associates is the default/expected role for sub-sellers assigned by Team Members
+    role: v.optional(v.union(v.literal("ASSOCIATES"), v.literal("STAFF"))),
     canScan: v.optional(v.boolean()),
     allocatedTickets: v.optional(v.number()), // Tickets allocated from parent's balance
-    parentCommissionPercent: v.number(), // What % parent keeps from sub-seller sales
-    subSellerCommissionPercent: v.number(), // What % sub-seller gets from their sales
+    parentCommissionPercent: v.number(), // What % parent (Team Member) keeps from sub-seller sales
+    subSellerCommissionPercent: v.number(), // What % sub-seller (Associate) gets from their sales
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -961,6 +967,9 @@ export const assignSubSeller = mutation({
     }
 
     // Create sub-seller record
+    // Default role is ASSOCIATES - the standard role for sub-sellers assigned by Team Members
+    const subSellerRole = args.role || "ASSOCIATES";
+
     const subSellerId = await ctx.db.insert("eventStaff", {
       eventId: args.eventId,
       organizerId: parentStaff.organizerId, // Inherit from parent
@@ -968,8 +977,8 @@ export const assignSubSeller = mutation({
       email: args.email,
       name: args.name,
       phone: args.phone,
-      role: args.role,
-      canScan: args.canScan || args.role === STAFF_ROLES.STAFF,
+      role: subSellerRole,
+      canScan: args.canScan || subSellerRole === STAFF_ROLES.STAFF,
       commissionType: parentCommissionType,
       commissionValue: subSellerCommissionValue,
       commissionPercent:

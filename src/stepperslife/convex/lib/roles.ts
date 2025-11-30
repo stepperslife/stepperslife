@@ -39,13 +39,29 @@ export const USER_ROLES = {
 
 /**
  * Staff roles for event-specific staff members
+ *
+ * HIERARCHY:
+ * - TEAM_MEMBERS: Business partners who work directly with organizers
+ *   - Can get up to 100% commission (they're partners, not employees)
+ *   - Can assign ASSOCIATES as sub-sellers WITHOUT organizer permission
+ *   - Can manage their own sub-seller network
+ *
+ * - ASSOCIATES: Sub-sellers assigned by TEAM_MEMBERS
+ *   - Receive ticket allocations from their parent TEAM_MEMBER
+ *   - Earn commission split determined by the TEAM_MEMBER who assigned them
+ *   - Cannot assign their own sub-sellers (unless explicitly enabled)
+ *
+ * - STAFF: Door staff for ticket scanning
+ *   - Primarily scan tickets at event entrance
+ *   - Can sell tickets if organizer permits
+ *   - Cannot assign sub-sellers
  */
 export const STAFF_ROLES = {
   /** Door staff - Can scan tickets, can sell only if organizer permits */
   STAFF: "STAFF",
-  /** Team members/partners who sell tickets and can assign associates */
+  /** Business partners - Can get up to 100% commission, can assign Associates as sub-sellers */
   TEAM_MEMBERS: "TEAM_MEMBERS",
-  /** Associates - Get tickets from Team Members to sell */
+  /** Sub-sellers assigned by Team Members - earn commission from ticket sales */
   ASSOCIATES: "ASSOCIATES",
 } as const;
 
@@ -155,8 +171,10 @@ export function getRoleDescription(role: UserRole | StaffRole): string {
     [USER_ROLES.USER]: "Browse events and purchase tickets",
     [STAFF_ROLES.STAFF]:
       "Scan and validate tickets at event entrance, can sell if organizer permits",
-    [STAFF_ROLES.TEAM_MEMBERS]: "Team member/partner who sells tickets and can assign associates",
-    [STAFF_ROLES.ASSOCIATES]: "Receives tickets from Team Members to sell and earn commission",
+    [STAFF_ROLES.TEAM_MEMBERS]:
+      "Business partner - can earn up to 100% commission, can assign Associates as sub-sellers without organizer permission",
+    [STAFF_ROLES.ASSOCIATES]:
+      "Sub-seller assigned by a Team Member - receives ticket allocation and earns commission from sales",
   };
   return descriptions[role] || "Unknown role";
 }
