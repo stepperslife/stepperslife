@@ -107,36 +107,17 @@ export const deleteAllEventStaff = internalMutation({
 });
 
 /**
- * Delete all event bundles
+ * Delete all ticket bundles
  */
 export const deleteAllBundles = internalMutation({
   args: {},
   handler: async (ctx) => {
 
-    const allBundles = await ctx.db.query("eventBundles").collect();
+    const allBundles = await ctx.db.query("ticketBundles").collect();
     let deletedCount = 0;
 
     for (const bundle of allBundles) {
       await ctx.db.delete(bundle._id);
-      deletedCount++;
-    }
-
-    return { deletedCount };
-  },
-});
-
-/**
- * Delete all settlements
- */
-export const deleteAllSettlements = internalMutation({
-  args: {},
-  handler: async (ctx) => {
-
-    const allSettlements = await ctx.db.query("settlements").collect();
-    let deletedCount = 0;
-
-    for (const settlement of allSettlements) {
-      await ctx.db.delete(settlement._id);
       deletedCount++;
     }
 
@@ -160,7 +141,6 @@ export const completeReset = internalMutation({
       orders: 0,
       staff: 0,
       bundles: 0,
-      settlements: 0,
     };
 
     // Delete tickets
@@ -185,17 +165,10 @@ export const completeReset = internalMutation({
     }
 
     // Delete bundles
-    const allBundles = await ctx.db.query("eventBundles").collect();
+    const allBundles = await ctx.db.query("ticketBundles").collect();
     for (const bundle of allBundles) {
       await ctx.db.delete(bundle._id);
       results.bundles++;
-    }
-
-    // Delete settlements
-    const allSettlements = await ctx.db.query("settlements").collect();
-    for (const settlement of allSettlements) {
-      await ctx.db.delete(settlement._id);
-      results.settlements++;
     }
 
     // Delete events

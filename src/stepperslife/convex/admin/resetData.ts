@@ -224,49 +224,38 @@ export const resetAllDataExceptProducts = mutation({
       ticketTiers: 0,
       tickets: 0,
       orders: 0,
-      cashPayments: 0,
       paymentConfigs: 0,
       seatingLayouts: 0,
       seatAssignments: 0,
       eventStaff: 0,
-      staffAllocations: 0,
       bundles: 0,
-      bundlePurchases: 0,
       discounts: 0,
       transfers: 0,
       flyers: 0,
       crm: 0,
       waitlist: 0,
-      notifications: 0,
       organizerCreditsReset: 0,
     };
 
     // Delete all flyers
-    const flyers = await ctx.db.query("flyers").collect();
+    const flyers = await ctx.db.query("uploadedFlyers").collect();
     for (const flyer of flyers) {
       await ctx.db.delete(flyer._id);
       deletedCounts.flyers++;
     }
 
     // Delete all waitlist entries
-    const waitlistEntries = await ctx.db.query("waitlist").collect();
+    const waitlistEntries = await ctx.db.query("eventWaitlist").collect();
     for (const entry of waitlistEntries) {
       await ctx.db.delete(entry._id);
       deletedCounts.waitlist++;
     }
 
     // Delete all CRM contacts
-    const crmContacts = await ctx.db.query("crmContacts").collect();
+    const crmContacts = await ctx.db.query("eventContacts").collect();
     for (const contact of crmContacts) {
       await ctx.db.delete(contact._id);
       deletedCounts.crm++;
-    }
-
-    // Delete all notifications
-    const notifications = await ctx.db.query("notifications").collect();
-    for (const notification of notifications) {
-      await ctx.db.delete(notification._id);
-      deletedCounts.notifications++;
     }
 
     // Delete all transfers
@@ -277,17 +266,10 @@ export const resetAllDataExceptProducts = mutation({
     }
 
     // Delete all discounts
-    const discounts = await ctx.db.query("discounts").collect();
+    const discounts = await ctx.db.query("discountCodes").collect();
     for (const discount of discounts) {
       await ctx.db.delete(discount._id);
       deletedCounts.discounts++;
-    }
-
-    // Delete all bundle purchases
-    const bundlePurchases = await ctx.db.query("bundlePurchases").collect();
-    for (const purchase of bundlePurchases) {
-      await ctx.db.delete(purchase._id);
-      deletedCounts.bundlePurchases++;
     }
 
     // Delete all bundles
@@ -297,13 +279,6 @@ export const resetAllDataExceptProducts = mutation({
       deletedCounts.bundles++;
     }
 
-    // Delete all staff allocations
-    const staffAllocations = await ctx.db.query("staffTierAllocations").collect();
-    for (const allocation of staffAllocations) {
-      await ctx.db.delete(allocation._id);
-      deletedCounts.staffAllocations++;
-    }
-
     // Delete all event staff
     const eventStaff = await ctx.db.query("eventStaff").collect();
     for (const staff of eventStaff) {
@@ -311,17 +286,17 @@ export const resetAllDataExceptProducts = mutation({
       deletedCounts.eventStaff++;
     }
 
-    // Delete all seat assignments
-    const seatAssignments = await ctx.db.query("seatAssignments").collect();
-    for (const assignment of seatAssignments) {
-      await ctx.db.delete(assignment._id);
+    // Delete all seat reservations
+    const seatReservations = await ctx.db.query("seatReservations").collect();
+    for (const reservation of seatReservations) {
+      await ctx.db.delete(reservation._id);
       deletedCounts.seatAssignments++;
     }
 
-    // Delete all seating layouts
-    const seatingLayouts = await ctx.db.query("seatingLayouts").collect();
-    for (const layout of seatingLayouts) {
-      await ctx.db.delete(layout._id);
+    // Delete all seating charts
+    const seatingCharts = await ctx.db.query("seatingCharts").collect();
+    for (const chart of seatingCharts) {
+      await ctx.db.delete(chart._id);
       deletedCounts.seatingLayouts++;
     }
 
@@ -330,13 +305,6 @@ export const resetAllDataExceptProducts = mutation({
     for (const config of paymentConfigs) {
       await ctx.db.delete(config._id);
       deletedCounts.paymentConfigs++;
-    }
-
-    // Delete all cash payments
-    const cashPayments = await ctx.db.query("cashPayments").collect();
-    for (const payment of cashPayments) {
-      await ctx.db.delete(payment._id);
-      deletedCounts.cashPayments++;
     }
 
     // Delete all orders

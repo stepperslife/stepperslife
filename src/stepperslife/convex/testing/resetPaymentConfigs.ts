@@ -8,7 +8,7 @@ import { mutation } from "../_generated/server";
 export const resetAllPaymentConfigs = mutation({
   handler: async (ctx) => {
     // Delete all existing payment configs
-    const oldConfigs = await ctx.db.query("paymentConfigs").collect();
+    const oldConfigs = await ctx.db.query("eventPaymentConfig").collect();
 
     for (const config of oldConfigs) {
       await ctx.db.delete(config._id);
@@ -21,7 +21,7 @@ export const resetAllPaymentConfigs = mutation({
 
     for (const event of events) {
       // Create payment config with isActive field
-      const paymentConfigId = await ctx.db.insert("paymentConfigs", {
+      const paymentConfigId = await ctx.db.insert("eventPaymentConfig", {
         eventId: event._id,
         model: "CREDIT_CARD",
         platformFeePercent: 0,

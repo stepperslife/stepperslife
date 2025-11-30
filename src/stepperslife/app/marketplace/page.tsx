@@ -2,7 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Package, ShoppingCart, DollarSign, AlertCircle } from "lucide-react";
+import { Package, ShoppingCart, DollarSign, AlertCircle, Store, Users } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -77,11 +77,20 @@ export default function ShopPage() {
       <div className="min-h-screen bg-background">
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground dark:text-white">SteppersLife Shop</h1>
-            <p className="text-muted-foreground mt-2">
-              Official merchandise and products
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground dark:text-white">SteppersLife Shop</h1>
+              <p className="text-muted-foreground mt-2">
+                Official merchandise and vendor products
+              </p>
+            </div>
+            <Link
+              href="/marketplace/vendors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+            >
+              <Store className="w-5 h-5" />
+              Browse Vendors
+            </Link>
           </div>
 
           {products.length === 0 ? (
@@ -129,6 +138,24 @@ export default function ShopPage() {
                       <h3 className="font-bold text-lg text-foreground dark:text-white mb-1 line-clamp-2">
                         {product.name}
                       </h3>
+
+                      {/* Vendor Badge */}
+                      {product.vendor ? (
+                        <Link
+                          href={`/marketplace/vendors/${product.vendor.slug}`}
+                          className="inline-flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 mb-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Store className="w-3 h-3" />
+                          <span>Sold by {product.vendor.storeName}</span>
+                        </Link>
+                      ) : (
+                        <div className="flex items-center gap-1.5 text-xs text-primary mb-2">
+                          <Users className="w-3 h-3" />
+                          <span>SteppersLife Official</span>
+                        </div>
+                      )}
+
                       <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                         {product.description}
                       </p>

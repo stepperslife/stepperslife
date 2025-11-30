@@ -130,6 +130,23 @@ export const setupCompleteTest = mutation({
         tiers: []
       };
 
+      // Create payment config for this event (REQUIRED for tickets to show!)
+      await ctx.db.insert("eventPaymentConfig", {
+        eventId: eventId,
+        organizerId: organizerId,
+        paymentModel: "CREDIT_CARD",
+        customerPaymentMethods: ["STRIPE", "CASH"],
+        isActive: true,
+        activatedAt: now,
+        platformFeePercent: 3.7,
+        platformFeeFixed: 179, // $1.79 in cents
+        processingFeePercent: 2.9,
+        charityDiscount: false,
+        lowPriceDiscount: false,
+        createdAt: now,
+        updatedAt: now,
+      });
+
       // Create ticket tiers
       for (const tier of eventData.tiers) {
         const tierId = await ctx.db.insert("ticketTiers", {
@@ -284,6 +301,40 @@ export const setupCompleteTest = mutation({
         customerActiveTickets: results.tickets.length
       },
       details: results
+    };
+  },
+});
+
+/**
+ * Add a FREE ticket tier to an existing event
+ * This is for testing free ticket purchases without payment
+ */
+export const addFreeTicketTier = mutation({
+  args: {
+    eventId: v.id("events"),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    // Create FREE ticket tier with price = 0
+    const tierId = await ctx.db.insert("ticketTiers", {
+      eventId: args.eventId,
+      name: "Free Admission",
+      description: "Complimentary admission - no payment required",
+      price: 0, // $0.00 - FREE
+      quantity: 50,
+      sold: 0,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return {
+      success: true,
+      tierId,
+      tierName: "Free Admission",
+      price: 0,
+      message: "Free ticket tier created successfully"
     };
   },
 });

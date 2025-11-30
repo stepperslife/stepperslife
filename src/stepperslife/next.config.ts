@@ -53,8 +53,8 @@ const nextConfig: NextConfig = {
               "worker-src 'self' blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https: http://localhost:* https://lh3.googleusercontent.com https://images.unsplash.com https://unsplash.com https://dazzling-mockingbird-241.convex.cloud https://neighborly-swordfish-681.convex.cloud",
-              "connect-src 'self' https://dazzling-mockingbird-241.convex.cloud wss://dazzling-mockingbird-241.convex.cloud https://neighborly-swordfish-681.convex.cloud wss://neighborly-swordfish-681.convex.cloud https://api.stripe.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://connect.squareup.com https://pci-connect.squareup.com https://api.resend.com https://www.paypal.com https://api.paypal.com https://*.sentry.io",
+              "img-src 'self' data: blob: https: http://localhost:* https://lh3.googleusercontent.com https://images.unsplash.com https://unsplash.com https://dazzling-mockingbird-241.convex.cloud https://neighborly-swordfish-681.convex.cloud https://expert-vulture-775.convex.cloud",
+              "connect-src 'self' https://dazzling-mockingbird-241.convex.cloud wss://dazzling-mockingbird-241.convex.cloud https://neighborly-swordfish-681.convex.cloud wss://neighborly-swordfish-681.convex.cloud https://expert-vulture-775.convex.cloud wss://expert-vulture-775.convex.cloud https://api.stripe.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://connect.squareup.com https://pci-connect.squareup.com https://api.resend.com https://www.paypal.com https://api.paypal.com https://*.sentry.io",
               "frame-src 'self' https://web.squarecdn.com https://sandbox.web.squarecdn.com https://www.paypal.com https://js.stripe.com",
               "object-src 'none'",
               "base-uri 'self'",
@@ -154,6 +154,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "neighborly-swordfish-681.convex.cloud",
+        pathname: "/api/storage/**",
+      },
+      {
+        protocol: "https",
+        hostname: "expert-vulture-775.convex.cloud",
         pathname: "/api/storage/**",
       },
     ],

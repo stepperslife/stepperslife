@@ -196,6 +196,61 @@ export const updatePaymentStatus = mutation({
   },
 });
 
+// Get orders for a specific vendor (items belonging to vendor)
+export const getOrdersByVendor = query({
+  args: {
+    vendorId: v.id("vendors"),
+    fulfillmentStatus: v.optional(
+      v.union(
+        v.literal("PENDING"),
+        v.literal("PROCESSING"),
+        v.literal("SHIPPED"),
+        v.literal("DELIVERED"),
+        v.literal("CANCELLED")
+      )
+    ),
+  },
+  handler: async (ctx, args) => {
+    // Get all products belonging to this vendor
+    const vendorProducts = await ctx.db
+      .query("products")
+      .withIndex("by_vendor", (q) => q.eq("vendorId", args.vendorId))
+      .collect();
+
+    const vendorProductIds = new Set(vendorProducts.map((p) => p._id.toString()));
+
+    // Get all orders
+    let orders = await ctx.db.query("productOrders").order("desc").collect();
+
+    if (args.fulfillmentStatus) {
+      orders = orders.filter((o) => o.fulfillmentStatus === args.fulfillmentStatus);
+    }
+
+    // Filter orders that contain items from this vendor
+    const vendorOrders = orders
+      .map((order) => {
+        const vendorItems = order.items.filter((item) =>
+          vendorProductIds.has(item.productId.toString())
+        );
+
+        if (vendorItems.length === 0) return null;
+
+        // Calculate vendor's portion of this order
+        const vendorSubtotal = vendorItems.reduce((sum, item) => sum + item.totalPrice, 0);
+
+        return {
+          ...order,
+          vendorItems,
+          vendorSubtotal,
+          totalItems: vendorItems.reduce((sum, item) => sum + item.quantity, 0),
+        };
+      })
+      .filter(Boolean);
+
+    return vendorOrders;
+  },
+});
+
 // Add internal note to order
 export const addInternalNote = mutation({
   args: {

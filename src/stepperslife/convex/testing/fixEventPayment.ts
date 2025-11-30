@@ -15,13 +15,13 @@ export const addPaymentConfigsToAllEvents = mutation({
     for (const event of events) {
       // Check if payment config already exists
       const existingConfig = await ctx.db
-        .query("paymentConfigs")
-        .filter((q) => q.eq(q.field("eventId"), event._id))
+        .query("eventPaymentConfig")
+        .withIndex("by_event", (q) => q.eq("eventId", event._id))
         .first();
 
       if (!existingConfig) {
         // Create payment config
-        const paymentConfigId = await ctx.db.insert("paymentConfigs", {
+        const paymentConfigId = await ctx.db.insert("eventPaymentConfig", {
           eventId: event._id,
           model: "CREDIT_CARD",
           platformFeePercent: 0,

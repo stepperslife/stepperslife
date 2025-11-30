@@ -598,7 +598,7 @@ export const completeOrder = mutation({
         ticketCode,
         status: "VALID",
         soldByStaffId: order.soldByStaffId || undefined,
-        paymentMethod: args.paymentMethod as "SQUARE" | "STRIPE" | "ONLINE",
+        paymentMethod: args.paymentMethod as "SQUARE" | "STRIPE" | "ONLINE" | "FREE" | "TEST",
         createdAt: Date.now(),
         updatedAt: Date.now(),
       });
@@ -703,7 +703,7 @@ export const completeOrder = mutation({
           orderId: args.orderId,
           ticketCount,
           commissionAmount: commission,
-          paymentMethod: args.paymentMethod as "SQUARE" | "STRIPE" | "ONLINE",
+          paymentMethod: args.paymentMethod as "SQUARE" | "STRIPE" | "ONLINE" | "FREE" | "TEST",
           createdAt: Date.now(),
         });
       }

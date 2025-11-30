@@ -419,7 +419,9 @@ export default defineSchema({
         v.literal("CASH"),
         v.literal("CASH_APP"),
         v.literal("SQUARE"),
-        v.literal("STRIPE")
+        v.literal("STRIPE"),
+        v.literal("FREE"),
+        v.literal("TEST")
       )
     ),
 
@@ -1206,6 +1208,10 @@ export default defineSchema({
     // Created by
     createdBy: v.id("users"), // Admin who created
 
+    // Vendor support (for multi-vendor marketplace)
+    vendorId: v.optional(v.id("vendors")), // Vendor who owns this product (null = platform product)
+    vendorName: v.optional(v.string()), // Cached vendor name for display
+
     // Timestamps
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -1213,7 +1219,8 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_category", ["category"])
     .index("by_sku", ["sku"])
-    .index("by_created_by", ["createdBy"]),
+    .index("by_created_by", ["createdBy"])
+    .index("by_vendor", ["vendorId"]),
 
   // Product Orders - Customer orders for products
   productOrders: defineTable({
@@ -1396,4 +1403,104 @@ export default defineSchema({
     .index("by_restaurant", ["restaurantId"])
     .index("by_customer", ["customerId"])
     .index("by_order_number", ["orderNumber"]),
+
+  // ==========================================
+  // VENDOR MARKETPLACE MODULE - Multi-Vendor Store System
+  // ==========================================
+
+  // Vendors - Independent sellers in the marketplace
+  vendors: defineTable({
+    ownerId: v.id("users"),
+    name: v.string(),
+    slug: v.string(),
+    description: v.optional(v.string()),
+    contactName: v.string(),
+    contactEmail: v.string(),
+    contactPhone: v.string(),
+    businessType: v.optional(v.string()), // "Individual", "LLC", "Corporation"
+    address: v.optional(v.string()),
+    city: v.string(),
+    state: v.string(),
+    zipCode: v.string(),
+    logoUrl: v.optional(v.string()),
+    bannerUrl: v.optional(v.string()),
+    categories: v.array(v.string()), // Product categories vendor sells
+    commissionPercent: v.number(), // Platform commission (default 15%)
+    website: v.optional(v.string()),
+    additionalNotes: v.optional(v.string()),
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("APPROVED"),
+      v.literal("SUSPENDED"),
+      v.literal("REJECTED")
+    ),
+    isActive: v.boolean(),
+    reviewedBy: v.optional(v.id("users")),
+    reviewedAt: v.optional(v.number()),
+    rejectionReason: v.optional(v.string()),
+    // Stats (updated when orders placed)
+    totalProducts: v.optional(v.number()),
+    totalSales: v.optional(v.number()),
+    totalEarnings: v.optional(v.number()),
+    totalPaidOut: v.optional(v.number()),
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_owner", ["ownerId"])
+    .index("by_slug", ["slug"])
+    .index("by_status", ["status"])
+    .index("by_active", ["isActive"]),
+
+  // Vendor Earnings - Track earnings from each order
+  vendorEarnings: defineTable({
+    vendorId: v.id("vendors"),
+    orderId: v.id("productOrders"),
+    orderNumber: v.string(),
+    orderDate: v.number(),
+    grossAmount: v.number(), // Total sale amount in cents
+    commissionRate: v.number(), // Commission % at time of sale
+    commissionAmount: v.number(), // Platform fee in cents
+    netAmount: v.number(), // Vendor earnings in cents
+    status: v.union(
+      v.literal("PENDING"), // Order placed, awaiting payment
+      v.literal("AVAILABLE"), // Payment confirmed, available for payout
+      v.literal("PROCESSING"), // Payout in progress
+      v.literal("PAID"), // Payout completed
+      v.literal("REFUNDED") // Order was refunded
+    ),
+    payoutId: v.optional(v.id("vendorPayouts")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_vendor", ["vendorId"])
+    .index("by_order", ["orderId"])
+    .index("by_status", ["status"])
+    .index("by_vendor_status", ["vendorId", "status"]),
+
+  // Vendor Payouts - Payout requests and history
+  vendorPayouts: defineTable({
+    vendorId: v.id("vendors"),
+    payoutNumber: v.string(), // e.g., "PAY-2025-0001"
+    totalAmount: v.number(), // Total payout amount in cents
+    earningsCount: v.number(), // Number of earnings included
+    status: v.union(
+      v.literal("PENDING"), // Requested by vendor
+      v.literal("APPROVED"), // Approved by admin
+      v.literal("PROCESSING"), // Payment being processed
+      v.literal("COMPLETED"), // Payment sent
+      v.literal("FAILED") // Payment failed
+    ),
+    payoutMethod: v.string(), // "bank_transfer", "paypal", "check"
+    paymentReference: v.optional(v.string()), // Transaction ID or check number
+    paymentDate: v.optional(v.number()),
+    approvedBy: v.optional(v.id("users")),
+    approvedAt: v.optional(v.number()),
+    processedBy: v.optional(v.id("users")),
+    adminNotes: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_vendor", ["vendorId"])
+    .index("by_status", ["status"]),
 });

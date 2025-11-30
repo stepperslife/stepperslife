@@ -13,40 +13,47 @@ export const resetAllData = mutation({
     let totalDeleted = 0;
 
     // Define all tables in deletion order (child tables first, parent tables last)
+    // Using actual table names from schema.ts
     const tablesToReset = [
       // Child/Dependent tables first
       "tickets",
+      "ticketInstances",
+      "orderItems",
       "orders",
-      "seats",
+      "seatReservations",
       "seatingCharts",
-      "seatingTemplates",
-      "seatingShares",
       "roomTemplates",
-      "staffTickets",
+      "staffSales",
       "staffTicketTransfers",
+      "discountCodeUsage",
       "discountCodes",
-      "bundlePurchases",
-      "bundles",
+      "ticketBundles",
       "productOrders",
       "products",
-      "eventFlyers",
-      "qrScans",
+      "uploadedFlyers",
+      "eventContacts",
+      "ticketTiers",
+      "eventPaymentConfig",
+      "ticketTransfers",
+      "eventWaitlist",
       "creditTransactions",
       "organizerCredits",
-      "settlements",
-      "teams",
-      "crmContacts",
-      "eventTemplates",
-      "notificationPreferences",
-      "activityLogs",
+      "eventStaff",
 
       // Parent tables last
       "events",
       "users",
 
-      // Configuration tables
-      "featureFlags",
-      "systemConfigurations",
+      // Restaurant module tables
+      "menuItems",
+      "menuCategories",
+      "foodOrders",
+      "restaurants",
+
+      // Vendor module tables
+      "vendorEarnings",
+      "vendorPayouts",
+      "vendors",
     ];
 
     for (const tableName of tablesToReset) {
@@ -82,35 +89,40 @@ export const resetAllData = mutation({
 export const verifySystemEmpty = mutation({
   args: {},
   handler: async (ctx) => {
+    // Using actual table names from schema.ts
     const tables = [
       "users",
       "events",
       "tickets",
+      "ticketInstances",
       "orders",
-      "seats",
+      "orderItems",
+      "seatReservations",
       "seatingCharts",
-      "seatingTemplates",
-      "seatingShares",
       "roomTemplates",
-      "staffTickets",
+      "staffSales",
       "staffTicketTransfers",
       "discountCodes",
-      "bundlePurchases",
-      "bundles",
+      "discountCodeUsage",
+      "ticketBundles",
       "productOrders",
       "products",
-      "eventFlyers",
-      "qrScans",
+      "uploadedFlyers",
+      "eventContacts",
+      "ticketTiers",
+      "eventPaymentConfig",
+      "ticketTransfers",
+      "eventWaitlist",
       "creditTransactions",
       "organizerCredits",
-      "settlements",
-      "teams",
-      "crmContacts",
-      "eventTemplates",
-      "notificationPreferences",
-      "activityLogs",
-      "featureFlags",
-      "systemConfigurations",
+      "eventStaff",
+      "menuItems",
+      "menuCategories",
+      "foodOrders",
+      "restaurants",
+      "vendorEarnings",
+      "vendorPayouts",
+      "vendors",
     ];
 
     const results: Record<string, number> = {};

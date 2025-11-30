@@ -14,6 +14,8 @@ import {
   CreditCard,
   Plus,
   Minus,
+  Store,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -286,6 +288,31 @@ export default function ProductDetailPage() {
                   </span>
                 )}
                 <h1 className="text-3xl font-bold text-foreground mb-2">{product.name}</h1>
+
+                {/* Vendor Badge */}
+                {product.vendor ? (
+                  <Link
+                    href={`/marketplace/vendors/${product.vendor.slug}`}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors mb-3"
+                  >
+                    {product.vendor.logo ? (
+                      <img
+                        src={product.vendor.logo}
+                        alt={product.vendor.storeName}
+                        className="w-5 h-5 rounded-full object-cover"
+                      />
+                    ) : (
+                      <Store className="w-4 h-4" />
+                    )}
+                    <span className="text-sm font-medium">Sold by {product.vendor.storeName}</span>
+                  </Link>
+                ) : (
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-lg text-primary mb-3">
+                    <Users className="w-4 h-4" />
+                    <span className="text-sm font-medium">SteppersLife Official</span>
+                  </div>
+                )}
+
                 {product.tags && product.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {product.tags.map((tag, index) => (

@@ -138,6 +138,10 @@ export default function CheckoutPage() {
     // Organizer already paid platform fee upfront - no additional fees for customer
     platformFee = 0;
     processingFee = 0;
+  } else if (subtotalAfterDiscount === 0) {
+    // Free tickets (price $0 or 100% discount) - no fees charged
+    platformFee = 0;
+    processingFee = 0;
   } else {
     // CREDIT_CARD - fees added to customer's purchase
     platformFee = Math.round((subtotalAfterDiscount * 3.7) / 100) + 179; // 3.7% + $1.79

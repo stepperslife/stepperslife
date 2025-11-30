@@ -1,7 +1,7 @@
 import { mutation } from "../_generated/server";
 import { v } from "convex/values";
 
-// Create a new product
+// Create a new product (admin only - platform products)
 export const createProduct = mutation({
   args: {
     name: v.string(),
@@ -53,6 +53,144 @@ export const createProduct = mutation({
     });
 
     return productId;
+  },
+});
+
+// Create a vendor product
+export const createVendorProduct = mutation({
+  args: {
+    vendorId: v.id("vendors"),
+    name: v.string(),
+    description: v.string(),
+    price: v.number(),
+    compareAtPrice: v.optional(v.number()),
+    sku: v.optional(v.string()),
+    inventoryQuantity: v.number(),
+    trackInventory: v.boolean(),
+    allowBackorder: v.optional(v.boolean()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    images: v.optional(v.array(v.string())),
+    primaryImage: v.optional(v.string()),
+    hasVariants: v.boolean(),
+    requiresShipping: v.boolean(),
+    weight: v.optional(v.number()),
+    shippingPrice: v.optional(v.number()),
+    status: v.union(v.literal("ACTIVE"), v.literal("DRAFT"), v.literal("ARCHIVED")),
+  },
+  handler: async (ctx, args) => {
+    const { vendorId, ...productArgs } = args;
+
+    // Get vendor
+    const vendor = await ctx.db.get(vendorId);
+    if (!vendor) {
+      throw new Error("Vendor not found");
+    }
+
+    // Check vendor is approved and active
+    if (vendor.status !== "APPROVED" || !vendor.isActive) {
+      throw new Error("Vendor account is not active");
+    }
+
+    // Create product with vendor info
+    const productId = await ctx.db.insert("products", {
+      ...productArgs,
+      vendorId: vendor._id,
+      vendorName: vendor.name,
+      createdBy: vendor.ownerId,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    // Update vendor product count
+    await ctx.db.patch(vendorId, {
+      totalProducts: (vendor.totalProducts || 0) + 1,
+      updatedAt: Date.now(),
+    });
+
+    return productId;
+  },
+});
+
+// Update a vendor product (vendor can only edit their own products)
+export const updateVendorProduct = mutation({
+  args: {
+    productId: v.id("products"),
+    vendorId: v.id("vendors"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+    price: v.optional(v.number()),
+    compareAtPrice: v.optional(v.number()),
+    sku: v.optional(v.string()),
+    inventoryQuantity: v.optional(v.number()),
+    trackInventory: v.optional(v.boolean()),
+    allowBackorder: v.optional(v.boolean()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    images: v.optional(v.array(v.string())),
+    primaryImage: v.optional(v.string()),
+    hasVariants: v.optional(v.boolean()),
+    requiresShipping: v.optional(v.boolean()),
+    weight: v.optional(v.number()),
+    shippingPrice: v.optional(v.number()),
+    status: v.optional(v.union(v.literal("ACTIVE"), v.literal("DRAFT"), v.literal("ARCHIVED"))),
+  },
+  handler: async (ctx, args) => {
+    const { productId, vendorId, ...updates } = args;
+
+    // Get product
+    const product = await ctx.db.get(productId);
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    // Verify product belongs to this vendor
+    if (product.vendorId?.toString() !== vendorId.toString()) {
+      throw new Error("You can only edit your own products");
+    }
+
+    // Update product
+    await ctx.db.patch(productId, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+
+    return productId;
+  },
+});
+
+// Delete a vendor product
+export const deleteVendorProduct = mutation({
+  args: {
+    productId: v.id("products"),
+    vendorId: v.id("vendors"),
+  },
+  handler: async (ctx, args) => {
+    // Get product
+    const product = await ctx.db.get(args.productId);
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    // Verify product belongs to this vendor
+    if (product.vendorId?.toString() !== args.vendorId.toString()) {
+      throw new Error("You can only delete your own products");
+    }
+
+    // Get vendor to update count
+    const vendor = await ctx.db.get(args.vendorId);
+
+    await ctx.db.delete(args.productId);
+
+    // Update vendor product count
+    if (vendor) {
+      await ctx.db.patch(args.vendorId, {
+        totalProducts: Math.max(0, (vendor.totalProducts || 0) - 1),
+        updatedAt: Date.now(),
+      });
+    }
+
+    return { success: true };
   },
 });
 
