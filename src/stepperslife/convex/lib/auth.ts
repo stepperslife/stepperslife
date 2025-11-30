@@ -2,6 +2,18 @@ import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 
 /**
+ * Check if testing mode is enabled (only in development deployments)
+ * Production deployment: expert-vulture-775
+ * Development deployment: fearless-dragon-613
+ */
+export const isTestingModeAllowed = (): boolean => {
+  const convexUrl = process.env.CONVEX_CLOUD_URL || "";
+  // Only allow testing mode on development deployments, NOT production
+  const isProduction = convexUrl.includes("expert-vulture-775");
+  return !isProduction;
+};
+
+/**
  * Get the current authenticated user from the context.
  * Throws an error if user is not authenticated or not found in database.
  */
@@ -9,18 +21,21 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
   const identity = await ctx.auth.getUserIdentity();
 
   if (!identity) {
-    // TESTING MODE: Fall back to test user when not authenticated
-    console.warn("[getCurrentUser] TESTING MODE - Using test user (no identity)");
-    const testUser = await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
-      .first();
+    // TESTING MODE: Only allow in non-production environments
+    if (isTestingModeAllowed()) {
+      console.warn("[getCurrentUser] TESTING MODE - Using test user (no identity)");
+      const testUser = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .first();
 
-    if (!testUser) {
-      throw new Error("Not authenticated and test user not found in database");
+      if (testUser) {
+        return testUser;
+      }
     }
 
-    return testUser;
+    // In production or if test user not found, require authentication
+    throw new Error("Not authenticated");
   }
 
   // Extract email from identity

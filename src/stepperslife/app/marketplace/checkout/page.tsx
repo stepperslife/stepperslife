@@ -1,192 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { useCart } from "@/contexts/CartContext";
-import { ArrowLeft, CheckCircle2, Loader2, Package, MapPin, Truck } from "lucide-react";
+import { ArrowLeft, Construction, Package, Mail, Phone, ShoppingBag, Info } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import Script from "next/script";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
-import toast from "react-hot-toast";
-
-declare global {
-  interface Window {
-    Square?: any;
-  }
-}
 
 export default function CheckoutPage() {
-  const router = useRouter();
-  const { items, getSubtotal, clearCart } = useCart();
+  const { items, getSubtotal } = useCart();
 
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [orderComplete, setOrderComplete] = useState(false);
-  const [orderNumber, setOrderNumber] = useState("");
-  const [squareLoaded, setSquareLoaded] = useState(false);
-  const [card, setCard] = useState<any>(null);
-
-  const [shippingMethod, setShippingMethod] = useState<"PICKUP" | "DELIVERY">("PICKUP");
-  const [shippingCost, setShippingCost] = useState(0);
-
-  const [formData, setFormData] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    phone: "",
-    // Pickup location
-    pickupLocation: "chicago-downtown",
-    // Delivery address
-    address1: "",
-    address2: "",
-    city: "Chicago",
-    state: "IL",
-    zipCode: "",
-    country: "USA",
-  });
-
-  const createProductOrder = useMutation(api.productOrders.mutations.createProductOrder);
-
-  // Calculate shipping cost when method changes or items change
-  useEffect(() => {
-    if (shippingMethod === "DELIVERY" && items.length > 0) {
-      // Note: We'll fetch shipping prices from products when available
-      // For now, show placeholder
-      setShippingCost(1000); // $10.00 placeholder
-    } else {
-      setShippingCost(0);
-    }
-  }, [shippingMethod, items]);
-
-  // Square Web Payments SDK
-  useEffect(() => {
-    if (squareLoaded && window.Square) {
-      initializeSquare();
-    }
-  }, [squareLoaded]);
-
-  const initializeSquare = async () => {
-    if (!window.Square) {
-      console.error("Square.js failed to load");
-      return;
-    }
-
-    try {
-      const appId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID;
-      const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID;
-
-
-      if (!appId || !locationId) {
-        console.error("Missing Square credentials");
-        return;
-      }
-
-      const payments = window.Square.payments(appId, locationId);
-
-      const cardInstance = await payments.card();
-      await cardInstance.attach("#card-container");
-      setCard(cardInstance);
-    } catch (e) {
-      console.error("Failed to initialize Square payment form:", e);
-      // Show user-friendly error
-      toast.error("Payment form initialization failed. Please contact support.");
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (items.length === 0) {
-      toast.error("Your cart is empty");
-      return;
-    }
-
-    // Validate form
-    const requiredFields = ["email", "firstName", "lastName", "phone"];
-    if (shippingMethod === "DELIVERY") {
-      requiredFields.push("address1", "city", "state", "zipCode");
-    }
-
-    const missingFields = requiredFields.filter(
-      (field) => !formData[field as keyof typeof formData]
-    );
-
-    if (missingFields.length > 0) {
-      toast.error(`Please fill in all required fields: ${missingFields.join(", ")}`);
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      let paymentToken = null;
-
-      // Get payment token from Square
-      if (card) {
-        const result = await card.tokenize();
-        if (result.status === "OK") {
-          paymentToken = result.token;
-        } else {
-          throw new Error(result.errors?.[0]?.message || "Payment tokenization failed");
-        }
-      }
-
-      // Create order
-      const result = await createProductOrder({
-        items: items.map((item) => ({
-          productId: item.productId,
-          productName: item.productName,
-          variantId: item.variantId,
-          variantName: item.variantName,
-          quantity: item.quantity,
-          price: item.productPrice,
-        })),
-        customerEmail: formData.email,
-        customerName: `${formData.firstName} ${formData.lastName}`,
-        customerPhone: formData.phone,
-        shippingMethod,
-        shippingAddress: {
-          name: `${formData.firstName} ${formData.lastName}`,
-          address1: shippingMethod === "DELIVERY" ? formData.address1 : formData.pickupLocation,
-          address2: formData.address2,
-          city: formData.city,
-          state: formData.state,
-          zipCode: formData.zipCode,
-          country: formData.country,
-          phone: formData.phone,
-        },
-        pickupLocation: shippingMethod === "PICKUP" ? formData.pickupLocation : undefined,
-      });
-
-      setOrderNumber(result.orderNumber);
-
-      // Clear cart
-      clearCart();
-
-      // Show success
-      setOrderComplete(true);
-    } catch (error) {
-      console.error("Order creation error:", error);
-      toast.error(
-        `Failed to create order: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  if (items.length === 0 && !orderComplete) {
+  if (items.length === 0) {
     return (
       <>
         <PublicHeader />
@@ -213,88 +38,8 @@ export default function CheckoutPage() {
     );
   }
 
-  if (orderComplete) {
-    return (
-      <>
-        <PublicHeader />
-        <MarketplaceSubNav />
-        <div className="min-h-screen bg-background flex items-center justify-center p-4">
-          <div className="bg-card rounded-xl shadow-lg p-8 max-w-md w-full text-center">
-            <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="w-10 h-10 text-success" />
-            </div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">Order Placed Successfully!</h2>
-            <p className="text-muted-foreground mb-4">
-              Thank you for your order. We'll send you an email confirmation shortly
-              {shippingMethod === "PICKUP" ? " with pickup details" : ""}.
-            </p>
-            <div className="bg-background rounded-lg p-4 mb-6">
-              <p className="text-sm text-muted-foreground mb-1">Order Number</p>
-              <p className="text-lg font-bold text-primary font-mono">{orderNumber}</p>
-            </div>
-            {shippingMethod === "PICKUP" ? (
-              <div className="bg-accent/50 border border-border rounded-lg p-4 mb-6">
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <div className="text-left">
-                    <h3 className="font-semibold text-foreground mb-1">Pickup Location</h3>
-                    <p className="text-sm text-primary">
-                      {formData.pickupLocation
-                        .split("-")
-                        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                        .join(" ")}{" "}
-                      - Details will be sent via email
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-success/10 border border-success rounded-lg p-4 mb-6">
-                <div className="flex items-start gap-3">
-                  <Truck className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                  <div className="text-left">
-                    <h3 className="font-semibold text-foreground mb-1">Delivery Address</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {formData.address1}, {formData.city}, {formData.state} {formData.zipCode}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className="space-y-3">
-              <Link
-                href="/marketplace"
-                className="block w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Continue Shopping
-              </Link>
-              <Link
-                href="/"
-                className="block w-full px-6 py-3 border border-input text-foreground rounded-lg hover:bg-background dark:hover:bg-card transition-colors"
-              >
-                Back to Home
-              </Link>
-            </div>
-          </div>
-        </div>
-        <PublicFooter />
-      </>
-    );
-  }
-
   return (
     <>
-      {/* Load Square Web Payments SDK */}
-      <Script
-        src={
-          process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT === "production"
-            ? "https://web.squarecdn.com/v1/square.js"
-            : "https://sandbox.web.squarecdn.com/v1/square.js"
-        }
-        strategy="lazyOnload"
-        onLoad={() => setSquareLoaded(true)}
-      />
-
       <PublicHeader />
       <MarketplaceSubNav />
       <div className="min-h-screen bg-background">
@@ -312,261 +57,85 @@ export default function CheckoutPage() {
         </div>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h1 className="text-3xl font-bold text-foreground mb-8">Checkout</h1>
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            {/* Coming Soon Message */}
+            <div className="lg:col-span-3">
+              <div className="bg-card rounded-xl shadow-md p-8 text-center">
+                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Construction className="w-10 h-10 text-primary" />
+                </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Checkout Form */}
-            <div className="lg:col-span-2">
-              <form onSubmit={handleSubmit} className="bg-card rounded-xl shadow-md p-6 space-y-6">
+                <h1 className="text-3xl font-bold text-foreground mb-4">
+                  Online Checkout Coming Soon!
+                </h1>
+
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  We're working hard to bring you a seamless online shopping experience.
+                  In the meantime, you can contact our vendors directly to place your order.
+                </p>
+
                 {/* Contact Information */}
-                <div>
-                  <h2 className="text-xl font-bold text-foreground mb-4">Contact Information</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        First Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Last Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
-                  </div>
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
+                <div className="bg-accent/50 border border-border rounded-lg p-6 mb-6">
+                  <h2 className="font-semibold text-foreground mb-4 flex items-center justify-center gap-2">
+                    <Info className="w-5 h-5 text-primary" />
+                    How to Order
+                  </h2>
+                  <div className="space-y-3 text-left max-w-sm mx-auto">
+                    <p className="text-sm text-muted-foreground">
+                      1. Note down the products you want from your cart
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      2. Contact the vendor directly using their contact information on the product page
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      3. Arrange payment and delivery/pickup with the vendor
+                    </p>
                   </div>
                 </div>
 
-                {/* Shipping Method */}
-                <div className="border-t border-border pt-6">
-                  <h2 className="text-xl font-bold text-foreground mb-4">Shipping Method</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setShippingMethod("PICKUP")}
-                      className={`p-4 border-2 rounded-lg transition-all ${
-                        shippingMethod === "PICKUP"
-                          ? "border-primary bg-primary/10"
-                          : "border-input hover:border-border"
-                      }`}
-                    >
-                      <MapPin
-                        className={`w-8 h-8 mx-auto mb-2 ${shippingMethod === "PICKUP" ? "text-primary" : "text-muted-foreground"}`}
-                      />
-                      <p className="font-semibold">Pickup</p>
-                      <p className="text-sm text-muted-foreground">Free</p>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShippingMethod("DELIVERY")}
-                      className={`p-4 border-2 rounded-lg transition-all ${
-                        shippingMethod === "DELIVERY"
-                          ? "border-primary bg-primary/10"
-                          : "border-input hover:border-border"
-                      }`}
-                    >
-                      <Truck
-                        className={`w-8 h-8 mx-auto mb-2 ${shippingMethod === "DELIVERY" ? "text-primary" : "text-muted-foreground"}`}
-                      />
-                      <p className="font-semibold">Delivery</p>
-                      <p className="text-sm text-muted-foreground">Calculated by admin</p>
-                    </button>
-                  </div>
+                {/* Contact Options */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                  <a
+                    href="mailto:support@stepperslife.com?subject=Marketplace%20Order%20Inquiry"
+                    className="flex items-center justify-center gap-2 px-4 py-3 border border-input rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <Mail className="w-5 h-5 text-primary" />
+                    <span>Email Support</span>
+                  </a>
+                  <a
+                    href="tel:+1234567890"
+                    className="flex items-center justify-center gap-2 px-4 py-3 border border-input rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <Phone className="w-5 h-5 text-primary" />
+                    <span>Call Us</span>
+                  </a>
                 </div>
 
-                {/* Pickup Location or Delivery Address */}
-                {shippingMethod === "PICKUP" ? (
-                  <div className="border-t border-border pt-6">
-                    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-primary" />
-                      Pickup Location
-                    </h2>
-                    <div className="bg-accent/50 border border-border rounded-lg p-4 mb-4">
-                      <p className="text-sm text-primary">
-                        All orders are available for pickup in Chicago. Select your preferred pickup
-                        location below.
-                      </p>
-                    </div>
-                    <select
-                      name="pickupLocation"
-                      value={formData.pickupLocation}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    >
-                      <option value="chicago-downtown">Chicago Downtown</option>
-                      <option value="chicago-north">Chicago North Side</option>
-                      <option value="chicago-south">Chicago South Side</option>
-                      <option value="chicago-west">Chicago West Side</option>
-                    </select>
-                  </div>
-                ) : (
-                  <div className="border-t border-border pt-6">
-                    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                      <Truck className="w-5 h-5 text-primary" />
-                      Delivery Address
-                    </h2>
-                    <div className="bg-warning/10 border border-warning rounded-lg p-4 mb-4">
-                      <p className="text-sm text-muted-foreground">
-                        Shipping cost will be calculated based on the products in your cart and
-                        confirmed after order placement.
-                      </p>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Street Address *
-                        </label>
-                        <input
-                          type="text"
-                          name="address1"
-                          value={formData.address1}
-                          onChange={handleInputChange}
-                          required={shippingMethod === "DELIVERY"}
-                          className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Apartment, Suite, etc. (Optional)
-                        </label>
-                        <input
-                          type="text"
-                          name="address2"
-                          value={formData.address2}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">
-                            City *
-                          </label>
-                          <input
-                            type="text"
-                            name="city"
-                            value={formData.city}
-                            onChange={handleInputChange}
-                            required={shippingMethod === "DELIVERY"}
-                            className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">
-                            State *
-                          </label>
-                          <input
-                            type="text"
-                            name="state"
-                            value={formData.state}
-                            onChange={handleInputChange}
-                            required={shippingMethod === "DELIVERY"}
-                            className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">
-                            ZIP Code *
-                          </label>
-                          <input
-                            type="text"
-                            name="zipCode"
-                            value={formData.zipCode}
-                            onChange={handleInputChange}
-                            required={shippingMethod === "DELIVERY"}
-                            className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Payment Information */}
-                <div className="border-t border-border pt-6">
-                  <h2 className="text-xl font-bold text-foreground mb-4">Payment Information</h2>
-                  <div id="card-container" className="min-h-[100px]"></div>
-                  {!squareLoaded && (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                      <span className="ml-2 text-muted-foreground">Loading payment form...</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isProcessing || !squareLoaded}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-lg font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                <Link
+                  href="/marketplace"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
                 >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>Place Order - ${((getSubtotal() + shippingCost) / 100).toFixed(2)}</>
-                  )}
-                </button>
-              </form>
+                  <ShoppingBag className="w-5 h-5" />
+                  Continue Shopping
+                </Link>
+              </div>
             </div>
 
-            {/* Order Summary */}
-            <div className="lg:col-span-1">
+            {/* Cart Summary */}
+            <div className="lg:col-span-2">
               <div className="bg-card rounded-xl shadow-md p-6 sticky top-4">
-                <h2 className="text-xl font-bold text-foreground mb-4">Order Summary</h2>
+                <h2 className="text-xl font-bold text-foreground mb-4">Your Cart</h2>
 
                 {/* Cart Items */}
-                <div className="space-y-4 mb-4 max-h-96 overflow-y-auto">
+                <div className="space-y-4 mb-4 max-h-80 overflow-y-auto">
                   {items.map((item) => (
                     <div
                       key={`${item.productId}-${item.variantId || "default"}`}
                       className="flex gap-3 pb-4 border-b border-border"
                     >
                       {item.productImage ? (
-                        <div className="relative w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="relative w-14 h-14 bg-muted rounded-lg overflow-hidden flex-shrink-0">
                           <Image
                             src={item.productImage}
                             alt={item.productName}
@@ -575,23 +144,27 @@ export default function CheckoutPage() {
                           />
                         </div>
                       ) : (
-                        <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Package className="w-6 h-6 text-muted-foreground" />
+                        <div className="w-14 h-14 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Package className="w-5 h-5 text-muted-foreground" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-foreground text-sm line-clamp-2">
+                        <h3 className="font-medium text-foreground text-sm line-clamp-1">
                           {item.productName}
                         </h3>
                         {item.variantName && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{item.variantName}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {item.variantName}
+                          </p>
                         )}
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Qty: {item.quantity} x ${(item.productPrice / 100).toFixed(2)}
-                        </p>
-                        <p className="text-sm font-semibold text-foreground mt-1">
-                          ${((item.productPrice * item.quantity) / 100).toFixed(2)}
-                        </p>
+                        <div className="flex justify-between items-center mt-1">
+                          <p className="text-xs text-muted-foreground">
+                            Qty: {item.quantity}
+                          </p>
+                          <p className="text-sm font-semibold text-foreground">
+                            ${((item.productPrice * item.quantity) / 100).toFixed(2)}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -599,29 +172,25 @@ export default function CheckoutPage() {
 
                 {/* Order Totals */}
                 <div className="space-y-2 pt-4 border-t border-border">
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Subtotal</span>
+                  <div className="flex justify-between text-muted-foreground text-sm">
+                    <span>Subtotal ({items.length} {items.length === 1 ? 'item' : 'items'})</span>
                     <span>${(getSubtotal() / 100).toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-muted-foreground">
+                  <div className="flex justify-between text-muted-foreground text-sm">
                     <span>Shipping</span>
-                    <span
-                      className={shippingMethod === "PICKUP" ? "text-success font-semibold" : ""}
-                    >
-                      {shippingMethod === "PICKUP" ? "FREE" : "TBD"}
-                    </span>
+                    <span>TBD</span>
                   </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Tax</span>
-                    <span>$0.00</span>
-                  </div>
-                  <div className="border-t border-border pt-2 flex justify-between text-lg font-bold text-foreground">
-                    <span>Total</span>
+                  <div className="border-t border-border pt-2 flex justify-between text-base font-bold text-foreground">
+                    <span>Estimated Total</span>
                     <span className="text-primary">
-                      ${((getSubtotal() + shippingCost) / 100).toFixed(2)}
+                      ${(getSubtotal() / 100).toFixed(2)}+
                     </span>
                   </div>
                 </div>
+
+                <p className="text-xs text-muted-foreground mt-4 text-center">
+                  Final price will be confirmed by the vendor
+                </p>
               </div>
             </div>
           </div>

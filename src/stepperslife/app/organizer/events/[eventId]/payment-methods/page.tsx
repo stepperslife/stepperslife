@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-type MerchantProcessor = "SQUARE" | "STRIPE" | "PAYPAL";
+type MerchantProcessor = "STRIPE" | "PAYPAL"; // Square temporarily disabled
 
 export default function PaymentMethodsPage() {
   const params = useParams();
@@ -29,13 +29,14 @@ export default function PaymentMethodsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   // Queries
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
   const event = useQuery(api.events.queries.getEventById, { eventId });
   const paymentConfig = useQuery(api.paymentConfig.queries.getEventPaymentConfig, { eventId });
 
   // Mutation
   const updatePaymentMethods = useMutation(api.paymentConfig.mutations.updatePaymentMethods);
 
-  const isLoading = event === undefined;
+  const isLoading = event === undefined || currentUser === undefined;
 
   // Initialize state from existing config
   useState(() => {
@@ -144,25 +145,7 @@ export default function PaymentMethodsPage() {
             Choose your preferred payment processor for handling credit card and Cash App payments
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Square */}
-            <button
-              onClick={() => setSelectedProcessor("SQUARE")}
-              className={`p-6 rounded-lg border-2 transition ${
-                selectedProcessor === "SQUARE"
-                  ? "border-primary bg-accent"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-2xl font-bold">Square</span>
-                {selectedProcessor === "SQUARE" && <Check className="w-6 h-6 text-primary" />}
-              </div>
-              <p className="text-sm text-gray-600">
-                Industry-leading payment processing with simple pricing
-              </p>
-            </button>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Stripe */}
             <button
               onClick={() => setSelectedProcessor("STRIPE")}

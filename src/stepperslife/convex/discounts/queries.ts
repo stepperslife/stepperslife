@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "../_generated/server";
+import { isTestingModeAllowed } from "../lib/auth";
 
 /**
  * Get all discount codes for an event (organizer only)
@@ -11,9 +12,8 @@ export const getEventDiscountCodes = query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
-    // TESTING MODE: Allow access without authentication
-    const TESTING_MODE = process.env.CONVEX_CLOUD_URL?.includes("fearless-dragon-613");
-    if (TESTING_MODE && !identity) {
+    // TESTING MODE: Only allow in non-production environments
+    if (isTestingModeAllowed() && !identity) {
       console.warn("[getEventDiscountCodes] TESTING MODE - No authentication required");
       const discountCodes = await ctx.db
         .query("discountCodes")
