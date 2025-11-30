@@ -199,8 +199,8 @@ export const getPublicEventDetails = query({
 
     // Get payment config to check if tickets are visible
     const paymentConfig = await ctx.db
-      .query("paymentConfigs")
-      .filter((q) => q.eq(q.field("eventId"), args.eventId))
+      .query("eventPaymentConfig")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
       .first();
 
     // Get tickets if visible
