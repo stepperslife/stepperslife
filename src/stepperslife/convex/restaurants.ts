@@ -5,10 +5,15 @@ import { query, mutation } from "./_generated/server";
 export const getAll = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
-      .query("restaurants")
-      .withIndex("by_active", (q) => q.eq("isActive", true))
-      .collect();
+    try {
+      // Use filter instead of index to avoid potential index issues
+      const allRestaurants = await ctx.db.query("restaurants").collect();
+      return allRestaurants.filter((r) => r.isActive === true);
+    } catch (error) {
+      console.error("Error fetching restaurants:", error);
+      // Return empty array if there's an error
+      return [];
+    }
   },
 });
 

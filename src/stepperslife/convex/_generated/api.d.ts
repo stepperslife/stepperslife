@@ -55,6 +55,7 @@ import type * as migrations from "../migrations.js";
 import type * as migrations_updatePaymentModels from "../migrations/updatePaymentModels.js";
 import type * as notifications_pushNotifications from "../notifications/pushNotifications.js";
 import type * as notifications_pushSubscriptions from "../notifications/pushSubscriptions.js";
+import type * as notifications_restaurantNotifications from "../notifications/restaurantNotifications.js";
 import type * as orders_cashPayments from "../orders/cashPayments.js";
 import type * as orders_cashPaymentsCron from "../orders/cashPaymentsCron.js";
 import type * as orders_mutations from "../orders/mutations.js";
@@ -181,6 +182,7 @@ declare const fullApi: ApiFromModules<{
   "migrations/updatePaymentModels": typeof migrations_updatePaymentModels;
   "notifications/pushNotifications": typeof notifications_pushNotifications;
   "notifications/pushSubscriptions": typeof notifications_pushSubscriptions;
+  "notifications/restaurantNotifications": typeof notifications_restaurantNotifications;
   "orders/cashPayments": typeof orders_cashPayments;
   "orders/cashPaymentsCron": typeof orders_cashPaymentsCron;
   "orders/mutations": typeof orders_mutations;
