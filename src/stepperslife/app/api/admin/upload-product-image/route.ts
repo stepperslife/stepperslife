@@ -1,25 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
 import sharp from "sharp";
 import crypto from "crypto";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
 
-// Get storage path at RUNTIME, not compile time
-function getStoragePath() {
-  // First check if explicitly set
-  if (process.env.PRODUCT_IMAGE_STORAGE_PATH) {
-    return process.env.PRODUCT_IMAGE_STORAGE_PATH;
-  }
-
-  // Then check NODE_ENV at runtime
-  if (process.env.NODE_ENV === "production") {
-    return "/root/websites/events-stepperslife/STEPFILES/product-images";
-  }
-
-  // Default to local development path
-  return path.join(process.cwd(), "STEPFILES", "product-images");
-}
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 // Calculate file hash for duplicate detection
 async function calculateFileHash(buffer: Buffer): Promise<string> {
@@ -28,7 +13,6 @@ async function calculateFileHash(buffer: Buffer): Promise<string> {
 
 export async function POST(request: NextRequest) {
   try {
-    const storagePath = getStoragePath();
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
@@ -53,12 +37,6 @@ export async function POST(request: NextRequest) {
 
     // Calculate file hash for unique naming
     const fileHash = await calculateFileHash(buffer);
-    const timestamp = Date.now();
-
-    // Ensure storage directory exists
-    if (!existsSync(storagePath)) {
-      await mkdir(storagePath, { recursive: true });
-    }
 
     // Optimize image with sharp
     const optimizedBuffer = await sharp(buffer)
@@ -73,10 +51,26 @@ export async function POST(request: NextRequest) {
       })
       .toBuffer();
 
-    // Save optimized image with hash and timestamp
-    const filename = `${fileHash}-${timestamp}.jpg`;
-    const filepath = path.join(storagePath, filename);
-    await writeFile(filepath, optimizedBuffer);
+    // Get upload URL from Convex
+    const uploadUrl = await convex.mutation(api.upload.generateUploadUrl);
+
+    // Upload to Convex storage
+    const uploadResponse = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "image/jpeg",
+      },
+      body: optimizedBuffer,
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`Convex upload failed: ${uploadResponse.statusText}`);
+    }
+
+    const { storageId } = await uploadResponse.json();
+
+    // Get the public URL for the uploaded file
+    const imageUrl = await convex.mutation(api.upload.getImageUrl, { storageId });
 
     // Calculate sizes for reporting
     const originalSize = buffer.length;
@@ -84,15 +78,11 @@ export async function POST(request: NextRequest) {
     const savedBytes = originalSize - optimizedSize;
     const savedPercent = ((savedBytes / originalSize) * 100).toFixed(1);
 
-
-    // Return relative URL (served via Next.js API route)
-    const publicUrl = `/api/product-images/${filename}`;
-
     return NextResponse.json({
       success: true,
-      filename,
+      storageId,
       hash: fileHash,
-      url: publicUrl,
+      url: imageUrl,
       originalSize,
       optimizedSize,
       savedBytes,

@@ -1,21 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
 import sharp from "sharp";
 import crypto from "crypto";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
 
-const FLYER_STORAGE_PATH = "/root/websites/events-stepperslife/STEPFILES/event-flyers";
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 // Calculate file hash for duplicate detection
 async function calculateFileHash(buffer: Buffer): Promise<string> {
   return crypto.createHash("sha256").update(buffer).digest("hex");
-}
-
-// Check if flyer already exists
-function checkDuplicateByHash(hash: string): boolean {
-  const hashFilePath = path.join(FLYER_STORAGE_PATH, `${hash}.jpg`);
-  return existsSync(hashFilePath);
 }
 
 export async function POST(request: NextRequest) {
@@ -31,33 +24,8 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Calculate file hash for duplicate detection
+    // Calculate file hash for identification
     const fileHash = await calculateFileHash(buffer);
-
-    // Check for duplicates
-    const isDuplicate = checkDuplicateByHash(fileHash);
-    const duplicateFilePath = path.join(FLYER_STORAGE_PATH, `${fileHash}.jpg`);
-
-    if (isDuplicate) {
-      console.warn(`⚠️ Duplicate detected! File already exists: ${duplicateFilePath}`);
-      return NextResponse.json(
-        {
-          error: "Duplicate flyer detected - this file has already been uploaded",
-          isDuplicate: true,
-          fileHash: fileHash,
-          existingFilePath: duplicateFilePath,
-          message:
-            "This exact flyer has already been uploaded. You can find and delete the existing flyer below if you want to re-upload it.",
-        },
-        { status: 409 }
-      );
-    }
-
-
-    // Ensure storage directory exists
-    if (!existsSync(FLYER_STORAGE_PATH)) {
-      await mkdir(FLYER_STORAGE_PATH, { recursive: true });
-    }
 
     // Optimize image with sharp
     const optimizedBuffer = await sharp(buffer)
@@ -72,10 +40,26 @@ export async function POST(request: NextRequest) {
       })
       .toBuffer();
 
-    // Save optimized image
-    const filename = `${fileHash}.jpg`;
-    const filepath = path.join(FLYER_STORAGE_PATH, filename);
-    await writeFile(filepath, optimizedBuffer);
+    // Get upload URL from Convex
+    const uploadUrl = await convex.mutation(api.upload.generateUploadUrl);
+
+    // Upload to Convex storage
+    const uploadResponse = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "image/jpeg",
+      },
+      body: optimizedBuffer,
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`Convex upload failed: ${uploadResponse.statusText}`);
+    }
+
+    const { storageId } = await uploadResponse.json();
+
+    // Get the public URL for the uploaded file
+    const imageUrl = await convex.mutation(api.upload.getImageUrl, { storageId });
 
     // Calculate sizes for reporting
     const originalSize = buffer.length;
@@ -85,13 +69,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      filename,
+      storageId,
       hash: fileHash,
       originalSize,
       optimizedSize,
       savedBytes,
       savedPercent: `${savedPercent}%`,
-      path: `/api/flyers/${filename}`,
+      url: imageUrl,
     });
   } catch (error) {
     console.error("Flyer upload error:", error);

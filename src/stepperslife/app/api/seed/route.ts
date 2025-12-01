@@ -4,13 +4,16 @@ import { api } from "@/convex/_generated/api";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
+// Seed secret from environment variable
+const SEED_SECRET = process.env.SEED_SECRET;
+
 export async function POST(request: Request) {
   try {
     // Check for a secret key to prevent unauthorized access
     const { searchParams } = new URL(request.url);
     const secret = searchParams.get("secret");
 
-    if (secret !== "stepperslife-seed-2025") {
+    if (!SEED_SECRET || secret !== SEED_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -36,7 +39,7 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const secret = searchParams.get("secret");
 
-    if (secret !== "stepperslife-seed-2025") {
+    if (!SEED_SECRET || secret !== SEED_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

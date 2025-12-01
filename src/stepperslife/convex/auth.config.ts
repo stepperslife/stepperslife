@@ -8,17 +8,35 @@
  * created by /app/api/auth/convex-token/route.ts
  */
 
+// Domain configuration based on environment
+const domains = [
+  // Production - Vercel
+  {
+    domain: "https://stepperslife.vercel.app",
+    applicationID: "convex",
+  },
+  // Production - Custom domain
+  {
+    domain: "https://stepperslife.com",
+    applicationID: "convex",
+  },
+  // Production - www subdomain
+  {
+    domain: "https://www.stepperslife.com",
+    applicationID: "convex",
+  },
+  // Production - Vercel preview URLs
+  {
+    domain: "https://stepperslife-stepperlifes-projects.vercel.app",
+    applicationID: "convex",
+  },
+  // Development
+  {
+    domain: "http://localhost:3004",
+    applicationID: "convex",
+  },
+];
+
 export default {
-  providers: [
-    {
-      // For localhost development
-      domain: "http://localhost:3004",
-      applicationID: "convex",
-    },
-    {
-      // For production
-      domain: "https://stepperslife.com/events",
-      applicationID: "convex",
-    },
-  ],
+  providers: domains,
 };

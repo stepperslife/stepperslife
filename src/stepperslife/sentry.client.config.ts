@@ -1,12 +1,12 @@
 import * as Sentry from "@sentry/nextjs";
 
-Sentry.init({
-  dsn: "https://aba7ae328b85a86cfffc763b430dc463@o4510231346216960.ingest.us.sentry.io/4510231347920896",
+const isProduction = process.env.NODE_ENV === "production";
 
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN || "https://aba7ae328b85a86cfffc763b430dc463@o4510231346216960.ingest.us.sentry.io/4510231347920896",
+
+  // Lower sampling rate in production to reduce costs and improve performance
+  tracesSampleRate: isProduction ? 0.1 : 1.0,
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
@@ -14,8 +14,8 @@ Sentry.init({
   // Capture 100% of errors with session replay
   replaysOnErrorSampleRate: 1.0,
 
-  // Capture 10% of normal sessions
-  replaysSessionSampleRate: 0.1,
+  // Capture 10% of normal sessions (lower in production)
+  replaysSessionSampleRate: isProduction ? 0.05 : 0.1,
 
   integrations: [
     Sentry.replayIntegration({
