@@ -2,7 +2,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone', // Required for Docker deployment
+  // Note: Removed 'output: standalone' - not needed for Vercel deployment
   typescript: {
     ignoreBuildErrors: true,
   },
