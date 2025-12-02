@@ -102,7 +102,7 @@ export function EventsGrid({ events }: EventsGridProps) {
               ? event.description.substring(0, 120) + "..."
               : event.description || "";
 
-            const imageUrl = event.imageUrl || "/images/event-placeholder.jpg";
+            const imageUrl = event.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80";
 
             return (
               <Link
