@@ -8,9 +8,37 @@ import { randomBytes } from "crypto";
 
 const GOOGLE_CLIENT_ID = process.env.AUTH_GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.AUTH_GOOGLE_CLIENT_SECRET!;
-const REDIRECT_URI = process.env.NEXTAUTH_URL
-  ? `${process.env.NEXTAUTH_URL}/api/auth/callback/google`
-  : "http://localhost:3000/api/auth/callback/google";
+
+/**
+ * Get the OAuth redirect URI based on environment
+ *
+ * Priority:
+ * 1. NEXTAUTH_URL environment variable (if set)
+ * 2. VERCEL_URL (automatically set by Vercel in production/preview)
+ * 3. Production domain (stepperslife.com) if NODE_ENV is production
+ * 4. localhost:3004 for local development
+ */
+function getRedirectUri(): string {
+  // Check NEXTAUTH_URL first (explicit configuration)
+  if (process.env.NEXTAUTH_URL) {
+    return `${process.env.NEXTAUTH_URL}/api/auth/callback/google`;
+  }
+
+  // Check VERCEL_URL (automatically set by Vercel)
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}/api/auth/callback/google`;
+  }
+
+  // Production fallback to main domain
+  if (process.env.NODE_ENV === "production") {
+    return "https://stepperslife.com/api/auth/callback/google";
+  }
+
+  // Local development fallback
+  return "http://localhost:3004/api/auth/callback/google";
+}
+
+const REDIRECT_URI = getRedirectUri();
 
 
 /**
