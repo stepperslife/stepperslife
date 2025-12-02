@@ -18,6 +18,7 @@ import {
   ChevronDown,
   ChefHat,
   Utensils,
+  BookOpen,
 } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -55,6 +56,7 @@ export function PublicHeader({
 
   const navigationLinks = [
     { href: "/events", label: "Events" },
+    { href: "/classes", label: "Classes" },
     { href: "/marketplace", label: "Marketplace" },
     { href: "/restaurants", label: "Restaurants" },
   ];
@@ -217,6 +219,15 @@ export function PublicHeader({
                           <Calendar className="w-4 h-4 text-muted-foreground" />
                           My Events
                         </Link>
+                        <Link
+                          href="/organizer/classes"
+                          onClick={() => setIsProfileOpen(false)}
+                          data-testid="menu-my-classes"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                        >
+                          <BookOpen className="w-4 h-4 text-muted-foreground" />
+                          My Classes
+                        </Link>
                         {(user?.role === "restaurateur" || user?.role === "admin") && (
                           <Link
                             href="/restaurateur/dashboard"
@@ -346,6 +357,14 @@ export function PublicHeader({
                   >
                     <Calendar className="w-4 h-4" />
                     My Events
+                  </Link>
+                  <Link
+                    href="/organizer/classes"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    My Classes
                   </Link>
                   {(user?.role === "restaurateur" || user?.role === "admin") && (
                     <Link

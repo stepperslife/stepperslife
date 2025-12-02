@@ -66,7 +66,8 @@ export default defineSchema({
         v.literal("SAVE_THE_DATE"),
         v.literal("FREE_EVENT"),
         v.literal("TICKETED_EVENT"),
-        v.literal("SEATED_EVENT")
+        v.literal("SEATED_EVENT"),
+        v.literal("CLASS")
       )
     ),
 

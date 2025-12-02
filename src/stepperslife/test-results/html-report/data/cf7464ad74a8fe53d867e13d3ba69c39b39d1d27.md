@@ -1,0 +1,50 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link "SteppersLife" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "SteppersLife" [ref=e8]
+      - navigation [ref=e9]:
+        - link "Events" [ref=e10] [cursor=pointer]:
+          - /url: /events
+        - link "Marketplace" [ref=e11] [cursor=pointer]:
+          - /url: /marketplace
+        - link "Restaurants" [ref=e12] [cursor=pointer]:
+          - /url: /restaurants
+      - generic [ref=e13]:
+        - button "Dark mode" [ref=e14]:
+          - img [ref=e15]
+        - link "Sign In" [ref=e17] [cursor=pointer]:
+          - /url: /login
+          - img [ref=e18]
+          - text: Sign In
+  - generic [ref=e23]:
+    - generic [ref=e24]:
+      - heading "Welcome Back" [level=1] [ref=e25]
+      - paragraph [ref=e26]: Sign in to your account
+    - generic [ref=e27]:
+      - button "Continue with Google" [ref=e28]:
+        - img [ref=e29]
+        - text: Continue with Google
+      - generic [ref=e38]: or
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41]: Email Address
+          - textbox "Email Address" [ref=e42]:
+            - /placeholder: you@example.com
+        - generic [ref=e43]:
+          - img [ref=e44]
+          - generic [ref=e47]: We'll send you a secure link to sign in instantly - no password needed!
+        - button "Send Magic Link" [ref=e48]
+      - button "Sign in with password" [ref=e50]:
+        - generic [ref=e51]: Sign in with password
+        - img [ref=e52]
+    - generic [ref=e54]:
+      - generic [ref=e59]: Don't have an account?
+      - link "Create Account" [ref=e61] [cursor=pointer]:
+        - /url: /register
+```

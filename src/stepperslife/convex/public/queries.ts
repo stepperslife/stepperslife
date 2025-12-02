@@ -22,6 +22,9 @@ export const getPublishedEvents = query({
 
     let events = await eventsQuery.collect();
 
+    // Filter out CLASS events - classes have their own dedicated queries
+    events = events.filter((e) => e.eventType !== "CLASS");
+
     // Filter out past events by default (unless includePast is true)
     if (!args.includePast) {
       events = events.filter((e) => {
@@ -512,5 +515,160 @@ export const getActiveRestaurants = query({
   handler: async (ctx) => {
     const allRestaurants = await ctx.db.query("restaurants").collect();
     return allRestaurants.filter((r) => r.isActive === true);
+  },
+});
+
+// =============================================================================
+// CLASSES QUERIES - Public queries for class listings
+// =============================================================================
+
+/**
+ * Get all published classes (eventType: CLASS)
+ */
+export const getPublishedClasses = query({
+  args: {
+    limit: v.optional(v.number()),
+    category: v.optional(v.string()),
+    searchTerm: v.optional(v.string()),
+    includePast: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    // Get all published events with eventType CLASS
+    const eventsQuery = ctx.db
+      .query("events")
+      .withIndex("by_status", (q) => q.eq("status", "PUBLISHED"))
+      .order("desc");
+
+    let classes = await eventsQuery.collect();
+
+    // Filter to only CLASS type events
+    classes = classes.filter((e) => e.eventType === "CLASS");
+
+    // Filter out past classes by default (unless includePast is true)
+    if (!args.includePast) {
+      classes = classes.filter((e) => {
+        const classDate = e.endDate || e.startDate;
+        return classDate && classDate >= now;
+      });
+    }
+
+    // Filter by category if specified
+    if (args.category) {
+      classes = classes.filter((e) => e.categories?.includes(args.category!));
+    }
+
+    // Filter by search term if specified
+    if (args.searchTerm) {
+      const searchLower = args.searchTerm.toLowerCase();
+      classes = classes.filter(
+        (e) =>
+          e.name.toLowerCase().includes(searchLower) ||
+          e.description.toLowerCase().includes(searchLower) ||
+          (e.location &&
+            typeof e.location === "object" &&
+            e.location.city &&
+            e.location.city.toLowerCase().includes(searchLower))
+      );
+    }
+
+    // Sort by date in chronological order (oldest to newest)
+    classes.sort((a, b) => {
+      const aDate = a.startDate || 0;
+      const bDate = b.startDate || 0;
+      return aDate - bDate;
+    });
+
+    // Limit results
+    if (args.limit) {
+      classes = classes.slice(0, args.limit);
+    }
+
+    // Convert storage IDs to URLs for images
+    const classesWithImageUrls = await Promise.all(
+      classes.map(async (classItem) => {
+        let imageUrl = classItem.imageUrl;
+
+        if (!imageUrl && classItem.images && classItem.images.length > 0) {
+          const url = await ctx.storage.getUrl(classItem.images[0]);
+          imageUrl = url ?? undefined;
+        }
+
+        return {
+          ...classItem,
+          imageUrl,
+        };
+      })
+    );
+
+    return classesWithImageUrls;
+  },
+});
+
+/**
+ * Get class categories with counts
+ */
+export const getClassCategories = query({
+  args: {},
+  handler: async (ctx) => {
+    const classes = await ctx.db
+      .query("events")
+      .withIndex("by_status", (q) => q.eq("status", "PUBLISHED"))
+      .collect();
+
+    // Filter to only CLASS type
+    const classEvents = classes.filter((e) => e.eventType === "CLASS");
+
+    // Count classes per category
+    const categoryCounts = new Map<string, number>();
+
+    classEvents.forEach((classItem) => {
+      classItem.categories?.forEach((category) => {
+        categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1);
+      });
+    });
+
+    // Convert to array and sort by count
+    const categories = Array.from(categoryCounts.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+
+    return categories;
+  },
+});
+
+/**
+ * Get public class details by ID
+ */
+export const getPublicClassDetails = query({
+  args: {
+    classId: v.id("events"),
+  },
+  handler: async (ctx, args) => {
+    const classItem = await ctx.db.get(args.classId);
+
+    if (!classItem || classItem.status !== "PUBLISHED" || classItem.eventType !== "CLASS") {
+      return null;
+    }
+
+    // Get organizer info
+    const organizer = classItem.organizerId ? await ctx.db.get(classItem.organizerId) : null;
+
+    // Convert storage IDs to URLs for images
+    let imageUrl = classItem.imageUrl;
+    if (!imageUrl && classItem.images && classItem.images.length > 0) {
+      const url = await ctx.storage.getUrl(classItem.images[0]);
+      imageUrl = url ?? undefined;
+    }
+
+    return {
+      ...classItem,
+      imageUrl,
+      organizer: {
+        name: organizer?.name,
+        email: organizer?.email,
+      },
+    };
   },
 });

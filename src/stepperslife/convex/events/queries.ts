@@ -394,3 +394,75 @@ export const searchClaimableEvents = query({
     return eventsWithImageUrls;
   },
 });
+
+// =============================================================================
+// CLASSES QUERIES - Organizer queries for class management
+// =============================================================================
+
+/**
+ * Get organizer's classes (events with eventType: CLASS)
+ *
+ * SECURITY: Filters classes by user ownership.
+ * - Admins see all classes
+ * - Organizers see only their own classes
+ * - Returns empty array if user not found
+ */
+export const getOrganizerClasses = query({
+  args: {
+    userId: v.optional(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    // Return empty array if no userId provided
+    if (!args.userId) {
+      return [];
+    }
+
+    // Get user from database
+    const user = await ctx.db.get(args.userId);
+
+    if (!user) {
+      console.error("[getOrganizerClasses] User not found:", args.userId);
+      return [];
+    }
+
+    // Admins see all classes, organizers see only their classes
+    let classes;
+    if (user.role === "admin") {
+      const allEvents = await ctx.db.query("events").order("desc").collect();
+      classes = allEvents.filter((e) => e.eventType === "CLASS");
+    } else {
+      // Filter events by organizerId for non-admin users
+      const userEvents = await ctx.db
+        .query("events")
+        .withIndex("by_organizer", (q) => q.eq("organizerId", user._id))
+        .order("desc")
+        .collect();
+      classes = userEvents.filter((e) => e.eventType === "CLASS");
+    }
+
+    // Convert storage IDs to URLs for images
+    const classesWithImageUrls = await Promise.all(
+      classes.map(async (classItem) => {
+        let imageUrl = classItem.imageUrl;
+
+        if (classItem.images && classItem.images.length > 0) {
+          try {
+            const url = await ctx.storage.getUrl(classItem.images[0]);
+            if (url) {
+              imageUrl = url;
+            }
+          } catch (error) {
+            console.error("[getOrganizerClasses] Error getting image URL:", error);
+          }
+        }
+
+        return {
+          ...classItem,
+          imageUrl,
+        };
+      })
+    );
+
+    return classesWithImageUrls;
+  },
+});

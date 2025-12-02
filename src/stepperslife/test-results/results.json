@@ -1,0 +1,928 @@
+{
+  "config": {
+    "configFile": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/playwright.config.ts",
+    "rootDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "test-results/html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*\\.setup\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "cleanup",
+        "name": "cleanup",
+        "testDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/global\\.teardown\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-auth",
+        "name": "chromium-auth",
+        "testDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-chrome",
+        "name": "mobile-chrome",
+        "testDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-safari",
+        "name": "mobile-safari",
+        "testDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "tablet",
+        "name": "tablet",
+        "testDir": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "production-oauth-debug.spec.ts",
+      "file": "production-oauth-debug.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Production Google OAuth Debug",
+          "file": "production-oauth-debug.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "1. Production login page loads",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 4263,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:27:23",
+                        "location": {
+                          "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                          "column": 23,
+                          "line": 27
+                        },
+                        "snippet": "  25 |\n  26 |     await page.screenshot({ path: \"test-results/prod-oauth-1-login.png\", fullPage: true });\n> 27 |     expect(isVisible).toBe(true);\n     |                       ^\n  28 |   });\n  29 |\n  30 |   test(\"2. Production OAuth redirect check\", async ({ page, context }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                            "column": 23,
+                            "line": 27
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  25 |\n  26 |     await page.screenshot({ path: \"test-results/prod-oauth-1-login.png\", fullPage: true });\n> 27 |     expect(isVisible).toBe(true);\n     |                       ^\n  28 |   });\n  29 |\n  30 |   test(\"2. Production OAuth redirect check\", async ({ page, context }) => {\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:27:23"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 Testing production login page...\n"
+                        },
+                        {
+                          "text": "Current URL: https://stepperslife.com/login\n"
+                        },
+                        {
+                          "text": "Google button visible: \u001b[33mfalse\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-02T15:02:59.409Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-9b550-Production-login-page-loads-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-9b550-Production-login-page-loads-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-9b550-Production-login-page-loads-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                        "column": 23,
+                        "line": 27
+                      }
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 3801,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:27:23",
+                        "location": {
+                          "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                          "column": 23,
+                          "line": 27
+                        },
+                        "snippet": "  25 |\n  26 |     await page.screenshot({ path: \"test-results/prod-oauth-1-login.png\", fullPage: true });\n> 27 |     expect(isVisible).toBe(true);\n     |                       ^\n  28 |   });\n  29 |\n  30 |   test(\"2. Production OAuth redirect check\", async ({ page, context }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                            "column": 23,
+                            "line": 27
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  25 |\n  26 |     await page.screenshot({ path: \"test-results/prod-oauth-1-login.png\", fullPage: true });\n> 27 |     expect(isVisible).toBe(true);\n     |                       ^\n  28 |   });\n  29 |\n  30 |   test(\"2. Production OAuth redirect check\", async ({ page, context }) => {\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:27:23"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 Testing production login page...\n"
+                        },
+                        {
+                          "text": "Current URL: https://stepperslife.com/login\n"
+                        },
+                        {
+                          "text": "Google button visible: \u001b[33mfalse\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2025-12-02T15:03:05.928Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-9b550-Production-login-page-loads-chromium-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-9b550-Production-login-page-loads-chromium-retry1/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-9b550-Production-login-page-loads-chromium-retry1/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-9b550-Production-login-page-loads-chromium-retry1/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                        "column": 23,
+                        "line": 27
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "05aa3e94cc4f6cb94641-cb6a28eb9d44b8c9ccd8",
+              "file": "production-oauth-debug.spec.ts",
+              "line": 12,
+              "column": 7
+            },
+            {
+              "title": "2. Production OAuth redirect check",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 18682,
+                      "error": {
+                        "message": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\u001b[2m    - waiting for\" https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-2143750828%3A1764687805925494&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\" navigation to finish...\u001b[22m\n\u001b[2m    - navigated to \"https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-2143750828%3A1764687805925494&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\"\u001b[22m\n",
+                        "stack": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\u001b[2m    - waiting for\" https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-2143750828%3A1764687805925494&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\" navigation to finish...\u001b[22m\n\u001b[2m    - navigated to \"https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-2143750828%3A1764687805925494&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\"\u001b[22m\n\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:56:24",
+                        "location": {
+                          "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                          "column": 24,
+                          "line": 56
+                        },
+                        "snippet": "  54 |\n  55 |     // Click Google button\n> 56 |     await googleButton.click();\n     |                        ^\n  57 |     await page.waitForTimeout(5000);\n  58 |\n  59 |     console.log(\"\\nFinal URL:\", page.url());"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                            "column": 24,
+                            "line": 56
+                          },
+                          "message": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\u001b[2m    - waiting for\" https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-2143750828%3A1764687805925494&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\" navigation to finish...\u001b[22m\n\u001b[2m    - navigated to \"https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-2143750828%3A1764687805925494&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\"\u001b[22m\n\n\n  54 |\n  55 |     // Click Google button\n> 56 |     await googleButton.click();\n     |                        ^\n  57 |     await page.waitForTimeout(5000);\n  58 |\n  59 |     console.log(\"\\nFinal URL:\", page.url());\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:56:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 Testing production OAuth redirect...\n"
+                        },
+                        {
+                          "text": "Request: https://stepperslife.com/api/auth/google?callbackUrl=%2F...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m307\u001b[39m https://stepperslife.com/api/auth/google?callbackUrl=%2F...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/o/oauth2/v2/auth?client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.com&redirect_uri=https%3A%...\n"
+                        },
+                        {
+                          "text": "Request: https://stepperslife.com/api/auth/google?callbackUrl=%2F...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m307\u001b[39m https://stepperslife.com/api/auth/google?callbackUrl=%2F...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/o/oauth2/v2/auth?client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.com&redirect_uri=https%3A%...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m302\u001b[39m https://accounts.google.com/o/oauth2/v2/auth?client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-2143750828%3A1764687805925494&access_type=offline&client_id=325543338490-brk0cmo...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m200\u001b[39m https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-2143750828%3A1764687805925494&...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.youtube.com/accounts/CheckConnection?pmpo=https%3A%2F%2Faccounts.google.com&v=760697405&timestamp=1764687806613...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/_/bscframe...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m200\u001b[39m https://accounts.google.com/_/bscframe...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m200\u001b[39m https://accounts.youtube.com/accounts/CheckConnection?pmpo=https%3A%2F%2Faccounts.google.com&v=76069...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/generate_204?1rJ_2w...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m204\u001b[39m https://accounts.google.com/generate_204?1rJ_2w...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-02T15:03:10.327Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-08a1e-uction-OAuth-redirect-check-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-08a1e-uction-OAuth-redirect-check-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-08a1e-uction-OAuth-redirect-check-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                        "column": 24,
+                        "line": 56
+                      }
+                    },
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 18658,
+                      "error": {
+                        "message": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\u001b[2m    - waiting for\" https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-1086879410%3A1764687818554440&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\" navigation to finish...\u001b[22m\n\u001b[2m    - navigated to \"https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-1086879410%3A1764687818554440&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\"\u001b[22m\n",
+                        "stack": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\u001b[2m    - waiting for\" https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-1086879410%3A1764687818554440&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\" navigation to finish...\u001b[22m\n\u001b[2m    - navigated to \"https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-1086879410%3A1764687818554440&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\"\u001b[22m\n\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:56:24",
+                        "location": {
+                          "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                          "column": 24,
+                          "line": 56
+                        },
+                        "snippet": "  54 |\n  55 |     // Click Google button\n> 56 |     await googleButton.click();\n     |                        ^\n  57 |     await page.waitForTimeout(5000);\n  58 |\n  59 |     console.log(\"\\nFinal URL:\", page.url());"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                            "column": 24,
+                            "line": 56
+                          },
+                          "message": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\u001b[2m    - waiting for\" https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-1086879410%3A1764687818554440&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\" navigation to finish...\u001b[22m\n\u001b[2m    - navigated to \"https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-1086879410%3A1764687818554440&access_type=offline&client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.…\"\u001b[22m\n\n\n  54 |\n  55 |     // Click Google button\n> 56 |     await googleButton.click();\n     |                        ^\n  57 |     await page.waitForTimeout(5000);\n  58 |\n  59 |     console.log(\"\\nFinal URL:\", page.url());\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:56:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 Testing production OAuth redirect...\n"
+                        },
+                        {
+                          "text": "Request: https://stepperslife.com/api/auth/google?callbackUrl=%2F...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m307\u001b[39m https://stepperslife.com/api/auth/google?callbackUrl=%2F...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/o/oauth2/v2/auth?client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv.apps.googleusercontent.com&redirect_uri=https%3A%...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m302\u001b[39m https://accounts.google.com/o/oauth2/v2/auth?client_id=325543338490-brk0cmodprdeto2sg19prjjlsc9dikrv...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-1086879410%3A1764687818554440&access_type=offline&client_id=325543338490-brk0cmo...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m200\u001b[39m https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-1086879410%3A1764687818554440&...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.youtube.com/accounts/CheckConnection?pmpo=https%3A%2F%2Faccounts.google.com&v=1630933493&timestamp=1764687819001...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/_/bscframe...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m200\u001b[39m https://accounts.youtube.com/accounts/CheckConnection?pmpo=https%3A%2F%2Faccounts.google.com&v=16309...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m200\u001b[39m https://accounts.google.com/_/bscframe...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/generate_204?C3nJvA...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m204\u001b[39m https://accounts.google.com/generate_204?C3nJvA...\n"
+                        },
+                        {
+                          "text": "Request: https://accounts.google.com/v3/signin/_/AccountsSignInUi/browserinfo?f.sid=1455104638530624544&bl=boq_identityfrontendauthuiserver_20251118.06_p0&hl=e...\n"
+                        },
+                        {
+                          "text": "Response: \u001b[33m200\u001b[39m https://accounts.google.com/v3/signin/_/AccountsSignInUi/browserinfo?f.sid=1455104638530624544&bl=bo...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2025-12-02T15:03:29.576Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-08a1e-uction-OAuth-redirect-check-chromium-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-08a1e-uction-OAuth-redirect-check-chromium-retry1/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-08a1e-uction-OAuth-redirect-check-chromium-retry1/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-08a1e-uction-OAuth-redirect-check-chromium-retry1/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                        "column": 24,
+                        "line": 56
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "05aa3e94cc4f6cb94641-75766676fb28ac8124de",
+              "file": "production-oauth-debug.spec.ts",
+              "line": 30,
+              "column": 7
+            },
+            {
+              "title": "3. Check what happens after Google sign-in",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 17905,
+                      "error": {
+                        "message": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n",
+                        "stack": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:123:24",
+                        "location": {
+                          "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                          "column": 24,
+                          "line": 123
+                        },
+                        "snippet": "  121 |     // Click Google and go to Google sign-in\n  122 |     const googleButton = page.locator('[data-testid=\"google-login-button\"]');\n> 123 |     await googleButton.click();\n      |                        ^\n  124 |\n  125 |     // Wait and capture where we end up\n  126 |     await page.waitForTimeout(10000);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                            "column": 24,
+                            "line": 123
+                          },
+                          "message": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\n\n  121 |     // Click Google and go to Google sign-in\n  122 |     const googleButton = page.locator('[data-testid=\"google-login-button\"]');\n> 123 |     await googleButton.click();\n      |                        ^\n  124 |\n  125 |     // Wait and capture where we end up\n  126 |     await page.waitForTimeout(10000);\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:123:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 Starting OAuth flow (will stop at Google sign-in)...\n"
+                        },
+                        {
+                          "text": "To complete this test, you need to manually sign in with Google\n"
+                        },
+                        {
+                          "text": "and then observe where it redirects\n\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login?_rsc=17yrj\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login?_rsc=17yrj\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m401\u001b[39m https://stepperslife.com/api/auth/me\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login?_rsc=m8m8p\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login?_rsc=4c4j4\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m401\u001b[39m https://stepperslife.com/api/auth/convex-token\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login?_rsc=4c4j4\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login?_rsc=m8m8p\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m401\u001b[39m https://stepperslife.com/api/auth/me\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m401\u001b[39m https://stepperslife.com/api/auth/convex-token\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login?_rsc=e7nnf\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login?_rsc=uuyak\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login?_rsc=uuyak\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login?_rsc=e7nnf\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-02T15:03:48.842Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-3335a-appens-after-Google-sign-in-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-3335a-appens-after-Google-sign-in-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-3335a-appens-after-Google-sign-in-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                        "column": 24,
+                        "line": 123
+                      }
+                    },
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 18061,
+                      "error": {
+                        "message": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n",
+                        "stack": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:123:24",
+                        "location": {
+                          "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                          "column": 24,
+                          "line": 123
+                        },
+                        "snippet": "  121 |     // Click Google and go to Google sign-in\n  122 |     const googleButton = page.locator('[data-testid=\"google-login-button\"]');\n> 123 |     await googleButton.click();\n      |                        ^\n  124 |\n  125 |     // Wait and capture where we end up\n  126 |     await page.waitForTimeout(10000);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                            "column": 24,
+                            "line": 123
+                          },
+                          "message": "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"google-login-button\"]')\u001b[22m\n\n\n  121 |     // Click Google and go to Google sign-in\n  122 |     const googleButton = page.locator('[data-testid=\"google-login-button\"]');\n> 123 |     await googleButton.click();\n      |                        ^\n  124 |\n  125 |     // Wait and capture where we end up\n  126 |     await page.waitForTimeout(10000);\n    at /Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts:123:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 Starting OAuth flow (will stop at Google sign-in)...\n"
+                        },
+                        {
+                          "text": "To complete this test, you need to manually sign in with Google\n"
+                        },
+                        {
+                          "text": "and then observe where it redirects\n\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login?_rsc=17yrj\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m401\u001b[39m https://stepperslife.com/api/auth/me\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login?_rsc=17yrj\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m401\u001b[39m https://stepperslife.com/api/auth/convex-token\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m401\u001b[39m https://stepperslife.com/api/auth/me\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login?_rsc=m8m8p\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login?_rsc=e7nnf\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m401\u001b[39m https://stepperslife.com/api/auth/convex-token\n"
+                        },
+                        {
+                          "text": "AUTH REQUEST: GET https://stepperslife.com/login?_rsc=uuyak\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login?_rsc=m8m8p\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login?_rsc=e7nnf\n"
+                        },
+                        {
+                          "text": "AUTH RESPONSE: \u001b[33m200\u001b[39m https://stepperslife.com/login?_rsc=uuyak\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2025-12-02T15:04:07.286Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-3335a-appens-after-Google-sign-in-chromium-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-3335a-appens-after-Google-sign-in-chromium-retry1/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-3335a-appens-after-Google-sign-in-chromium-retry1/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/test-results/artifacts/production-oauth-debug-Pro-3335a-appens-after-Google-sign-in-chromium-retry1/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/bobbygwatkins/.claude-worktrees/stepperslife/funny-benz/src/stepperslife/tests/production-oauth-debug.spec.ts",
+                        "column": 24,
+                        "line": 123
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "05aa3e94cc4f6cb94641-21815ada8118e432f7b0",
+              "file": "production-oauth-debug.spec.ts",
+              "line": 95,
+              "column": 7
+            },
+            {
+              "title": "4. Test callback URL directly with fake params",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3770,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 Testing callback URL handling...\n"
+                        },
+                        {
+                          "text": "Callback response URL: https://stepperslife.com/login?error=invalid_state\n"
+                        },
+                        {
+                          "text": "Page content: ((a,b,c,d,e,f,g,h)=>{let i=document.documentElement,j=[\"light\",\"dark\"];function k(b){var c;(Array.isArray(a)?a:[a]).forEach(a=>{let c=\"class\"===a,d=c&&f?e.map(a=>f[a]||a):e;c?(i.classList.remove(...d),i.classList.add(f&&f[b]?f[b]:b)):i.setAttribute(a,b)}),c=b,h&&j.includes(c)&&(i.style.colorScheme=c)}if(d)k(d);else try{let a=localStorage.getItem(b)||c,d=g&&\"system\"===a?window.matchMedia(\"(prefers-color-scheme: dark)\").matches?\"dark\":\"light\":a;k(d)}catch(a){}})(\"class\",\"theme\",\"light\",null,[\"ligh\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-02T15:04:25.913Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "05aa3e94cc4f6cb94641-5cf9dfe57d88ef413e70",
+              "file": "production-oauth-debug.spec.ts",
+              "line": 139,
+              "column": 7
+            },
+            {
+              "title": "5. Check /api/auth/me endpoint",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1513,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 Checking /api/auth/me...\n"
+                        },
+                        {
+                          "text": "/api/auth/me response: {\"error\":\"Not authenticated\"}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-02T15:04:29.895Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "05aa3e94cc4f6cb94641-ca53a1c990eb6530bc96",
+              "file": "production-oauth-debug.spec.ts",
+              "line": 156,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-12-02T15:02:59.164Z",
+    "duration": 92347.19,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

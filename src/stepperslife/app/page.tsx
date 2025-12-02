@@ -63,24 +63,24 @@ export default async function HomePage() {
         {/* Hero Section - Main Landing */}
         <HeroSection />
 
-        {/* Events Section - /events */}
+        {/* 1. Events Section - /events */}
         <Suspense fallback={<SectionSkeleton title="Upcoming Events" />}>
           <EventsGrid events={uniqueEvents} />
         </Suspense>
 
-        {/* Restaurants Section - /restaurants */}
-        <Suspense fallback={<SectionSkeleton title="Restaurants" />}>
-          <RestaurantsShowcase />
+        {/* 2. Classes Section - /classes */}
+        <Suspense fallback={<SectionSkeleton title="Classes" />}>
+          <ClassesSpotlight />
         </Suspense>
 
-        {/* Marketplace/Products Section - /marketplace */}
+        {/* 3. Marketplace/Products Section - /marketplace */}
         <Suspense fallback={<SectionSkeleton title="Marketplace" />}>
           <ProductsSection products={products} />
         </Suspense>
 
-        {/* Classes Section - /classes (coming soon) */}
-        <Suspense fallback={<SectionSkeleton title="Classes" />}>
-          <ClassesSpotlight />
+        {/* 4. Restaurants Section - /restaurants */}
+        <Suspense fallback={<SectionSkeleton title="Restaurants" />}>
+          <RestaurantsShowcase />
         </Suspense>
       </main>
       <PublicFooter />

@@ -15,7 +15,8 @@ export const createEvent = mutation({
       v.literal("TICKETED_EVENT"),
       v.literal("FREE_EVENT"),
       v.literal("SAVE_THE_DATE"),
-      v.literal("BALLROOM_EVENT")
+      v.literal("SEATED_EVENT"),
+      v.literal("CLASS")
     ),
     description: v.string(),
     categories: v.array(v.string()),
@@ -50,7 +51,7 @@ export const createEvent = mutation({
 
       // Check if user can create ticketed events
       if (
-        (args.eventType === "TICKETED_EVENT" || args.eventType === "BALLROOM_EVENT") &&
+        (args.eventType === "TICKETED_EVENT" || args.eventType === "SEATED_EVENT") &&
         user.canCreateTicketedEvents === false
       ) {
         throw new Error(
@@ -413,6 +414,10 @@ export const updateEvent = mutation({
     categories: v.optional(v.array(v.string())),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
+    timezone: v.optional(v.string()),
+    eventDateLiteral: v.optional(v.string()),
+    eventTimeLiteral: v.optional(v.string()),
+    eventTimezone: v.optional(v.string()),
     location: v.optional(
       v.object({
         venueName: v.optional(v.string()),
@@ -426,6 +431,14 @@ export const updateEvent = mutation({
     capacity: v.optional(v.number()),
     imageUrl: v.optional(v.string()),
     images: v.optional(v.array(v.id("_storage"))),
+    status: v.optional(
+      v.union(
+        v.literal("DRAFT"),
+        v.literal("PUBLISHED"),
+        v.literal("CANCELLED"),
+        v.literal("COMPLETED")
+      )
+    ),
   },
   handler: async (ctx, args) => {
     // Verify event ownership
@@ -504,6 +517,15 @@ export const updateEvent = mutation({
       }
       updates.capacity = args.capacity;
     }
+
+    // Handle timezone fields
+    if (args.timezone) updates.timezone = args.timezone;
+    if (args.eventDateLiteral) updates.eventDateLiteral = args.eventDateLiteral;
+    if (args.eventTimeLiteral) updates.eventTimeLiteral = args.eventTimeLiteral;
+    if (args.eventTimezone) updates.eventTimezone = args.eventTimezone;
+
+    // Handle status changes
+    if (args.status) updates.status = args.status;
 
     await ctx.db.patch(args.eventId, updates);
 
