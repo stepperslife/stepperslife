@@ -3,10 +3,12 @@
  *
  * GET /api/auth/callback/google
  * Handles OAuth callback from Google and creates/signs in user
+ *
+ * Uses stateless OAuth with encrypted state parameter - no cookies needed.
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { completeGoogleOAuth } from "@/lib/auth/google-oauth";
+import { completeGoogleOAuth, decryptOAuthState } from "@/lib/auth/google-oauth";
 import { api } from "@/convex/_generated/api";
 import { convexClient as convex } from "@/lib/auth/convex-client";
 import { createAndSetSession } from "@/lib/auth/session-manager";
@@ -16,7 +18,7 @@ export async function GET(request: NextRequest) {
   try {
     // Get OAuth code and state from query params
     const code = request.nextUrl.searchParams.get("code");
-    const state = request.nextUrl.searchParams.get("state");
+    const encryptedState = request.nextUrl.searchParams.get("state");
     const error = request.nextUrl.searchParams.get("error");
 
     console.log("[Google OAuth] Callback received");
@@ -32,26 +34,25 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate required params
-    if (!code || !state) {
-      console.error("[Google OAuth] Missing params - code:", !!code, "state:", !!state);
+    if (!code || !encryptedState) {
+      console.error("[Google OAuth] Missing params - code:", !!code, "state:", !!encryptedState);
       return NextResponse.redirect(new URL("/login?error=missing_params", request.url));
     }
 
-    // Verify state for CSRF protection
-    const storedState = request.cookies.get("oauth_state")?.value;
-    console.log("[Google OAuth] State comparison - received:", state?.substring(0, 10), "stored:", storedState?.substring(0, 10));
+    // Decrypt and verify the state parameter
+    // This replaces cookie-based state verification
+    const stateData = decryptOAuthState(encryptedState);
+    console.log("[Google OAuth] State decryption:", stateData ? "success" : "failed");
 
-    if (!storedState || storedState !== state) {
-      console.error("[Google OAuth] State mismatch - stored:", !!storedState, "match:", storedState === state);
-      // Log all cookies for debugging
-      const allCookies = request.cookies.getAll();
-      console.log("[Google OAuth] Available cookies:", allCookies.map(c => c.name).join(", "));
+    if (!stateData) {
+      console.error("[Google OAuth] Failed to decrypt state or state expired");
       return NextResponse.redirect(new URL("/login?error=invalid_state", request.url));
     }
 
-    // Get callback URL from cookie
-    const callbackUrl = request.cookies.get("oauth_callback_url")?.value || "/organizer/events";
+    // Get callback URL from decrypted state
+    const callbackUrl = stateData.callbackUrl || "/organizer/events";
     console.log("[Google OAuth] Callback URL:", callbackUrl);
+    console.log("[Google OAuth] State nonce:", stateData.nonce.substring(0, 10) + "...");
 
     // Exchange code for user info
     console.log("[Google OAuth] Exchanging code for user info...");
@@ -92,9 +93,7 @@ export async function GET(request: NextRequest) {
     );
     console.log("[Google OAuth] Session created successfully");
 
-    // Clear OAuth cookies
-    response.cookies.delete("oauth_state");
-    response.cookies.delete("oauth_callback_url");
+    // No cookies to clear - using stateless OAuth
 
     return response;
   } catch (error: any) {
