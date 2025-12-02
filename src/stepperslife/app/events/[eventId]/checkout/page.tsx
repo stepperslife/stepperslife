@@ -230,20 +230,32 @@ export default function CheckoutPage() {
   }, [selectedTierId, quantity]);
 
   const handleContinueToPayment = async () => {
+    console.log("[Checkout] handleContinueToPayment called", {
+      selectedTierId,
+      selectedBundleId,
+      buyerEmail,
+      buyerName,
+      purchaseType,
+      quantity,
+    });
+
     if ((!selectedTierId && !selectedBundleId) || !buyerEmail || !buyerName) {
-      toast.error("Please fill in all fields");
+      console.log("[Checkout] Validation failed - missing fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
     // Check if seating chart exists and seats are required (only for individual tickets)
     const requiresSeats =
-      purchaseType === "tier" && seatingChart && seatingChart.sections.length > 0;
+      purchaseType === "tier" && seatingChart && seatingChart.sections && seatingChart.sections.length > 0;
     if (requiresSeats && selectedSeats.length !== quantity) {
+      console.log("[Checkout] Seat selection required but not complete");
       toast.error(`Please select ${quantity} seat${quantity > 1 ? "s" : ""} before proceeding`);
       return;
     }
 
     try {
+      console.log("[Checkout] Creating order...");
       let newOrderId;
 
       if (purchaseType === "bundle" && selectedBundleId) {
@@ -315,10 +327,22 @@ export default function CheckoutPage() {
         setShowPayment(true);
       }
     } catch (error: any) {
-      console.error("Order creation error:", error);
+      console.error("[Checkout] Order creation error:", error);
       toast.error(error.message || "Failed to create order. Please try again.");
     }
   };
+
+  // Debug: Log state changes
+  useEffect(() => {
+    console.log("[Checkout] State updated:", {
+      selectedTierId,
+      selectedBundleId,
+      buyerEmail: buyerEmail ? "set" : "empty",
+      buyerName: buyerName ? "set" : "empty",
+      showPayment,
+      orderId,
+    });
+  }, [selectedTierId, selectedBundleId, buyerEmail, buyerName, showPayment, orderId]);
 
   const handlePaymentSuccess = async (result: Record<string, unknown>) => {
     if (!orderId) return;
