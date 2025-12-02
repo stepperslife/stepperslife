@@ -97,7 +97,7 @@ export default function LoginPage() {
       <PublicHeader showCreateButton={false} />
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+          <div data-testid="login-form-container" className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Welcome Back
@@ -107,13 +107,13 @@ export default function LoginPage() {
 
             {/* Error and Success Messages */}
             {error && (
-              <div className="mb-4 bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg text-sm">
+              <div data-testid="login-error-message" className="mb-4 bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg text-sm">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="mb-4 bg-success/10 border border-success text-success px-4 py-3 rounded-lg text-sm">
+              <div data-testid="login-success-message" className="mb-4 bg-success/10 border border-success text-success px-4 py-3 rounded-lg text-sm">
                 {success}
               </div>
             )}
@@ -125,6 +125,7 @@ export default function LoginPage() {
                   const callbackUrl = encodeURIComponent(redirectUrl);
                   window.location.href = `/api/auth/google?callbackUrl=${callbackUrl}`;
                 }}
+                data-testid="google-login-button"
                 className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-medium text-gray-900 dark:text-white shadow-sm"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -174,6 +175,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    data-testid="email-input"
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     placeholder="you@example.com"
                   />
@@ -188,6 +190,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={handleMagicLink}
                   disabled={isMagicLinkLoading}
+                  data-testid="magic-link-button"
                   className="w-full py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isMagicLinkLoading ? "Sending link..." : "Send Magic Link"}
@@ -199,6 +202,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowTraditionalLogin(!showTraditionalLogin)}
+                  data-testid="password-login-toggle"
                   className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                 >
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -212,7 +216,7 @@ export default function LoginPage() {
                 </button>
 
                 {showTraditionalLogin && (
-                  <form onSubmit={handleSubmit} className="p-4 space-y-4 bg-white dark:bg-gray-800">
+                  <form onSubmit={handleSubmit} data-testid="password-login-form" className="p-4 space-y-4 bg-white dark:bg-gray-800">
                     <div>
                       <label
                         htmlFor="email"
@@ -226,6 +230,7 @@ export default function LoginPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        data-testid="password-email-input"
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                         placeholder="you@example.com"
                       />
@@ -245,12 +250,14 @@ export default function LoginPage() {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
+                          data-testid="password-input"
                           className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                           placeholder="Enter your password"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
+                          data-testid="toggle-password-visibility"
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
                           aria-label={showPassword ? "Hide password" : "Show password"}
                         >
@@ -266,6 +273,7 @@ export default function LoginPage() {
                     <div className="flex items-center justify-between">
                       <Link
                         href="/forgot-password"
+                        data-testid="forgot-password-link"
                         className="text-sm text-primary hover:underline font-medium"
                       >
                         Forgot password?
@@ -275,6 +283,7 @@ export default function LoginPage() {
                     <Button
                       type="submit"
                       disabled={isLoading}
+                      data-testid="login-submit-button"
                       className="w-full py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLoading ? "Signing in..." : "Sign In"}
@@ -300,6 +309,7 @@ export default function LoginPage() {
               <div className="mt-4">
                 <Link
                   href="/register"
+                  data-testid="create-account-link"
                   className="w-full flex justify-center py-3 px-6 border border-primary rounded-lg text-primary hover:bg-primary hover:text-white transition-colors font-medium"
                 >
                   Create Account

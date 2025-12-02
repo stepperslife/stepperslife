@@ -1,0 +1,6 @@
+# Ignore auth storage states (contain sensitive session data)
+*.json
+
+# Keep the directory
+!.gitkeep
+!.gitignore

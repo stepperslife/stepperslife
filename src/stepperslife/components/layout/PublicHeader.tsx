@@ -89,11 +89,11 @@ export function PublicHeader({
   const headerCTA = getHeaderCTA();
 
   return (
-    <header className="bg-card/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
+    <header data-testid="public-header" className="bg-card/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center shrink-0">
+          <Link href="/" data-testid="logo" className="flex items-center shrink-0">
             <div className="relative h-10 w-32 sm:h-12 sm:w-40">
               {mounted && (
                 <Image
@@ -114,11 +114,12 @@ export function PublicHeader({
 
           {/* Desktop Navigation - Centered */}
           {showNavigation && (
-            <nav className="hidden md:flex items-center gap-1">
+            <nav data-testid="desktop-nav" className="hidden md:flex items-center gap-1">
               {navigationLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
+                  data-testid={`nav-link-${link.label.toLowerCase()}`}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     isActiveLink(link.href)
                       ? "bg-primary text-primary-foreground"
@@ -139,6 +140,7 @@ export function PublicHeader({
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="p-2 rounded-full hover:bg-accent transition-colors"
                 title={theme === "dark" ? "Light mode" : "Dark mode"}
+                data-testid="theme-toggle"
               >
                 {theme === "dark" ? (
                   <Sun className="w-[18px] h-[18px] text-muted-foreground" />
@@ -154,6 +156,7 @@ export function PublicHeader({
                 {showCreateButton && headerCTA && (
                   <Link
                     href={headerCTA.href}
+                    data-testid="header-cta"
                     className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors"
                   >
                     <headerCTA.icon className="w-4 h-4" />
@@ -165,6 +168,7 @@ export function PublicHeader({
                 <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    data-testid="profile-dropdown-trigger"
                     className="flex items-center gap-2 p-1.5 pr-3 rounded-full hover:bg-accent transition-colors border border-border/50"
                   >
                     {user?.image ? (
@@ -184,7 +188,7 @@ export function PublicHeader({
                   </button>
 
                   {isProfileOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-card rounded-xl shadow-lg border border-border py-1.5 z-50">
+                    <div data-testid="profile-dropdown-menu" className="absolute right-0 mt-2 w-56 bg-card rounded-xl shadow-lg border border-border py-1.5 z-50">
                       <div className="px-4 py-3 border-b border-border">
                         <p className="text-sm font-medium text-foreground truncate">
                           {user?.name || "User"}
@@ -198,6 +202,7 @@ export function PublicHeader({
                         <Link
                           href="/my-tickets"
                           onClick={() => setIsProfileOpen(false)}
+                          data-testid="menu-my-tickets"
                           className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
                         >
                           <Ticket className="w-4 h-4 text-muted-foreground" />
@@ -206,6 +211,7 @@ export function PublicHeader({
                         <Link
                           href="/organizer/events"
                           onClick={() => setIsProfileOpen(false)}
+                          data-testid="menu-my-events"
                           className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
                         >
                           <Calendar className="w-4 h-4 text-muted-foreground" />
@@ -215,6 +221,7 @@ export function PublicHeader({
                           <Link
                             href="/restaurateur/dashboard"
                             onClick={() => setIsProfileOpen(false)}
+                            data-testid="menu-my-restaurant"
                             className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
                           >
                             <Utensils className="w-4 h-4 text-muted-foreground" />
@@ -225,6 +232,7 @@ export function PublicHeader({
                           <Link
                             href="/admin"
                             onClick={() => setIsProfileOpen(false)}
+                            data-testid="menu-admin-panel"
                             className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
                           >
                             <User className="w-4 h-4 text-muted-foreground" />
@@ -239,6 +247,7 @@ export function PublicHeader({
                             setIsProfileOpen(false);
                             logout();
                           }}
+                          data-testid="sign-out-button"
                           className="w-full flex items-center gap-3 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
                         >
                           <LogOut className="w-4 h-4" />
@@ -252,6 +261,7 @@ export function PublicHeader({
             ) : (
               <Link
                 href="/login"
+                data-testid="sign-in-button"
                 className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors"
               >
                 <LogIn className="w-4 h-4" />
@@ -264,6 +274,7 @@ export function PublicHeader({
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 rounded-full hover:bg-accent transition-colors"
               aria-label="Toggle menu"
+              data-testid="mobile-menu-button"
             >
               {isMobileMenuOpen ? (
                 <X className="w-5 h-5 text-foreground" />
@@ -276,13 +287,14 @@ export function PublicHeader({
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border py-4 space-y-1">
+          <div data-testid="mobile-menu-panel" className="md:hidden border-t border-border py-4 space-y-1">
             {showNavigation &&
               navigationLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
+                  data-testid={`mobile-nav-${link.label.toLowerCase()}`}
                   className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     isActiveLink(link.href)
                       ? "bg-primary/10 text-primary"

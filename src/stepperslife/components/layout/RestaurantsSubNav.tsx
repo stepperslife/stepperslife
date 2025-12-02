@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Utensils, Plus, HelpCircle } from "lucide-react";
+import { Utensils, Plus, HelpCircle, Package, Heart } from "lucide-react";
 
 export function RestaurantsSubNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/restaurants", label: "Browse Restaurants", icon: Utensils },
+    { href: "/restaurants", label: "Browse", icon: Utensils },
+    { href: "/restaurants/favorites", label: "Favorites", icon: Heart },
+    { href: "/restaurants/my-orders", label: "My Orders", icon: Package },
     { href: "/restaurateur/apply", label: "Add Restaurant", icon: Plus },
     { href: "/help", label: "Help", icon: HelpCircle },
   ];
@@ -19,8 +21,10 @@ export function RestaurantsSubNav() {
         <nav className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || 
-              (item.href === "/restaurants" && pathname?.startsWith("/restaurants") && !pathname?.startsWith("/restaurateur")) ||
+            const isActive = pathname === item.href ||
+              (item.href === "/restaurants" && pathname === "/restaurants") ||
+              (item.href === "/restaurants/favorites" && pathname === "/restaurants/favorites") ||
+              (item.href === "/restaurants/my-orders" && pathname === "/restaurants/my-orders") ||
               (item.href === "/restaurateur/apply" && pathname?.startsWith("/restaurateur"));
             
             return (

@@ -2,13 +2,17 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { MapPin, Phone, Clock, Utensils, Plus, Minus, ShoppingCart } from "lucide-react";
+import { MapPin, Phone, Clock, Utensils, Plus, Minus, ShoppingCart, Star } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { RestaurantReviews } from "@/components/restaurants/RestaurantReviews";
+import { StarRating } from "@/components/restaurants/StarRating";
+import { FavoriteButton } from "@/components/restaurants/FavoriteButton";
+import { ShareButton } from "@/components/restaurants/ShareButton";
 
 interface CartItem {
   menuItemId: string;
@@ -22,6 +26,8 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
   const restaurant = useQuery(api.restaurants.getBySlug, { slug });
   const menuItems = restaurant ? useQuery(api.menuItems.getByRestaurant, { restaurantId: restaurant._id }) : undefined;
   const categories = restaurant ? useQuery(api.menuItems.getCategories, { restaurantId: restaurant._id }) : undefined;
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const reviewStats = restaurant ? useQuery(api.restaurantReviews.getRestaurantStats, { restaurantId: restaurant._id }) : undefined;
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
@@ -123,7 +129,29 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
           <div className="mt-6">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-3xl font-bold">{restaurant.name}</h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold">{restaurant.name}</h1>
+                  <FavoriteButton
+                    restaurantId={restaurant._id}
+                    userId={currentUser?._id || null}
+                    size="lg"
+                  />
+                  <ShareButton
+                    title={restaurant.name}
+                    text={`Check out ${restaurant.name} on SteppersLife! ${restaurant.cuisine?.join(", ") || "Great food"} - Order for pickup today.`}
+                    variant="icon"
+                    size="lg"
+                  />
+                </div>
+                {/* Rating Display */}
+                {reviewStats && reviewStats.totalReviews > 0 && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <StarRating rating={reviewStats.averageRating} size="md" showValue />
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      ({reviewStats.totalReviews} {reviewStats.totalReviews === 1 ? "review" : "reviews"})
+                    </span>
+                  </div>
+                )}
                 {restaurant.cuisine.length > 0 && (
                   <p className="text-gray-500 dark:text-gray-400 mt-1">
                     {restaurant.cuisine.join(" • ")}
@@ -158,6 +186,30 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
 
             {restaurant.description && (
               <p className="mt-4 text-gray-700 dark:text-gray-300">{restaurant.description}</p>
+            )}
+
+            {/* Operating Hours */}
+            {restaurant.operatingHours && (
+              <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Operating Hours
+                </h3>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map((day) => {
+                    const hours = (restaurant.operatingHours as any)?.[day];
+                    const isToday = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase() === day;
+                    return (
+                      <div key={day} className={`flex justify-between ${isToday ? "font-semibold text-orange-600" : ""}`}>
+                        <span className="capitalize">{day}</span>
+                        <span>
+                          {hours?.closed ? "Closed" : hours ? `${hours.open} - ${hours.close}` : "Not set"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </div>
 
@@ -241,6 +293,15 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                 )}
               </div>
             )}
+          </div>
+
+          {/* Reviews Section */}
+          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+            <h2 className="text-2xl font-bold mb-6">Reviews & Ratings</h2>
+            <RestaurantReviews
+              restaurantId={restaurant._id}
+              userId={currentUser?._id || null}
+            />
           </div>
         </div>
 

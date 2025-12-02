@@ -117,3 +117,50 @@ export const remove = mutation({
     return await ctx.db.delete(args.id);
   },
 });
+
+// Update menu category
+export const updateCategory = mutation({
+  args: {
+    id: v.id("menuCategories"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+    isActive: v.optional(v.boolean()),
+    sortOrder: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+    return await ctx.db.patch(id, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Delete menu category
+export const removeCategory = mutation({
+  args: { id: v.id("menuCategories") },
+  handler: async (ctx, args) => {
+    // First check if there are any items in this category
+    const itemsInCategory = await ctx.db
+      .query("menuItems")
+      .withIndex("by_category", (q) => q.eq("categoryId", args.id))
+      .first();
+
+    if (itemsInCategory) {
+      throw new Error("Cannot delete category with items. Move or delete items first.");
+    }
+
+    return await ctx.db.delete(args.id);
+  },
+});
+
+// Get restaurant owned by user
+export const getRestaurantByOwner = query({
+  args: { ownerId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("restaurants")
+      .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId))
+      .first();
+  },
+});
