@@ -230,6 +230,7 @@ export default function CheckoutPage() {
   }, [selectedTierId, quantity]);
 
   const handleContinueToPayment = async () => {
+    // DEBUG: Visible indication that function was called
     console.log("[Checkout] handleContinueToPayment called", {
       selectedTierId,
       selectedBundleId,
@@ -239,8 +240,12 @@ export default function CheckoutPage() {
       quantity,
     });
 
+    // Show loading toast immediately to indicate button was clicked
+    const loadingToast = toast.loading("Creating order...");
+
     if ((!selectedTierId && !selectedBundleId) || !buyerEmail || !buyerName) {
       console.log("[Checkout] Validation failed - missing fields");
+      toast.dismiss(loadingToast);
       toast.error("Please fill in all required fields");
       return;
     }
@@ -250,12 +255,13 @@ export default function CheckoutPage() {
       purchaseType === "tier" && seatingChart && seatingChart.sections && seatingChart.sections.length > 0;
     if (requiresSeats && selectedSeats.length !== quantity) {
       console.log("[Checkout] Seat selection required but not complete");
+      toast.dismiss(loadingToast);
       toast.error(`Please select ${quantity} seat${quantity > 1 ? "s" : ""} before proceeding`);
       return;
     }
 
     try {
-      console.log("[Checkout] Creating order...");
+      console.log("[Checkout] Creating order...", { eventId, purchaseType, selectedTierId, selectedBundleId });
       let newOrderId;
 
       if (purchaseType === "bundle" && selectedBundleId) {
@@ -316,18 +322,23 @@ export default function CheckoutPage() {
           }
 
           // Mark as success
+          toast.dismiss(loadingToast);
           setIsSuccess(true);
           toast.success("Order completed successfully!");
         } catch (error: any) {
           console.error("Free order completion error:", error);
+          toast.dismiss(loadingToast);
           toast.error("Failed to complete free order. Please contact support.");
         }
       } else {
         // Show payment UI for paid orders
+        console.log("[Checkout] Order created successfully, showing payment UI", { newOrderId, total });
+        toast.dismiss(loadingToast);
         setShowPayment(true);
       }
     } catch (error: any) {
       console.error("[Checkout] Order creation error:", error);
+      toast.dismiss(loadingToast);
       toast.error(error.message || "Failed to create order. Please try again.");
     }
   };
