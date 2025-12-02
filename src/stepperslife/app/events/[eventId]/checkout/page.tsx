@@ -628,7 +628,12 @@ export default function CheckoutPage() {
                             return (
                               <button
                                 key={tier._id}
-                                onClick={() => !isSoldOut && setSelectedTierId(tier._id)}
+                                onClick={() => {
+                                  console.log("[Checkout] Ticket tier clicked:", tier._id, tier.name);
+                                  if (!isSoldOut) {
+                                    setSelectedTierId(tier._id);
+                                  }
+                                }}
                                 disabled={isSoldOut}
                                 className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
                                   selectedTierId === tier._id
