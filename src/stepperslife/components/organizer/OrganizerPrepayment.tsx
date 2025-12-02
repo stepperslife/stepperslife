@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, CreditCard, Smartphone, CheckCircle, AlertCircle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { DollarSign, CreditCard, Smartphone, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { SquareCardPayment } from "@/components/checkout/SquareCardPayment";
 import { CashAppQRPayment } from "@/components/checkout/CashAppPayment";
+import toast from "react-hot-toast";
 
 interface OrganizerPrepaymentProps {
   eventId: string;
@@ -26,6 +30,14 @@ export function OrganizerPrepayment({
 }: OrganizerPrepaymentProps) {
   const [selectedMethod, setSelectedMethod] = useState<"square" | "cashapp" | null>(null);
   const [showPayment, setShowPayment] = useState(false);
+  const [isConfiguring, setIsConfiguring] = useState(false);
+
+  // Get current user for userId
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
+
+  // Convex mutations
+  const configurePayment = useMutation(api.events.mutations.configurePayment);
+  const purchaseCredits = useMutation(api.credits.mutations.purchaseCredits);
 
   const totalAmount = estimatedTickets * pricePerTicket;
   const totalAmountCents = Math.round(totalAmount * 100);
@@ -35,25 +47,103 @@ export function OrganizerPrepayment({
     setShowPayment(true);
   };
 
-  const handleSquarePaymentSuccess = async (result: Record<string, unknown>) => {
-    // TODO: Call Convex mutation to update payment config
-    onPaymentSuccess();
+  const handleSquarePaymentSuccess = async (result: { paymentId: string; status: string }) => {
+    setIsConfiguring(true);
+    const loadingToast = toast.loading("Configuring your event...");
+
+    try {
+      // Step 1: Record the credit purchase transaction
+      if (currentUser?._id) {
+        await purchaseCredits({
+          credits: estimatedTickets,
+          paymentId: result.paymentId,
+          paymentMethod: "SQUARE",
+          amountCents: totalAmountCents,
+        });
+      }
+
+      // Step 2: Configure the event with PREPAY model
+      await configurePayment({
+        eventId: eventId as Id<"events">,
+        model: "PREPAY",
+        ticketPrice: pricePerTicket,
+      });
+
+      toast.dismiss(loadingToast);
+      toast.success("Payment successful! Your event is now active.");
+      onPaymentSuccess();
+    } catch (error: any) {
+      console.error("[OrganizerPrepayment] Configuration error:", error);
+      toast.dismiss(loadingToast);
+      toast.error(error.message || "Failed to configure event. Please contact support.");
+      // Don't call onPaymentSuccess since configuration failed
+    } finally {
+      setIsConfiguring(false);
+    }
   };
 
   const handleSquarePaymentError = (error: string) => {
     console.error("[Prepayment] Payment error:", error);
-    alert(`Payment failed: ${error}`);
+    toast.error(`Payment failed: ${error}`);
   };
 
-  const handleCashAppPaymentSuccess = async (result: Record<string, unknown>) => {
-    // TODO: Call Convex mutation to update payment config
-    onPaymentSuccess();
+  const handleCashAppPaymentSuccess = async (result: { paymentId: string; status: string }) => {
+    setIsConfiguring(true);
+    const loadingToast = toast.loading("Configuring your event...");
+
+    try {
+      // Step 1: Record the credit purchase transaction
+      if (currentUser?._id) {
+        await purchaseCredits({
+          credits: estimatedTickets,
+          paymentId: result.paymentId,
+          paymentMethod: "CASHAPP",
+          amountCents: totalAmountCents,
+        });
+      }
+
+      // Step 2: Configure the event with PREPAY model
+      await configurePayment({
+        eventId: eventId as Id<"events">,
+        model: "PREPAY",
+        ticketPrice: pricePerTicket,
+      });
+
+      toast.dismiss(loadingToast);
+      toast.success("Payment successful! Your event is now active.");
+      onPaymentSuccess();
+    } catch (error: any) {
+      console.error("[OrganizerPrepayment] CashApp configuration error:", error);
+      toast.dismiss(loadingToast);
+      toast.error(error.message || "Failed to configure event. Please contact support.");
+    } finally {
+      setIsConfiguring(false);
+    }
   };
 
   const handleCashAppPaymentError = (error: string) => {
     console.error("[Prepayment] CashApp payment error:", error);
-    alert(`Payment failed: ${error}`);
+    toast.error(`Payment failed: ${error}`);
   };
+
+  // Show loading while configuring
+  if (isConfiguring) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <Card>
+          <CardContent className="py-12">
+            <div className="flex flex-col items-center justify-center gap-4">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              <h3 className="text-xl font-semibold">Activating Your Event...</h3>
+              <p className="text-muted-foreground text-center">
+                Please wait while we configure your event settings.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (showPayment && selectedMethod === "square") {
     return (
@@ -71,6 +161,9 @@ export function OrganizerPrepayment({
             setShowPayment(false);
             setSelectedMethod(null);
           }}
+          userId={currentUser?._id}
+          eventId={eventId}
+          description={`PREPAY: ${estimatedTickets} tickets for "${eventName}"`}
         />
       </div>
     );
@@ -87,6 +180,9 @@ export function OrganizerPrepayment({
             setShowPayment(false);
             setSelectedMethod(null);
           }}
+          userId={currentUser?._id}
+          eventId={eventId}
+          description={`PREPAY: ${estimatedTickets} tickets for "${eventName}"`}
         />
       </div>
     );
@@ -191,8 +287,8 @@ export function OrganizerPrepayment({
               No card needed
             </div>
             <div className="flex items-center gap-2 text-sm text-foreground">
-              <AlertCircle className="w-4 h-4 text-warning" />
-              Manual verification (24hrs)
+              <CheckCircle className="w-4 h-4 text-success" />
+              Instant confirmation
             </div>
           </div>
 
