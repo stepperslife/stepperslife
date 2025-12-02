@@ -2,15 +2,125 @@
  * Google OAuth Helper Library
  *
  * Handles Google OAuth 2.0 authentication flow
+ * Uses stateless OAuth with encrypted state to avoid cookie issues.
  */
 
-import { randomBytes } from "crypto";
+import { randomBytes, createCipheriv, createDecipheriv, createHash } from "crypto";
 
 const GOOGLE_CLIENT_ID = process.env.AUTH_GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.AUTH_GOOGLE_CLIENT_SECRET!;
-const REDIRECT_URI = process.env.NEXTAUTH_URL
-  ? `${process.env.NEXTAUTH_URL}/api/auth/callback/google`
-  : "http://localhost:3000/api/auth/callback/google";
+
+// Use the client secret as the encryption key (hashed to get correct length)
+// This ensures the same key across all serverless function instances
+function getEncryptionKey(): Buffer {
+  const secret = process.env.AUTH_GOOGLE_CLIENT_SECRET || "fallback-secret-key";
+  return createHash("sha256").update(secret).digest();
+}
+
+const ALGORITHM = "aes-256-gcm";
+const IV_LENGTH = 12;
+const AUTH_TAG_LENGTH = 16;
+const STATE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
+
+export interface OAuthStateData {
+  callbackUrl: string;
+  nonce: string;
+  timestamp: number;
+}
+
+/**
+ * Encrypt OAuth state data into a URL-safe string
+ * Uses AES-256-GCM for authenticated encryption
+ */
+export function encryptOAuthState(data: OAuthStateData): string {
+  const key = getEncryptionKey();
+  const iv = randomBytes(IV_LENGTH);
+  const cipher = createCipheriv(ALGORITHM, key, iv);
+
+  const plaintext = JSON.stringify(data);
+  const encrypted = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+
+  // Combine: iv + authTag + encrypted data
+  const combined = Buffer.concat([iv, authTag, encrypted]);
+
+  // Return as URL-safe base64
+  return combined.toString("base64url");
+}
+
+/**
+ * Decrypt OAuth state data from the encrypted string
+ * Returns null if decryption fails or state is expired
+ */
+export function decryptOAuthState(encryptedState: string): OAuthStateData | null {
+  try {
+    const key = getEncryptionKey();
+    const combined = Buffer.from(encryptedState, "base64url");
+
+    // Extract parts
+    const iv = combined.subarray(0, IV_LENGTH);
+    const authTag = combined.subarray(IV_LENGTH, IV_LENGTH + AUTH_TAG_LENGTH);
+    const encrypted = combined.subarray(IV_LENGTH + AUTH_TAG_LENGTH);
+
+    const decipher = createDecipheriv(ALGORITHM, key, iv);
+    decipher.setAuthTag(authTag);
+
+    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+    const data: OAuthStateData = JSON.parse(decrypted.toString("utf8"));
+
+    // Check if state is expired
+    if (Date.now() - data.timestamp > STATE_EXPIRY_MS) {
+      console.error("[Google OAuth] State expired");
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("[Google OAuth] Failed to decrypt state:", error);
+    return null;
+  }
+}
+
+/**
+ * Get the OAuth redirect URI based on environment
+ *
+ * Priority:
+ * 1. NEXTAUTH_URL environment variable (if set)
+ * 2. VERCEL_URL (automatically set by Vercel in production/preview)
+ * 3. Production domain (stepperslife.com) if NODE_ENV is production
+ * 4. localhost:3004 for local development
+ */
+function getRedirectUri(): string {
+  let uri: string;
+
+  // Check NEXTAUTH_URL first (explicit configuration)
+  if (process.env.NEXTAUTH_URL) {
+    uri = `${process.env.NEXTAUTH_URL}/api/auth/callback/google`;
+  }
+  // Check VERCEL_URL (automatically set by Vercel)
+  else if (process.env.VERCEL_URL) {
+    uri = `https://${process.env.VERCEL_URL}/api/auth/callback/google`;
+  }
+  // Production fallback to main domain
+  else if (process.env.NODE_ENV === "production") {
+    uri = "https://stepperslife.com/api/auth/callback/google";
+  }
+  // Local development fallback
+  else {
+    uri = "http://localhost:3004/api/auth/callback/google";
+  }
+
+  console.log("[Google OAuth] Redirect URI:", uri);
+  console.log("[Google OAuth] Environment:", {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL ? "set" : "not set",
+    VERCEL_URL: process.env.VERCEL_URL ? "set" : "not set",
+    NODE_ENV: process.env.NODE_ENV,
+  });
+
+  return uri;
+}
+
+const REDIRECT_URI = getRedirectUri();
 
 
 /**
@@ -107,3 +217,5 @@ export async function completeGoogleOAuth(code: string) {
   const userInfo = await getGoogleUserInfo(accessToken);
   return userInfo;
 }
+// Force deploy 1764688721
+// Deploy trigger: 1733154433

@@ -12,7 +12,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, User, Settings } from "lucide-react";
+import { LogOut, User, Settings, Ticket, Calendar, BookOpen, Utensils, ShieldCheck } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -133,20 +133,37 @@ export function AppHeader() {
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">{currentUser.name}</p>
                   <p className="text-xs leading-none text-muted-foreground">{currentUser.email}</p>
-                  <p className="text-xs leading-none text-muted-foreground capitalize">
-                    Role: {currentUser.role}
-                  </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push("/organizer/settings")}>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+              <DropdownMenuItem onClick={() => router.push("/my-tickets")}>
+                <Ticket className="mr-2 h-4 w-4" />
+                <span>My Tickets</span>
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/organizer/events")}>
+                <Calendar className="mr-2 h-4 w-4" />
+                <span>My Events</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/organizer/classes")}>
+                <BookOpen className="mr-2 h-4 w-4" />
+                <span>My Classes</span>
+              </DropdownMenuItem>
+              {(currentUser.role === "restaurateur" || currentUser.role === "admin") && (
+                <DropdownMenuItem onClick={() => router.push("/restaurateur/dashboard")}>
+                  <Utensils className="mr-2 h-4 w-4" />
+                  <span>My Restaurant</span>
+                </DropdownMenuItem>
+              )}
+              {currentUser.role === "admin" && (
+                <DropdownMenuItem onClick={() => router.push("/admin")}>
+                  <ShieldCheck className="mr-2 h-4 w-4" />
+                  <span>Admin Panel</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+                <span>Sign Out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

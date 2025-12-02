@@ -3,11 +3,11 @@
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import { ArrowLeft, Clock, MapPin, CreditCard, Loader2 } from "lucide-react";
+import { ArrowLeft, Clock, MapPin, CreditCard, Loader2, Calendar } from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 
@@ -17,6 +17,11 @@ interface CartItem {
   price: number;
   quantity: number;
 }
+
+type PickupTimeOption = {
+  label: string;
+  value: number | "asap";
+};
 
 export default function RestaurantCheckoutPage() {
   const params = useParams();
@@ -35,6 +40,40 @@ export default function RestaurantCheckoutPage() {
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [pickupTimeOption, setPickupTimeOption] = useState<"asap" | number>("asap");
+
+  // Generate pickup time slots
+  const pickupTimeOptions = useMemo<PickupTimeOption[]>(() => {
+    if (!restaurant) return [];
+
+    const options: PickupTimeOption[] = [
+      { label: `ASAP (~${restaurant.estimatedPickupTime} min)`, value: "asap" },
+    ];
+
+    const now = new Date();
+    const startTime = new Date(now.getTime() + (restaurant.estimatedPickupTime + 15) * 60000);
+
+    // Round to nearest 15 minutes
+    startTime.setMinutes(Math.ceil(startTime.getMinutes() / 15) * 15);
+    startTime.setSeconds(0);
+
+    // Generate time slots for the next 4 hours in 15-minute increments
+    for (let i = 0; i < 16; i++) {
+      const slotTime = new Date(startTime.getTime() + i * 15 * 60000);
+      const hours = slotTime.getHours();
+      const minutes = slotTime.getMinutes();
+      const ampm = hours >= 12 ? "PM" : "AM";
+      const displayHours = hours % 12 || 12;
+      const displayMinutes = minutes.toString().padStart(2, "0");
+
+      options.push({
+        label: `${displayHours}:${displayMinutes} ${ampm}`,
+        value: slotTime.getTime(),
+      });
+    }
+
+    return options;
+  }, [restaurant]);
 
   useEffect(() => {
     const cartParam = searchParams.get("cart");
@@ -106,6 +145,11 @@ export default function RestaurantCheckoutPage() {
         quantity: item.quantity,
       }));
 
+      // Calculate pickup time
+      const pickupTime = pickupTimeOption === "asap"
+        ? Date.now() + (restaurant.estimatedPickupTime * 60 * 1000)
+        : pickupTimeOption;
+
       // Submit order (with notification)
       const result = await createOrder({
         restaurantId: restaurant._id,
@@ -116,6 +160,7 @@ export default function RestaurantCheckoutPage() {
         subtotal,
         tax,
         total,
+        pickupTime,
         specialInstructions: specialInstructions.trim() || undefined,
         paymentMethod: "pay_at_pickup",
       });
@@ -201,6 +246,32 @@ export default function RestaurantCheckoutPage() {
                 </div>
 
                 <div className="bg-card rounded-lg border p-6">
+                  <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Pickup Time
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    When would you like to pick up your order?
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {pickupTimeOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => setPickupTimeOption(option.value)}
+                        className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                          pickupTimeOption === option.value
+                            ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 font-medium"
+                            : "border-input hover:border-orange-300 hover:bg-orange-50/50 dark:hover:bg-orange-900/10"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-lg border p-6">
                   <h2 className="text-xl font-semibold mb-4">Special Instructions</h2>
                   <textarea
                     value={specialInstructions}
@@ -262,7 +333,15 @@ export default function RestaurantCheckoutPage() {
                     </p>
                     <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                       <Clock className="h-3 w-3" />
-                      Est. pickup in {restaurant.estimatedPickupTime} min
+                      {pickupTimeOption === "asap" ? (
+                        `Est. pickup in ${restaurant.estimatedPickupTime} min`
+                      ) : (
+                        `Pickup at ${new Date(pickupTimeOption).toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}`
+                      )}
                     </p>
                   </div>
                 </div>

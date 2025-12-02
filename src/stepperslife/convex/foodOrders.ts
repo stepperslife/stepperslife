@@ -154,14 +154,68 @@ export const updateStatus = mutation({
   },
   handler: async (ctx, args) => {
     const updates: Record<string, unknown> = { status: args.status };
-    
+
     if (args.status === "READY_FOR_PICKUP") {
       updates.readyAt = Date.now();
     } else if (args.status === "COMPLETED") {
       updates.completedAt = Date.now();
     }
-    
-    return await ctx.db.patch(args.id, updates);
+
+    const result = await ctx.db.patch(args.id, updates);
+
+    // Return order info for notification
+    const order = await ctx.db.get(args.id);
+    return {
+      result,
+      orderId: args.id,
+      orderNumber: order?.orderNumber,
+      customerId: order?.customerId,
+      status: args.status,
+    };
+  },
+});
+
+// Update order status with customer notification
+export const updateStatusWithNotification = action({
+  args: {
+    id: v.id("foodOrders"),
+    status: v.string(),
+  },
+  handler: async (ctx, args): Promise<{
+    result: null;
+    orderId: string;
+    orderNumber: string | undefined;
+    customerId: string | undefined;
+    status: string;
+  }> => {
+    // Update the status using direct mutation reference
+    const foodOrdersApi = api.foodOrders as any;
+    const updateResult = await ctx.runMutation(foodOrdersApi.updateStatus, {
+      id: args.id,
+      status: args.status,
+    });
+
+    // Send notification to customer if they have a subscription
+    if (updateResult.customerId) {
+      try {
+        // Use direct reference to avoid circular type issues
+        const notificationsApi = api.notifications as any;
+        await ctx.runAction(
+          notificationsApi.customerNotifications.notifyOrderStatusUpdate,
+          {
+            foodOrderId: args.id,
+            customerId: updateResult.customerId,
+            orderNumber: updateResult.orderNumber || "",
+            newStatus: args.status,
+          }
+        );
+      } catch (error) {
+        // Don't fail if notification fails
+        console.error("Failed to send customer notification:", error);
+      }
+    }
+
+    return updateResult;
   },
 });
 

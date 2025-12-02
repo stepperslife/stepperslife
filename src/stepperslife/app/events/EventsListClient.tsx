@@ -109,11 +109,11 @@ export default function EventsListClient() {
     <>
       <PublicHeader />
         <EventsSubNav />
-      <div className="min-h-screen bg-background">
+      <div data-testid="events-page" className="min-h-screen bg-background">
         {/* Page Title */}
         <div className="bg-card shadow-sm border-b border-border">
           <div className="container mx-auto px-4 py-8">
-            <h1 className="text-4xl font-bold text-foreground mb-2">All Events</h1>
+            <h1 data-testid="events-page-title" className="text-4xl font-bold text-foreground mb-2">All Events</h1>
             <p className="text-lg text-muted-foreground">
               Discover amazing stepping events, workshops, and socials
             </p>
@@ -132,6 +132,7 @@ export default function EventsListClient() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search events by name, description, or location..."
+                  data-testid="events-search-input"
                   className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground placeholder-muted-foreground"
                 />
               </div>
@@ -142,6 +143,7 @@ export default function EventsListClient() {
                 <select
                   value={selectedCategory || ""}
                   onChange={(e) => setSelectedCategory(e.target.value || undefined)}
+                  data-testid="events-category-filter"
                   className="pl-10 pr-10 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent appearance-none bg-background text-foreground"
                 >
                   <option value="">All Categories</option>
@@ -159,6 +161,7 @@ export default function EventsListClient() {
                   type="checkbox"
                   checked={showPastEvents}
                   onChange={(e) => setShowPastEvents(e.target.checked)}
+                  data-testid="events-past-toggle"
                   className="w-4 h-4 text-primary border-input rounded focus:ring-ring"
                 />
                 <span className="text-sm font-medium text-foreground">
@@ -201,7 +204,7 @@ export default function EventsListClient() {
         {/* Events Grid */}
         <div className="container mx-auto px-4 py-8">
           {events.length === 0 ? (
-            <div className="text-center py-12">
+            <div data-testid="events-empty-state" className="text-center py-12">
               <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-foreground mb-2">
                 No events found
@@ -215,12 +218,12 @@ export default function EventsListClient() {
           ) : (
             <>
               <div className="mb-6">
-                <p className="text-muted-foreground">
+                <p data-testid="events-count" className="text-muted-foreground">
                   Showing {events.length} {events.length === 1 ? "event" : "events"}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div data-testid="events-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {events.map((event) => {
                   const isPast = event.endDate && event.endDate < Date.now();
 
@@ -228,6 +231,7 @@ export default function EventsListClient() {
                     <Link
                       key={event._id}
                       href={`/events/${event._id}`}
+                      data-testid={`event-card-${event._id}`}
                       className="group bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
                     >
                       {/* Event Image */}

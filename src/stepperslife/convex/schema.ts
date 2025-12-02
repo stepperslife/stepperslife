@@ -66,7 +66,8 @@ export default defineSchema({
         v.literal("SAVE_THE_DATE"),
         v.literal("FREE_EVENT"),
         v.literal("TICKETED_EVENT"),
-        v.literal("SEATED_EVENT")
+        v.literal("SEATED_EVENT"),
+        v.literal("CLASS")
       )
     ),
 
@@ -1403,6 +1404,50 @@ export default defineSchema({
     .index("by_restaurant", ["restaurantId"])
     .index("by_customer", ["customerId"])
     .index("by_order_number", ["orderNumber"]),
+
+  // Restaurant Reviews - Customer ratings and reviews
+  restaurantReviews: defineTable({
+    restaurantId: v.id("restaurants"),
+    customerId: v.id("users"),
+    orderId: v.optional(v.id("foodOrders")), // Link to order for "verified purchase"
+    rating: v.number(), // 1-5 stars
+    title: v.optional(v.string()),
+    reviewText: v.optional(v.string()),
+    photos: v.optional(v.array(v.string())), // URLs of review photos
+    isVerifiedPurchase: v.boolean(), // True if linked to completed order
+    helpfulCount: v.number(), // Number of "helpful" votes
+    reportCount: v.number(), // Number of reports (for moderation)
+    status: v.string(), // "published", "pending", "hidden", "removed"
+    restaurantResponse: v.optional(v.string()), // Owner's response to review
+    restaurantResponseAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_restaurant", ["restaurantId"])
+    .index("by_customer", ["customerId"])
+    .index("by_order", ["orderId"])
+    .index("by_status", ["status"]),
+
+  // Restaurant Review Votes - Track who voted helpful
+  restaurantReviewVotes: defineTable({
+    reviewId: v.id("restaurantReviews"),
+    userId: v.id("users"),
+    voteType: v.string(), // "helpful" or "reported"
+    createdAt: v.number(),
+  })
+    .index("by_review", ["reviewId"])
+    .index("by_user", ["userId"])
+    .index("by_review_user", ["reviewId", "userId"]),
+
+  // Favorite Restaurants - User's saved/favorite restaurants
+  favoriteRestaurants: defineTable({
+    userId: v.id("users"),
+    restaurantId: v.id("restaurants"),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_restaurant", ["restaurantId"])
+    .index("by_user_restaurant", ["userId", "restaurantId"]),
 
   // ==========================================
   // VENDOR MARKETPLACE MODULE - Multi-Vendor Store System

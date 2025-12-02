@@ -78,28 +78,28 @@ export default function RestaurateurDashboardClient() {
       title: "Menu",
       description: "Edit your menu items and prices",
       href: "/restaurateur/dashboard/menu",
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       icon: BarChart3,
       title: "Analytics",
       description: "Track your sales and performance",
       href: "/restaurateur/dashboard/analytics",
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       icon: Clock,
       title: "Hours",
       description: "Set your operating hours",
       href: "/restaurateur/dashboard/hours",
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       icon: Settings,
       title: "Settings",
       description: "Manage restaurant settings",
       href: "/restaurateur/dashboard/settings",
-      comingSoon: true,
+      comingSoon: false,
     },
   ];
 
