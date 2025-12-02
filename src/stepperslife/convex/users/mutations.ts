@@ -51,6 +51,96 @@ export const upsertUserFromAuth = mutation({
 });
 
 /**
+ * Activate a feature mode for the current user
+ * Called when user first clicks "Create Event", "Open Store", or "Add Restaurant"
+ */
+export const activateFeature = mutation({
+  args: {
+    feature: v.union(
+      v.literal("eventOrganizer"),
+      v.literal("marketplaceVendor"),
+      v.literal("restaurantOwner")
+    ),
+  },
+  handler: async (ctx, { feature }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const updates: Record<string, boolean | number> = { updatedAt: Date.now() };
+
+    switch (feature) {
+      case "eventOrganizer":
+        updates.isEventOrganizer = true;
+        break;
+      case "marketplaceVendor":
+        updates.isMarketplaceVendor = true;
+        break;
+      case "restaurantOwner":
+        updates.isRestaurantOwner = true;
+        break;
+    }
+
+    await ctx.db.patch(user._id, updates);
+
+    return { success: true, feature };
+  },
+});
+
+/**
+ * Update feature toggles for user settings
+ * Allows users to enable/disable feature modes from their settings
+ */
+export const updateFeatureToggles = mutation({
+  args: {
+    isEventOrganizer: v.optional(v.boolean()),
+    isMarketplaceVendor: v.optional(v.boolean()),
+    isRestaurantOwner: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const updates: Record<string, boolean | number | undefined> = { updatedAt: Date.now() };
+
+    if (args.isEventOrganizer !== undefined) {
+      updates.isEventOrganizer = args.isEventOrganizer;
+    }
+    if (args.isMarketplaceVendor !== undefined) {
+      updates.isMarketplaceVendor = args.isMarketplaceVendor;
+    }
+    if (args.isRestaurantOwner !== undefined) {
+      updates.isRestaurantOwner = args.isRestaurantOwner;
+    }
+
+    await ctx.db.patch(user._id, updates);
+
+    return { success: true };
+  },
+});
+
+/**
  * Mark the welcome popup as shown for the current user
  */
 export const markWelcomePopupShown = mutation({

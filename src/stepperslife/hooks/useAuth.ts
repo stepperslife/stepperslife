@@ -9,6 +9,10 @@ interface User {
   name?: string;
   role?: "admin" | "organizer" | "user";
   image?: string;
+  // Feature toggles
+  isEventOrganizer?: boolean;
+  isMarketplaceVendor?: boolean;
+  isRestaurantOwner?: boolean;
 }
 
 interface AuthState {

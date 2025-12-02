@@ -210,25 +210,31 @@ export function PublicHeader({
                           <Ticket className="w-4 h-4 text-muted-foreground" />
                           My Tickets
                         </Link>
-                        <Link
-                          href="/organizer/events"
-                          onClick={() => setIsProfileOpen(false)}
-                          data-testid="menu-my-events"
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                        >
-                          <Calendar className="w-4 h-4 text-muted-foreground" />
-                          My Events
-                        </Link>
-                        <Link
-                          href="/organizer/classes"
-                          onClick={() => setIsProfileOpen(false)}
-                          data-testid="menu-my-classes"
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                        >
-                          <BookOpen className="w-4 h-4 text-muted-foreground" />
-                          My Classes
-                        </Link>
-                        {(user?.role === "restaurateur" || user?.role === "admin") && (
+                        {/* Organizer Dashboard - only show if feature is activated or user is admin/organizer */}
+                        {(user?.isEventOrganizer || user?.role === "organizer" || user?.role === "admin") && (
+                          <>
+                            <Link
+                              href="/organizer/events"
+                              onClick={() => setIsProfileOpen(false)}
+                              data-testid="menu-my-events"
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                            >
+                              <Calendar className="w-4 h-4 text-muted-foreground" />
+                              My Events
+                            </Link>
+                            <Link
+                              href="/organizer/classes"
+                              onClick={() => setIsProfileOpen(false)}
+                              data-testid="menu-my-classes"
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                            >
+                              <BookOpen className="w-4 h-4 text-muted-foreground" />
+                              My Classes
+                            </Link>
+                          </>
+                        )}
+                        {/* Restaurant Dashboard - only show if feature is activated or user has restaurateur role */}
+                        {(user?.isRestaurantOwner || user?.role === "restaurateur" || user?.role === "admin") && (
                           <Link
                             href="/restaurateur/dashboard"
                             onClick={() => setIsProfileOpen(false)}
@@ -350,23 +356,29 @@ export function PublicHeader({
                     <Ticket className="w-4 h-4" />
                     My Tickets
                   </Link>
-                  <Link
-                    href="/organizer/events"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    My Events
-                  </Link>
-                  <Link
-                    href="/organizer/classes"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    My Classes
-                  </Link>
-                  {(user?.role === "restaurateur" || user?.role === "admin") && (
+                  {/* Organizer Dashboard - only show if feature is activated or user is admin/organizer */}
+                  {(user?.isEventOrganizer || user?.role === "organizer" || user?.role === "admin") && (
+                    <>
+                      <Link
+                        href="/organizer/events"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        My Events
+                      </Link>
+                      <Link
+                        href="/organizer/classes"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        My Classes
+                      </Link>
+                    </>
+                  )}
+                  {/* Restaurant Dashboard - only show if feature is activated or user has restaurateur role */}
+                  {(user?.isRestaurantOwner || user?.role === "restaurateur" || user?.role === "admin") && (
                     <Link
                       href="/restaurateur/dashboard"
                       onClick={() => setIsMobileMenuOpen(false)}

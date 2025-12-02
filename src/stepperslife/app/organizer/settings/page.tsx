@@ -12,6 +12,10 @@ import {
   HelpCircle,
   ExternalLink,
   CheckCircle2,
+  Calendar,
+  Store,
+  Utensils,
+  ToggleLeft,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -20,12 +24,14 @@ export default function SettingsPage() {
   const connectStripe = useMutation(api.users.mutations.connectStripeAccount);
   const connectPaypal = useMutation(api.users.mutations.connectPaypalAccount);
   const disconnectProcessor = useMutation(api.users.mutations.disconnectPaymentProcessor);
+  const updateFeatureToggles = useMutation(api.users.mutations.updateFeatureToggles);
 
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [marketingEmails, setMarketingEmails] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdatingFeatures, setIsUpdatingFeatures] = useState(false);
 
   // Fetch user data from API instead of Convex
   useEffect(() => {
@@ -132,6 +138,26 @@ export default function SettingsPage() {
     }
   };
 
+  const handleToggleFeature = async (
+    feature: "isEventOrganizer" | "isMarketplaceVendor" | "isRestaurantOwner",
+    enabled: boolean
+  ) => {
+    try {
+      setIsUpdatingFeatures(true);
+      await updateFeatureToggles({ [feature]: enabled });
+      // Update local state
+      setCurrentUser((prev: any) => ({
+        ...prev,
+        [feature]: enabled,
+      }));
+    } catch (error) {
+      console.error("Error updating feature toggle:", error);
+      alert("Failed to update feature setting");
+    } finally {
+      setIsUpdatingFeatures(false);
+    }
+  };
+
   // Check if still loading
   if (isLoading || !currentUser) {
     return (
@@ -189,6 +215,93 @@ export default function SettingsPage() {
             </div>
             <p className="text-sm text-muted-foreground">
               Account settings are managed through your authentication provider.
+            </p>
+          </div>
+        </div>
+
+        {/* Feature Access */}
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+              <ToggleLeft className="w-5 h-5" />
+              Feature Access
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Control which features are visible in your navigation. Features are automatically enabled when you use them (e.g., creating an event).
+            </p>
+          </div>
+          <div className="p-6 space-y-4">
+            {/* Event Organizer */}
+            <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="font-semibold text-foreground">Event Organizer</p>
+                  <p className="text-sm text-muted-foreground">
+                    Create and manage events, classes, and sell tickets
+                  </p>
+                </div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={currentUser.isEventOrganizer || false}
+                  onChange={(e) => handleToggleFeature("isEventOrganizer", e.target.checked)}
+                  disabled={isUpdatingFeatures}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-disabled:opacity-50"></div>
+              </label>
+            </div>
+
+            {/* Marketplace Vendor */}
+            <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+              <div className="flex items-center gap-3">
+                <Store className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="font-semibold text-foreground">Marketplace Vendor</p>
+                  <p className="text-sm text-muted-foreground">
+                    Open a store and sell products in the marketplace
+                  </p>
+                </div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={currentUser.isMarketplaceVendor || false}
+                  onChange={(e) => handleToggleFeature("isMarketplaceVendor", e.target.checked)}
+                  disabled={isUpdatingFeatures}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-disabled:opacity-50"></div>
+              </label>
+            </div>
+
+            {/* Restaurant Owner */}
+            <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+              <div className="flex items-center gap-3">
+                <Utensils className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="font-semibold text-foreground">Restaurant Owner</p>
+                  <p className="text-sm text-muted-foreground">
+                    Register and manage a restaurant listing
+                  </p>
+                </div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={currentUser.isRestaurantOwner || false}
+                  onChange={(e) => handleToggleFeature("isRestaurantOwner", e.target.checked)}
+                  disabled={isUpdatingFeatures}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-disabled:opacity-50"></div>
+              </label>
+            </div>
+
+            <p className="text-xs text-muted-foreground pt-2">
+              Tip: These features will automatically turn on when you create your first event, store, or restaurant. You can turn them off here to simplify your navigation.
             </p>
           </div>
         </div>

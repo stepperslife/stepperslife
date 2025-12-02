@@ -140,15 +140,21 @@ export function AppHeader() {
                 <Ticket className="mr-2 h-4 w-4" />
                 <span>My Tickets</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push("/organizer/events")}>
-                <Calendar className="mr-2 h-4 w-4" />
-                <span>My Events</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push("/organizer/classes")}>
-                <BookOpen className="mr-2 h-4 w-4" />
-                <span>My Classes</span>
-              </DropdownMenuItem>
-              {(currentUser.role === "restaurateur" || currentUser.role === "admin") && (
+              {/* Organizer Dashboard - only show if feature is activated or user is admin/organizer */}
+              {(currentUser.isEventOrganizer || currentUser.role === "organizer" || currentUser.role === "admin") && (
+                <>
+                  <DropdownMenuItem onClick={() => router.push("/organizer/events")}>
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>My Events</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push("/organizer/classes")}>
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    <span>My Classes</span>
+                  </DropdownMenuItem>
+                </>
+              )}
+              {/* Restaurant Dashboard - only show if feature is activated or user has restaurateur role */}
+              {(currentUser.isRestaurantOwner || currentUser.role === "restaurateur" || currentUser.role === "admin") && (
                 <DropdownMenuItem onClick={() => router.push("/restaurateur/dashboard")}>
                   <Utensils className="mr-2 h-4 w-4" />
                   <span>My Restaurant</span>

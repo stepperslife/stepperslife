@@ -78,6 +78,16 @@ export default function CreateEventPage() {
   const creditBalance = useQuery(api.payments.queries.getCreditBalance);
   const markWelcomePopupShown = useMutation(api.users.mutations.markWelcomePopupShown);
 
+  // Activate event organizer feature when user visits this page
+  const activateFeature = useMutation(api.users.mutations.activateFeature);
+
+  // Auto-activate event organizer feature on page load
+  useEffect(() => {
+    activateFeature({ feature: "eventOrganizer" }).catch(() => {
+      // Silently ignore - user might not be authenticated yet or feature already active
+    });
+  }, [activateFeature]);
+
   // All users can create ticketed events by default (restrictions handled by middleware)
   const canCreateTicketedEvents = true;
 

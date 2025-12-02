@@ -39,6 +39,10 @@ export default defineSchema({
     // Onboarding
     welcomePopupShown: v.optional(v.boolean()), // Track if user has seen the 1000 free tickets welcome popup on event creation
     firstEventTicketPopupShown: v.optional(v.boolean()), // Track if user has seen the "Add Tickets" congratulations popup
+    // Feature toggles (activated when user first creates event/store/restaurant)
+    isEventOrganizer: v.optional(v.boolean()), // Has created/manages events - shows organizer dashboard links
+    isMarketplaceVendor: v.optional(v.boolean()), // Has a store - shows vendor dashboard links
+    isRestaurantOwner: v.optional(v.boolean()), // Has a restaurant - shows restaurant dashboard links
     // Timestamps
     createdAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
