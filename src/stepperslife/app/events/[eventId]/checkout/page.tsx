@@ -1237,7 +1237,7 @@ export default function CheckoutPage() {
                       <button
                         onClick={(e) => {
                           e.preventDefault();
-                          console.log("[Checkout] Button clicked directly");
+                          console.log("[Checkout] Button clicked!", { selectedTierId, selectedBundleId, buyerEmail, buyerName, purchaseType });
                           handleContinueToPayment();
                         }}
                         disabled={!buyerEmail || !buyerName}
