@@ -1235,9 +1235,12 @@ export default function CheckoutPage() {
 
                     {!showPayment && (
                       <button
+                        id="continue-payment-btn"
                         onClick={(e) => {
                           e.preventDefault();
-                          console.log("[Checkout] Button clicked!", { selectedTierId, selectedBundleId, buyerEmail, buyerName, purchaseType });
+                          // DEBUG: Change button text to confirm click handler runs
+                          const btn = document.getElementById('continue-payment-btn');
+                          if (btn) btn.textContent = 'Processing...';
                           handleContinueToPayment();
                         }}
                         disabled={!buyerEmail || !buyerName}
