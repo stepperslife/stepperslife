@@ -240,8 +240,12 @@ export default function CheckoutPage() {
       quantity,
     });
 
+    // TEMPORARY DEBUG: Show alert to confirm function is called
+    // alert(`handleContinueToPayment called! selectedTierId=${selectedTierId}, email=${buyerEmail}`);
+
     // Show loading toast immediately to indicate button was clicked
     const loadingToast = toast.loading("Creating order...");
+    console.log("[Checkout] Loading toast shown:", loadingToast);
 
     if ((!selectedTierId && !selectedBundleId) || !buyerEmail || !buyerName) {
       console.log("[Checkout] Validation failed - missing fields");
@@ -1231,7 +1235,11 @@ export default function CheckoutPage() {
 
                     {!showPayment && (
                       <button
-                        onClick={handleContinueToPayment}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          console.log("[Checkout] Button clicked directly");
+                          handleContinueToPayment();
+                        }}
                         disabled={!buyerEmail || !buyerName}
                         className={`w-full px-6 py-4 rounded-lg font-semibold transition-all ${
                           buyerEmail && buyerName
