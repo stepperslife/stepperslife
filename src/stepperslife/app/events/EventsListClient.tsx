@@ -236,17 +236,11 @@ export default function EventsListClient() {
                     >
                       {/* Event Image */}
                       <div className="relative h-48 bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
-                        {event.imageUrl ? (
-                          <img
-                            src={event.imageUrl}
-                            alt={event.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Calendar className="w-16 h-16 text-white opacity-50" />
-                          </div>
-                        )}
+                        <img
+                          src={event.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
+                          alt={event.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
                         {isPast && (
                           <div className="absolute top-2 right-2 bg-foreground/75 text-background px-3 py-1 rounded-full text-sm font-medium">
                             Past Event

@@ -18,7 +18,7 @@ interface ProductsSectionProps {
 }
 
 export function ProductsSection({ products }: ProductsSectionProps) {
-  if (!products || products.length === 0) return null;
+  const hasProducts = products && products.length > 0;
 
   return (
     <section className="container mx-auto px-4 py-16">
@@ -26,17 +26,35 @@ export function ProductsSection({ products }: ProductsSectionProps) {
         <div>
           <h2 className="text-3xl font-bold text-foreground dark:text-white flex items-center gap-2">
             <ShoppingBag className="w-8 h-8 text-primary" />
-            Shop Products
+            Marketplace
           </h2>
           <p className="text-muted-foreground mt-2">
             Browse our exclusive stepping merchandise and products
           </p>
         </div>
         <Link href="/marketplace" className="text-primary hover:underline font-medium">
-          View All Products →
+          Visit Marketplace →
         </Link>
       </div>
 
+      {!hasProducts ? (
+        <div className="text-center py-12 bg-muted/30 rounded-xl">
+          <ShoppingBag className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-foreground mb-2">
+            Marketplace Coming Soon
+          </h3>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+            We&apos;re working on bringing you exclusive stepping merchandise and products from local vendors.
+          </p>
+          <Link
+            href="/marketplace"
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+          >
+            <ShoppingBag className="w-5 h-5" />
+            Explore Marketplace
+          </Link>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.slice(0, 8).map((product) => (
           <div
@@ -97,6 +115,7 @@ export function ProductsSection({ products }: ProductsSectionProps) {
           </div>
         ))}
       </div>
+      )}
     </section>
   );
 }

@@ -230,20 +230,32 @@ export default function CheckoutPage() {
   }, [selectedTierId, quantity]);
 
   const handleContinueToPayment = async () => {
+    console.log("[Checkout] handleContinueToPayment called", {
+      selectedTierId,
+      selectedBundleId,
+      buyerEmail,
+      buyerName,
+      purchaseType,
+      quantity,
+    });
+
     if ((!selectedTierId && !selectedBundleId) || !buyerEmail || !buyerName) {
-      toast.error("Please fill in all fields");
+      console.log("[Checkout] Validation failed - missing fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
     // Check if seating chart exists and seats are required (only for individual tickets)
     const requiresSeats =
-      purchaseType === "tier" && seatingChart && seatingChart.sections.length > 0;
+      purchaseType === "tier" && seatingChart && seatingChart.sections && seatingChart.sections.length > 0;
     if (requiresSeats && selectedSeats.length !== quantity) {
+      console.log("[Checkout] Seat selection required but not complete");
       toast.error(`Please select ${quantity} seat${quantity > 1 ? "s" : ""} before proceeding`);
       return;
     }
 
     try {
+      console.log("[Checkout] Creating order...");
       let newOrderId;
 
       if (purchaseType === "bundle" && selectedBundleId) {
@@ -315,10 +327,22 @@ export default function CheckoutPage() {
         setShowPayment(true);
       }
     } catch (error: any) {
-      console.error("Order creation error:", error);
+      console.error("[Checkout] Order creation error:", error);
       toast.error(error.message || "Failed to create order. Please try again.");
     }
   };
+
+  // Debug: Log state changes
+  useEffect(() => {
+    console.log("[Checkout] State updated:", {
+      selectedTierId,
+      selectedBundleId,
+      buyerEmail: buyerEmail ? "set" : "empty",
+      buyerName: buyerName ? "set" : "empty",
+      showPayment,
+      orderId,
+    });
+  }, [selectedTierId, selectedBundleId, buyerEmail, buyerName, showPayment, orderId]);
 
   const handlePaymentSuccess = async (result: Record<string, unknown>) => {
     if (!orderId) return;
@@ -484,19 +508,13 @@ export default function CheckoutPage() {
                 transition={{ duration: 0.3, delay: 0.2 }}
                 className="bg-card rounded-lg shadow-md overflow-hidden mb-6"
               >
-                {/* Event Image - Now Required */}
+                {/* Event Image */}
                 <div className="w-full h-48 relative bg-muted">
-                  {eventDetails.imageUrl ? (
-                    <img
-                      src={eventDetails.imageUrl}
-                      alt={eventDetails.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
-                      <p className="text-muted-foreground text-sm">Event Image</p>
-                    </div>
-                  )}
+                  <img
+                    src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
+                    alt={eventDetails.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
                 <div className="p-6">
@@ -610,7 +628,12 @@ export default function CheckoutPage() {
                             return (
                               <button
                                 key={tier._id}
-                                onClick={() => !isSoldOut && setSelectedTierId(tier._id)}
+                                onClick={() => {
+                                  console.log("[Checkout] Ticket tier clicked:", tier._id, tier.name);
+                                  if (!isSoldOut) {
+                                    setSelectedTierId(tier._id);
+                                  }
+                                }}
                                 disabled={isSoldOut}
                                 className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
                                   selectedTierId === tier._id
@@ -1050,6 +1073,7 @@ export default function CheckoutPage() {
                   <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <Tag className="w-5 h-5" />
                     Discount Code
+                    <span className="text-xs font-normal text-gray-500">(optional)</span>
                   </h3>
 
                   {/* Applied Discount Display */}
@@ -1094,7 +1118,7 @@ export default function CheckoutPage() {
                               handleApplyDiscount();
                             }
                           }}
-                          placeholder="Enter code"
+                          placeholder="Have a code? Enter it here"
                           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400 uppercase"
                         />
                         <button
