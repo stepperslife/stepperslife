@@ -208,19 +208,13 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               className="md:col-span-2"
             >
               <div className="relative w-full bg-muted rounded-xl overflow-hidden shadow-lg sticky top-24">
-                {eventDetails.imageUrl ? (
-                  <div onClick={() => setShowFlyerModal(true)} className="cursor-pointer">
-                    <img
-                      src={eventDetails.imageUrl}
-                      alt={eventDetails.name}
-                      className="w-full h-auto object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full aspect-[3/4] flex items-center justify-center bg-primary">
-                    <Calendar className="w-24 h-24 text-white opacity-50" />
-                  </div>
-                )}
+                <div onClick={() => setShowFlyerModal(true)} className="cursor-pointer">
+                  <img
+                    src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
+                    alt={eventDetails.name}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
 
                 {/* Event Type Badge */}
                 <div className="absolute top-4 left-4">

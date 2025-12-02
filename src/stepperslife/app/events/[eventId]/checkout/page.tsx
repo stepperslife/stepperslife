@@ -484,19 +484,13 @@ export default function CheckoutPage() {
                 transition={{ duration: 0.3, delay: 0.2 }}
                 className="bg-card rounded-lg shadow-md overflow-hidden mb-6"
               >
-                {/* Event Image - Now Required */}
+                {/* Event Image */}
                 <div className="w-full h-48 relative bg-muted">
-                  {eventDetails.imageUrl ? (
-                    <img
-                      src={eventDetails.imageUrl}
-                      alt={eventDetails.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
-                      <p className="text-muted-foreground text-sm">Event Image</p>
-                    </div>
-                  )}
+                  <img
+                    src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
+                    alt={eventDetails.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
                 <div className="p-6">
@@ -1050,6 +1044,7 @@ export default function CheckoutPage() {
                   <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <Tag className="w-5 h-5" />
                     Discount Code
+                    <span className="text-xs font-normal text-gray-500">(optional)</span>
                   </h3>
 
                   {/* Applied Discount Display */}
@@ -1094,7 +1089,7 @@ export default function CheckoutPage() {
                               handleApplyDiscount();
                             }
                           }}
-                          placeholder="Enter code"
+                          placeholder="Have a code? Enter it here"
                           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400 uppercase"
                         />
                         <button

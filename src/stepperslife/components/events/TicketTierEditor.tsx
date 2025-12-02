@@ -102,7 +102,7 @@ export function TicketTierEditor({ tiers, onChange }: TicketTierEditorProps) {
                     type="text"
                     value={tier.name}
                     onChange={(e) => updateTier(tier.id, "name", e.target.value)}
-                    placeholder="e.g., General Admission, VIP, Early Bird"
+                    placeholder="e.g., General Admission, VIP, Table Seating"
                     className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </div>
