@@ -19,23 +19,33 @@ const GOOGLE_CLIENT_SECRET = process.env.AUTH_GOOGLE_CLIENT_SECRET!;
  * 4. localhost:3004 for local development
  */
 function getRedirectUri(): string {
+  let uri: string;
+
   // Check NEXTAUTH_URL first (explicit configuration)
   if (process.env.NEXTAUTH_URL) {
-    return `${process.env.NEXTAUTH_URL}/api/auth/callback/google`;
+    uri = `${process.env.NEXTAUTH_URL}/api/auth/callback/google`;
   }
-
   // Check VERCEL_URL (automatically set by Vercel)
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}/api/auth/callback/google`;
+  else if (process.env.VERCEL_URL) {
+    uri = `https://${process.env.VERCEL_URL}/api/auth/callback/google`;
   }
-
   // Production fallback to main domain
-  if (process.env.NODE_ENV === "production") {
-    return "https://stepperslife.com/api/auth/callback/google";
+  else if (process.env.NODE_ENV === "production") {
+    uri = "https://stepperslife.com/api/auth/callback/google";
+  }
+  // Local development fallback
+  else {
+    uri = "http://localhost:3004/api/auth/callback/google";
   }
 
-  // Local development fallback
-  return "http://localhost:3004/api/auth/callback/google";
+  console.log("[Google OAuth] Redirect URI:", uri);
+  console.log("[Google OAuth] Environment:", {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL ? "set" : "not set",
+    VERCEL_URL: process.env.VERCEL_URL ? "set" : "not set",
+    NODE_ENV: process.env.NODE_ENV,
+  });
+
+  return uri;
 }
 
 const REDIRECT_URI = getRedirectUri();
