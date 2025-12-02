@@ -230,27 +230,20 @@ export default function CheckoutPage() {
   }, [selectedTierId, quantity]);
 
   const handleContinueToPayment = async () => {
-    // DEBUG: Visible indication that function was called
-    console.log("[Checkout] handleContinueToPayment called", {
-      selectedTierId,
-      selectedBundleId,
-      buyerEmail,
-      buyerName,
-      purchaseType,
-      quantity,
-    });
-
-    // TEMPORARY DEBUG: Show alert to confirm function is called
-    // alert(`handleContinueToPayment called! selectedTierId=${selectedTierId}, email=${buyerEmail}`);
-
-    // Show loading toast immediately to indicate button was clicked
+    // Show loading toast immediately
     const loadingToast = toast.loading("Creating order...");
-    console.log("[Checkout] Loading toast shown:", loadingToast);
 
     if ((!selectedTierId && !selectedBundleId) || !buyerEmail || !buyerName) {
-      console.log("[Checkout] Validation failed - missing fields");
       toast.dismiss(loadingToast);
       toast.error("Please fill in all required fields");
+      return;
+    }
+
+    // Check if Stripe Connect is configured for paid orders
+    const needsStripePayment = total > 0 && (paymentModel === "CREDIT_CARD" || paymentMethod === "card");
+    if (needsStripePayment && !paymentConfig?.stripeConnectAccountId) {
+      toast.dismiss(loadingToast);
+      toast.error("Payment is not configured for this event. Please contact the organizer.");
       return;
     }
 
@@ -258,14 +251,12 @@ export default function CheckoutPage() {
     const requiresSeats =
       purchaseType === "tier" && seatingChart && seatingChart.sections && seatingChart.sections.length > 0;
     if (requiresSeats && selectedSeats.length !== quantity) {
-      console.log("[Checkout] Seat selection required but not complete");
       toast.dismiss(loadingToast);
       toast.error(`Please select ${quantity} seat${quantity > 1 ? "s" : ""} before proceeding`);
       return;
     }
 
     try {
-      console.log("[Checkout] Creating order...", { eventId, purchaseType, selectedTierId, selectedBundleId });
       let newOrderId;
 
       if (purchaseType === "bundle" && selectedBundleId) {
@@ -336,12 +327,11 @@ export default function CheckoutPage() {
         }
       } else {
         // Show payment UI for paid orders
-        console.log("[Checkout] Order created successfully, showing payment UI", { newOrderId, total });
         toast.dismiss(loadingToast);
         setShowPayment(true);
       }
     } catch (error: any) {
-      console.error("[Checkout] Order creation error:", error);
+      console.error("Order creation error:", error);
       toast.dismiss(loadingToast);
       toast.error(error.message || "Failed to create order. Please try again.");
     }
