@@ -3,6 +3,7 @@ import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { getJwtSecretEncoded, validateJwtSecret } from "@/lib/auth/jwt-secret";
 import { getBaseUrl } from "@/lib/constants/app-config";
+import { getPrivateKey, getKeyId } from "@/lib/auth/jwks";
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,11 +26,14 @@ export async function GET(request: NextRequest) {
     try {
       const { payload } = await jwtVerify(sessionToken.value, secret);
 
-      // Create a Convex-compatible JWT token
+      // Create a Convex-compatible JWT token using RS256
       // Convex expects specific fields in the token
       // The token identifier format: domain|applicationID|subject
       const baseUrl = getBaseUrl(request);
       const tokenIdentifier = `${baseUrl}|convex|${payload.userId}`;
+
+      // Get the RSA private key for signing
+      const privateKey = await getPrivateKey();
 
       const convexToken = await new SignJWT({
         sub: tokenIdentifier,
@@ -39,10 +43,10 @@ export async function GET(request: NextRequest) {
         name: payload.name,
         role: payload.role,
       })
-        .setProtectedHeader({ alg: "HS256" })
+        .setProtectedHeader({ alg: "RS256", kid: getKeyId(), typ: "JWT" })
         .setIssuedAt()
         .setExpirationTime("30d")
-        .sign(secret);
+        .sign(privateKey);
 
       return NextResponse.json({ token: convexToken });
     } catch (error) {
