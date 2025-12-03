@@ -395,7 +395,8 @@ export default defineSchema({
         v.literal("SCANNED"),
         v.literal("CANCELLED"),
         v.literal("REFUNDED"),
-        v.literal("PENDING_ACTIVATION") // For cash sales awaiting customer activation
+        v.literal("PENDING_ACTIVATION"), // For cash sales awaiting customer activation
+        v.literal("PENDING") // For cash payments awaiting staff validation at door
       )
     ),
     scannedAt: v.optional(v.number()),
@@ -421,6 +422,7 @@ export default defineSchema({
         v.literal("CASH_APP"),
         v.literal("SQUARE"),
         v.literal("STRIPE"),
+        v.literal("PAYPAL"),
         v.literal("FREE"),
         v.literal("TEST")
       )
@@ -603,6 +605,7 @@ export default defineSchema({
     // Status
     status: v.union(
       v.literal("PENDING"),
+      v.literal("PENDING_PAYMENT"), // Cash order awaiting payment at door
       v.literal("COMPLETED"),
       v.literal("CANCELLED"),
       v.literal("FAILED"),
