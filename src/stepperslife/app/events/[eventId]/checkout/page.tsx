@@ -65,7 +65,8 @@ export default function CheckoutPage() {
   const [buyerEmail, setBuyerEmail] = useState("");
   const [buyerName, setBuyerName] = useState("");
   const [showPayment, setShowPayment] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "cash">("card");
+  // Default to cash payment - organizer validates with code at door
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "cash">("cash");
   const [orderId, setOrderId] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [referralCode, setReferralCode] = useState<string | null>(null);
@@ -119,7 +120,8 @@ export default function CheckoutPage() {
 
   // Determine payment processor based on event payment model
   const paymentModel = paymentConfig?.paymentModel || "PREPAY";
-  const useStripePayment = paymentModel === "CREDIT_CARD";
+  // Only force Stripe if CREDIT_CARD AND Stripe Connect is configured
+  const useStripePayment = paymentModel === "CREDIT_CARD" && !!paymentConfig?.stripeConnectAccountId;
 
   const subtotal =
     purchaseType === "bundle" && selectedBundle
@@ -230,6 +232,12 @@ export default function CheckoutPage() {
   }, [selectedTierId, quantity]);
 
   const handleContinueToPayment = async () => {
+    // If order already exists (user clicked back and returned), just show payment
+    if (orderId) {
+      setShowPayment(true);
+      return;
+    }
+
     // Show loading toast immediately
     const loadingToast = toast.loading("Creating order...");
 
@@ -239,13 +247,8 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Check if Stripe Connect is configured for paid orders
-    const needsStripePayment = total > 0 && (paymentModel === "CREDIT_CARD" || paymentMethod === "card");
-    if (needsStripePayment && !paymentConfig?.stripeConnectAccountId) {
-      toast.dismiss(loadingToast);
-      toast.error("Payment is not configured for this event. Please contact the organizer.");
-      return;
-    }
+    // Stripe Connect is only required for CREDIT_CARD model events with online payment
+    // Cash payments don't need Stripe Connect - they're validated by organizer at door
 
     // Check if seating chart exists and seats are required (only for individual tickets)
     const requiresSeats =
@@ -481,30 +484,53 @@ export default function CheckoutPage() {
       {/* Main Checkout Form */}
       {!isLoading && eventDetails && !isSuccess && (
         <div className="min-h-screen bg-muted">
-          <div className="container mx-auto px-4 py-8 max-w-4xl">
-            {/* Header */}
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Link
-                href={`/events/${eventId}`}
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Event
-              </Link>
-            </motion.div>
+          {/* Step Indicator - Sticky Header */}
+          <div className="bg-card border-b border-border sticky top-0 z-40">
+            <div className="container mx-auto px-4 py-4 max-w-4xl">
+              <div className="flex items-center justify-between">
+                <Link
+                  href={`/events/${eventId}`}
+                  className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline">Back to Event</span>
+                </Link>
 
-          <div className="grid md:grid-cols-2 gap-8">
+                {/* Simple 2-Step Indicator */}
+                <div className="flex items-center gap-2">
+                  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    !showPayment
+                      ? "bg-primary text-white"
+                      : "bg-muted text-muted-foreground"
+                  }`}>
+                    <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">1</span>
+                    <span className="hidden sm:inline">Select Tickets</span>
+                  </div>
+                  <div className="w-8 h-0.5 bg-border" />
+                  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    showPayment
+                      ? "bg-primary text-white"
+                      : "bg-muted text-muted-foreground"
+                  }`}>
+                    <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">2</span>
+                    <span className="hidden sm:inline">Payment</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="container mx-auto px-4 py-8 max-w-4xl">
+            <div className="grid md:grid-cols-2 gap-8">
             {/* Left: Order Details */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <h1 className="text-2xl font-bold text-foreground mb-6">Checkout</h1>
+              <h1 className="text-2xl font-bold text-foreground mb-6">
+                {showPayment ? "Complete Payment" : "Select Your Tickets"}
+              </h1>
 
               {/* Event Info */}
               <motion.div
@@ -1249,8 +1275,8 @@ export default function CheckoutPage() {
                 )}
               </motion.div>
             </motion.div>
+            </div>
           </div>
-        </div>
         </div>
       )}
       <PublicFooter />

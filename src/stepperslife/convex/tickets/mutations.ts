@@ -524,7 +524,7 @@ export const completeOrder = mutation({
   args: {
     orderId: v.id("orders"),
     paymentId: v.string(),
-    paymentMethod: v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("TEST"), v.literal("FREE")),
+    paymentMethod: v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("CASH"), v.literal("PAYPAL"), v.literal("TEST"), v.literal("FREE")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -555,12 +555,13 @@ export const completeOrder = mutation({
 
     if (!user) throw new Error("User not found");
 
-    // Update order status
+    // Update order status - CASH payments are PENDING_PAYMENT until staff validates
+    const orderStatus = args.paymentMethod === "CASH" ? "PENDING_PAYMENT" : "COMPLETED";
     await ctx.db.patch(args.orderId, {
-      status: "COMPLETED",
+      status: orderStatus,
       paymentId: args.paymentId,
       paymentMethod: args.paymentMethod,
-      paidAt: Date.now(),
+      paidAt: args.paymentMethod === "CASH" ? undefined : Date.now(), // Don't set paidAt for cash until validated
       updatedAt: Date.now(),
     });
 
@@ -587,6 +588,10 @@ export const completeOrder = mutation({
       // Generate unique ticket code
       const ticketCode = `TKT-${Date.now()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
 
+      // CASH payments start as PENDING until staff validates at door
+      // All other payment methods are immediately VALID
+      const ticketStatus = args.paymentMethod === "CASH" ? "PENDING" : "VALID";
+
       const ticketId = await ctx.db.insert("tickets", {
         orderId: args.orderId,
         orderItemId: item._id,
@@ -596,9 +601,9 @@ export const completeOrder = mutation({
         attendeeEmail: order.buyerEmail,
         attendeeName: order.buyerName,
         ticketCode,
-        status: "VALID",
+        status: ticketStatus,
         soldByStaffId: order.soldByStaffId || undefined,
-        paymentMethod: args.paymentMethod as "SQUARE" | "STRIPE" | "ONLINE" | "FREE" | "TEST",
+        paymentMethod: args.paymentMethod as "SQUARE" | "STRIPE" | "CASH" | "PAYPAL" | "FREE" | "TEST",
         createdAt: Date.now(),
         updatedAt: Date.now(),
       });
@@ -1082,7 +1087,7 @@ export const completeBundleOrder = mutation({
   args: {
     orderId: v.id("orders"),
     paymentId: v.string(),
-    paymentMethod: v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("TEST"), v.literal("FREE")),
+    paymentMethod: v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("CASH"), v.literal("PAYPAL"), v.literal("TEST"), v.literal("FREE")),
   },
   handler: async (ctx, args) => {
     const order = await ctx.db.get(args.orderId);
@@ -1092,12 +1097,13 @@ export const completeBundleOrder = mutation({
     const bundle = await ctx.db.get(order.bundleId);
     if (!bundle) throw new Error("Bundle not found");
 
-    // Update order status
+    // Update order status - CASH payments are PENDING_PAYMENT until staff validates
+    const orderStatus = args.paymentMethod === "CASH" ? "PENDING_PAYMENT" : "COMPLETED";
     await ctx.db.patch(args.orderId, {
-      status: "COMPLETED",
+      status: orderStatus,
       paymentId: args.paymentId,
       paymentMethod: args.paymentMethod,
-      paidAt: Date.now(),
+      paidAt: args.paymentMethod === "CASH" ? undefined : Date.now(),
       updatedAt: Date.now(),
     });
 
@@ -1109,6 +1115,9 @@ export const completeBundleOrder = mutation({
       if (!tier) continue;
 
       // Generate tickets for this tier
+      // CASH payments start as PENDING until staff validates
+      const ticketStatus = args.paymentMethod === "CASH" ? "PENDING" : "VALID";
+
       for (let i = 0; i < includedTier.quantity; i++) {
         // Generate unique ticket code for QR scanning
         const ticketCode = `TKT-${Date.now()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
@@ -1121,7 +1130,7 @@ export const completeBundleOrder = mutation({
           attendeeEmail: order.buyerEmail,
           attendeeName: order.buyerName,
           ticketCode, // FIXED: Add unique ticket code for QR scanning
-          status: "VALID",
+          status: ticketStatus,
           soldByStaffId: order.soldByStaffId,
           paymentMethod: args.paymentMethod === "TEST" ? "ONLINE" : args.paymentMethod,
           createdAt: Date.now(),
