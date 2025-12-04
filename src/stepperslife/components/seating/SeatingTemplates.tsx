@@ -1523,6 +1523,7 @@ export default function SeatingTemplates({ onSelectTemplate, onClose }: SeatingT
         {/* Footer */}
         <div className="border-t border-border px-8 py-4 bg-muted flex justify-end">
           <button
+            type="button"
             onClick={onClose}
             className="px-6 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-muted transition-colors font-medium"
           >

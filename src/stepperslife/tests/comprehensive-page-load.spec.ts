@@ -43,7 +43,7 @@ async function checkPageLoaded(page: Page, pageName: string, expectedUrl: string
     console.log(`  ✅ Page loaded successfully`);
     return true;
   } catch (error) {
-    console.log(`  ❌ Error: ${error.message}`);
+    console.log(`  ❌ Error: ${error instanceof Error ? error.message : String(error)}`);
     return false;
   }
 }

@@ -156,6 +156,7 @@ export default function DefaultTeamPage() {
       {/* Add Staff Button */}
       <div className="mb-6">
         <button
+          type="button"
           onClick={() => setShowAddStaff(true)}
           className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition flex items-center gap-2 font-semibold"
         >
@@ -279,6 +280,7 @@ export default function DefaultTeamPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
+                        type="button"
                         onClick={() =>
                           handleToggleAutoAssign(staff._id, staff.autoAssignToNewEvents || false)
                         }
@@ -299,6 +301,7 @@ export default function DefaultTeamPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
+                        type="button"
                         onClick={() => handleRemoveStaff(staff._id)}
                         className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                         title="Remove staff member"

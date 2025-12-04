@@ -7,13 +7,25 @@ import { Calendar, Clock, MapPin, Users, Ticket, DollarSign, TrendingUp } from "
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+interface EventDetails {
+  name: string;
+  ticketsAvailable?: number;
+  ticketsSold?: number;
+  earnings?: string;
+  startDate: string | number | Date;
+  venue: string;
+  capacity?: number;
+  ticketsAllocated?: number;
+  commissionRate?: number;
+}
+
 export default function EventDetailsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const searchParams = useSearchParams();
   const eventId = searchParams.get("id");
 
   // Mock event data - replace with actual Convex query
-  const event = null;
+  const event: EventDetails | null = null;
 
   if (!event) {
     return (
@@ -37,6 +49,9 @@ export default function EventDetailsPage() {
     );
   }
 
+  // Type assertion for mock data - will be replaced with actual Convex query result
+  const eventData = event as EventDetails;
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -45,7 +60,7 @@ export default function EventDetailsPage() {
           <span>/</span>
           <span>Event Details</span>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">{event.name}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{eventData.name}</h1>
         <p className="text-muted-foreground mt-2">View event details and your performance</p>
       </div>
 
@@ -56,7 +71,7 @@ export default function EventDetailsPage() {
             <Ticket className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{event.ticketsAvailable || 0}</div>
+            <div className="text-2xl font-bold">{eventData.ticketsAvailable || 0}</div>
             <p className="text-xs text-muted-foreground">To sell</p>
           </CardContent>
         </Card>
@@ -67,7 +82,7 @@ export default function EventDetailsPage() {
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{event.ticketsSold || 0}</div>
+            <div className="text-2xl font-bold text-green-600">{eventData.ticketsSold || 0}</div>
             <p className="text-xs text-muted-foreground">By you</p>
           </CardContent>
         </Card>
@@ -78,7 +93,7 @@ export default function EventDetailsPage() {
             <DollarSign className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">${event.earnings || "0.00"}</div>
+            <div className="text-2xl font-bold text-green-600">${eventData.earnings || "0.00"}</div>
             <p className="text-xs text-muted-foreground">Commission</p>
           </CardContent>
         </Card>
@@ -106,7 +121,7 @@ export default function EventDetailsPage() {
             <div>
               <p className="text-sm font-medium">Date</p>
               <p className="text-sm text-muted-foreground">
-                {new Date(event.startDate).toLocaleDateString('en-US', {
+                {new Date(eventData.startDate).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
@@ -121,7 +136,7 @@ export default function EventDetailsPage() {
             <div>
               <p className="text-sm font-medium">Time</p>
               <p className="text-sm text-muted-foreground">
-                {new Date(event.startDate).toLocaleTimeString('en-US', {
+                {new Date(eventData.startDate).toLocaleTimeString('en-US', {
                   hour: '2-digit',
                   minute: '2-digit'
                 })}
@@ -133,7 +148,7 @@ export default function EventDetailsPage() {
             <MapPin className="h-5 w-5 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">Venue</p>
-              <p className="text-sm text-muted-foreground">{event.venue}</p>
+              <p className="text-sm text-muted-foreground">{eventData.venue}</p>
             </div>
           </div>
 
@@ -141,7 +156,7 @@ export default function EventDetailsPage() {
             <Users className="h-5 w-5 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">Capacity</p>
-              <p className="text-sm text-muted-foreground">{event.capacity || "N/A"} attendees</p>
+              <p className="text-sm text-muted-foreground">{eventData.capacity || "N/A"} attendees</p>
             </div>
           </div>
         </CardContent>
@@ -156,19 +171,19 @@ export default function EventDetailsPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Tickets Allocated</span>
-              <span className="font-semibold">{event.ticketsAllocated || 0}</span>
+              <span className="font-semibold">{eventData.ticketsAllocated || 0}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Tickets Sold</span>
-              <span className="font-semibold text-green-600">{event.ticketsSold || 0}</span>
+              <span className="font-semibold text-green-600">{eventData.ticketsSold || 0}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Total Earnings</span>
-              <span className="font-semibold text-green-600">${event.earnings || "0.00"}</span>
+              <span className="font-semibold text-green-600">${eventData.earnings || "0.00"}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Commission Rate</span>
-              <span className="font-semibold">{event.commissionRate || 0}%</span>
+              <span className="font-semibold">{eventData.commissionRate || 0}%</span>
             </div>
           </div>
         </CardContent>

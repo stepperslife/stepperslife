@@ -7,11 +7,21 @@ import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock, Users, QrCode } from "lucide-react";
 import Link from "next/link";
 
+interface TodayEvent {
+  id: string;
+  name: string;
+  startTime: number;
+  endTime: number;
+  location: string;
+  expectedAttendance: number;
+  scannedCount: number;
+}
+
 export default function TodayEventsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data
-  const events = [];
+  const events: TodayEvent[] = [];
 
   const formatTime = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString("en-US", {
@@ -50,7 +60,7 @@ export default function TodayEventsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {events.map((event: any) => (
+          {events.map((event) => (
             <Card key={event.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row gap-6">

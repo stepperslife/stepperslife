@@ -18,7 +18,11 @@ import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
 
 export default function OrganizerDashboardPage() {
-  const events = useQuery(api.events.queries.getOrganizerEvents);
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const events = useQuery(
+    api.events.queries.getOrganizerEvents,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
+  );
   const credits = useQuery(api.credits.queries.getMyCredits);
 
   const isLoading = events === undefined || credits === undefined;
@@ -27,7 +31,7 @@ export default function OrganizerDashboardPage() {
   const totalTicketsAllocated =
     events?.reduce((sum, event) => sum + (event.totalTickets || 0), 0) || 0;
   const totalTicketsSold = events?.reduce((sum, event) => sum + (event.ticketsSold || 0), 0) || 0;
-  const totalRevenue = events?.reduce((sum, event) => sum + (event.totalRevenue || 0), 0) || 0;
+  const totalRevenue = 0; // TODO: Calculate from orders/tickets
   const percentageUsed = credits ? (credits.creditsUsed / credits.creditsTotal) * 100 : 0;
 
   // Get upcoming events

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -39,16 +39,18 @@ export default function PaymentMethodsPage() {
   const isLoading = event === undefined || currentUser === undefined;
 
   // Initialize state from existing config
-  useState(() => {
+  useEffect(() => {
     if (paymentConfig) {
       setSelectedProcessor((paymentConfig.merchantProcessor as MerchantProcessor) || null);
-      setCreditCardEnabled(paymentConfig.creditCardEnabled ?? true);
-      setCashAppEnabled(paymentConfig.cashAppEnabled ?? false);
+      // Check if STRIPE is in customerPaymentMethods array
+      setCreditCardEnabled(paymentConfig.customerPaymentMethods?.includes("STRIPE") ?? true);
+      // Check if CASHAPP is in customerPaymentMethods array
+      setCashAppEnabled(paymentConfig.customerPaymentMethods?.includes("CASHAPP") ?? false);
     }
-  });
+  }, [paymentConfig]);
 
   // Check if user is the organizer
-  if (!isLoading && event.organizerId !== currentUser?._id) {
+  if (!isLoading && event && event.organizerId !== currentUser?._id) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">

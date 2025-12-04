@@ -9,16 +9,31 @@ import { Package, Calendar, Download, Search, CheckCircle, Clock, XCircle, Ticke
 import Link from "next/link";
 import { useState } from "react";
 
+interface OrderEvent {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface Order {
+  id: string;
+  orderNumber: string;
+  orderDate: number;
+  status: string;
+  total: number;
+  events: OrderEvent[];
+}
+
 export default function MyOrdersPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Mock data - will be replaced with actual Convex query
-  const orders = [];
+  const orders: Order[] = [];
 
-  const filteredOrders = orders.filter((order: any) =>
+  const filteredOrders = orders.filter((order) =>
     order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.events.some((e: any) =>
+    order.events.some((e) =>
       e.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
@@ -66,9 +81,9 @@ export default function MyOrdersPage() {
   };
 
   const totalOrders = orders.length;
-  const totalSpent = orders.reduce((sum: number, o: any) => sum + o.total, 0);
+  const totalSpent = orders.reduce((sum, o) => sum + o.total, 0);
   const totalTickets = orders.reduce(
-    (sum: number, o: any) => sum + o.events.reduce((s: number, e: any) => s + e.quantity, 0),
+    (sum, o) => sum + o.events.reduce((s, e) => s + e.quantity, 0),
     0
   );
 
@@ -154,7 +169,7 @@ export default function MyOrdersPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {filteredOrders.map((order: any) => (
+          {filteredOrders.map((order) => (
             <Card key={order.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 {/* Order Header */}
@@ -178,7 +193,7 @@ export default function MyOrdersPage() {
 
                 {/* Order Items */}
                 <div className="space-y-3 mb-4">
-                  {order.events.map((event: any, index: number) => (
+                  {order.events.map((event, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between py-2"

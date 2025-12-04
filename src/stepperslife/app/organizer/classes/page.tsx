@@ -253,6 +253,7 @@ export default function OrganizerClassesPage() {
                         </Link>
 
                         <button
+                          type="button"
                           onClick={() => handleTogglePublish(classItem._id, classItem.status || "DRAFT")}
                           className={`flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm rounded-lg transition-all font-semibold ${
                             classItem.status === "PUBLISHED"
@@ -282,6 +283,7 @@ export default function OrganizerClassesPage() {
                         </Link>
 
                         <button
+                          type="button"
                           onClick={() => setShowDeleteConfirm(classItem._id)}
                           className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-destructive text-destructive rounded-lg hover:bg-destructive/10 transition-colors"
                         >
@@ -319,6 +321,7 @@ export default function OrganizerClassesPage() {
 
               <div className="flex gap-3 justify-end">
                 <button
+                  type="button"
                   onClick={() => setShowDeleteConfirm(null)}
                   disabled={deletingId !== null}
                   className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
@@ -326,6 +329,7 @@ export default function OrganizerClassesPage() {
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={() => handleDelete(showDeleteConfirm)}
                   disabled={deletingId !== null}
                   className="px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center gap-2"

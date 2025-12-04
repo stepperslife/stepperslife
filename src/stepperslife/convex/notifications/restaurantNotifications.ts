@@ -247,7 +247,7 @@ export const notifyNewFoodOrder = action({
     totalCents: v.number(),
     itemCount: v.number(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; pushSent: number; emailScheduled: boolean }> => {
     const totalDollars = (args.totalCents / 100).toFixed(2);
     const itemText = args.itemCount === 1 ? "item" : "items";
 
@@ -256,7 +256,7 @@ export const notifyNewFoodOrder = action({
 
     // Send push notification
     const pushResult = await ctx.runMutation(
-      internal.notifications.restaurantNotifications.sendToRestaurant,
+      internal["notifications/restaurantNotifications"].sendToRestaurant,
       {
         restaurantId: args.restaurantId,
         type: "FOOD_ORDER",
@@ -274,7 +274,7 @@ export const notifyNewFoodOrder = action({
     if (!pushResult.success || pushResult.sent === 0) {
       // Schedule email notification as fallback
       await ctx.runMutation(
-        internal.notifications.restaurantNotifications.scheduleEmailNotification,
+        internal["notifications/restaurantNotifications"].scheduleEmailNotification,
         {
           restaurantId: args.restaurantId,
           foodOrderId: args.foodOrderId,
@@ -345,9 +345,9 @@ export const sendTestNotification = action({
   args: {
     restaurantId: v.id("restaurants"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; sent: number }> => {
     const result = await ctx.runMutation(
-      internal.notifications.restaurantNotifications.sendToRestaurant,
+      internal["notifications/restaurantNotifications"].sendToRestaurant,
       {
         restaurantId: args.restaurantId,
         type: "TEST",
@@ -358,7 +358,7 @@ export const sendTestNotification = action({
 
     return {
       success: result.success,
-      sent: result.sent,
+      sent: result.sent || 0,
     };
   },
 });

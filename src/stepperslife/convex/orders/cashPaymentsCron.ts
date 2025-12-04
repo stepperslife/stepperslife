@@ -21,9 +21,10 @@ export const expireCashOrders = internalMutation({
       .filter((q) => q.eq(q.field("status"), "PENDING_CASH_PAYMENT"))
       .collect();
 
-    // Filter by expired hold time
+    // Filter by expired hold time (30 minutes from order creation)
+    const CASH_HOLD_DURATION = 30 * 60 * 1000; // 30 minutes
     const expiredOrders = allPendingOrders.filter(
-      (order) => order.holdExpiresAt && order.holdExpiresAt < now
+      (order) => order.createdAt && (now - order.createdAt) > CASH_HOLD_DURATION
     );
 
 
@@ -31,13 +32,13 @@ export const expireCashOrders = internalMutation({
     let ticketsReleasedCount = 0;
 
     for (const order of expiredOrders) {
-      // Update order status to EXPIRED
+      // Update order status to CANCELLED (no EXPIRED status in schema)
       await ctx.db.patch(order._id, {
-        status: "EXPIRED",
+        status: "CANCELLED",
         updatedAt: now,
       });
 
-      // Update all tickets to EXPIRED status
+      // Update all tickets to CANCELLED status (no EXPIRED status in schema)
       const tickets = await ctx.db
         .query("tickets")
         .withIndex("by_order", (q) => q.eq("orderId", order._id))
@@ -45,7 +46,7 @@ export const expireCashOrders = internalMutation({
 
       for (const ticket of tickets) {
         await ctx.db.patch(ticket._id, {
-          status: "EXPIRED",
+          status: "CANCELLED",
           updatedAt: now,
         });
       }

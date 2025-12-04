@@ -3,16 +3,41 @@ import sharp from "sharp";
 import crypto from "crypto";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
+import { jwtVerify } from "jose";
+import { getJwtSecretEncoded } from "@/lib/auth/jwt-secret";
+import { Id } from "@/convex/_generated/dataModel";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const JWT_SECRET = getJwtSecretEncoded();
 
 // Calculate file hash for duplicate detection
 async function calculateFileHash(buffer: Buffer): Promise<string> {
   return crypto.createHash("sha256").update(buffer).digest("hex");
 }
 
+// Verify user is authenticated and is an admin or organizer
+async function verifyAuth(request: NextRequest): Promise<{ userId: string; role: string } | null> {
+  const token = request.cookies.get("session_token")?.value || request.cookies.get("auth-token")?.value;
+  if (!token) return null;
+
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const role = payload.role as string;
+    // Allow admin and organizer roles to upload flyers
+    if (role !== "admin" && role !== "organizer") return null;
+    return { userId: payload.userId as string, role };
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
+    // Verify authentication
+    const auth = await verifyAuth(request);
+    if (!auth) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
@@ -49,7 +74,7 @@ export async function POST(request: NextRequest) {
       headers: {
         "Content-Type": "image/jpeg",
       },
-      body: optimizedBuffer,
+      body: optimizedBuffer as unknown as BodyInit,
     });
 
     if (!uploadResponse.ok) {

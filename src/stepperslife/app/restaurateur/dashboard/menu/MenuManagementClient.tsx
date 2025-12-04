@@ -104,7 +104,7 @@ export default function MenuManagementClient() {
                 Please sign in to manage your restaurant menu.
               </p>
               <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
-                <Link href="/auth/sign-in">Sign In</Link>
+                <Link href="/login">Sign In</Link>
               </Button>
             </div>
           </div>

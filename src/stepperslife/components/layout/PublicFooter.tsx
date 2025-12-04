@@ -60,8 +60,11 @@ export function PublicFooter() {
           {footerSections.map((section) => (
             <div key={section.id} className="border-b border-border">
               <button
+                type="button"
                 onClick={() => toggleSection(section.id)}
                 className="w-full flex items-center justify-between py-3 text-left"
+                aria-expanded={openSection === section.id}
+                aria-label={`Toggle ${section.title} section`}
               >
                 <h3 className="font-semibold text-foreground">{section.title}</h3>
                 <ChevronDown

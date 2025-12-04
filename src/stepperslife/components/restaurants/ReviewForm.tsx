@@ -74,7 +74,7 @@ export function ReviewForm({ restaurantId, userId, onSuccess, onCancel }: Review
           Sign in to leave a review
         </p>
         <Button asChild>
-          <a href="/auth/sign-in">Sign In</a>
+          <a href="/login">Sign In</a>
         </Button>
       </div>
     );

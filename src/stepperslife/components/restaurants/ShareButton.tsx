@@ -101,9 +101,10 @@ export function ShareButton({
     return (
       <div className="relative">
         <button
+          type="button"
           onClick={handleShare}
           className={`${sizeClasses[size]} flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform text-gray-600 dark:text-gray-300 hover:text-orange-600`}
-          title="Share"
+          aria-label="Share"
         >
           <Share2 className="w-4 h-4" />
         </button>
@@ -118,8 +119,10 @@ export function ShareButton({
               <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                 <span className="text-sm font-medium">Share</span>
                 <button
+                  type="button"
                   onClick={() => setShowDropdown(false)}
                   className="text-gray-400 hover:text-gray-600"
+                  aria-label="Close share menu"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -129,6 +132,7 @@ export function ShareButton({
                 if (link.action) {
                   return (
                     <button
+                      type="button"
                       key={link.name}
                       onClick={link.action}
                       className={`w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${link.className || ""}`}
@@ -176,8 +180,10 @@ export function ShareButton({
             <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
               <span className="text-sm font-medium">Share</span>
               <button
+                type="button"
                 onClick={() => setShowDropdown(false)}
                 className="text-gray-400 hover:text-gray-600"
+                aria-label="Close share menu"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -187,6 +193,7 @@ export function ShareButton({
               if (link.action) {
                 return (
                   <button
+                    type="button"
                     key={link.name}
                     onClick={link.action}
                     className={`w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${link.className || ""}`}

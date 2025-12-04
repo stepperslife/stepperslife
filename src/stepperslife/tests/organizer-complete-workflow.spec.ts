@@ -33,6 +33,7 @@ const ORGANIZER_NAME = 'Test Organizer';
 
 let convex: ConvexHttpClient;
 let testEventId: Id<"events"> | null = null;
+const organizerId: Id<"users"> | null = null;
 
 test.beforeAll(async () => {
   convex = new ConvexHttpClient(CONVEX_URL);
@@ -209,13 +210,13 @@ test.describe('ORGANIZER Role Complete Workflow', () => {
     console.log(`  ✓ Redirected to: ${currentUrl}`);
 
     // Query for the created event
-    const events = await convex.query(api.events.queries.getAllEvents);
-    const createdEvent = events.find((e: any) => e.title?.includes('Test Event - Production Ready'));
+    const events = await convex.query(api.events.queries.getOrganizerEvents, { userId: undefined });
+    const createdEvent = events.find((e: any) => e.name?.includes('Test Event - Production Ready'));
 
     if (createdEvent) {
       testEventId = createdEvent._id;
       console.log(`✓ Event created successfully: ${testEventId}`);
-      console.log(`  - Title: ${createdEvent.title}`);
+      console.log(`  - Title: ${createdEvent.name}`);
       console.log(`  - Status: ${createdEvent.status}`);
       console.log(`  - Capacity: ${createdEvent.capacity}`);
     } else {
@@ -668,7 +669,7 @@ test.describe('ORGANIZER Role Complete Workflow', () => {
     ];
 
     let successCount = 0;
-    let totalPages = organizerPages.length;
+    const totalPages = organizerPages.length;
 
     for (const orgPage of organizerPages) {
       try {

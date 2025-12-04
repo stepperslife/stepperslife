@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query, internalQuery } from "../_generated/server";
 import { requireAdmin } from "../lib/permissions";
+import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Admin queries - requires admin role
@@ -20,7 +21,7 @@ export const getPlatformAnalytics = query({
       console.warn("[getPlatformAnalytics] TESTING MODE - No authentication");
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       user = await ctx.db
@@ -117,7 +118,7 @@ export const getAllUsers = query({
       console.warn("[getAllUsers] TESTING MODE - No authentication");
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       user = await ctx.db
@@ -181,7 +182,7 @@ export const getAllEvents = query({
       console.warn("[getAllEvents] TESTING MODE - No authentication");
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       user = await ctx.db
@@ -247,7 +248,7 @@ export const getRecentActivity = query({
       console.warn("[getRecentActivity] TESTING MODE - No authentication");
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       user = await ctx.db
@@ -302,7 +303,7 @@ export const searchUsers = query({
       console.warn("[searchUsers] TESTING MODE - No authentication");
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       user = await ctx.db

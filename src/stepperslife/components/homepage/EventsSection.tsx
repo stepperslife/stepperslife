@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { format } from 'date-fns'
 import { Calendar, MapPin, Ticket, ArrowRight } from 'lucide-react'
 
@@ -77,11 +78,14 @@ export function EventsSection({ events }: EventsSectionProps) {
               >
                 {/* Event Image */}
                 {event.imageUrl ? (
-                  <div className="aspect-video w-full overflow-hidden bg-muted">
-                    <img
+                  <div className="aspect-video w-full overflow-hidden bg-muted relative">
+                    <Image
                       src={event.imageUrl}
                       alt={event.title}
-                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform group-hover:scale-105"
+                      loading="lazy"
                     />
                   </div>
                 ) : (

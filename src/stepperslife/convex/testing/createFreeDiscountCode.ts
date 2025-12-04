@@ -35,6 +35,11 @@ export const createFreeDiscountCode = mutation({
 
     const now = Date.now();
 
+    // Validate organizerId is present
+    if (!event.organizerId) {
+      throw new Error("Event does not have an organizer");
+    }
+
     // Create FREE discount code (100% off, unlimited uses)
     const discountCodeId = await ctx.db.insert("discountCodes", {
       code: "FREE",
@@ -100,6 +105,18 @@ export const createFreeCodeForAllTestEvents = mutation({
       }
 
       const now = Date.now();
+
+      // Validate organizerId is present
+      if (!event.organizerId) {
+        results.push({
+          eventId: event._id,
+          eventName: event.name,
+          status: "error" as const,
+          discountCodeId: undefined,
+          error: "Event does not have an organizer",
+        });
+        continue;
+      }
 
       // Create FREE code
       const discountCodeId = await ctx.db.insert("discountCodes", {

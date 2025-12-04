@@ -55,7 +55,7 @@ const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL || 'https://neighborly-swo
 let convex: ConvexHttpClient;
 let lifecycleEventId: Id<"events"> | null = null;
 let lifecycleOrderId: Id<"orders"> | null = null;
-let lifecycleTicketIds: Id<"tickets">[] = [];
+const lifecycleTicketIds: Id<"tickets">[] = [];
 let lifecycleQRCodes: string[] = [];
 
 test.beforeAll(async () => {
@@ -69,14 +69,14 @@ test.describe('Complete Ticket Lifecycle - End to End', () => {
     console.log('\n🎯 LIFECYCLE-1: Creating event...');
 
     // Query for existing test event or note that we'd create one
-    const allEvents = await convex.query(api.events.queries.getPublishedEvents);
+    const allEvents = await convex.query(api.public.queries.getPublishedEvents, {});
 
     if (allEvents.length > 0) {
       lifecycleEventId = allEvents[0]._id;
       console.log(`✓ Using existing test event: ${lifecycleEventId}`);
-      console.log(`  - Title: ${allEvents[0].title}`);
+      console.log(`  - Name: ${allEvents[0].name}`);
       console.log(`  - Status: ${allEvents[0].status}`);
-      console.log(`  - Type: ${allEvents[0].type}`);
+      console.log(`  - Event Type: ${allEvents[0].eventType || 'Not specified'}`);
     } else {
       console.log('⚠ No events available for lifecycle test');
       console.log('  Note: In full test, organizer would create event via API');
@@ -95,7 +95,7 @@ test.describe('Complete Ticket Lifecycle - End to End', () => {
     }
 
     // Query event details
-    const eventDetails = await convex.query(api.events.queries.getPublicEventDetails, {
+    const eventDetails = await convex.query(api.public.queries.getPublicEventDetails, {
       eventId: lifecycleEventId
     });
 
@@ -104,7 +104,7 @@ test.describe('Complete Ticket Lifecycle - End to End', () => {
 
       // Check if event has ticket tiers
       const hasTiers = eventDetails.ticketTiers && eventDetails.ticketTiers.length > 0;
-      if (hasTiers) {
+      if (hasTiers && eventDetails.ticketTiers) {
         console.log(`✓ Event has ${eventDetails.ticketTiers.length} ticket tier(s)`);
 
         for (const tier of eventDetails.ticketTiers) {
@@ -134,12 +134,12 @@ test.describe('Complete Ticket Lifecycle - End to End', () => {
     await page.waitForLoadState('networkidle');
 
     // Query published events
-    const publishedEvents = await convex.query(api.events.queries.getPublishedEvents);
+    const publishedEvents = await convex.query(api.public.queries.getPublishedEvents, {});
     expect(publishedEvents.length).toBeGreaterThan(0);
     console.log(`✓ Found ${publishedEvents.length} published events`);
 
     // Verify our test event is in the list
-    const ourEvent = publishedEvents.find((e: any) => e._id === lifecycleEventId);
+    const ourEvent = publishedEvents.find(e => e._id === lifecycleEventId);
     if (ourEvent) {
       expect(ourEvent.status).toBe('PUBLISHED');
       console.log('✓ Test event is published and visible');
@@ -187,8 +187,9 @@ test.describe('Complete Ticket Lifecycle - End to End', () => {
   test('LIFECYCLE-5: Order creation and ticket generation', async ({ page }) => {
     console.log('\n🎯 LIFECYCLE-5: Validating order and ticket generation...');
 
-    // Query recent orders
-    const recentOrders = await convex.query(api.orders.queries.getAllOrders, { limit: 10 });
+    // Query recent activity (includes recent orders)
+    const recentActivity = await convex.query(api.adminPanel.queries.getRecentActivity, {});
+    const recentOrders = recentActivity.orders;
 
     if (recentOrders && recentOrders.length > 0) {
       console.log(`✓ Found ${recentOrders.length} recent orders`);
@@ -199,18 +200,18 @@ test.describe('Complete Ticket Lifecycle - End to End', () => {
 
       console.log(`✓ Test order: ${lifecycleOrderId}`);
       console.log(`  - Status: ${testOrder.status}`);
-      console.log(`  - Amount: $${testOrder.amount / 100}`);
+      console.log(`  - Amount: $${testOrder.totalCents / 100}`);
 
-      // Query tickets for this order
-      const orderTickets = await convex.query(api.tickets.queries.getTicketsByOrder, {
+      // Query order details (includes tickets)
+      const orderDetails = await convex.query(api.tickets.queries.getOrderDetails, {
         orderId: lifecycleOrderId
       });
 
-      if (orderTickets && orderTickets.length > 0) {
-        lifecycleTicketIds = orderTickets.map((t: any) => t._id);
-        lifecycleQRCodes = orderTickets.map((t: any) => t.qrCode);
+      if (orderDetails && orderDetails.tickets && orderDetails.tickets.length > 0) {
+        // Note: orderDetails.tickets has enriched data with {code, tierName, status}
+        lifecycleQRCodes = orderDetails.tickets.map(t => t.code).filter((code): code is string => code !== undefined);
 
-        console.log(`✓ Order has ${orderTickets.length} ticket(s)`);
+        console.log(`✓ Order has ${orderDetails.tickets.length} ticket(s)`);
         console.log(`  - QR codes generated: ${lifecycleQRCodes.length}`);
 
         // Verify QR codes are unique
@@ -219,7 +220,7 @@ test.describe('Complete Ticket Lifecycle - End to End', () => {
         console.log('✓ All QR codes are unique');
 
         // Verify ticket status
-        const firstTicket = orderTickets[0];
+        const firstTicket = orderDetails.tickets[0];
         console.log(`  - Ticket status: ${firstTicket.status}`);
         expect(['VALID', 'SCANNED', 'CANCELLED']).toContain(firstTicket.status);
       }
@@ -351,7 +352,7 @@ test.describe('Complete Ticket Lifecycle - End to End', () => {
   test('LIFECYCLE-10: **CRITICAL** Double-scan prevention', async () => {
     console.log('\n🎯 LIFECYCLE-10: Validating double-scan prevention...');
 
-    if (lifecycleTicketIds.length === 0) {
+    if (lifecycleQRCodes.length === 0) {
       console.log('⚠ No tickets available for double-scan test');
       return;
     }

@@ -58,14 +58,10 @@ export const getPublicSeatingChart = query({
       reservedSeatsMap.add(key);
     }
 
-    // Update seat statuses based on reservations and filter out reserved tables
+    // Update seat statuses based on reservations
     const updatedSections = seatingChart.sections.map((section) => ({
       ...section,
-      // Filter out reserved tables from customer view
-      tables: section.tables?.filter(
-        (table) =>
-          table.reservationStatus !== "RESERVED" && table.reservationStatus !== "UNAVAILABLE"
-      ),
+      tables: section.tables,
       rows: section.rows?.map((row) => ({
         ...row,
         seats: row.seats.map((seat) => {

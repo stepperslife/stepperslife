@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { RoleBasedSidebar } from "@/components/navigation";
 import { AppHeader } from "@/components/sidebar/app-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -10,6 +11,8 @@ import { generateUserInitials } from "@/lib/navigation/utils";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<NavUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [unauthorized, setUnauthorized] = useState(false);
+  const router = useRouter();
 
   // Fetch user data from auth API
   useEffect(() => {
@@ -20,12 +23,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           const data = await response.json();
           const apiUser = data.user;
 
+          // SECURITY: Verify user has admin role - don't default to admin
+          if (apiUser.role !== "admin") {
+            setUnauthorized(true);
+            setLoading(false);
+            return;
+          }
+
           // Convert API user to NavUser format
           const navUser: NavUser = {
             id: apiUser._id,
             email: apiUser.email,
             name: apiUser.name,
-            role: apiUser.role || "admin",
+            role: apiUser.role,
             avatar: apiUser.avatar,
             initials: generateUserInitials(apiUser.name, apiUser.email),
             staffRoles: [],
@@ -33,18 +43,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           setUser(navUser);
         } else {
-          setUser(null);
+          // Not authenticated - redirect to login
+          router.push("/login?redirect=/admin");
+          return;
         }
       } catch (error) {
         console.error("Failed to fetch user:", error);
-        setUser(null);
+        router.push("/login?redirect=/admin");
+        return;
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [router]);
 
   // Show loading state
   if (loading) {
@@ -55,7 +68,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // Show error if no user (should redirect to login in production)
+  // Show unauthorized message for non-admin users
+  if (unauthorized) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-destructive mb-2">Access Denied</h1>
+          <p className="text-muted-foreground">You do not have permission to access the admin area.</p>
+          <button
+            onClick={() => router.push("/user/dashboard")}
+            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Go to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if no user
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center">

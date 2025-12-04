@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function LeaderboardPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const leaderboard = [];
+  const leaderboard: any[] = [];
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Trophy className="h-6 w-6 text-yellow-500" />;

@@ -14,7 +14,8 @@ export function RestaurantsSection() {
             We're cooking up something special for you!
           </p>
           <div className="mt-8">
-            <button className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            <button
+              type="button" className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground hover:bg-primary/90">
               Get Early Access
             </button>
           </div>

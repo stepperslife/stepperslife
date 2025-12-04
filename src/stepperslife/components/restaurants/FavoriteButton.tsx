@@ -51,7 +51,7 @@ export function FavoriteButton({
 
     if (!userId) {
       // Could redirect to login or show a toast
-      window.location.href = "/auth/sign-in";
+      window.location.href = "/login";
       return;
     }
 
@@ -66,6 +66,7 @@ export function FavoriteButton({
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       className={`
         ${buttonSizeClasses[size]}
@@ -81,7 +82,7 @@ export function FavoriteButton({
         shadow-sm
         ${className}
       `}
-      title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+      aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
     >
       <Heart
         className={`

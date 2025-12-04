@@ -7,9 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Bell, CheckCircle, Trash2, Send, AlertTriangle, Calendar } from "lucide-react";
 import { getNotificationIcon } from "@/lib/utils/notification-helpers";
 
+interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  timestamp: number;
+}
+
 export default function AdminNotificationsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const notifications = [];
+  const notifications: Notification[] = [];
 
   return (
     <div className="p-6 space-y-6">
@@ -88,7 +96,7 @@ export default function AdminNotificationsPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {notifications.map((notification: any) => (
+              {notifications.map((notification) => (
                 <div key={notification.id} className="flex items-start gap-4 p-4 border rounded-lg">
                   <div className="mt-1">{getNotificationIcon(notification.type)}</div>
                   <div className="flex-1">

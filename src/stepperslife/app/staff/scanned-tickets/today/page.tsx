@@ -6,11 +6,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, XCircle, Clock, Ticket } from "lucide-react";
 import Link from "next/link";
 
+interface Scan {
+  id: string;
+  ticketNumber: string;
+  eventName: string;
+  valid: boolean;
+  timestamp: number;
+}
+
 export default function TodayScansPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data
-  const scans = [];
+  const scans: Scan[] = [];
 
   const formatTime = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString("en-US", {
@@ -87,7 +95,7 @@ export default function TodayScansPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {scans.map((scan: any) => (
+              {scans.map((scan) => (
                 <div
                   key={scan.id}
                   className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50"

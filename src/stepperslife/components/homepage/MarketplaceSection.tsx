@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Star, ShoppingBag, ArrowRight } from 'lucide-react'
 
 interface Product {
@@ -46,7 +47,7 @@ export function MarketplaceSection({ products }: MarketplaceSectionProps) {
             </p>
           </div>
           <Link
-            href="/stores"
+            href="/marketplace"
             className="hidden items-center gap-2 text-sm font-medium text-primary hover:underline sm:flex"
           >
             Browse marketplace
@@ -62,16 +63,19 @@ export function MarketplaceSection({ products }: MarketplaceSectionProps) {
             return (
               <Link
                 key={product.id}
-                href={`/stores/${product.vendorStore.slug}/products/${product.slug}`}
+                href={`/marketplace/${product.id}`}
                 className="group rounded-lg border bg-card transition-all hover:shadow-lg"
               >
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg bg-muted">
                   {image ? (
-                    <img
+                    <Image
                       src={image.url}
                       alt={product.name}
-                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      className="object-cover transition-transform group-hover:scale-105"
+                      loading="lazy"
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center">
@@ -81,7 +85,7 @@ export function MarketplaceSection({ products }: MarketplaceSectionProps) {
 
                   {/* Sale Badge */}
                   {product.compareAtPrice && product.compareAtPrice > product.price && (
-                    <div className="absolute right-2 top-2 rounded-full bg-destructive px-2 py-1 text-xs font-bold text-destructive-foreground">
+                    <div className="absolute right-2 top-2 rounded-full bg-destructive px-2 py-1 text-xs font-bold text-destructive-foreground z-10">
                       SALE
                     </div>
                   )}
@@ -138,7 +142,7 @@ export function MarketplaceSection({ products }: MarketplaceSectionProps) {
         {/* Mobile View All Link */}
         <div className="mt-8 flex justify-center sm:hidden">
           <Link
-            href="/stores"
+            href="/marketplace"
             className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
           >
             Browse marketplace

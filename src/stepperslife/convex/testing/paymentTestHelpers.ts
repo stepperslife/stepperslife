@@ -96,7 +96,7 @@ export const setupTestEvent = mutation({
       eventId,
       organizerId: args.organizerId,
       paymentModel: args.paymentModel,
-      customerPaymentMethods: args.customerPaymentMethods || ["STRIPE"],
+      customerPaymentMethods: (args.customerPaymentMethods || ["STRIPE"]) as ("STRIPE" | "PAYPAL" | "CASHAPP" | "CASH")[],
       organizerPaymentMethod: args.paymentModel === "PREPAY" ? "SQUARE" : undefined,
       ticketsAllocated: args.ticketsAllocated,
       stripeConnectAccountId: user.stripeConnectedAccountId,
@@ -241,7 +241,7 @@ export const simulateOrder = mutation({
 
     await ctx.db.patch(args.ticketTierId, {
       sold: updatedTier.sold + args.quantity,
-      version: updatedTier.version + 1,
+      version: (updatedTier.version || 0) + 1,
       updatedAt: Date.now(),
     });
 
@@ -364,7 +364,7 @@ export const getEventStats = query({
       totalCollected,
       paymentModel: paymentConfig?.paymentModel,
       completedOrders: orders.filter((o) => o.status === "COMPLETED").length,
-      pendingOrders: orders.filter((o) => o.status === "PENDING_ACTIVATION").length,
+      pendingOrders: orders.filter((o) => o.status === "PENDING" || o.status === "PENDING_PAYMENT").length,
     };
   },
 });

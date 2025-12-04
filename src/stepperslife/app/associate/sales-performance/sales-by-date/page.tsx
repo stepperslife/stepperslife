@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function SalesByDatePage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const salesByDate = [];
+  const salesByDate: any[] = [];
 
   return (
     <div className="p-6 space-y-6">

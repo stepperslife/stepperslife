@@ -139,6 +139,7 @@ export function PublicHeader({
             {/* Theme Toggle */}
             {mounted && (
               <button
+                type="button"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="p-2 rounded-full hover:bg-accent transition-colors"
                 title={theme === "dark" ? "Light mode" : "Dark mode"}
@@ -169,6 +170,7 @@ export function PublicHeader({
                 {/* Profile Dropdown */}
                 <div className="relative" ref={profileRef}>
                   <button
+                    type="button"
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     data-testid="profile-dropdown-trigger"
                     className="flex items-center gap-2 p-1.5 pr-3 rounded-full hover:bg-accent transition-colors border border-border/50"
@@ -228,7 +230,7 @@ export function PublicHeader({
                           <BookOpen className="w-4 h-4 text-muted-foreground" />
                           My Classes
                         </Link>
-                        {(user?.role === "restaurateur" || user?.role === "admin") && (
+                        {user?.role === "admin" && (
                           <Link
                             href="/restaurateur/dashboard"
                             onClick={() => setIsProfileOpen(false)}
@@ -254,6 +256,7 @@ export function PublicHeader({
 
                       <div className="border-t border-border pt-1">
                         <button
+                          type="button"
                           onClick={() => {
                             setIsProfileOpen(false);
                             logout();
@@ -282,6 +285,7 @@ export function PublicHeader({
 
             {/* Mobile Menu Button */}
             <button
+              type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 rounded-full hover:bg-accent transition-colors"
               aria-label="Toggle menu"
@@ -319,6 +323,7 @@ export function PublicHeader({
             <div className="border-t border-border mt-3 pt-3">
               {mounted && (
                 <button
+                  type="button"
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
                 >
@@ -366,7 +371,7 @@ export function PublicHeader({
                     <BookOpen className="w-4 h-4" />
                     My Classes
                   </Link>
-                  {(user?.role === "restaurateur" || user?.role === "admin") && (
+                  {user?.role === "admin" && (
                     <Link
                       href="/restaurateur/dashboard"
                       onClick={() => setIsMobileMenuOpen(false)}
@@ -387,6 +392,7 @@ export function PublicHeader({
                     </Link>
                   )}
                   <button
+                    type="button"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       logout();

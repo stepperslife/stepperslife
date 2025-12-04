@@ -1578,7 +1578,7 @@ export default function EventDashboardPage() {
                 </p>
               </div>
 
-              <BundleEditor eventId={eventId} ticketTiers={ticketTiers || []} />
+              <BundleEditor eventId={eventId} />
             </div>
           </div>
         )}

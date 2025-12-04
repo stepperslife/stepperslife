@@ -7,9 +7,17 @@ import { TrendingUp, ArrowLeft, Calendar, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
+interface Transaction {
+  id: string;
+  eventTitle: string;
+  date: number;
+  amount: number;
+  type: string;
+}
+
 export default function TransactionsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const events = useQuery(api.users.queries.getOrganizerEvents, {
+  const events = useQuery(api.events.queries.getOrganizerEvents, {
     userId: currentUser?._id,
   });
 
@@ -29,10 +37,10 @@ export default function TransactionsPage() {
   }
 
   // TODO: Fetch actual transactions from database
-  const mockTransactions = events?.flatMap((event) =>
+  const mockTransactions: Transaction[] = events?.flatMap((event) =>
     Array.from({ length: Math.min(5, event.ticketsSold || 0) }).map((_, i) => ({
       id: `${event._id}-${i}`,
-      eventTitle: event.title,
+      eventTitle: event.name,
       date: Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000,
       amount: Math.random() * 100 + 20,
       type: "Ticket Sale",

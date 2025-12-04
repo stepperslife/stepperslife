@@ -167,12 +167,12 @@ export default function StaffDashboardPage() {
                           {/* Role Badge */}
                           <span
                             className={`px-3 py-1 text-xs font-bold rounded-full ${
-                              position.role === "SELLER"
+                              position.role === "STAFF"
                                 ? "bg-primary text-white"
                                 : "bg-gray-600 text-white"
                             }`}
                           >
-                            {position.role === "SELLER" ? "🎫 SELLER" : "📱 SCANNER"}
+                            {position.role === "STAFF" ? "🎫 STAFF" : position.role === "TEAM_MEMBERS" ? "👥 TEAM" : "🤝 ASSOCIATES"}
                           </span>
 
                           {/* Hierarchy Level Badge */}
@@ -188,7 +188,7 @@ export default function StaffDashboardPage() {
                               👥 Can Assign
                             </span>
                           )}
-                          {position.canScan && position.role === "SELLER" && (
+                          {position.canScan && position.role === "STAFF" && (
                             <span className="px-3 py-1 text-xs font-bold bg-warning text-white rounded-full">
                               📱 Can Scan
                             </span>
@@ -238,7 +238,7 @@ export default function StaffDashboardPage() {
                   </div>
 
                   {/* Commission Structure */}
-                  {position.role === "SELLER" && (
+                  {position.role === "STAFF" && (
                     <div className="px-6 py-4 border-b bg-accent">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -295,7 +295,8 @@ export default function StaffDashboardPage() {
                             {position.referralCode}
                           </div>
                           <button
-                            onClick={() => handleCopyReferralCode(position.referralCode)}
+                            type="button"
+                            onClick={() => position.referralCode && handleCopyReferralCode(position.referralCode)}
                             className="px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
                           >
                             {copiedCode === position.referralCode ? (
@@ -315,11 +316,12 @@ export default function StaffDashboardPage() {
                         {/* Referral Link */}
                         <div className="flex items-center gap-3">
                           <div className="flex-1 px-4 py-3 bg-muted rounded-lg text-sm text-muted-foreground truncate">
-                            {`${window.location.origin}/events/${position.event._id}/checkout?ref=${position.referralCode}`}
+                            {typeof window !== 'undefined' && `${window.location.origin}/events/${position.event._id}/checkout?ref=${position.referralCode}`}
                           </div>
                           <button
+                            type="button"
                             onClick={() =>
-                              handleCopyReferralLink(position.event!._id, position.referralCode)
+                              position.referralCode && position.event && handleCopyReferralLink(position.event._id, position.referralCode)
                             }
                             className="px-4 py-3 bg-success text-white rounded-lg hover:bg-success/90 transition-colors flex items-center gap-2"
                           >

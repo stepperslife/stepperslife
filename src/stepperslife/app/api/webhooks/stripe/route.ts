@@ -19,7 +19,7 @@ if (!STRIPE_WEBHOOK_SECRET) {
 // Initialize Stripe client
 const stripe = STRIPE_SECRET_KEY
   ? new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-10-29.clover",
     })
   : null;
 
@@ -194,11 +194,10 @@ async function handleAccountUpdated(account: Stripe.Account) {
   try {
     // Update user's Stripe account status in Convex
     await convex.mutation(api.users.mutations.updateStripeAccountStatus, {
-      stripeConnectedAccountId: account.id,
-      setupComplete: isComplete,
+      accountId: account.id,
       chargesEnabled: account.charges_enabled || false,
       payoutsEnabled: account.payouts_enabled || false,
-      requirementsCurrentlyDue: account.requirements?.currently_due || [],
+      detailsSubmitted: account.details_submitted || false,
     });
 
   } catch (error: any) {

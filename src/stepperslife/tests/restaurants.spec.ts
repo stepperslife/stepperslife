@@ -105,11 +105,11 @@ async function setupTestData() {
   console.log("\n🔧 Setting up test data...\n");
 
   // Create test user
-  const userResult = await client.mutation(api.users.createOrUpdate, {
+  const userResult = await client.mutation(api.users.mutations.upsertUserFromAuth, {
     email: TEST_USER.email,
     name: TEST_USER.name,
   });
-  testUserId = userResult._id;
+  testUserId = userResult as Id<"users">;
   console.log(`✅ Created test user: ${testUserId}`);
 
   // Create test restaurant (directly active for testing)
@@ -649,7 +649,7 @@ test.describe("Restaurants Feature", () => {
       }
 
       // Update status to READY_FOR_PICKUP
-      await client.mutation(api.foodOrders.updateStatus, {
+      await client.action(api.foodOrders.updateStatusWithNotification, {
         id: testOrderId,
         status: "READY_FOR_PICKUP",
       });
@@ -665,7 +665,7 @@ test.describe("Restaurants Feature", () => {
       console.log("✅ Order status updated to READY_FOR_PICKUP");
 
       // Update to COMPLETED
-      await client.mutation(api.foodOrders.updateStatus, {
+      await client.action(api.foodOrders.updateStatusWithNotification, {
         id: testOrderId,
         status: "COMPLETED",
       });

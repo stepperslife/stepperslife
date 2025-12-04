@@ -223,7 +223,7 @@ export default function CheckoutPage() {
   };
 
   const handleBallroomSeatDeselect = (seatId: string) => {
-    setSelectedSeats((prev) => prev.filter((s) => s.id !== seatId));
+    setSelectedSeats((prev) => prev.filter((s) => s.seatId !== seatId));
   };
 
   // Reset seats when tier or quantity changes
@@ -340,17 +340,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // Debug: Log state changes
-  useEffect(() => {
-    console.log("[Checkout] State updated:", {
-      selectedTierId,
-      selectedBundleId,
-      buyerEmail: buyerEmail ? "set" : "empty",
-      buyerName: buyerName ? "set" : "empty",
-      showPayment,
-      orderId,
-    });
-  }, [selectedTierId, selectedBundleId, buyerEmail, buyerName, showPayment, orderId]);
 
   const handlePaymentSuccess = async (result: Record<string, unknown>) => {
     if (!orderId) return;
@@ -604,6 +593,7 @@ export default function CheckoutPage() {
                     {eventDetails.bundles && eventDetails.bundles.length > 0 && (
                       <div className="flex gap-2 mb-4 p-1 bg-muted rounded-lg">
                         <button
+                          type="button"
                           onClick={() => {
                             setPurchaseType("tier");
                             setSelectedBundleId(null);
@@ -618,6 +608,7 @@ export default function CheckoutPage() {
                           Individual Tickets
                         </button>
                         <button
+                          type="button"
                           onClick={() => {
                             setPurchaseType("bundle");
                             setSelectedTierId(null);
@@ -658,9 +649,9 @@ export default function CheckoutPage() {
 
                             return (
                               <button
+                                type="button"
                                 key={tier._id}
                                 onClick={() => {
-                                  console.log("[Checkout] Ticket tier clicked:", tier._id, tier.name);
                                   if (!isSoldOut) {
                                     setSelectedTierId(tier._id);
                                   }
@@ -755,6 +746,7 @@ export default function CheckoutPage() {
                       <div className="space-y-3">
                         {eventDetails.bundles.map((bundle: any) => (
                           <button
+                            type="button"
                             key={bundle._id}
                             onClick={() => setSelectedBundleId(bundle._id)}
                             className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
@@ -841,7 +833,7 @@ export default function CheckoutPage() {
                     seatingChart.sections.length > 0 && (
                       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                         <h3 className="font-semibold text-gray-900 mb-4">Select Your Seats</h3>
-                        {seatingChart.layoutType === "TABLE_BASED" ? (
+                        {(seatingChart as any).seatingStyle === "TABLE_BASED" ? (
                           <InteractiveSeatingChart
                             eventId={eventId}
                             onSeatSelect={handleBallroomSeatSelect}
@@ -883,6 +875,7 @@ export default function CheckoutPage() {
                   {!useStripePayment && (
                     <div className="grid grid-cols-3 gap-3 mb-6">
                       <button
+                        type="button"
                         onClick={() => setPaymentMethod("card")}
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "card"
@@ -893,6 +886,7 @@ export default function CheckoutPage() {
                         Credit/Debit Card
                       </button>
                       <button
+                        type="button"
                         onClick={() => setPaymentMethod("paypal")}
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "paypal"
@@ -903,6 +897,7 @@ export default function CheckoutPage() {
                         PayPal
                       </button>
                       <button
+                        type="button"
                         onClick={() => setPaymentMethod("cash")}
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "cash"
@@ -967,6 +962,7 @@ export default function CheckoutPage() {
                         onError={handlePaymentError}
                       />
                       <button
+                        type="button"
                         onClick={() => setShowPayment(false)}
                         className="w-full mt-4 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                       >
@@ -988,6 +984,7 @@ export default function CheckoutPage() {
                       </div>
                       <div className="flex gap-3">
                         <button
+                          type="button"
                           onClick={async () => {
                             try {
                               // Complete cash order with PENDING status
@@ -1016,6 +1013,7 @@ export default function CheckoutPage() {
                           Confirm Cash Payment
                         </button>
                         <button
+                          type="button"
                           onClick={() => setShowPayment(false)}
                           className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                         >
@@ -1124,6 +1122,7 @@ export default function CheckoutPage() {
                           </p>
                         </div>
                         <button
+                          type="button"
                           onClick={handleRemoveDiscount}
                           className="p-2 text-green-700 hover:bg-green-100 rounded-lg transition-colors"
                           title="Remove discount"
@@ -1153,6 +1152,7 @@ export default function CheckoutPage() {
                           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400 uppercase"
                         />
                         <button
+                          type="button"
                           onClick={handleApplyDiscount}
                           className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium whitespace-nowrap"
                         >
@@ -1251,6 +1251,7 @@ export default function CheckoutPage() {
 
                     {!showPayment && (
                       <button
+                        type="button"
                         id="continue-payment-btn"
                         onClick={(e) => {
                           e.preventDefault();

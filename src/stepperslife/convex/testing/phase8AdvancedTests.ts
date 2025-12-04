@@ -284,7 +284,7 @@ export const test3MultiDayFestival = mutation({
     ];
 
     const eventResults = [];
-    const allTiers: { tierId: any; tierName: string; eventId: any; eventName: string; price: number }[] = [];
+    const allTiers: Array<{ tierId: any; tierName: string; eventId: any; eventName: string; price: number }> = [];
 
     for (const day of days) {
       const eventId = await ctx.db.insert("events", {
@@ -1214,7 +1214,14 @@ export const test6StaffDistribution = mutation({
         email: tm.email,
         referralCode,
         allocatedTickets: 200,
-        associates: []
+        associates: [] as Array<{
+          staffId: any;
+          name: string;
+          email: string;
+          referralCode: string;
+          allocatedTickets: number;
+          parentTeamMember: string;
+        }>
       });
     }
 

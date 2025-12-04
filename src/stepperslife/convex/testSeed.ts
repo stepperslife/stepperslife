@@ -12,12 +12,12 @@ export const seedTestEvents = mutation({
     // Get or create test organizer
     let testOrganizer = await ctx.db
       .query("users")
-      .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+      .withIndex("by_email", (q) => q.eq("email", "bobbygwatkins@gmail.com"))
       .first();
 
     if (!testOrganizer) {
       const organizerId = await ctx.db.insert("users", {
-        email: "iradwatkins@gmail.com",
+        email: "bobbygwatkins@gmail.com",
         name: "Test Organizer",
         role: "organizer",
         createdAt: Date.now(),
@@ -33,7 +33,7 @@ export const seedTestEvents = mutation({
       description:
         "Get ready for our biggest stepping event of the year! Save the date for an unforgettable night of music, dancing, and community. More details coming soon!",
       organizerId: testOrganizer!._id,
-      organizerName: testOrganizer!.name,
+      organizerName: testOrganizer!.name || "Test Organizer",
       eventType: "SAVE_THE_DATE",
       imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80",
       startDate: new Date("2026-03-15T19:00:00").getTime(),
@@ -59,7 +59,7 @@ export const seedTestEvents = mutation({
       description:
         "Join us for a free community dance night! All skill levels welcome. Come learn new steps, practice your moves, and meet fellow stepping enthusiasts. Light refreshments provided.",
       organizerId: testOrganizer!._id,
-      organizerName: testOrganizer!.name,
+      organizerName: testOrganizer!.name || "Test Organizer",
       eventType: "FREE_EVENT",
       imageUrl: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1200&q=80",
       doorPrice: "$15 at the door",
@@ -86,7 +86,7 @@ export const seedTestEvents = mutation({
       description:
         "Black tie optional stepping gala featuring live DJ, professional performances, appetizers, and cash bar. Join us for an elegant evening of stepping at its finest. VIP packages include meet & greet with featured performers.",
       organizerId: testOrganizer!._id,
-      organizerName: testOrganizer!.name,
+      organizerName: testOrganizer!.name || "Test Organizer",
       eventType: "TICKETED_EVENT",
       imageUrl: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=1200&q=80",
       startDate: new Date("2025-12-31T21:00:00").getTime(),
@@ -121,6 +121,7 @@ export const seedTestEvents = mutation({
       processingFeePercent: 2.9,
       charityDiscount: false,
       lowPriceDiscount: false,
+      customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -200,12 +201,12 @@ export const createShowcaseEvents = mutation({
     // Get or create test organizer
     let testOrganizer = await ctx.db
       .query("users")
-      .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+      .withIndex("by_email", (q) => q.eq("email", "bobbygwatkins@gmail.com"))
       .first();
 
     if (!testOrganizer) {
       const organizerId = await ctx.db.insert("users", {
-        email: "iradwatkins@gmail.com",
+        email: "bobbygwatkins@gmail.com",
         name: "Test Organizer",
         role: "organizer",
         createdAt: Date.now(),
@@ -221,7 +222,7 @@ export const createShowcaseEvents = mutation({
       description:
         "Experience an unforgettable evening of smooth jazz in an elegant setting. Featuring Grammy-nominated saxophonist Marcus Williams and his quartet. Includes complimentary wine and cheese reception. Reserved seating ensures the perfect view of the stage. Dress code: Smart casual.",
       organizerId: testOrganizer!._id,
-      organizerName: testOrganizer!.name,
+      organizerName: testOrganizer!.name || "Test Organizer",
       eventType: "TICKETED_EVENT",
       imageUrl: "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=1200&q=80",
       startDate: new Date("2025-11-22T19:30:00").getTime(),
@@ -256,6 +257,7 @@ export const createShowcaseEvents = mutation({
       processingFeePercent: 2.9,
       charityDiscount: false,
       lowPriceDiscount: false,
+      customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -292,7 +294,7 @@ export const createShowcaseEvents = mutation({
       description:
         "Join 500+ tech leaders, entrepreneurs, and innovators for a full day of keynotes, workshops, and networking. Topics include AI, Web3, Cybersecurity, and SaaS growth strategies. Includes lunch, networking mixer, and exclusive access to startup pitch competition. Early bird pricing ends Nov 1st!",
       organizerId: testOrganizer!._id,
-      organizerName: testOrganizer!.name,
+      organizerName: testOrganizer!.name || "Test Organizer",
       eventType: "TICKETED_EVENT",
       imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80",
       startDate: new Date("2026-02-15T08:00:00").getTime(),
@@ -327,6 +329,7 @@ export const createShowcaseEvents = mutation({
       processingFeePercent: 2.9,
       charityDiscount: false,
       lowPriceDiscount: false,
+      customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -375,7 +378,7 @@ export const createShowcaseEvents = mutation({
       description:
         "3 days of non-stop music featuring 40+ artists across 5 stages! Headliners include The Electric Dreams, Luna Sky, and Basswave. General admission, VIP, and camping passes available. Food trucks, art installations, yoga sessions, and more. Rain or shine event. Ages 18+. ID required.",
       organizerId: testOrganizer!._id,
-      organizerName: testOrganizer!.name,
+      organizerName: testOrganizer!.name || "Test Organizer",
       eventType: "TICKETED_EVENT",
       imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&q=80",
       startDate: new Date("2026-07-10T14:00:00").getTime(),
@@ -410,6 +413,7 @@ export const createShowcaseEvents = mutation({
       processingFeePercent: 2.9,
       charityDiscount: false,
       lowPriceDiscount: false,
+      customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -458,7 +462,7 @@ export const createShowcaseEvents = mutation({
       description:
         "An exclusive evening for professionals to connect over premium wines from Napa Valley and Sonoma. Guided tasting of 8 wines paired with artisan cheeses and charcuterie. Sommelier-led discussion on wine regions, tasting notes, and pairing principles. Perfect for wine enthusiasts and business networking. Limited to 60 guests for intimate atmosphere.",
       organizerId: testOrganizer!._id,
-      organizerName: testOrganizer!.name,
+      organizerName: testOrganizer!.name || "Test Organizer",
       eventType: "TICKETED_EVENT",
       imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200&q=80",
       startDate: new Date("2025-12-05T18:00:00").getTime(),
@@ -493,6 +497,7 @@ export const createShowcaseEvents = mutation({
       processingFeePercent: 2.9,
       charityDiscount: false,
       lowPriceDiscount: false,
+      customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -548,12 +553,12 @@ export const createDollarTest = mutation({
     // Get or create test organizer
     let testOrganizer = await ctx.db
       .query("users")
-      .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+      .withIndex("by_email", (q) => q.eq("email", "bobbygwatkins@gmail.com"))
       .first();
 
     if (!testOrganizer) {
       const organizerId = await ctx.db.insert("users", {
-        email: "iradwatkins@gmail.com",
+        email: "bobbygwatkins@gmail.com",
         name: "Test Organizer",
         role: "organizer",
         createdAt: Date.now(),
@@ -568,7 +573,7 @@ export const createDollarTest = mutation({
       description:
         "⚠️ This is a $1 test event for verifying the production payment system. Please use other events for actual ticket purchases.",
       organizerId: testOrganizer!._id,
-      organizerName: testOrganizer!.name,
+      organizerName: testOrganizer!.name || "Test Organizer",
       eventType: "TICKETED_EVENT",
       imageUrl: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&q=80",
       startDate: new Date("2025-12-01T19:00:00").getTime(),
@@ -603,6 +608,7 @@ export const createDollarTest = mutation({
       processingFeePercent: 2.9,
       charityDiscount: false,
       lowPriceDiscount: false,
+      customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });

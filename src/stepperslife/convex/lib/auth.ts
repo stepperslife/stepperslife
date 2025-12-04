@@ -1,5 +1,6 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
+import { PRIMARY_ADMIN_EMAIL } from "./roles";
 
 /**
  * Check if testing mode is enabled (only in development deployments)
@@ -26,7 +27,7 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
       console.warn("[getCurrentUser] TESTING MODE - Using test user (no identity)");
       const testUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
 
       if (testUser) {

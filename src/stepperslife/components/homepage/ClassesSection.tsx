@@ -14,7 +14,8 @@ export function ClassesSection() {
             Learn new skills, connect with instructors, and grow in your community.
           </p>
           <div className="mt-8">
-            <button className="inline-flex h-12 items-center justify-center rounded-md bg-muted px-8 text-sm font-medium hover:bg-muted/80">
+            <button
+              type="button" className="inline-flex h-12 items-center justify-center rounded-md bg-muted px-8 text-sm font-medium hover:bg-muted/80">
               Notify Me When Available
             </button>
           </div>

@@ -41,10 +41,10 @@ export default function MySubSellersPage() {
 
   // Select first event by default
   if (staffPositions && staffPositions.length > 0 && !selectedEventId) {
-    setSelectedEventId(staffPositions[0].eventId as Id<"events">);
+    setSelectedEventId(staffPositions[0].event?._id as Id<"events">);
   }
 
-  const selectedPosition = staffPositions?.find((pos) => pos.eventId === selectedEventId);
+  const selectedPosition = staffPositions?.find((pos) => pos.event?._id === selectedEventId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +76,7 @@ export default function MySubSellersPage() {
         name: formData.name,
         email: formData.email,
         phone: formData.phone || undefined,
-        role: "SELLER",
+        role: "ASSOCIATES",
         allocatedTickets: formData.allocatedTickets
           ? parseInt(formData.allocatedTickets)
           : undefined,
@@ -155,8 +155,8 @@ export default function MySubSellersPage() {
             className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
           >
             {staffPositions.map((pos) => (
-              <option key={pos.eventId} value={pos.eventId}>
-                {pos.eventName}
+              <option key={pos.event?._id} value={pos.event?._id}>
+                {pos.event?.name}
               </option>
             ))}
           </select>
@@ -217,6 +217,7 @@ export default function MySubSellersPage() {
           {/* Add Sub-Seller Button */}
           <div className="mb-6">
             <button
+              type="button"
               onClick={() => setShowAddModal(true)}
               className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition flex items-center gap-2 font-semibold"
             >
@@ -331,6 +332,7 @@ export default function MySubSellersPage() {
             <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-card">
               <h2 className="text-2xl font-bold text-foreground">Add Sub-Seller</h2>
               <button
+                type="button"
                 onClick={() => {
                   setShowAddModal(false);
                   setError("");
@@ -412,7 +414,7 @@ export default function MySubSellersPage() {
                   <p className="text-sm text-accent-foreground mb-4">
                     Configure how commissions are split between you and the sub-seller. Your current
                     commission:{" "}
-                    {selectedPosition?.commissionPercent || selectedPosition?.commissionValue}
+                    {selectedPosition?.commissionValue}
                     {selectedPosition?.commissionType === "PERCENTAGE" ? "%" : " cents"}
                   </p>
 

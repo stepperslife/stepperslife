@@ -387,7 +387,7 @@ export default function StaffTransfersPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge
-                            variant={staff.role === "SELLER" ? "default" : "secondary"}
+                            variant={staff.role === "STAFF" ? "default" : "secondary"}
                             className="text-xs"
                           >
                             {staff.role}

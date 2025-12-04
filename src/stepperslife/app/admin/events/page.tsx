@@ -300,6 +300,7 @@ export default function EventsModerationPage() {
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-600">Change Status:</span>
                       <button
+                        type="button"
                         onClick={() => handleStatusChange(event._id, "PUBLISHED")}
                         disabled={event.status === "PUBLISHED"}
                         className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded-lg hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -307,6 +308,7 @@ export default function EventsModerationPage() {
                         Publish
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleStatusChange(event._id, "DRAFT")}
                         disabled={event.status === "DRAFT"}
                         className="px-3 py-1 text-sm bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -314,6 +316,7 @@ export default function EventsModerationPage() {
                         Draft
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleStatusChange(event._id, "CANCELLED")}
                         disabled={event.status === "CANCELLED"}
                         className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded-lg hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -321,6 +324,7 @@ export default function EventsModerationPage() {
                         Cancel
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleStatusChange(event._id, "COMPLETED")}
                         disabled={event.status === "COMPLETED"}
                         className="px-3 py-1 text-sm bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -332,6 +336,7 @@ export default function EventsModerationPage() {
                     <div className="ml-auto flex items-center gap-2">
                       {event.isClaimable ? (
                         <button
+                          type="button"
                           onClick={() => handleUnmarkClaimable(event._id)}
                           className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-1"
                           title="Remove from claimable list"
@@ -341,6 +346,7 @@ export default function EventsModerationPage() {
                         </button>
                       ) : (
                         <button
+                          type="button"
                           onClick={() => setClaimModalEventId(event._id)}
                           className="px-3 py-1 text-sm bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors flex items-center gap-1"
                           title="Make event claimable by organizers"
@@ -366,6 +372,7 @@ export default function EventsModerationPage() {
                         <Eye className="w-4 h-4" />
                       </a>
                       <button
+                        type="button"
                         onClick={() => handleDeleteEvent(event._id, event.name)}
                         className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                         title="Delete event"
@@ -426,12 +433,14 @@ export default function EventsModerationPage() {
             </div>
             <div className="flex gap-3">
               <button
+                type="button"
                 onClick={handleMakeClaimable}
                 className="flex-1 px-4 py-2 bg-success text-white rounded-lg hover:bg-success/90 transition-colors"
               >
                 Make Claimable
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setClaimModalEventId(null);
                   setClaimCode("");

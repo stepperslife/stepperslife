@@ -174,6 +174,7 @@ export default function ProductOptionsManager({
           </p>
         </div>
         <button
+          type="button"
           onClick={() => setIsAddingOption(true)}
           className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
         >
@@ -223,6 +224,7 @@ export default function ProductOptionsManager({
             Add options to let customers customize their purchase
           </p>
           <button
+            type="button"
             onClick={() => setIsAddingOption(true)}
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
@@ -276,7 +278,8 @@ function OptionCard({
     <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors">
-        <button className="cursor-grab hover:bg-gray-200 rounded p-1">
+        <button
+          type="button" className="cursor-grab hover:bg-gray-200 rounded p-1">
           <GripVertical className="w-5 h-5 text-gray-400" />
         </button>
 
@@ -299,18 +302,21 @@ function OptionCard({
 
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={onEdit}
             className="px-3 py-1 text-sm text-primary hover:bg-primary/10 rounded transition-colors"
           >
             Edit
           </button>
           <button
+            type="button"
             onClick={onDelete}
             className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
           <button
+            type="button"
             onClick={onToggleExpand}
             className="p-1 hover:bg-gray-200 rounded transition-colors"
           >

@@ -223,7 +223,7 @@ export const approve = mutation({
     return await ctx.db.patch(args.vendorId, {
       status: "APPROVED",
       isActive: true,
-      approvedAt: now,
+      reviewedAt: now,
       commissionPercent: vendor.commissionPercent ?? DEFAULT_COMMISSION_PERCENT,
       updatedAt: now,
     });
@@ -272,7 +272,7 @@ export const suspend = mutation({
     return await ctx.db.patch(args.vendorId, {
       status: "SUSPENDED",
       isActive: false,
-      suspendedAt: now,
+      reviewedAt: now,
       rejectionReason: args.reason,
       updatedAt: now,
     });
@@ -296,7 +296,7 @@ export const reactivate = mutation({
     return await ctx.db.patch(args.vendorId, {
       status: "APPROVED",
       isActive: true,
-      approvedAt: now,
+      reviewedAt: now,
       rejectionReason: undefined,
       updatedAt: now,
     });

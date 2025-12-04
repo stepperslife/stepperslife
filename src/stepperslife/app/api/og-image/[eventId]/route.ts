@@ -221,7 +221,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .toBuffer();
 
     // Return the optimized image
-    return new NextResponse(resizedImage, {
+    return new NextResponse(resizedImage as unknown as BodyInit, {
       headers: {
         "Content-Type": "image/jpeg",
         "Cache-Control": "public, max-age=31536000, immutable",

@@ -74,7 +74,11 @@ export default function CreateEventPage() {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   // Queries for welcome popup logic
-  const myEvents = useQuery(api.events.queries.getOrganizerEvents);
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const myEvents = useQuery(
+    api.events.queries.getOrganizerEvents,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
+  );
   const creditBalance = useQuery(api.payments.queries.getCreditBalance);
   const markWelcomePopupShown = useMutation(api.users.mutations.markWelcomePopupShown);
 
@@ -112,18 +116,6 @@ export default function CreateEventPage() {
   }, [city, state]);
 
   const createEvent = useMutation(api.events.mutations.createEvent);
-  const testAuth = useMutation(api.debug.testAuth);
-
-  // Debug: Test authentication
-  const handleTestAuth = async () => {
-    try {
-      const result = await testAuth({});
-      alert(JSON.stringify(result, null, 2));
-    } catch (error: any) {
-      console.error("[DEBUG] Auth test failed:", error);
-      alert("Auth test failed: " + error.message);
-    }
-  };
 
   const handleCategoryToggle = (category: string) => {
     if (categories.includes(category)) {
@@ -257,13 +249,6 @@ export default function CreateEventPage() {
             />
           </div>
 
-          {/* Debug Button - Temporarily enabled for troubleshooting */}
-          <button
-            onClick={handleTestAuth}
-            className="mt-4 px-3 py-1 text-xs bg-warning text-white rounded hover:bg-warning/90"
-          >
-            🔧 Test Auth
-          </button>
         </div>
       </header>
 
@@ -341,6 +326,7 @@ export default function CreateEventPage() {
                       return (
                         <button
                           key={type}
+                          type="button"
                           onClick={() => setEventType(type)}
                           className={`p-4 border-2 rounded-lg text-left transition-all ${
                             eventType === type
@@ -380,6 +366,7 @@ export default function CreateEventPage() {
                   {EVENT_CATEGORIES.map((category) => (
                     <button
                       key={category}
+                      type="button"
                       onClick={() => handleCategoryToggle(category)}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                         categories.includes(category)
@@ -614,6 +601,7 @@ export default function CreateEventPage() {
           {/* Navigation Buttons */}
           <div className="flex items-center justify-between pt-6 border-t border-border mt-8">
             <button
+              type="button"
               onClick={() => setStep(Math.max(1, step - 1))}
               disabled={step === 1}
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${
@@ -625,6 +613,7 @@ export default function CreateEventPage() {
 
             {step < totalSteps ? (
               <button
+                type="button"
                 onClick={() => setStep(step + 1)}
                 className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold"
               >
@@ -632,6 +621,7 @@ export default function CreateEventPage() {
               </button>
             ) : (
               <button
+                type="button"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
                 className={`px-6 py-3 rounded-lg font-semibold transition-colors ${

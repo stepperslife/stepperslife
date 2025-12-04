@@ -287,6 +287,7 @@ export const duplicateProduct = mutation({
       variants: product.variants, // Copy variants too
       requiresShipping: product.requiresShipping,
       weight: product.weight,
+      shippingPrice: product.shippingPrice,
       status: "DRAFT", // Always create duplicates as drafts
       createdBy: user._id,
       createdAt: Date.now(),
@@ -351,7 +352,17 @@ export const generateVariantCombinations = mutation({
       throw new Error("Product not found");
     }
 
-    const variants = [];
+    const variants: Array<{
+      id: string;
+      name: string;
+      options: {
+        size?: string;
+        color?: string;
+      };
+      price?: number;
+      sku?: string;
+      inventoryQuantity: number;
+    }> = [];
     for (const color of args.colors) {
       for (const size of args.sizes) {
         const variantId = `${color.toLowerCase()}-${size.toLowerCase()}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -367,7 +378,6 @@ export const generateVariantCombinations = mutation({
             ? `${args.baseSku}-${color.toUpperCase()}-${size.toUpperCase()}`
             : undefined,
           inventoryQuantity: 0, // Default to 0, can be set later
-          image: undefined, // No image by default
         });
       }
     }
@@ -575,29 +585,9 @@ export const addProductOption = mutation({
       throw new Error("Product not found");
     }
 
-    const optionId = `opt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const currentOptions = product.options || [];
-    const displayOrder = currentOptions.length;
-
-    // Process choices to add IDs
-    const choices = args.option.choices?.map((choice, index) => ({
-      id: `choice-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
-      ...choice,
-    }));
-
-    const newOption = {
-      id: optionId,
-      ...args.option,
-      choices,
-      displayOrder,
-    };
-
-    await ctx.db.patch(args.productId, {
-      options: [...currentOptions, newOption],
-      updatedAt: Date.now(),
-    });
-
-    return { success: true, optionId };
+    // Note: Product options are not currently supported in the schema
+    // This functionality would need to be added to the schema first
+    throw new Error("Product options feature is not yet implemented in the schema");
   },
 });
 
@@ -631,46 +621,9 @@ export const updateProductOption = mutation({
     }),
   },
   handler: async (ctx, args) => {
-    const product = await ctx.db.get(args.productId);
-    if (!product) {
-      throw new Error("Product not found");
-    }
-
-    if (!product.options) {
-      throw new Error("Product has no options");
-    }
-
-    const updatedOptions = product.options.map((option) => {
-      if (option.id === args.optionId) {
-        // Process choices if updated
-        let choices = option.choices;
-        if (args.updates.choices) {
-          choices = args.updates.choices.map((choice, index) => ({
-            id:
-              choice.id ||
-              `choice-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
-            label: choice.label,
-            priceModifier: choice.priceModifier,
-            image: choice.image,
-            default: choice.default,
-          }));
-        }
-
-        return {
-          ...option,
-          ...args.updates,
-          choices,
-        };
-      }
-      return option;
-    });
-
-    await ctx.db.patch(args.productId, {
-      options: updatedOptions,
-      updatedAt: Date.now(),
-    });
-
-    return { success: true };
+    // Note: Product options are not currently supported in the schema
+    // This functionality would need to be added to the schema first
+    throw new Error("Product options feature is not yet implemented in the schema");
   },
 });
 
@@ -681,23 +634,9 @@ export const deleteProductOption = mutation({
     optionId: v.string(),
   },
   handler: async (ctx, args) => {
-    const product = await ctx.db.get(args.productId);
-    if (!product) {
-      throw new Error("Product not found");
-    }
-
-    if (!product.options) {
-      throw new Error("Product has no options");
-    }
-
-    const updatedOptions = product.options.filter((opt) => opt.id !== args.optionId);
-
-    await ctx.db.patch(args.productId, {
-      options: updatedOptions.length > 0 ? updatedOptions : undefined,
-      updatedAt: Date.now(),
-    });
-
-    return { success: true };
+    // Note: Product options are not currently supported in the schema
+    // This functionality would need to be added to the schema first
+    throw new Error("Product options feature is not yet implemented in the schema");
   },
 });
 
@@ -708,35 +647,8 @@ export const reorderProductOptions = mutation({
     optionIds: v.array(v.string()), // Array of option IDs in new order
   },
   handler: async (ctx, args) => {
-    const product = await ctx.db.get(args.productId);
-    if (!product) {
-      throw new Error("Product not found");
-    }
-
-    if (!product.options) {
-      throw new Error("Product has no options");
-    }
-
-    // Create a map for quick lookup
-    const optionsMap = new Map(product.options.map((opt) => [opt.id, opt]));
-
-    // Reorder based on the provided array
-    const reorderedOptions = args.optionIds.map((id, index) => {
-      const option = optionsMap.get(id);
-      if (!option) {
-        throw new Error(`Option ${id} not found`);
-      }
-      return {
-        ...option,
-        displayOrder: index,
-      };
-    });
-
-    await ctx.db.patch(args.productId, {
-      options: reorderedOptions,
-      updatedAt: Date.now(),
-    });
-
-    return { success: true };
+    // Note: Product options are not currently supported in the schema
+    // This functionality would need to be added to the schema first
+    throw new Error("Product options feature is not yet implemented in the schema");
   },
 });

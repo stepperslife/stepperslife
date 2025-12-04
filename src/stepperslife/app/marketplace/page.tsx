@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Package, ShoppingCart, DollarSign, AlertCircle, Store, Users } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -41,7 +42,8 @@ export default function ShopPage() {
               <p className="text-muted-foreground mb-4">
                 Unable to load products. Please check your connection and try again.
               </p>
-              <button 
+              <button
+                type="button"
                 onClick={() => window.location.reload()}
                 className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
@@ -121,10 +123,13 @@ export default function ShopPage() {
                     {/* Product Image */}
                     <div className="aspect-square bg-muted relative">
                       {product.primaryImage ? (
-                        <img
+                        <Image
                           src={product.primaryImage}
                           alt={product.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                          className="object-cover"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">

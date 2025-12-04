@@ -85,12 +85,12 @@ export default function VendorSettingsPage() {
         contactPhone: vendor.contactPhone || "",
         website: vendor.website || "",
         address: vendor.address || "",
-        city: vendor.city || "",
-        state: vendor.state || "",
-        zipCode: vendor.zipCode || "",
-        country: vendor.country || "USA",
-        categories: vendor.categories || [],
-        businessType: vendor.businessType || "",
+        city: (vendor as { city?: string }).city || "",
+        state: (vendor as { state?: string }).state || "",
+        zipCode: (vendor as { zipCode?: string }).zipCode || "",
+        country: (vendor as { country?: string }).country || "USA",
+        categories: (vendor as { categories?: string[] }).categories || [],
+        businessType: (vendor as { businessType?: string }).businessType || "",
       });
     }
   }, [vendor]);
@@ -149,6 +149,20 @@ export default function VendorSettingsPage() {
         country: formData.country || undefined,
         categories: formData.categories.length > 0 ? formData.categories : undefined,
         businessType: formData.businessType || undefined,
+      } as {
+        vendorId: Id<"vendors">;
+        name: string;
+        description?: string;
+        contactEmail: string;
+        contactPhone?: string;
+        website?: string;
+        address?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+        country?: string;
+        categories?: string[];
+        businessType?: string;
       });
 
       toast.success("Settings saved successfully!");

@@ -245,6 +245,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                           </div>
                           {restaurant.acceptingOrders && (
                             <button
+                              type="button"
                               onClick={() => addToCart(item)}
                               className="ml-4 p-2 bg-orange-600 text-white rounded-full hover:bg-orange-700"
                             >
@@ -258,11 +259,11 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                 ))}
                 
                 {/* Uncategorized items */}
-                {itemsByCategory?.["uncategorized"]?.length > 0 && (
+                {(itemsByCategory?.["uncategorized"]?.length ?? 0) > 0 && (
                   <div>
                     <h3 className="text-xl font-semibold mb-4">Other Items</h3>
                     <div className="grid gap-4">
-                      {itemsByCategory["uncategorized"].filter(item => item.isAvailable).map((item) => (
+                      {itemsByCategory?.["uncategorized"].filter(item => item.isAvailable).map((item) => (
                         <div
                           key={item._id}
                           className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
@@ -280,6 +281,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                           </div>
                           {restaurant.acceptingOrders && (
                             <button
+                              type="button"
                               onClick={() => addToCart(item)}
                               className="ml-4 p-2 bg-orange-600 text-white rounded-full hover:bg-orange-700"
                             >
@@ -308,6 +310,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
         {/* Floating Cart Button */}
         {cartCount > 0 && (
           <button
+            type="button"
             onClick={() => setShowCart(true)}
             className="fixed bottom-6 right-6 flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-full shadow-lg hover:bg-orange-700 transition-colors"
           >
@@ -325,7 +328,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold">Your Order</h2>
-                  <button onClick={() => setShowCart(false)} className="text-gray-500 hover:text-gray-700">
+                  <button type="button" onClick={() => setShowCart(false)} className="text-gray-500 hover:text-gray-700">
                     ✕
                   </button>
                 </div>
@@ -345,6 +348,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                           </div>
                           <div className="flex items-center gap-2">
                             <button
+                              type="button"
                               onClick={() => removeFromCart(item.menuItemId)}
                               className="p-1 bg-gray-100 dark:bg-gray-700 rounded"
                             >
@@ -352,6 +356,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             </button>
                             <span className="w-8 text-center">{item.quantity}</span>
                             <button
+                              type="button"
                               onClick={() => addToCart({ _id: item.menuItemId, name: item.name, price: item.price })}
                               className="p-1 bg-gray-100 dark:bg-gray-700 rounded"
                             >
@@ -368,6 +373,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                         <span>${(cartTotal / 100).toFixed(2)}</span>
                       </div>
                       <button
+                        type="button"
                         onClick={handleCheckout}
                         className="w-full mt-4 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700"
                       >

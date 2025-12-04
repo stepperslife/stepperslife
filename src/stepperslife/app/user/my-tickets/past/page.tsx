@@ -14,7 +14,7 @@ export default function PastTicketsPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Mock data - will be replaced with actual Convex query
-  const tickets = [];
+  const tickets: any[] = [];
 
   const filteredTickets = tickets.filter((ticket: any) =>
     ticket.eventName.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -8,9 +8,10 @@ import { motion } from "framer-motion";
 
 export default function ReportsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const events = useQuery(api.events.queries.getOrganizerEvents, {
-    userId: currentUser?._id,
-  });
+  const events = useQuery(
+    api.events.queries.getOrganizerEvents,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
+  );
 
   const isLoading = currentUser === undefined || events === undefined;
 
@@ -25,7 +26,7 @@ export default function ReportsPage() {
     );
   }
 
-  const totalRevenue = events?.reduce((sum, e) => sum + (e.totalRevenue || 0), 0) || 0;
+  const totalRevenue = 0; // TODO: Calculate from orders/tickets
   const totalTicketsSold = events?.reduce((sum, e) => sum + (e.ticketsSold || 0), 0) || 0;
   const totalEvents = events?.length || 0;
 

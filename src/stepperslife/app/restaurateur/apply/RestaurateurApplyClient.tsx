@@ -254,6 +254,7 @@ export default function RestaurateurApplyClient() {
                 </ul>
               </div>
               <button
+                type="button"
                 onClick={() => router.push("/restaurants")}
                 className="w-full px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
               >

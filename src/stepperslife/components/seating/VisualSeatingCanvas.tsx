@@ -280,6 +280,7 @@ export default function VisualSeatingCanvas({
       <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
         <div className="bg-white rounded-lg shadow border border-gray-300 p-2 flex flex-col gap-2">
           <button
+            type="button"
             onClick={() => setShowGrid(!showGrid)}
             className={`p-2 rounded transition-colors ${
               showGrid ? "bg-gray-800 text-white" : "bg-white text-gray-700 hover:bg-gray-100"
@@ -289,6 +290,7 @@ export default function VisualSeatingCanvas({
             <GridIcon className="w-5 h-5" />
           </button>
           <button
+            type="button"
             onClick={() => setShowSectionLabels(!showSectionLabels)}
             className={`p-2 rounded transition-colors ${
               showSectionLabels
@@ -318,6 +320,7 @@ export default function VisualSeatingCanvas({
         <div className="space-y-1 max-h-48 overflow-y-auto">
           {sections.map((section) => (
             <button
+              type="button"
               key={section.id}
               onClick={() => onSectionSelect(section.id)}
               className={`w-full text-left px-2 py-1.5 rounded text-xs transition-colors flex items-center gap-2 ${
@@ -351,6 +354,7 @@ export default function VisualSeatingCanvas({
             {/* Zoom Controls */}
             <div className="absolute bottom-4 right-4 z-20 bg-white rounded-lg shadow-lg border border-gray-200 p-2 flex gap-2">
               <button
+                type="button"
                 onClick={() => zoomIn()}
                 className="p-2 hover:bg-gray-100 rounded transition-colors"
                 title="Zoom In"
@@ -358,6 +362,7 @@ export default function VisualSeatingCanvas({
                 <ZoomIn className="w-5 h-5 text-gray-700" />
               </button>
               <button
+                type="button"
                 onClick={() => zoomOut()}
                 className="p-2 hover:bg-gray-100 rounded transition-colors"
                 title="Zoom Out"
@@ -365,6 +370,7 @@ export default function VisualSeatingCanvas({
                 <ZoomOut className="w-5 h-5 text-gray-700" />
               </button>
               <button
+                type="button"
                 onClick={() => resetTransform()}
                 className="p-2 hover:bg-gray-100 rounded transition-colors"
                 title="Reset View"
@@ -439,7 +445,7 @@ export default function VisualSeatingCanvas({
                   return (
                     <motion.div
                       key={section.id}
-                      className={`absolute cursor-move transition-all ${isSelected ? "z-10" : ""}`}
+                      className={`absolute cursor-move transition-all ${isSelected ? "z-10 border-2 border-solid border-foreground" : "border-2 border-dashed border-gray-400"}`}
                       style={{
                         left: sectionX,
                         top: sectionY,
@@ -449,11 +455,6 @@ export default function VisualSeatingCanvas({
                         borderRadius: "4px",
                         transform: `rotate(${sectionRotation}deg)`,
                       }}
-                      className={
-                        isSelected
-                          ? "border-2 border-solid border-foreground"
-                          : "border-2 border-dashed border-gray-400"
-                      }
                       onMouseDown={(e) => handleSectionDragStart(e, section)}
                       whileHover={{ scale: isDragging ? 1 : 1.01 }}
                     >
@@ -484,6 +485,7 @@ export default function VisualSeatingCanvas({
 
                           {/* Rotate Button */}
                           <button
+                            type="button"
                             className="absolute -top-10 left-1/2 -translate-x-1/2 p-1.5 bg-gray-700 text-white rounded-full border-2 border-white hover:bg-gray-900 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();

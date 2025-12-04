@@ -1,10 +1,10 @@
 /**
  * TESTING HELPERS
- * These mutations are only for testing purposes and bypass authentication
+ * These mutations and queries are only for testing purposes and bypass authentication
  */
 
 import { v } from "convex/values";
-import { mutation } from "../_generated/server";
+import { mutation, query } from "../_generated/server";
 
 /**
  * Enable tickets visibility for testing (bypasses authentication)
@@ -32,12 +32,14 @@ export const enableTicketsForTesting = mutation({
       // Get event to get organizerId
       const event = await ctx.db.get(args.eventId);
       if (!event) throw new Error("Event not found");
+      if (!event.organizerId) throw new Error("Event has no organizer");
 
       // Create minimal payment config
       await ctx.db.insert("eventPaymentConfig", {
         eventId: args.eventId,
         organizerId: event.organizerId,
         paymentModel: "PREPAY",
+        customerPaymentMethods: ["CASH"],
         isActive: true,
         platformFeePercent: 0,
         platformFeeFixed: 0,
@@ -56,5 +58,47 @@ export const enableTicketsForTesting = mutation({
     }
 
     return { success: true };
+  },
+});
+
+/**
+ * Get all tickets for an event (testing only)
+ */
+export const getTicketsForEvent = query({
+  args: {
+    eventId: v.id("events"),
+  },
+  handler: async (ctx, args) => {
+    const tickets = await ctx.db
+      .query("tickets")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+      .collect();
+
+    return tickets;
+  },
+});
+
+/**
+ * Get scan history for a ticket (testing only)
+ */
+export const getScanHistory = query({
+  args: {
+    ticketId: v.id("tickets"),
+  },
+  handler: async (ctx, args) => {
+    const ticket = await ctx.db.get(args.ticketId);
+    if (!ticket) return [];
+
+    // Return scan history - for now just return array with scannedAt if ticket was scanned
+    const history = [];
+    if (ticket.scannedAt) {
+      history.push({
+        scannedAt: ticket.scannedAt,
+        scannedBy: ticket.scannedBy,
+        ticketId: ticket._id,
+      });
+    }
+
+    return history;
   },
 });

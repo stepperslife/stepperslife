@@ -74,6 +74,7 @@ export default function EventsListClient() {
                 Unable to load events. Please check your connection and try again.
               </p>
               <button 
+                type="button"
                 onClick={() => window.location.reload()}
                 className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
@@ -178,6 +179,7 @@ export default function EventsListClient() {
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
                     Search: {searchTerm}
                     <button
+                      type="button"
                       onClick={() => setSearchTerm("")}
                       className="ml-2 text-primary hover:text-primary/80"
                     >
@@ -189,6 +191,7 @@ export default function EventsListClient() {
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
                     Category: {selectedCategory}
                     <button
+                      type="button"
                       onClick={() => setSelectedCategory(undefined)}
                       className="ml-2 text-primary hover:text-primary/80"
                     >
@@ -263,7 +266,7 @@ export default function EventsListClient() {
                           <Calendar className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
                           <div>
                             <div className="font-medium">
-                              {formatEventDate(event.startDate, event.timezone)}
+                              {event.startDate && formatEventDate(event.startDate, event.timezone)}
                             </div>
                             {event.eventTimeLiteral && (
                               <div className="text-muted-foreground">
@@ -278,8 +281,10 @@ export default function EventsListClient() {
                           <div className="flex items-center gap-2 mb-3 text-sm text-foreground">
                             <MapPin className="w-4 h-4 shrink-0 text-primary" />
                             <span>
-                              {event.location.venueName && `${event.location.venueName}, `}
-                              {event.location.city}, {event.location.state}
+                              {typeof event.location === 'string'
+                                ? event.location
+                                : `${event.location.venueName ? `${event.location.venueName}, ` : ''}${event.location.city}, ${event.location.state}`
+                              }
                             </span>
                           </div>
                         )}

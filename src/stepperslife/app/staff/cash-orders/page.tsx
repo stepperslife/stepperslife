@@ -21,6 +21,29 @@ import { format } from "date-fns";
 
 export const dynamic = "force-dynamic";
 
+interface TicketDetail {
+  tierId: Id<"ticketTiers">;
+  tierName: string;
+  quantity: number;
+  price: number;
+}
+
+interface PendingOrder {
+  _id: Id<"orders">;
+  buyerName: string;
+  buyerPhone: string;
+  buyerEmail?: string;
+  totalCents: number;
+  ticketCount: number;
+  createdAt: number;
+  holdExpiresAt?: number;
+  orderNumber?: string;
+  tickets?: TicketDetail[];
+  timeRemaining: number;
+  isExpired: boolean;
+  expiresIn: number;
+}
+
 export default function CashOrdersPage() {
   const [selectedEventId, setSelectedEventId] = useState<Id<"events"> | null>(null);
   const [activatingOrderId, setActivatingOrderId] = useState<Id<"orders"> | null>(null);
@@ -37,7 +60,7 @@ export default function CashOrdersPage() {
   const pendingOrders = useQuery(
     api.orders.cashPayments.getPendingCashOrders,
     selectedEventId ? { eventId: selectedEventId } : "skip"
-  );
+  ) as PendingOrder[] | undefined;
 
   // Mutations
   const approveCashOrder = useMutation(api.orders.cashPayments.approveCashOrder);
@@ -46,7 +69,7 @@ export default function CashOrdersPage() {
   // Auto-select first event if available
   useEffect(() => {
     if (staffPositions && staffPositions.length > 0 && !selectedEventId) {
-      setSelectedEventId(staffPositions[0].eventId as Id<"events">);
+      setSelectedEventId(staffPositions[0].event?._id as Id<"events">);
     }
   }, [staffPositions, selectedEventId]);
 
@@ -136,8 +159,8 @@ export default function CashOrdersPage() {
   }
 
   // Find selected event details
-  const selectedEvent = staffPositions.find((pos) => pos.eventId === selectedEventId);
-  const selectedStaffId = selectedEvent?.staffId as Id<"eventStaff"> | undefined;
+  const selectedEvent = staffPositions.find((pos) => pos.event?._id === selectedEventId);
+  const selectedStaffId = selectedEvent?._id as Id<"eventStaff"> | undefined;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -149,6 +172,7 @@ export default function CashOrdersPage() {
             <p className="text-muted-foreground mt-1">Approve in-person cash payments</p>
           </div>
           <button
+            type="button"
             onClick={() => setRefreshKey((prev) => prev + 1)}
             className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border text-foreground rounded-lg hover:bg-muted transition"
           >
@@ -167,8 +191,8 @@ export default function CashOrdersPage() {
               className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               {staffPositions.map((pos) => (
-                <option key={pos.eventId} value={pos.eventId}>
-                  {pos.eventName}
+                <option key={pos.event?._id} value={pos.event?._id}>
+                  {pos.event?.name}
                 </option>
               ))}
             </select>
@@ -219,13 +243,13 @@ export default function CashOrdersPage() {
         ) : (
           <div className="space-y-4">
             {pendingOrders.map((order) => {
-              const isGeneratedCode = generatedCode?.orderId === order.orderId;
-              const timeRemaining = getTimeRemaining(order.holdExpiresAt);
-              const timeColor = getTimeColor(order.holdExpiresAt);
+              const isGeneratedCode = generatedCode?.orderId === order._id;
+              const timeRemaining = order.holdExpiresAt ? getTimeRemaining(order.holdExpiresAt) : "Expired";
+              const timeColor = order.holdExpiresAt ? getTimeColor(order.holdExpiresAt) : "text-destructive";
 
               return (
                 <div
-                  key={order.orderId}
+                  key={order._id}
                   className="bg-card border-2 border-warning rounded-lg p-6 shadow-sm hover:shadow-md transition"
                 >
                   <div className="flex items-start justify-between mb-4">
@@ -278,7 +302,7 @@ export default function CashOrdersPage() {
                       <p>
                         <strong>Order #:</strong> {order.orderNumber}
                       </p>
-                      {order.tickets.map((ticket, idx) => (
+                      {order.tickets && order.tickets.map((ticket: TicketDetail, idx: number) => (
                         <div key={idx} className="flex items-center gap-2">
                           <Ticket className="w-4 h-4" />
                           <span>
@@ -291,7 +315,7 @@ export default function CashOrdersPage() {
                   </div>
 
                   {/* Generated Code Display */}
-                  {isGeneratedCode && (
+                  {isGeneratedCode && generatedCode && (
                     <div className="bg-success/10 border-2 border-success rounded-lg p-4 mb-4">
                       <div className="flex items-center gap-3">
                         <Key className="w-6 h-6 text-success" />
@@ -314,11 +338,12 @@ export default function CashOrdersPage() {
                   {selectedStaffId && (
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => handleApprove(order.orderId, selectedStaffId)}
-                        disabled={activatingOrderId === order.orderId}
+                        type="button"
+                        onClick={() => handleApprove(order._id, selectedStaffId)}
+                        disabled={activatingOrderId === order._id}
                         className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-success text-white rounded-lg hover:bg-success/90 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
                       >
-                        {activatingOrderId === order.orderId ? (
+                        {activatingOrderId === order._id ? (
                           <>
                             <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
                             Activating...
@@ -331,8 +356,9 @@ export default function CashOrdersPage() {
                         )}
                       </button>
                       <button
-                        onClick={() => handleGenerateCode(order.orderId, selectedStaffId)}
-                        disabled={activatingOrderId === order.orderId || isGeneratedCode}
+                        type="button"
+                        onClick={() => handleGenerateCode(order._id, selectedStaffId)}
+                        disabled={activatingOrderId === order._id || isGeneratedCode}
                         className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
                       >
                         <Key className="w-5 h-5" />

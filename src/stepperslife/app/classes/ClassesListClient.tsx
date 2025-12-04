@@ -62,6 +62,7 @@ export default function ClassesListClient() {
                 Unable to load classes. Please check your connection and try again.
               </p>
               <button
+                type="button"
                 onClick={() => window.location.reload()}
                 className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
@@ -113,7 +114,9 @@ export default function ClassesListClient() {
               {/* Search */}
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <label htmlFor="classes-search" className="sr-only">Search classes by name, description, or location</label>
                 <input
+                  id="classes-search"
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -126,7 +129,9 @@ export default function ClassesListClient() {
               {/* Category Filter */}
               <div className="relative">
                 <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <label htmlFor="category-filter" className="sr-only">Filter by category</label>
                 <select
+                  id="category-filter"
                   value={selectedCategory || ""}
                   onChange={(e) => setSelectedCategory(e.target.value || undefined)}
                   data-testid="classes-category-filter"
@@ -164,8 +169,10 @@ export default function ClassesListClient() {
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
                     Search: {searchTerm}
                     <button
+                      type="button"
                       onClick={() => setSearchTerm("")}
                       className="ml-2 text-primary hover:text-primary/80"
+                      aria-label="Clear search term"
                     >
                       ×
                     </button>
@@ -175,8 +182,10 @@ export default function ClassesListClient() {
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
                     Category: {selectedCategory}
                     <button
+                      type="button"
                       onClick={() => setSelectedCategory(undefined)}
                       className="ml-2 text-primary hover:text-primary/80"
+                      aria-label="Clear category filter"
                     >
                       ×
                     </button>

@@ -5,7 +5,7 @@
 
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
-import { Id } from "../convex/_generated/dataModel";
+import { Id, Doc } from "../convex/_generated/dataModel";
 
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL || "https://expert-vulture-775.convex.cloud";
 
@@ -82,9 +82,9 @@ class TestDataCleaner {
       // Get all events with "TEST", "PREPAY", "SPLIT" in name
       const testPatterns = ['TEST', 'PREPAY Event', 'SPLIT Event', 'House Party', 'Dance Festival'];
 
-      const events = await this.convex.query(api.events.queries.getAllEvents, {});
+      const events = await this.convex.query(api.adminPanel.queries.getAllEvents, {});
 
-      const testEvents = events.filter((event: any) =>
+      const testEvents = events.filter((event) =>
         testPatterns.some(pattern => event.name?.includes(pattern))
       );
 
@@ -92,12 +92,13 @@ class TestDataCleaner {
 
       for (const event of testEvents) {
         try {
-          await this.convex.mutation(api.events.mutations.deleteEvent, {
+          await this.convex.action(api.adminPanel.mutations.deleteEvent, {
             eventId: event._id
           });
           console.log(`  ✓ Deleted event: ${event.name} (${event._id})`);
         } catch (error) {
-          console.log(`  ✗ Failed to delete event ${event._id}: ${error.message}`);
+          const message = error instanceof Error ? error.message : String(error);
+          console.log(`  ✗ Failed to delete event ${event._id}: ${message}`);
         }
       }
 
@@ -113,29 +114,40 @@ class TestDataCleaner {
     console.log('[CLEANUP] Removing test orders...');
 
     try {
-      // Find orders from test users or test events
-      const testEmails = ['test', '@test.com', 'cash', 'stripe', 'paypal', 'cashapp', 'split', 'mixed'];
+      // Get all events and then get orders for test events
+      const events = await this.convex.query(api.adminPanel.queries.getAllEvents, {});
+      const testPatterns = ['TEST', 'PREPAY Event', 'SPLIT Event', 'House Party', 'Dance Festival'];
+      const testEvents = events.filter((event) =>
+        testPatterns.some(pattern => event.name?.includes(pattern))
+      );
 
-      const orders = await this.convex.query(api.orders.queries.getAllOrders, {});
+      let totalOrders = 0;
 
-      const testOrders = orders.filter((order: any) => {
-        // Check if order email contains test patterns
-        const email = order.buyerEmail?.toLowerCase() || '';
-        return testEmails.some(pattern => email.includes(pattern));
-      });
-
-      console.log(`Found ${testOrders.length} test orders to delete`);
-
-      for (const order of testOrders) {
+      for (const event of testEvents) {
         try {
-          await this.convex.mutation(api.orders.mutations.deleteOrder, {
-            orderId: order._id
+          const orders = await this.convex.query(api.events.queries.getEventOrders, {
+            eventId: event._id
           });
-          console.log(`  ✓ Deleted order: ${order._id} (${order.buyerEmail})`);
+
+          for (const order of orders) {
+            try {
+              await this.convex.mutation(api.adminPanel.mutations.deleteOrder, {
+                orderId: order._id
+              });
+              console.log(`  ✓ Deleted order: ${order._id} (${order.buyerEmail})`);
+              totalOrders++;
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              console.log(`  ✗ Failed to delete order ${order._id}: ${message}`);
+            }
+          }
         } catch (error) {
-          console.log(`  ✗ Failed to delete order ${order._id}: ${error.message}`);
+          const message = error instanceof Error ? error.message : String(error);
+          console.log(`  ✗ Failed to get orders for event ${event._id}: ${message}`);
         }
       }
+
+      console.log(`Found ${totalOrders} test orders to delete`);
 
     } catch (error) {
       console.error('Error cleaning up test orders:', error);
@@ -149,28 +161,42 @@ class TestDataCleaner {
     console.log('[CLEANUP] Removing test tickets...');
 
     try {
-      // Tickets are usually cascade-deleted with orders/events
-      // But we can clean up orphaned test tickets
+      // Note: Individual ticket deletion is handled when deleting orders/events
+      // This cleanup focuses on ticket tiers which are the templates for tickets
+      const events = await this.convex.query(api.adminPanel.queries.getAllEvents, {});
+      const testPatterns = ['TEST', 'PREPAY Event', 'SPLIT Event', 'House Party', 'Dance Festival'];
+      const testEvents = events.filter((event) =>
+        testPatterns.some(pattern => event.name?.includes(pattern))
+      );
 
-      const tickets = await this.convex.query(api.tickets.queries.getAllTickets, {});
+      let totalTiers = 0;
 
-      const testTickets = tickets.filter((ticket: any) => {
-        const email = ticket.buyerEmail?.toLowerCase() || '';
-        return email.includes('test') || email.includes('@test.com');
-      });
-
-      console.log(`Found ${testTickets.length} test tickets to delete`);
-
-      for (const ticket of testTickets) {
+      for (const event of testEvents) {
         try {
-          await this.convex.mutation(api.tickets.mutations.deleteTicket, {
-            ticketId: ticket._id
+          // getTicketsByEvent actually returns ticket tiers
+          const tiers = await this.convex.query(api.tickets.queries.getTicketsByEvent, {
+            eventId: event._id
           });
-          console.log(`  ✓ Deleted ticket: ${ticket._id}`);
+
+          for (const tier of tiers) {
+            try {
+              await this.convex.mutation(api.tickets.mutations.deleteTicketTier, {
+                tierId: tier._id
+              });
+              console.log(`  ✓ Deleted ticket tier: ${tier._id}`);
+              totalTiers++;
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              console.log(`  ✗ Failed to delete ticket tier ${tier._id}: ${message}`);
+            }
+          }
         } catch (error) {
-          console.log(`  ✗ Failed to delete ticket ${ticket._id}: ${error.message}`);
+          const message = error instanceof Error ? error.message : String(error);
+          console.log(`  ✗ Failed to get ticket tiers for event ${event._id}: ${message}`);
         }
       }
+
+      console.log(`Found ${totalTiers} test ticket tiers to delete`);
 
     } catch (error) {
       console.error('Error cleaning up test tickets:', error);
@@ -184,9 +210,9 @@ class TestDataCleaner {
     console.log('[CLEANUP] Removing test users (use with caution)...');
 
     try {
-      const users = await this.convex.query(api.users.queries.getAllUsers, {});
+      const users = await this.convex.query(api.adminPanel.queries.getAllUsers, {});
 
-      const testUsers = users.filter((user: any) => {
+      const testUsers = users.filter((user) => {
         const email = user.email?.toLowerCase() || '';
         return email.includes('test-organizer') || email.includes('@stepperslife.com');
       });
@@ -195,12 +221,13 @@ class TestDataCleaner {
 
       for (const user of testUsers) {
         try {
-          await this.convex.mutation(api.users.mutations.deleteUser, {
+          await this.convex.mutation(api.adminPanel.mutations.deleteUser, {
             userId: user._id
           });
           console.log(`  ✓ Deleted user: ${user.email} (${user._id})`);
         } catch (error) {
-          console.log(`  ✗ Failed to delete user ${user._id}: ${error.message}`);
+          const message = error instanceof Error ? error.message : String(error);
+          console.log(`  ✗ Failed to delete user ${user._id}: ${message}`);
         }
       }
 
@@ -216,26 +243,11 @@ class TestDataCleaner {
     console.log('[CLEANUP] Removing test credit transactions...');
 
     try {
-      const transactions = await this.convex.query(api.credits.queries.getAllTransactions, {});
-
-      const testTransactions = transactions.filter((tx: any) =>
-        tx.organizerId?.includes('test') ||
-        tx.description?.includes('test') ||
-        tx.description?.includes('Automated test')
-      );
-
-      console.log(`Found ${testTransactions.length} test credit transactions to delete`);
-
-      for (const tx of testTransactions) {
-        try {
-          await this.convex.mutation(api.credits.mutations.deleteTransaction, {
-            transactionId: tx._id
-          });
-          console.log(`  ✓ Deleted transaction: ${tx._id}`);
-        } catch (error) {
-          console.log(`  ✗ Failed to delete transaction ${tx._id}: ${error.message}`);
-        }
-      }
+      // Note: Credit transaction cleanup is not currently implemented
+      // as there's no getAllTransactions or deleteTransaction API available.
+      // Credits are typically managed through the admin panel or will be
+      // cleaned up when associated users/events are deleted.
+      console.log('⚠ Credit cleanup not implemented - credits will be cleaned up with users/events');
 
     } catch (error) {
       console.error('Error cleaning up test credits:', error);
@@ -250,43 +262,32 @@ class TestDataCleaner {
 
     try {
       // Delete orders for this event
-      const orders = await this.convex.query(api.orders.queries.getEventOrders, {
+      const orders = await this.convex.query(api.events.queries.getEventOrders, {
         eventId
       });
 
       console.log(`Deleting ${orders.length} orders...`);
       for (const order of orders) {
-        await this.convex.mutation(api.orders.mutations.deleteOrder, {
+        await this.convex.mutation(api.adminPanel.mutations.deleteOrder, {
           orderId: order._id
         });
       }
 
-      // Delete tickets for this event
-      const tickets = await this.convex.query(api.tickets.queries.getEventTickets, {
-        eventId
-      });
-
-      console.log(`Deleting ${tickets.length} tickets...`);
-      for (const ticket of tickets) {
-        await this.convex.mutation(api.tickets.mutations.deleteTicket, {
-          ticketId: ticket._id
-        });
-      }
-
-      // Delete ticket tiers
-      const tiers = await this.convex.query(api.ticketTiers.queries.getEventTicketTiers, {
+      // Delete ticket tiers for this event
+      // Note: getTicketsByEvent actually returns ticket tiers, not individual tickets
+      const tiers = await this.convex.query(api.tickets.queries.getTicketsByEvent, {
         eventId
       });
 
       console.log(`Deleting ${tiers.length} ticket tiers...`);
       for (const tier of tiers) {
-        await this.convex.mutation(api.ticketTiers.mutations.deleteTicketTier, {
-          tierid: tier._id
+        await this.convex.mutation(api.tickets.mutations.deleteTicketTier, {
+          tierId: tier._id
         });
       }
 
       // Delete event
-      await this.convex.mutation(api.events.mutations.deleteEvent, { eventId });
+      await this.convex.action(api.adminPanel.mutations.deleteEvent, { eventId });
 
       console.log(`✓ Event ${eventId} and all related data deleted\n`);
 
@@ -303,9 +304,9 @@ class TestDataCleaner {
     console.log(`\n[CLEANUP] Removing data from ${new Date(startDate)} to ${new Date(endDate)}...\n`);
 
     try {
-      const events = await this.convex.query(api.events.queries.getAllEvents, {});
+      const events = await this.convex.query(api.adminPanel.queries.getAllEvents, {});
 
-      const eventsInRange = events.filter((event: any) =>
+      const eventsInRange = events.filter((event) =>
         event._creationTime >= startDate && event._creationTime <= endDate
       );
 
@@ -328,25 +329,36 @@ class TestDataCleaner {
     console.log('\n[STATS] Test data statistics...\n');
 
     try {
-      const events = await this.convex.query(api.events.queries.getAllEvents, {});
-      const orders = await this.convex.query(api.orders.queries.getAllOrders, {});
-      const tickets = await this.convex.query(api.tickets.queries.getAllTickets, {});
+      const events = await this.convex.query(api.adminPanel.queries.getAllEvents, {});
 
-      const testEvents = events.filter((e: any) =>
+      const testEvents = events.filter((e) =>
         ['TEST', 'PREPAY Event', 'SPLIT Event'].some(p => e.name?.includes(p))
       );
 
-      const testOrders = orders.filter((o: any) =>
-        o.buyerEmail?.toLowerCase().includes('test')
-      );
+      // Count orders and ticket tiers for test events
+      let totalOrders = 0;
+      let totalTiers = 0;
 
-      const testTickets = tickets.filter((t: any) =>
-        t.buyerEmail?.toLowerCase().includes('test')
-      );
+      for (const event of testEvents) {
+        try {
+          const orders = await this.convex.query(api.events.queries.getEventOrders, {
+            eventId: event._id
+          });
+          totalOrders += orders.length;
+
+          // getTicketsByEvent returns ticket tiers, not individual tickets
+          const tiers = await this.convex.query(api.tickets.queries.getTicketsByEvent, {
+            eventId: event._id
+          });
+          totalTiers += tiers.length;
+        } catch (error) {
+          // Skip if queries fail for this event
+        }
+      }
 
       console.log(`Test Events: ${testEvents.length} / ${events.length} total`);
-      console.log(`Test Orders: ${testOrders.length} / ${orders.length} total`);
-      console.log(`Test Tickets: ${testTickets.length} / ${tickets.length} total`);
+      console.log(`Test Orders (estimated): ${totalOrders}`);
+      console.log(`Test Ticket Tiers (estimated): ${totalTiers}`);
       console.log('');
 
     } catch (error) {

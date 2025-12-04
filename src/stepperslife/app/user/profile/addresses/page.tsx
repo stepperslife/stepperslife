@@ -11,7 +11,7 @@ export default function AddressesPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data - will be replaced with actual Convex query
-  const addresses = [];
+  const addresses: any[] = [];
 
   const getAddressIcon = (type: string) => {
     switch (type) {

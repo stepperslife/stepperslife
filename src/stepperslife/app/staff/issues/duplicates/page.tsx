@@ -6,11 +6,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Copy, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
 
+interface DuplicateScan {
+  id: string;
+  ticketNumber: string;
+  eventName: string;
+  firstScan: number;
+  duplicateScan: number;
+}
+
 export default function DuplicateScansPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data
-  const duplicates = [];
+  const duplicates: DuplicateScan[] = [];
 
   const formatTime = (timestamp: number) => {
     return new Date(timestamp).toLocaleString("en-US", {
@@ -51,7 +59,7 @@ export default function DuplicateScansPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {duplicates.map((duplicate: any) => (
+          {duplicates.map((duplicate) => (
             <Card key={duplicate.id} className="border-warning bg-warning/10">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">

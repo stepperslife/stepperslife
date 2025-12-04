@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/useAuth";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -28,6 +28,37 @@ import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 
 type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY_FOR_PICKUP" | "COMPLETED" | "CANCELLED";
+
+interface OrderItem {
+  menuItemId: Id<"menuItems">;
+  name: string;
+  price: number;
+  quantity: number;
+  notes?: string;
+}
+
+interface FoodOrder {
+  _id: Id<"foodOrders">;
+  _creationTime: number;
+  orderNumber: string;
+  restaurantId: Id<"restaurants">;
+  customerId?: Id<"users">;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  items: OrderItem[];
+  subtotal: number;
+  tax: number;
+  total: number;
+  pickupTime?: number;
+  specialInstructions?: string;
+  status: string;
+  paymentStatus: string;
+  paymentMethod?: string;
+  placedAt: number;
+  readyAt?: number;
+  completedAt?: number;
+}
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; bgColor: string; icon: typeof Clock; pulse?: boolean }> = {
   PENDING: { label: "New Order", color: "text-yellow-700", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: Clock, pulse: true },
@@ -66,7 +97,7 @@ export default function RestaurateurOrdersClient() {
     selectedRestaurant ? { restaurantId: selectedRestaurant as Id<"restaurants"> } : "skip"
   );
 
-  const updateStatus = useMutation(api.foodOrders.updateStatus);
+  const updateOrderStatus = useAction(api.foodOrders.updateStatusWithNotification);
   const updatePaymentStatus = useMutation(api.foodOrders.updatePaymentStatus);
 
   // Initialize audio element
@@ -137,20 +168,20 @@ export default function RestaurateurOrdersClient() {
     if (!orders || isFirstLoadRef.current) {
       // On first load, just set the initial state without alerting
       if (orders) {
-        const pendingOrders = orders.filter(o => o.status === "PENDING");
+        const pendingOrders = orders.filter((o: FoodOrder) => o.status === "PENDING");
         previousOrderCountRef.current = orders.length;
-        previousPendingOrderIdsRef.current = new Set(pendingOrders.map(o => o._id));
+        previousPendingOrderIdsRef.current = new Set(pendingOrders.map((o: FoodOrder) => o._id));
         isFirstLoadRef.current = false;
       }
       return;
     }
 
-    const pendingOrders = orders.filter(o => o.status === "PENDING");
-    const currentPendingIds = new Set(pendingOrders.map(o => o._id));
+    const pendingOrders = orders.filter((o: FoodOrder) => o.status === "PENDING");
+    const currentPendingIds = new Set(pendingOrders.map((o: FoodOrder) => o._id));
 
     // Find new pending orders (orders that weren't in the previous set)
     const newPendingOrders = pendingOrders.filter(
-      o => !previousPendingOrderIdsRef.current.has(o._id)
+      (o: FoodOrder) => !previousPendingOrderIdsRef.current.has(o._id)
     );
 
     if (newPendingOrders.length > 0) {
@@ -158,8 +189,8 @@ export default function RestaurateurOrdersClient() {
       playNotificationSound();
 
       // Show browser notification for each new order
-      newPendingOrders.forEach(order => {
-        const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+      newPendingOrders.forEach((order: FoodOrder) => {
+        const itemCount = order.items.reduce((sum: number, item: OrderItem) => sum + item.quantity, 0);
         showBrowserNotification(
           "🍽️ New Food Order!",
           `${order.customerName} ordered ${itemCount} item${itemCount > 1 ? "s" : ""} - $${(order.total / 100).toFixed(2)}`
@@ -261,18 +292,18 @@ export default function RestaurateurOrdersClient() {
   }
 
   const handleStatusUpdate = async (orderId: Id<"foodOrders">, newStatus: OrderStatus) => {
-    await updateStatus({ id: orderId, status: newStatus });
+    await updateOrderStatus({ id: orderId, status: newStatus });
   };
 
   const handleMarkPaid = async (orderId: Id<"foodOrders">) => {
     await updatePaymentStatus({ id: orderId, paymentStatus: "paid", paymentMethod: "cash" });
   };
 
-  const filteredOrders = orders?.filter(order =>
+  const filteredOrders = orders?.filter((order: FoodOrder) =>
     statusFilter === "ALL" || order.status === statusFilter
   ) || [];
 
-  const activeOrders = orders?.filter(order =>
+  const activeOrders = orders?.filter((order: FoodOrder) =>
     !["COMPLETED", "CANCELLED"].includes(order.status)
   ).length || 0;
 
@@ -304,6 +335,7 @@ export default function RestaurateurOrdersClient() {
               <div className="flex items-center gap-2">
                 {/* Sound Toggle */}
                 <button
+                  type="button"
                   onClick={() => setSoundEnabled(!soundEnabled)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
                     soundEnabled ? "bg-white/20 text-white" : "bg-white/10 text-white/60"
@@ -316,6 +348,7 @@ export default function RestaurateurOrdersClient() {
                 {/* Notification Toggle */}
                 {notificationPermission !== "granted" ? (
                   <button
+                    type="button"
                     onClick={requestNotificationPermission}
                     className="flex items-center gap-2 px-3 py-2 bg-yellow-500/80 text-white rounded-lg hover:bg-yellow-500 transition-colors"
                     title="Enable browser notifications"
@@ -325,6 +358,7 @@ export default function RestaurateurOrdersClient() {
                   </button>
                 ) : (
                   <button
+                    type="button"
                     onClick={() => setNotificationsEnabled(!notificationsEnabled)}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
                       notificationsEnabled ? "bg-white/20 text-white" : "bg-white/10 text-white/60"
@@ -337,6 +371,7 @@ export default function RestaurateurOrdersClient() {
 
                 {/* Refresh Button */}
                 <button
+                  type="button"
                   onClick={() => window.location.reload()}
                   className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors"
                 >
@@ -372,6 +407,7 @@ export default function RestaurateurOrdersClient() {
           {/* Status Filters */}
           <div className="flex flex-wrap gap-2 mb-6">
             <button
+              type="button"
               onClick={() => setStatusFilter("ALL")}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 statusFilter === "ALL"
@@ -383,10 +419,11 @@ export default function RestaurateurOrdersClient() {
             </button>
             {(Object.keys(STATUS_CONFIG) as OrderStatus[]).map((status) => {
               const config = STATUS_CONFIG[status];
-              const count = orders?.filter(o => o.status === status).length || 0;
+              const count = orders?.filter((o: FoodOrder) => o.status === status).length || 0;
               return (
                 <button
                   key={status}
+                  type="button"
                   onClick={() => setStatusFilter(status)}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                     statusFilter === status
@@ -424,7 +461,7 @@ export default function RestaurateurOrdersClient() {
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredOrders.map((order) => {
+              {filteredOrders.map((order: FoodOrder) => {
                 const statusConfig = STATUS_CONFIG[order.status as OrderStatus] || STATUS_CONFIG.PENDING;
                 const StatusIcon = statusConfig.icon;
                 const currentStatusIndex = STATUS_FLOW.indexOf(order.status as OrderStatus);
@@ -481,7 +518,7 @@ export default function RestaurateurOrdersClient() {
                     <div className="mb-4">
                       <h4 className="font-medium mb-2">Items</h4>
                       <div className="space-y-2">
-                        {order.items.map((item, idx) => (
+                        {order.items.map((item: OrderItem, idx: number) => (
                           <div key={idx} className="flex justify-between text-sm">
                             <span>
                               {item.quantity}x {item.name}
@@ -524,6 +561,7 @@ export default function RestaurateurOrdersClient() {
                       <div className="flex flex-wrap gap-3">
                         {nextStatus && (
                           <button
+                            type="button"
                             onClick={() => handleStatusUpdate(order._id, nextStatus)}
                             className="flex-1 sm:flex-none px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
                           >
@@ -532,6 +570,7 @@ export default function RestaurateurOrdersClient() {
                         )}
                         {order.paymentStatus !== "paid" && (
                           <button
+                            type="button"
                             onClick={() => handleMarkPaid(order._id)}
                             className="flex-1 sm:flex-none px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
                           >
@@ -540,6 +579,7 @@ export default function RestaurateurOrdersClient() {
                         )}
                         {order.status === "PENDING" && (
                           <button
+                            type="button"
                             onClick={() => handleStatusUpdate(order._id, "CANCELLED")}
                             className="px-4 py-2 border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                           >

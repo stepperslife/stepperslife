@@ -455,8 +455,6 @@ test.describe("Comprehensive Organizer Workflow", () => {
 
     console.log(`\nTransactions:`);
     console.log(`  Total: ${summary.transactions.total}`);
-    console.log(`  Purchases: ${summary.transactions.purchases}`);
-    console.log(`  Usage: ${summary.transactions.usage}`);
     console.log(`  Total Purchased: ${summary.transactions.totalPurchased} credits`);
     console.log(`  Total Spent: $${summary.transactions.totalSpent}`);
 

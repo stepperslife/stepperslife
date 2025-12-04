@@ -19,6 +19,48 @@ import {
 
 type FulfillmentStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 
+interface OrderItem {
+  productId: Id<"products">;
+  productName: string;
+  variantId?: string;
+  variantName?: string;
+  quantity: number;
+  price: number;
+  totalPrice: number;
+}
+
+interface ShippingAddress {
+  name: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  phone?: string;
+}
+
+interface VendorOrder {
+  _id: string;
+  _creationTime: number;
+  orderNumber: string;
+  customerEmail: string;
+  customerName: string;
+  customerPhone?: string;
+  shippingAddress: ShippingAddress;
+  items: OrderItem[];
+  fulfillmentStatus: FulfillmentStatus;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  createdAt: number;
+  paidAt?: number;
+  shippedAt?: number;
+  deliveredAt?: number;
+  vendorItems: OrderItem[];
+  vendorSubtotal: number;
+  totalItems: number;
+}
+
 const STATUS_CONFIG: Record<FulfillmentStatus, { label: string; color: string; icon: typeof Clock }> = {
   PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
   PROCESSING: { label: "Processing", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", icon: Package },
@@ -41,17 +83,17 @@ export default function VendorOrdersPage() {
 
   // Get vendor orders
   const orders = useQuery(
-    api.productOrders.getOrdersByVendor,
+    api.products.orders.getOrdersByVendor,
     vendor?._id
       ? {
           vendorId: vendor._id,
           fulfillmentStatus: statusFilter || undefined,
         }
       : "skip"
-  );
+  ) as VendorOrder[] | undefined;
 
   // Filter orders by search
-  const filteredOrders = orders?.filter((order) => {
+  const filteredOrders = orders?.filter((order: VendorOrder) => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return (
@@ -78,9 +120,9 @@ export default function VendorOrdersPage() {
   // Calculate stats
   const stats = {
     total: orders?.length || 0,
-    pending: orders?.filter((o) => o.fulfillmentStatus === "PENDING").length || 0,
-    processing: orders?.filter((o) => o.fulfillmentStatus === "PROCESSING").length || 0,
-    shipped: orders?.filter((o) => o.fulfillmentStatus === "SHIPPED").length || 0,
+    pending: orders?.filter((o: VendorOrder) => o.fulfillmentStatus === "PENDING").length || 0,
+    processing: orders?.filter((o: VendorOrder) => o.fulfillmentStatus === "PROCESSING").length || 0,
+    shipped: orders?.filter((o: VendorOrder) => o.fulfillmentStatus === "SHIPPED").length || 0,
   };
 
   if (!vendor) {
@@ -185,7 +227,7 @@ export default function VendorOrdersPage() {
         </div>
       ) : filteredOrders && filteredOrders.length > 0 ? (
         <div className="space-y-4">
-          {filteredOrders.map((order) => {
+          {filteredOrders.map((order: VendorOrder) => {
             const statusConfig = STATUS_CONFIG[order.fulfillmentStatus as FulfillmentStatus];
             const StatusIcon = statusConfig.icon;
             const isExpanded = selectedOrder === order._id;
@@ -227,7 +269,8 @@ export default function VendorOrdersPage() {
                         <StatusIcon className="w-4 h-4" />
                         {statusConfig.label}
                       </span>
-                      <button className="p-2 hover:bg-muted rounded-lg transition-colors">
+                      <button
+                        type="button" className="p-2 hover:bg-muted rounded-lg transition-colors">
                         <Eye className="w-5 h-5 text-muted-foreground" />
                       </button>
                     </div>
@@ -281,7 +324,7 @@ export default function VendorOrdersPage() {
                     <div className="mt-6">
                       <h4 className="font-medium text-foreground mb-3">Your Items</h4>
                       <div className="space-y-3">
-                        {order.vendorItems.map((item, idx) => (
+                        {order.vendorItems.map((item: OrderItem, idx: number) => (
                           <div
                             key={idx}
                             className="flex items-center justify-between p-3 bg-background rounded-lg border border-border"

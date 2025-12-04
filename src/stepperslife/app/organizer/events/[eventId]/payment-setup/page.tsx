@@ -20,6 +20,7 @@ export default function PaymentSetupPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPrepayment, setShowPrepayment] = useState(false);
 
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
   const event = useQuery(api.events.queries.getEventById, { eventId });
   const paymentConfig = useQuery(api.events.queries.getPaymentConfig, { eventId });
   const creditBalance = useQuery(api.payments.queries.getCreditBalance);
@@ -27,13 +28,13 @@ export default function PaymentSetupPage() {
   const configurePayment = useMutation(api.events.mutations.configurePayment);
   const createStripeConnectAccount = useMutation(api.payments.mutations.createStripeConnectAccount);
 
-  const isLoading = event === undefined;
+  const isLoading = event === undefined || currentUser === undefined;
 
   // Check if user has Stripe account connected
   const hasStripeConnected = currentUser?.stripeAccountSetupComplete === true;
 
   // Check if user is the organizer
-  if (!isLoading && event.organizerId !== currentUser?._id) {
+  if (!isLoading && event && event.organizerId !== currentUser?._id) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
@@ -96,7 +97,7 @@ export default function PaymentSetupPage() {
         });
 
         // Redirect to Stripe Connect onboarding flow
-        router.push(`/organizer/stripe-connect?action=create&email=${currentUser.email}`);
+        router.push(`/organizer/stripe-connect?action=create&email=${currentUser?.email || ""}`);
       }
     } catch (error) {
       console.error("Payment setup error:", error);
@@ -211,7 +212,7 @@ export default function PaymentSetupPage() {
 
           <OrganizerPrepayment
             eventId={eventId}
-            eventName={event.name}
+            eventName={event?.name || "Event"}
             estimatedTickets={100} // Default estimate, could be made configurable
             pricePerTicket={0.3}
             onPaymentSuccess={handlePrepaymentSuccess}
@@ -236,7 +237,7 @@ export default function PaymentSetupPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Choose Your Payment Model</h1>
           <p className="text-gray-600">
-            Select how you want to handle ticket sales for "{event.name}"
+            Select how you want to handle ticket sales for "{event?.name || "your event"}"
           </p>
 
           {creditBalance && creditBalance.creditsRemaining > 0 && (
@@ -445,14 +446,14 @@ export default function PaymentSetupPage() {
         </div>
 
         {/* Current Credit Balance (if Pre-Purchase selected) */}
-        {selectedModel === "PREPAY" && creditBalance !== undefined && (
+        {selectedModel === "PREPAY" && creditBalance !== undefined && creditBalance !== null && (
           <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Current Credit Balance</p>
-                <p className="text-2xl font-bold text-gray-900">{creditBalance} credits</p>
+                <p className="text-2xl font-bold text-gray-900">{creditBalance.creditsRemaining} credits</p>
               </div>
-              {creditBalance < 100 && (
+              {creditBalance.creditsRemaining < 100 && (
                 <div className="text-right">
                   <p className="text-sm text-orange-600 font-medium">Low balance</p>
                   <p className="text-xs text-gray-500">You'll be prompted to purchase more</p>

@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function PastEventsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const events = [];
+  const events: any[] = [];
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString("en-US", {

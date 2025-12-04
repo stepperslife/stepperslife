@@ -8,14 +8,22 @@ import { Calendar, MapPin, CheckCircle, Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
+interface PastEvent {
+  id: string;
+  name: string;
+  date: number;
+  location: string;
+  scannedCount: number;
+}
+
 export default function PastEventsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Mock data
-  const events = [];
+  const events: PastEvent[] = [];
 
-  const filteredEvents = events.filter((event: any) =>
+  const filteredEvents = events.filter((event) =>
     event.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -72,7 +80,7 @@ export default function PastEventsPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filteredEvents.map((event: any) => (
+          {filteredEvents.map((event) => (
             <Card key={event.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center gap-4">

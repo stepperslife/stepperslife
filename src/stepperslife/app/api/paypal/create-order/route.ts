@@ -51,7 +51,7 @@ import type {
  */
 export async function POST(
   request: NextRequest
-): Promise<NextResponse<PaymentSuccessResponse | PaymentErrorResponse>> {
+): Promise<NextResponse> {
   const requestId = generateRequestId();
   const startTime = Date.now();
 
@@ -70,7 +70,7 @@ export async function POST(
       return NextResponse.json(
         createErrorResponse(errorMessage, {
           code: "VALIDATION_ERROR",
-          fields: validation.error.errors,
+          fields: validation.error.flatten().fieldErrors,
         }),
         { status: 400 }
       );
@@ -150,11 +150,14 @@ export async function POST(
     });
 
     return NextResponse.json(
-      createSuccessResponse({
-        id: orderData.id,
-        status: orderData.status,
-        links: orderData.links,
-      }),
+      {
+        success: true as const,
+        data: {
+          id: orderData.id,
+          status: orderData.status,
+          links: orderData.links,
+        },
+      },
       { status: 200 }
     );
   } catch (error: unknown) {

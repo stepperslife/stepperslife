@@ -252,6 +252,7 @@ export default function SettingsPage() {
                       Update Account
                     </Link>
                     <button
+                      type="button"
                       onClick={() => handleDisconnectProcessor("stripe")}
                       disabled={isProcessing}
                       className="px-3 py-2 text-sm text-destructive hover:text-destructive/90 hover:bg-destructive/10 rounded border border-destructive transition-colors disabled:opacity-50"
@@ -280,6 +281,7 @@ export default function SettingsPage() {
               {/* Not Connected */}
               {!currentUser.stripeConnectedAccountId && (
                 <button
+                  type="button"
                   onClick={handleConnectStripe}
                   disabled={isProcessing}
                   className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm disabled:opacity-50"
@@ -320,6 +322,7 @@ export default function SettingsPage() {
                     Connected
                   </div>
                   <button
+                    type="button"
                     onClick={() => handleDisconnectProcessor("paypal")}
                     disabled={isProcessing}
                     className="px-3 py-2 text-sm text-destructive hover:text-destructive/90 hover:bg-destructive/10 rounded border border-destructive transition-colors disabled:opacity-50"
@@ -329,6 +332,7 @@ export default function SettingsPage() {
                 </div>
               ) : (
                 <button
+                  type="button"
                   onClick={handleConnectPaypal}
                   disabled={isProcessing}
                   className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm disabled:opacity-50"

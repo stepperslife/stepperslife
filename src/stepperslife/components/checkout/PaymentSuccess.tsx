@@ -275,7 +275,7 @@ export function PaymentSuccess({
       <div className="mt-8 text-center text-sm text-muted-foreground">
         <p>
           Need help?{" "}
-          <Link href="/support" className="text-primary hover:underline font-medium">
+          <Link href="/help" className="text-primary hover:underline font-medium">
             Contact Support
           </Link>
         </p>

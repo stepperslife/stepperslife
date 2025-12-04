@@ -52,8 +52,8 @@ export default function RowRenderer({
       const isSpecialType = ["WHEELCHAIR", "VIP", "BLOCKED"].includes(seat.type);
 
       // Determine seat color based on status
-      let seatFill = SEAT_COLORS.AVAILABLE;
-      let seatStroke = SEAT_COLORS.AVAILABLE;
+      let seatFill: string = SEAT_COLORS.AVAILABLE;
+      let seatStroke: string = SEAT_COLORS.AVAILABLE;
 
       if (isSold) {
         seatFill = SEAT_COLORS.SOLD;

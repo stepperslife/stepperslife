@@ -22,6 +22,7 @@ export function ViewToggle({ currentView, onViewChange }: ViewToggleProps) {
 
         return (
           <button
+            type="button"
             key={view.id}
             onClick={() => onViewChange(view.id)}
             className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${

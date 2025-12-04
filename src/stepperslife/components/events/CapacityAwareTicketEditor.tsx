@@ -159,6 +159,7 @@ export function CapacityAwareTicketEditor({
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Quick Start:</h3>
           <div className="grid grid-cols-2 gap-2">
             <button
+              type="button"
               onClick={() =>
                 addQuickTier({
                   name: "General Admission",
@@ -171,6 +172,7 @@ export function CapacityAwareTicketEditor({
               General Admission
             </button>
             <button
+              type="button"
               onClick={() =>
                 addQuickTier({
                   name: "VIP",
@@ -234,6 +236,7 @@ export function CapacityAwareTicketEditor({
                   </div>
                   <div className="flex items-center gap-2">
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         removeTier(tier.id);
@@ -395,6 +398,7 @@ export function CapacityAwareTicketEditor({
 
       {/* Add Tier Button */}
       <button
+        type="button"
         onClick={addTier}
         className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary hover:bg-accent transition-colors flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary font-medium"
       >

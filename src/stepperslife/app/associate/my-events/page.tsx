@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function AssociateMyEventsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const events = [];
+  const events: any[] = [];
 
   return (
     <div className="p-6 space-y-6">

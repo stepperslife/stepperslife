@@ -85,6 +85,7 @@ export const allocateEventTickets = mutation({
           organizerId: user._id,
           paymentModel: "PREPAY",
           ticketsAllocated: args.ticketQuantity,
+          customerPaymentMethods: ["CASH"],
           isActive: true,
           activatedAt: Date.now(),
           platformFeePercent: 0,
@@ -129,6 +130,7 @@ export const allocateEventTickets = mutation({
         organizerId: user._id,
         paymentModel: "PREPAY",
         ticketsAllocated: args.ticketQuantity,
+        customerPaymentMethods: ["CASH"],
         isActive: true,
         activatedAt: Date.now(),
         platformFeePercent: 0,
@@ -337,7 +339,12 @@ export const createEventPaymentConfig = mutation({
     eventId: v.id("events"),
     organizerId: v.id("users"),
     ticketsAllocated: v.number(),
-    paymentModel: v.union(v.literal("PREPAY"), v.literal("PERCENTAGE")),
+    paymentModel: v.union(
+      v.literal("PREPAY"),
+      v.literal("CREDIT_CARD"),
+      v.literal("PRE_PURCHASE"),
+      v.literal("PAY_AS_SELL")
+    ),
   },
   handler: async (ctx, args) => {
     // Check if config already exists
@@ -361,6 +368,7 @@ export const createEventPaymentConfig = mutation({
       organizerId: args.organizerId,
       paymentModel: args.paymentModel,
       ticketsAllocated: args.ticketsAllocated,
+      customerPaymentMethods: ["CASH"],
       isActive: true,
       activatedAt: Date.now(),
       platformFeePercent: 0,
@@ -418,6 +426,7 @@ export const confirmEventTicketPurchase = mutation({
         organizerId: transaction.organizerId,
         paymentModel: "PREPAY",
         ticketsAllocated: transaction.ticketsPurchased,
+        customerPaymentMethods: ["CASH"],
         isActive: true,
         activatedAt: Date.now(),
         platformFeePercent: 0,

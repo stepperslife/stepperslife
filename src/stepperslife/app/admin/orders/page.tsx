@@ -266,6 +266,7 @@ export default function OrdersManagementPage() {
                       <div className="flex items-center gap-2">
                         {order.fulfillmentStatus === "PENDING" && (
                           <button
+                            type="button"
                             onClick={() => handleStatusChange(order._id, "PROCESSING")}
                             className="px-2 py-1 bg-accent text-primary rounded hover:bg-accent/90 text-xs"
                           >
@@ -274,6 +275,7 @@ export default function OrdersManagementPage() {
                         )}
                         {order.fulfillmentStatus === "PROCESSING" && (
                           <button
+                            type="button"
                             onClick={() => setSelectedOrder(order._id)}
                             className="px-2 py-1 bg-accent text-primary rounded hover:bg-primary/20 text-xs"
                           >
@@ -334,12 +336,14 @@ export default function OrdersManagementPage() {
             </div>
             <div className="flex gap-3 mt-6">
               <button
+                type="button"
                 onClick={handleAddTracking}
                 className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
               >
                 Mark as Shipped
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setSelectedOrder(null);
                   setTrackingInfo({ number: "", url: "" });

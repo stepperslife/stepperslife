@@ -10,6 +10,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import crypto from "crypto";
 import { convexClient as convex } from "@/lib/auth/convex-client";
+import { PayPalWebhookEvent } from "@/lib/types/payment";
 
 const PAYPAL_WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID || "5NK114525U789563D";
 
@@ -93,7 +94,7 @@ function computeCrc32(str: string): number {
 }
 
 function makeCrcTable(): number[] {
-  let c;
+  let c: number;
   const crcTable: number[] = [];
   for (let n = 0; n < 256; n++) {
     c = n;
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    const event = JSON.parse(rawBody);
+    const event: PayPalWebhookEvent = JSON.parse(rawBody);
 
     // Handle different event types
     switch (event.event_type) {
@@ -155,7 +156,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handlePaymentCompleted(event: any) {
+async function handlePaymentCompleted(event: PayPalWebhookEvent) {
 
   const resource = event.resource;
   const customId = resource.custom || resource.invoice_number;
@@ -174,19 +175,17 @@ async function handlePaymentCompleted(event: any) {
 
     // If it's an order purchase
     if (customId.startsWith("ORDER_")) {
-      const orderId = customId.replace("ORDER_", "");
+      const orderId = customId.replace("ORDER_", "") as Id<"orders">;
 
-      // Find and complete the order
-      const orders = await convex.query(api.orders.queries.listOrders, {
-        status: "pending",
-      });
-
-      const order = orders.find((o: any) => o._id === orderId);
-      if (order) {
+      // Complete the order using PayPal payment ID
+      try {
         await convex.mutation(api.tickets.mutations.completeOrder, {
-          orderId: orderId as Id<"orders">,
-          paymentIntentId: resource.id,
+          orderId: orderId,
+          paymentId: resource.id,
+          paymentMethod: "PAYPAL",
         });
+      } catch (error) {
+        console.error("[PayPal Webhook] Error completing order:", error);
       }
     }
   } catch (error) {
@@ -194,7 +193,7 @@ async function handlePaymentCompleted(event: any) {
   }
 }
 
-async function handlePaymentDenied(event: any) {
+async function handlePaymentDenied(event: PayPalWebhookEvent) {
 
   const resource = event.resource;
   const customId = resource.custom || resource.invoice_number;
@@ -204,10 +203,10 @@ async function handlePaymentDenied(event: any) {
   }
 
   try {
-    const orderId = customId.replace("ORDER_", "");
+    const orderId = customId.replace("ORDER_", "") as Id<"orders">;
 
-    await convex.mutation(api.orders.mutations.cancelOrder, {
-      orderId: orderId as Id<"orders">,
+    await convex.mutation(api.orders.mutations.markOrderFailed, {
+      orderId: orderId,
       reason: "Payment denied by PayPal",
     });
 
@@ -216,25 +215,27 @@ async function handlePaymentDenied(event: any) {
   }
 }
 
-async function handlePaymentRefunded(event: any) {
+async function handlePaymentRefunded(event: PayPalWebhookEvent) {
 
   const resource = event.resource;
   const saleId = resource.sale_id;
 
-  try {
-    // Find order by PayPal sale ID
-    const orders = await convex.query(api.orders.queries.listOrders, {});
-    const order = orders.find((o: any) => o.paypalSaleId === saleId);
+  if (!saleId) {
+    return;
+  }
 
-    if (order) {
-      // Update order status to refunded (need to create this mutation)
-      // TODO: Add refund handling mutation
-    }
+  try {
+    // Mark the order as refunded using PayPal sale ID (payment ID)
+    await convex.mutation(api.orders.mutations.markOrderRefunded, {
+      paymentIntentId: saleId,
+      refundAmount: resource.amount ? parseFloat(resource.amount.value) * 100 : 0,
+      refundReason: "PayPal refund",
+    });
   } catch (error) {
     console.error("[PayPal Webhook] Error handling refund:", error);
   }
 }
 
-async function handleDisputeCreated(event: any) {
+async function handleDisputeCreated(event: PayPalWebhookEvent) {
   // TODO: Add dispute handling logic (notify admin, flag order, etc.)
 }

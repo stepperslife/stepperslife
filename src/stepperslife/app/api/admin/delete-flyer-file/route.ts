@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { unlink } from "fs/promises";
 import path from "path";
+import { jwtVerify } from "jose";
+import { getJwtSecretEncoded } from "@/lib/auth/jwt-secret";
+
+const JWT_SECRET = getJwtSecretEncoded();
+
+// Verify user is authenticated and is an admin
+async function verifyAdminAuth(request: NextRequest): Promise<{ userId: string; role: string } | null> {
+  const token = request.cookies.get("session_token")?.value || request.cookies.get("auth-token")?.value;
+  if (!token) return null;
+
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const role = payload.role as string;
+    // Only allow admin role to delete files
+    if (role !== "admin") return null;
+    return { userId: payload.userId as string, role };
+  } catch {
+    return null;
+  }
+}
 
 /**
  * API endpoint to physically delete flyer image files from the filesystem
@@ -8,6 +28,12 @@ import path from "path";
  */
 export async function POST(request: NextRequest) {
   try {
+    // Verify admin authentication
+    const auth = await verifyAdminAuth(request);
+    if (!auth) {
+      return NextResponse.json({ error: "Unauthorized - Admin access required" }, { status: 401 });
+    }
+
     const { filepath } = await request.json();
 
     if (!filepath) {

@@ -730,7 +730,7 @@ test.describe("Public User Flow - Events Browsing & Purchase", () => {
 // =============================================================================
 
 test.describe("Organizer Flow - Event Management", () => {
-  let createdEventId: string | null = null;
+  const createdEventId: string | null = null;
 
   test.describe("Event Creation", () => {
     test("should navigate to create event page", async ({ page }) => {

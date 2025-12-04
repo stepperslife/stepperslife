@@ -22,6 +22,55 @@ import Image from "next/image";
 import VariantsManager from "@/components/admin/VariantsManager";
 import dynamic from "next/dynamic";
 
+type Variant = {
+  id: string;
+  name: string;
+  options: {
+    size?: string;
+    color?: string;
+  };
+  price: number;
+  sku?: string;
+  inventoryQuantity: number;
+  image?: string;
+};
+
+type OptionType =
+  | "text"
+  | "textarea"
+  | "number"
+  | "select"
+  | "radio"
+  | "checkbox"
+  | "color"
+  | "date"
+  | "file"
+  | "image_swatch";
+
+interface Choice {
+  id?: string;
+  label: string;
+  priceModifier: number;
+  image?: string;
+  default?: boolean;
+}
+
+type ProductOption = {
+  id: string;
+  name: string;
+  description?: string;
+  type: OptionType;
+  required: boolean;
+  choices?: Choice[];
+  priceModifier?: number;
+  minLength?: number;
+  maxLength?: number;
+  minValue?: number;
+  maxValue?: number;
+  placeholder?: string;
+  displayOrder: number;
+};
+
 // Dynamic import for heavy ProductOptionsManager (only loaded when needed)
 const ProductOptionsManager = dynamic(() => import("@/components/admin/ProductOptionsManager"), {
   loading: () => (
@@ -675,7 +724,7 @@ export default function EditProductPage() {
               productName={product.name}
               basePrice={Math.round(parseFloat(formData.price) * 100)}
               baseSku={formData.sku}
-              variants={product.variants}
+              variants={(product as { variants?: Variant[] }).variants}
               onVariantsChange={() => setVariantsKey((k) => k + 1)}
             />
           )}
@@ -684,7 +733,7 @@ export default function EditProductPage() {
         {/* Product Options */}
         {product && (
           <div>
-            <ProductOptionsManager productId={productId} options={product.options} />
+            <ProductOptionsManager productId={productId} options={(product as { options?: ProductOption[] }).options} />
           </div>
         )}
 

@@ -203,7 +203,9 @@ export default function RestaurantsListClient() {
               {/* Search Input */}
               <div className="relative max-w-xl mx-auto">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <label htmlFor="restaurant-search" className="sr-only">Search restaurants or cuisines</label>
                 <input
+                  id="restaurant-search"
                   type="text"
                   placeholder="Search restaurants or cuisines..."
                   value={searchQuery}
@@ -212,8 +214,10 @@ export default function RestaurantsListClient() {
                 />
                 {searchQuery && (
                   <button
+                    type="button"
                     onClick={() => setSearchQuery("")}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label="Clear search"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -224,19 +228,24 @@ export default function RestaurantsListClient() {
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {/* Toggle Filters Button (Mobile) */}
                 <button
+                  type="button"
                   onClick={() => setShowFilters(!showFilters)}
                   className="md:hidden flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  aria-expanded={showFilters}
+                  aria-label="Toggle filters"
                 >
                   <SlidersHorizontal className="h-4 w-4" />
                   Filters
                   {hasActiveFilters && (
-                    <span className="w-2 h-2 rounded-full bg-orange-500" />
+                    <span className="w-2 h-2 rounded-full bg-orange-500" aria-label="Active filters" />
                   )}
                 </button>
 
                 {/* City Filter */}
                 <div className={`${showFilters ? 'flex' : 'hidden'} md:flex`}>
+                  <label htmlFor="city-filter" className="sr-only">Filter by city</label>
                   <select
+                    id="city-filter"
                     value={selectedCity}
                     onChange={(e) => setSelectedCity(e.target.value)}
                     className="px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -250,7 +259,9 @@ export default function RestaurantsListClient() {
 
                 {/* Sort Dropdown */}
                 <div className={`${showFilters ? 'flex' : 'hidden'} md:flex`}>
+                  <label htmlFor="sort-by" className="sr-only">Sort restaurants by</label>
                   <select
+                    id="sort-by"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortOption)}
                     className="px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -264,6 +275,7 @@ export default function RestaurantsListClient() {
                 {/* Clear Filters */}
                 {hasActiveFilters && (
                   <button
+                    type="button"
                     onClick={clearFilters}
                     className="flex items-center gap-1 px-4 py-2 rounded-full text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-sm font-medium"
                   >
@@ -279,12 +291,14 @@ export default function RestaurantsListClient() {
                   {availableCuisines.map(cuisine => (
                     <button
                       key={cuisine}
+                      type="button"
                       onClick={() => toggleCuisine(cuisine)}
                       className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                         selectedCuisines.includes(cuisine)
                           ? "bg-orange-600 text-white"
                           : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                       }`}
+                      aria-pressed={selectedCuisines.includes(cuisine)}
                     >
                       {cuisine}
                     </button>
@@ -320,6 +334,7 @@ export default function RestaurantsListClient() {
                       No restaurants match your current filters. Try adjusting your search or filters.
                     </p>
                     <button
+                      type="button"
                       onClick={clearFilters}
                       className="inline-block px-6 py-3 bg-orange-600 text-white rounded-full font-semibold hover:bg-orange-700 transition-colors"
                     >

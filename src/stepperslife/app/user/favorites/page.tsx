@@ -11,7 +11,7 @@ export default function FavoritesPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data - will be replaced with actual Convex query
-  const favorites = [];
+  const favorites: any[] = [];
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString("en-US", {

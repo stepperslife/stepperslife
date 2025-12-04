@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "../_generated/server";
+import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Get credit balance for organizer
@@ -46,7 +47,7 @@ export const getMyCredits = query({
       // TESTING MODE: Fall back to test user
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       // Parse the identity

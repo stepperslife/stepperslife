@@ -66,6 +66,7 @@ export function SocialShareButtons({
       <span className="text-sm font-medium text-gray-600 mr-2">Share:</span>
 
       <button
+        type="button"
         onClick={() => handleShare("facebook")}
         className="flex items-center gap-2 px-3 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#166fe5] transition-colors text-sm font-medium"
         aria-label="Share on Facebook"
@@ -75,6 +76,7 @@ export function SocialShareButtons({
       </button>
 
       <button
+        type="button"
         onClick={() => handleShare("twitter")}
         className="flex items-center gap-2 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
         aria-label="Share on X (Twitter)"
@@ -84,6 +86,7 @@ export function SocialShareButtons({
       </button>
 
       <button
+        type="button"
         onClick={handleInstagramShare}
         className="flex items-center gap-2 px-3 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
         aria-label="Share on Instagram"
@@ -93,6 +96,7 @@ export function SocialShareButtons({
       </button>
 
       <button
+        type="button"
         onClick={handleCopyLink}
         className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
           copied ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"

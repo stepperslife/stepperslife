@@ -67,6 +67,7 @@ export default function TableShapePalette({
           const isSelected = currentShape === tableShape.shape;
           return (
             <button
+              type="button"
               key={tableShape.shape}
               onClick={() => onShapeSelect(tableShape.shape)}
               title={tableShape.description}

@@ -4,19 +4,28 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Ticket, Calendar, MapPin, QrCode, Download, Share2, ArrowRight } from "lucide-react";
+import { Ticket as TicketIcon, Calendar, MapPin, QrCode, Download, Share2, ArrowRight } from "lucide-react";
 import Link from "next/link";
+
+interface TicketData {
+  id: string;
+  eventName: string;
+  eventDate: number;
+  location: string;
+  ticketNumber: string;
+  status: string;
+}
 
 export default function MyTicketsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock ticket data - will be replaced with actual Convex query
-  const tickets = [];
+  const tickets: TicketData[] = [];
 
-  const upcomingTickets = tickets.filter((ticket: any) =>
+  const upcomingTickets = tickets.filter((ticket) =>
     ticket.eventDate > Date.now()
   );
-  const pastTickets = tickets.filter((ticket: any) =>
+  const pastTickets = tickets.filter((ticket) =>
     ticket.eventDate <= Date.now()
   );
 
@@ -51,7 +60,7 @@ export default function MyTicketsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Tickets</CardTitle>
-            <Ticket className="h-4 w-4 text-muted-foreground" />
+            <TicketIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{tickets.length}</div>
@@ -132,7 +141,7 @@ export default function MyTicketsPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-primary/10 rounded-lg">
-                    <Ticket className="h-5 w-5 text-primary" />
+                    <TicketIcon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Ticket History</CardTitle>
@@ -154,7 +163,7 @@ export default function MyTicketsPage() {
         {tickets.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <Ticket className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
+              <TicketIcon className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
               <p className="text-muted-foreground mb-2">No tickets yet</p>
               <p className="text-sm text-muted-foreground mb-4">
                 Start by browsing events and purchasing tickets
@@ -166,7 +175,7 @@ export default function MyTicketsPage() {
           </Card>
         ) : (
           <div className="grid gap-4">
-            {tickets.slice(0, 5).map((ticket: any) => (
+            {tickets.slice(0, 5).map((ticket) => (
               <Card key={ticket.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
@@ -192,7 +201,7 @@ export default function MyTicketsPage() {
                               <span>{ticket.location}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Ticket className="h-4 w-4" />
+                              <TicketIcon className="h-4 w-4" />
                               <span>Ticket #{ticket.ticketNumber}</span>
                             </div>
                           </div>

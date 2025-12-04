@@ -96,6 +96,15 @@ export default function TicketTiersPage() {
   // No need to check organizer permissions here - the proxy middleware already handles auth
   // If the user got this far, they're authenticated and authorized
 
+  // TypeScript null check - event is guaranteed to exist after loading check
+  if (!event) {
+    return (
+      <div className="min-h-screen bg-muted flex items-center justify-center">
+        <div className="text-destructive">Event not found</div>
+      </div>
+    );
+  }
+
   const handleOpenAddTier = () => {
     // Initialize with one empty tier
     setNewTiers([

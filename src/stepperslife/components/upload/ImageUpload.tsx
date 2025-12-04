@@ -118,6 +118,7 @@ export function ImageUpload({
         <div className="relative w-full h-64 bg-muted rounded-lg overflow-hidden border-2 border-border">
           <Image src={previewUrl} alt="Event preview" fill className="object-cover" />
           <button
+            type="button"
             onClick={handleRemove}
             className="absolute top-2 right-2 p-2 bg-destructive text-white rounded-full hover:bg-destructive/90 transition-colors shadow-lg"
           >

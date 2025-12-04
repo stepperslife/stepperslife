@@ -17,9 +17,10 @@ import { useState } from "react";
 export default function PurchaseTicketsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const credits = useQuery(api.credits.queries.getMyCredits);
-  const events = useQuery(api.events.queries.getOrganizerEvents, {
-    userId: currentUser?._id,
-  });
+  const events = useQuery(
+    api.events.queries.getOrganizerEvents,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
+  );
 
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [ticketQuantity, setTicketQuantity] = useState<number>(100);
@@ -98,7 +99,7 @@ export default function PurchaseTicketsPage() {
                   <option value="">Choose an event...</option>
                   {events?.map((event) => (
                     <option key={event._id} value={event._id}>
-                      {event.title}
+                      {event.name}
                     </option>
                   ))}
                 </select>
@@ -111,6 +112,7 @@ export default function PurchaseTicketsPage() {
                 </label>
                 <div className="flex items-center gap-4">
                   <button
+                    type="button"
                     onClick={() => setTicketQuantity(Math.max(1, ticketQuantity - 10))}
                     className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                   >
@@ -124,6 +126,7 @@ export default function PurchaseTicketsPage() {
                     min="1"
                   />
                   <button
+                    type="button"
                     onClick={() => setTicketQuantity(ticketQuantity + 10)}
                     className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                   >
@@ -144,6 +147,7 @@ export default function PurchaseTicketsPage() {
                   {[50, 100, 250, 500].map((qty) => (
                     <button
                       key={qty}
+                      type="button"
                       onClick={() => setTicketQuantity(qty)}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         ticketQuantity === qty
@@ -159,6 +163,7 @@ export default function PurchaseTicketsPage() {
 
               {/* Purchase Button */}
               <button
+                type="button"
                 onClick={handlePurchase}
                 disabled={!selectedEvent || !hasEnoughCredits}
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"

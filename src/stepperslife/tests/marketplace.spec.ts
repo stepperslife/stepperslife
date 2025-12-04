@@ -229,10 +229,9 @@ test.describe("Section 1: Public Product Browsing", () => {
       console.log("  ✓ Grid layout found");
 
       // Count product cards
-      const productCards = page.locator('a[href^="/marketplace/"]').filter({
-        hasNot: page.locator('[href*="vendors"]'),
-        hasNot: page.locator('[href*="checkout"]'),
-      });
+      const productCards = page.locator('a[href^="/marketplace/"]')
+        .filter({ hasNot: page.locator('[href*="vendors"]') })
+        .filter({ hasNot: page.locator('[href*="checkout"]') });
       const productCount = await productCards.count();
       console.log(`  ✓ Found ${productCount} product card(s)`);
     } else {
@@ -249,10 +248,9 @@ test.describe("Section 1: Public Product Browsing", () => {
     await page.goto(`${BASE_URL}/marketplace`);
     await waitForStableState(page);
 
-    const productCards = page.locator('a[href^="/marketplace/"]').filter({
-      hasNot: page.locator('[href*="vendors"]'),
-      hasNot: page.locator('[href*="checkout"]'),
-    });
+    const productCards = page.locator('a[href^="/marketplace/"]')
+      .filter({ hasNot: page.locator('[href*="vendors"]') })
+      .filter({ hasNot: page.locator('[href*="checkout"]') });
 
     const productCount = await productCards.count();
     if (productCount === 0) {
@@ -453,10 +451,9 @@ test.describe("Section 2: Product Detail Page", () => {
     await page.goto(`${BASE_URL}/marketplace`);
     await waitForStableState(page);
 
-    const productLinks = page.locator('a[href^="/marketplace/"]').filter({
-      hasNot: page.locator('[href*="vendors"]'),
-      hasNot: page.locator('[href*="checkout"]'),
-    });
+    const productLinks = page.locator('a[href^="/marketplace/"]')
+      .filter({ hasNot: page.locator('[href*="vendors"]') })
+      .filter({ hasNot: page.locator('[href*="checkout"]') });
 
     if ((await productLinks.count()) > 0) {
       testProductUrl = await productLinks.first().getAttribute("href");
@@ -471,10 +468,9 @@ test.describe("Section 2: Product Detail Page", () => {
     await page.goto(`${BASE_URL}/marketplace`);
     await waitForStableState(page);
 
-    const productLinks = page.locator('a[href^="/marketplace/"]').filter({
-      hasNot: page.locator('[href*="vendors"]'),
-      hasNot: page.locator('[href*="checkout"]'),
-    });
+    const productLinks = page.locator('a[href^="/marketplace/"]')
+      .filter({ hasNot: page.locator('[href*="vendors"]') })
+      .filter({ hasNot: page.locator('[href*="checkout"]') });
 
     if ((await productLinks.count()) === 0) {
       console.log("  No products available, skipping test");
@@ -509,10 +505,9 @@ test.describe("Section 2: Product Detail Page", () => {
     await page.goto(`${BASE_URL}/marketplace`);
     await waitForStableState(page);
 
-    const productLinks = page.locator('a[href^="/marketplace/"]').filter({
-      hasNot: page.locator('[href*="vendors"]'),
-      hasNot: page.locator('[href*="checkout"]'),
-    });
+    const productLinks = page.locator('a[href^="/marketplace/"]')
+      .filter({ hasNot: page.locator('[href*="vendors"]') })
+      .filter({ hasNot: page.locator('[href*="checkout"]') });
 
     if ((await productLinks.count()) === 0) {
       console.log("  No products available, skipping test");
@@ -548,10 +543,9 @@ test.describe("Section 2: Product Detail Page", () => {
     await page.goto(`${BASE_URL}/marketplace`);
     await waitForStableState(page);
 
-    const productLinks = page.locator('a[href^="/marketplace/"]').filter({
-      hasNot: page.locator('[href*="vendors"]'),
-      hasNot: page.locator('[href*="checkout"]'),
-    });
+    const productLinks = page.locator('a[href^="/marketplace/"]')
+      .filter({ hasNot: page.locator('[href*="vendors"]') })
+      .filter({ hasNot: page.locator('[href*="checkout"]') });
 
     if ((await productLinks.count()) === 0) {
       console.log("  No products available, skipping test");
@@ -788,10 +782,9 @@ test.describe("Section 3: Shopping Cart & Checkout", () => {
     await page.goto(`${BASE_URL}/marketplace`);
     await waitForStableState(page);
 
-    const productLinks = page.locator('a[href^="/marketplace/"]').filter({
-      hasNot: page.locator('[href*="vendors"]'),
-      hasNot: page.locator('[href*="checkout"]'),
-    });
+    const productLinks = page.locator('a[href^="/marketplace/"]')
+      .filter({ hasNot: page.locator('[href*="vendors"]') })
+      .filter({ hasNot: page.locator('[href*="checkout"]') });
 
     if ((await productLinks.count()) === 0) {
       console.log("  No products available, skipping test");
@@ -819,10 +812,9 @@ test.describe("Section 3: Shopping Cart & Checkout", () => {
     await page.goto(`${BASE_URL}/marketplace`);
     await waitForStableState(page);
 
-    const productLinks = page.locator('a[href^="/marketplace/"]').filter({
-      hasNot: page.locator('[href*="vendors"]'),
-      hasNot: page.locator('[href*="checkout"]'),
-    });
+    const productLinks = page.locator('a[href^="/marketplace/"]')
+      .filter({ hasNot: page.locator('[href*="vendors"]') })
+      .filter({ hasNot: page.locator('[href*="checkout"]') });
 
     if ((await productLinks.count()) > 0) {
       const productUrl = await productLinks.first().getAttribute("href");

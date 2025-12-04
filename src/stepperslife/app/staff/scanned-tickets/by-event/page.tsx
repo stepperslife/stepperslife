@@ -6,11 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
+interface Event {
+  id: string;
+  name: string;
+  scansCount: number;
+  capacity: number;
+  soldCount: number;
+}
+
 export default function ScansByEventPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data
-  const events = [];
+  const events: Event[] = [];
 
   return (
     <div className="p-6 space-y-6">
@@ -42,7 +50,7 @@ export default function ScansByEventPage() {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {events.map((event: any) => (
+          {events.map((event) => (
             <Card key={event.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="flex items-center justify-between">

@@ -316,6 +316,7 @@ export default function AdminPayoutsPage() {
                           {payout.status === "PENDING" && (
                             <>
                               <button
+                                type="button"
                                 onClick={() =>
                                   setActionModal({
                                     type: "approve",
@@ -332,6 +333,7 @@ export default function AdminPayoutsPage() {
                                 Approve
                               </button>
                               <button
+                                type="button"
                                 onClick={() =>
                                   setActionModal({
                                     type: "reject",
@@ -351,6 +353,7 @@ export default function AdminPayoutsPage() {
                           )}
                           {payout.status === "APPROVED" && (
                             <button
+                              type="button"
                               onClick={() =>
                                 setActionModal({
                                   type: "process",
@@ -454,6 +457,7 @@ export default function AdminPayoutsPage() {
 
             <div className="flex gap-3 justify-end">
               <button
+                type="button"
                 onClick={() => {
                   setActionModal(null);
                   setAdminNotes("");
@@ -464,6 +468,7 @@ export default function AdminPayoutsPage() {
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleAction}
                 disabled={isProcessing}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${

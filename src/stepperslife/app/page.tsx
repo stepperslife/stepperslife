@@ -65,7 +65,7 @@ export default async function HomePage() {
 
         {/* 1. Events Section - /events */}
         <Suspense fallback={<SectionSkeleton title="Upcoming Events" />}>
-          <EventsGrid events={uniqueEvents} />
+          <EventsGrid events={uniqueEvents as any} />
         </Suspense>
 
         {/* 2. Classes Section - /classes */}

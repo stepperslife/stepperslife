@@ -37,7 +37,7 @@ class SplitPaymentVerifier {
     }
 
     this.stripe = new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: '2024-11-20.acacia'
+      apiVersion: '2025-10-29.clover'
     });
 
     this.convex = new ConvexHttpClient(CONVEX_URL);
@@ -59,13 +59,15 @@ class SplitPaymentVerifier {
 
     try {
       // Get order from database
-      const order = await this.convex.query(api.orders.queries.getOrder, { orderId });
+      const orderDetails = await this.convex.query(api.tickets.queries.getOrderDetails, { orderId });
 
-      if (!order) {
+      if (!orderDetails || !orderDetails.order) {
         verification.passed = false;
         verification.errors.push('Order not found');
         return verification;
       }
+
+      const order = orderDetails.order;
 
       if (!order.paymentId) {
         verification.passed = false;
@@ -79,6 +81,12 @@ class SplitPaymentVerifier {
       const paymentConfig = await this.convex.query(api.paymentConfig.queries.getEventPaymentConfig, {
         eventId: order.eventId
       });
+
+      if (!paymentConfig) {
+        verification.passed = false;
+        verification.errors.push('No payment config found for event');
+        return verification;
+      }
 
       if (paymentConfig.paymentModel !== 'CREDIT_CARD') {
         verification.passed = false;
@@ -147,8 +155,9 @@ class SplitPaymentVerifier {
 
     } catch (error) {
       verification.passed = false;
-      verification.errors.push(`Error: ${error.message}`);
-      console.error(`✗ Verification error: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      verification.errors.push(`Error: ${errorMessage}`);
+      console.error(`✗ Verification error: ${errorMessage}`);
     }
 
     this.verifications.push(verification);
@@ -178,7 +187,7 @@ class SplitPaymentVerifier {
 
     try {
       // Get all orders for the event
-      const orders = await this.convex.query(api.orders.queries.getEventOrders, {
+      const orders = await this.convex.query(api.events.queries.getEventOrders, {
         eventId
       });
 
@@ -195,7 +204,8 @@ class SplitPaymentVerifier {
       this.printVerificationReport();
 
     } catch (error) {
-      console.error('Error verifying event split payments:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Error verifying event split payments:', errorMessage);
       throw error;
     }
   }

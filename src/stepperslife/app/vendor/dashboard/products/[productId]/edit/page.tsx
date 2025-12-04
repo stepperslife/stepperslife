@@ -69,12 +69,12 @@ export default function EditProductPage() {
 
   // Get product
   const product = useQuery(
-    api.products.getProductById,
+    api.products.queries.getProductById,
     productId ? { productId: productId as Id<"products"> } : "skip"
   );
 
-  const updateProduct = useMutation(api.products.updateVendorProduct);
-  const deleteProduct = useMutation(api.products.deleteVendorProduct);
+  const updateProduct = useMutation(api.products.mutations.updateVendorProduct);
+  const deleteProduct = useMutation(api.products.mutations.deleteVendorProduct);
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -289,6 +289,7 @@ export default function EditProductPage() {
             <p className="text-muted-foreground">Update your product details</p>
           </div>
           <button
+            type="button"
             onClick={() => setShowDeleteModal(true)}
             className="px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors flex items-center gap-2"
           >
@@ -681,12 +682,14 @@ export default function EditProductPage() {
             </p>
             <div className="flex gap-3 justify-end">
               <button
+                type="button"
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 border border-border rounded-lg font-medium hover:bg-muted transition-colors"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleDelete}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
               >

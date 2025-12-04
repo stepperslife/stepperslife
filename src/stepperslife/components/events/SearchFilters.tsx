@@ -65,6 +65,7 @@ export function SearchFilters({
         />
         {searchQuery && (
           <button
+            type="button"
             onClick={clearSearch}
             className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
           >
@@ -81,6 +82,7 @@ export function SearchFilters({
 
           return (
             <button
+              type="button"
               key={category}
               onClick={() => handleCategoryClick(category)}
               className={`
@@ -100,6 +102,7 @@ export function SearchFilters({
         {/* Past Events Toggle - on same line */}
         {onTogglePastEvents && (
           <button
+            type="button"
             onClick={() => onTogglePastEvents(!showPastEvents)}
             className={`
               px-4 py-2 rounded-full text-sm font-medium transition-all

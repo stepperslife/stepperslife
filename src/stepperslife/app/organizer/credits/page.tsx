@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import {
@@ -23,29 +23,15 @@ import { PurchaseCreditsModal } from "@/components/credits/PurchaseCreditsModal"
 
 export default function CreditsPage() {
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
 
-  const events = useQuery(api.events.queries.getOrganizerEvents);
-  const credits = useQuery(
-    api.credits.queries.getCreditBalance,
-    userId ? { organizerId: userId as any } : "skip"
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const events = useQuery(
+    api.events.queries.getOrganizerEvents,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
   );
+  const credits = useQuery(api.credits.queries.getMyCredits);
 
-  // Fetch current user ID
-  useEffect(() => {
-    fetch("/api/auth/me", { credentials: "same-origin" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user && data.user._id) {
-          setUserId(data.user._id);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch user:", err);
-      });
-  }, []);
-
-  if (!userId || credits === undefined) {
+  if (!currentUser || !events || !credits) {
     return (
       <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>

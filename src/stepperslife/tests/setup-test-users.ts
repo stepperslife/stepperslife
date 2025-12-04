@@ -5,6 +5,7 @@
 
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
+import * as bcrypt from "bcryptjs";
 
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL || "https://neighborly-swordfish-681.convex.cloud";
 const client = new ConvexHttpClient(CONVEX_URL);
@@ -54,19 +55,23 @@ async function createTestEvent(organizerId: string) {
   console.log("Creating test event for staff assignments...");
 
   try {
+    const startDate = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days from now
     const eventId = await client.mutation(api.events.mutations.createEvent, {
-      title: "Dashboard Test Event",
+      name: "Dashboard Test Event",
       description: "Event created for testing staff dashboards",
-      date: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days from now
-      startTime: "19:00",
-      endTime: "23:00",
-      location: "Test Venue",
-      address: "123 Test St",
-      city: "Test City",
-      state: "CA",
-      zipCode: "90210",
-      eventType: "TICKETED",
-      category: "SOCIAL",
+      startDate: startDate,
+      endDate: startDate + 4 * 60 * 60 * 1000, // 4 hours later
+      timezone: "America/Los_Angeles",
+      location: {
+        venueName: "Test Venue",
+        address: "123 Test St",
+        city: "Test City",
+        state: "CA",
+        zipCode: "90210",
+        country: "US",
+      },
+      eventType: "TICKETED_EVENT" as const,
+      categories: ["SOCIAL"],
       imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
     });
 
@@ -84,10 +89,11 @@ async function setupTestUsers() {
   try {
     // 1. Create Admin user
     console.log("1️⃣  Creating Admin user...");
+    const adminPasswordHash = await bcrypt.hash(TEST_USERS.admin.password, 10);
     await client.mutation(api.users.mutations.createUser, {
       name: TEST_USERS.admin.name,
       email: TEST_USERS.admin.email,
-      password: TEST_USERS.admin.password,
+      passwordHash: adminPasswordHash,
     });
     console.log(`✅ Admin user created: ${TEST_USERS.admin.email}`);
 
@@ -96,38 +102,42 @@ async function setupTestUsers() {
 
     // 2. Create Organizer user
     console.log("2️⃣  Creating Organizer user...");
+    const organizerPasswordHash = await bcrypt.hash(TEST_USERS.organizer.password, 10);
     await client.mutation(api.users.mutations.createUser, {
       name: TEST_USERS.organizer.name,
       email: TEST_USERS.organizer.email,
-      password: TEST_USERS.organizer.password,
+      passwordHash: organizerPasswordHash,
     });
     console.log(`✅ Organizer user created: ${TEST_USERS.organizer.email}`);
     console.log("   (Default role: organizer)\n");
 
     // 3. Create Regular User
     console.log("3️⃣  Creating Regular User...");
+    const userPasswordHash = await bcrypt.hash(TEST_USERS.user.password, 10);
     await client.mutation(api.users.mutations.createUser, {
       name: TEST_USERS.user.name,
       email: TEST_USERS.user.email,
-      password: TEST_USERS.user.password,
+      passwordHash: userPasswordHash,
     });
     console.log(`✅ Regular user created: ${TEST_USERS.user.email}\n`);
 
     // 4. Create Staff User (base account)
     console.log("4️⃣  Creating Staff user...");
+    const staffPasswordHash = await bcrypt.hash(TEST_USERS.staff.password, 10);
     await client.mutation(api.users.mutations.createUser, {
       name: TEST_USERS.staff.name,
       email: TEST_USERS.staff.email,
-      password: TEST_USERS.staff.password,
+      passwordHash: staffPasswordHash,
     });
     console.log(`✅ Staff base account created: ${TEST_USERS.staff.email}`);
 
     // 5. Create Team Member User (base account)
     console.log("5️⃣  Creating Team Member user...");
+    const teamPasswordHash = await bcrypt.hash(TEST_USERS.teamMember.password, 10);
     await client.mutation(api.users.mutations.createUser, {
       name: TEST_USERS.teamMember.name,
       email: TEST_USERS.teamMember.email,
-      password: TEST_USERS.teamMember.password,
+      passwordHash: teamPasswordHash,
     });
     console.log(`✅ Team Member base account created: ${TEST_USERS.teamMember.email}\n`);
 

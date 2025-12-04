@@ -7,7 +7,11 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function AnalyticsPage() {
-  const userEvents = useQuery(api.events.queries.getOrganizerEvents);
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const userEvents = useQuery(
+    api.events.queries.getOrganizerEvents,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
+  );
 
   // Check if still loading
   if (userEvents === undefined) {

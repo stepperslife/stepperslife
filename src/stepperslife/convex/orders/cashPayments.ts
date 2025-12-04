@@ -3,10 +3,10 @@
  *
  * Flow:
  * 1. Customer selects "Pay Cash In-Person" at checkout
- * 2. Order created with PENDING_CASH_PAYMENT status + 30-min hold
+ * 2. Order created with PENDING_PAYMENT status (paymentMethod: "CASH")
  * 3. Seller receives push notification
  * 4. Seller approves payment OR generates activation code
- * 5. Order completes OR expires after 30 minutes
+ * 5. Order completes
  */
 
 import { v } from "convex/values";
@@ -94,7 +94,7 @@ export const createCashOrder = mutation({
       updatedAt: now,
     });
 
-    // Create order with PENDING_CASH_PAYMENT status
+    // Create order with PENDING_PAYMENT status
     const orderNumber = generateOrderNumber();
     const orderId = await ctx.db.insert("orders", {
       eventId: args.eventId,
@@ -102,13 +102,12 @@ export const createCashOrder = mutation({
       buyerName: args.buyerName,
       buyerEmail: args.buyerEmail || "",
       buyerPhone: args.buyerPhone,
-      status: "PENDING_CASH_PAYMENT",
+      status: "PENDING_PAYMENT",
       subtotalCents,
       platformFeeCents,
       processingFeeCents,
       totalCents,
       paymentMethod: "CASH",
-      holdExpiresAt,
       createdAt: now,
       updatedAt: now,
     });
@@ -128,7 +127,6 @@ export const createCashOrder = mutation({
           attendeeId: buyerId,
           attendeeName: args.buyerName,
           attendeeEmail: args.buyerEmail || "",
-          attendeePhone: args.buyerPhone,
           ticketCode,
           status: "PENDING", // Pending until cash payment approved
           price: detail.price,
@@ -152,7 +150,6 @@ export const createCashOrder = mutation({
       orderId,
       orderNumber,
       totalCents,
-      holdExpiresAt,
       ticketIds,
       message: `Your tickets are on hold for 30 minutes. Complete payment with the seller. Order #: ${orderNumber}`,
     };
@@ -179,13 +176,8 @@ export const approveCashOrder = mutation({
     }
 
     // Verify order status
-    if (order.status !== "PENDING_CASH_PAYMENT") {
+    if (order.status !== "PENDING_PAYMENT") {
       throw new Error(`Cannot approve order with status: ${order.status}`);
-    }
-
-    // Check if expired
-    if (order.holdExpiresAt && order.holdExpiresAt < now) {
-      throw new Error("Order has expired");
     }
 
     // Get staff
@@ -203,8 +195,6 @@ export const approveCashOrder = mutation({
     await ctx.db.patch(args.orderId, {
       status: "COMPLETED",
       paidAt: now,
-      approvedByStaffId: args.staffId,
-      approvedAt: now,
       soldByStaffId: args.staffId, // Track who made the sale
       updatedAt: now,
     });
@@ -217,7 +207,7 @@ export const approveCashOrder = mutation({
 
     for (const ticket of tickets) {
       await ctx.db.patch(ticket._id, {
-        status: "ACTIVE",
+        status: "VALID",
         soldByStaffId: args.staffId,
         updatedAt: now,
       });
@@ -243,11 +233,6 @@ export const approveCashOrder = mutation({
     if (commission > 0) {
       await ctx.db.patch(args.staffId, {
         commissionEarned: staff.commissionEarned + commission,
-      });
-
-      // Update order with commission
-      await ctx.db.patch(args.orderId, {
-        staffCommission: commission,
       });
     }
 
@@ -293,13 +278,8 @@ export const generateCashActivationCode = mutation({
     }
 
     // Verify order status
-    if (order.status !== "PENDING_CASH_PAYMENT") {
+    if (order.status !== "PENDING_PAYMENT") {
       throw new Error(`Cannot generate code for order with status: ${order.status}`);
-    }
-
-    // Check if expired
-    if (order.holdExpiresAt && order.holdExpiresAt < now) {
-      throw new Error("Order has expired");
     }
 
     // Get staff
@@ -355,8 +335,6 @@ export const getPendingCashOrders = query({
     staffId: v.optional(v.id("eventStaff")),
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
-
     let orders;
 
     if (args.eventId) {
@@ -364,45 +342,36 @@ export const getPendingCashOrders = query({
       orders = await ctx.db
         .query("orders")
         .withIndex("by_event", (q) => q.eq("eventId", args.eventId!))
-        .filter((q) => q.eq(q.field("status"), "PENDING_CASH_PAYMENT"))
+        .filter((q) => q.eq(q.field("status"), "PENDING_PAYMENT"))
         .collect();
     } else {
       // Get all pending cash orders (admin view)
       const allOrders = await ctx.db
         .query("orders")
-        .withIndex("by_status", (q) => q.eq("status", "PENDING_CASH_PAYMENT"))
+        .withIndex("by_status", (q) => q.eq("status", "PENDING_PAYMENT"))
         .collect();
       orders = allOrders;
     }
 
-    // Enrich with ticket details and time remaining
+    // Filter for CASH payment method only
+    const cashOrders = orders.filter((order) => order.paymentMethod === "CASH");
+
+    // Enrich with ticket details
     const enriched = await Promise.all(
-      orders.map(async (order) => {
+      cashOrders.map(async (order) => {
         const tickets = await ctx.db
           .query("tickets")
           .withIndex("by_order", (q) => q.eq("orderId", order._id))
           .collect();
 
-        const timeRemaining = order.holdExpiresAt ? order.holdExpiresAt - now : 0;
-        const isExpired = timeRemaining <= 0;
-
         return {
           ...order,
           ticketCount: tickets.length,
-          timeRemaining,
-          isExpired,
-          expiresIn: Math.floor(timeRemaining / 1000 / 60), // minutes
         };
       })
     );
 
-    // Filter out expired (will be handled by cron job)
-    const active = enriched.filter((o) => !o.isExpired);
-
-    // Sort by time remaining (soonest to expire first)
-    active.sort((a, b) => a.timeRemaining - b.timeRemaining);
-
-    return active;
+    return enriched;
   },
 });
 

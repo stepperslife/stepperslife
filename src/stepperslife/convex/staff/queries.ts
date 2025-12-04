@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "../_generated/server";
+import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Get all staff members for an event
@@ -107,7 +108,7 @@ export const getStaffDashboard = query({
       console.warn("[getStaffDashboard] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -253,7 +254,7 @@ export const getOrganizerStaffSummary = query({
       console.warn("[getOrganizerStaffSummary] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -266,18 +267,21 @@ export const getOrganizerStaffSummary = query({
       throw new Error("User not found");
     }
 
-    let staffQuery = ctx.db
-      .query("eventStaff")
-      .withIndex("by_organizer", (q) => q.eq("organizerId", currentUser._id));
+    let allStaff;
 
     if (args.eventId) {
       // Get staff for specific event
-      staffQuery = ctx.db
+      allStaff = await ctx.db
         .query("eventStaff")
-        .withIndex("by_event", (q) => q.eq("eventId", args.eventId));
+        .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+        .collect();
+    } else {
+      // Get all staff by organizer
+      allStaff = await ctx.db
+        .query("eventStaff")
+        .withIndex("by_organizer", (q) => q.eq("organizerId", currentUser._id))
+        .collect();
     }
-
-    const allStaff = await staffQuery.collect();
 
     const activeStaff = allStaff.filter((s) => s.isActive);
     const totalCommissionEarned = activeStaff.reduce((sum, s) => sum + s.commissionEarned, 0);
@@ -318,7 +322,7 @@ export const getMySubSellers = query({
       console.warn("[getMySubSellers] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -398,6 +402,9 @@ export const getHierarchyTree = query({
     if (isTestingMode) {
       console.warn("[getHierarchyTree] TESTING MODE - Skipping auth checks");
       // In testing mode, just get the event organizer
+      if (!event.organizerId) {
+        throw new Error("Event has no organizer");
+      }
       currentUser = await ctx.db.get(event.organizerId);
     } else {
       currentUser = await ctx.db
@@ -464,7 +471,7 @@ export const getMyParentStaff = query({
       console.warn("[getMyParentStaff] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -525,7 +532,7 @@ export const getSubSellerBranchSales = query({
       console.warn("[getSubSellerBranchSales] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -635,7 +642,7 @@ export const getGlobalStaff = query({
       console.warn("[getGlobalStaff] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -675,7 +682,7 @@ export const getMyGlobalSubSellers = query({
       console.warn("[getMyGlobalSubSellers] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -748,7 +755,7 @@ export const getOrganizerEventsForCopy = query({
       console.warn("[getOrganizerEventsForCopy] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -793,7 +800,7 @@ export const getGlobalStaffWithPerformance = query({
       console.warn("[getGlobalStaffWithPerformance] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -820,7 +827,7 @@ export const getGlobalStaffWithPerformance = query({
         // Find all event-specific instances of this staff (same staffUserId, but with eventId set)
         const eventInstances = await ctx.db
           .query("eventStaff")
-          .withIndex("by_user", (q) => q.eq("staffUserId", staff.staffUserId))
+          .withIndex("by_staff_user", (q) => q.eq("staffUserId", staff.staffUserId))
           .filter((q) =>
             q.and(
               q.neq(q.field("eventId"), undefined), // Only event-specific instances
@@ -845,7 +852,7 @@ export const getGlobalStaffWithPerformance = query({
         const activeEventCount = eventInstances.filter((instance) => instance.isActive).length;
 
         // Get unique event IDs
-        const eventIds = [...new Set(eventInstances.map((i) => i.eventId).filter(Boolean))];
+        const eventIds = Array.from(new Set(eventInstances.map((i) => i.eventId).filter(Boolean)));
 
         // Calculate average performance
         const avgTicketsPerEvent = activeEventCount > 0 ? totalTicketsSold / activeEventCount : 0;

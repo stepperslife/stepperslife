@@ -137,7 +137,7 @@ test.describe("Table-Based Seating System", () => {
 
     try {
       const result = await client.mutation(api.seating.mutations.createSeatingChart, {
-        eventId: testEventId,
+        eventId: testEventId as any,
         name: "Main Hall - Table Seating",
         seatingStyle: "TABLE_BASED",
         sections: [
@@ -167,10 +167,13 @@ test.describe("Table-Based Seating System", () => {
     console.log("  ✅ Step 3: Verifying seating chart...");
 
     const seatingChart = await client.query(api.seating.queries.getEventSeatingChart, {
-      eventId: testEventId,
+      eventId: testEventId as any,
     });
 
     expect(seatingChart).toBeDefined();
+    if (!seatingChart) {
+      throw new Error("Seating chart not found");
+    }
     expect(seatingChart.seatingStyle).toBe("TABLE_BASED");
     expect(seatingChart.sections).toHaveLength(1);
     expect(seatingChart.sections[0].tables).toHaveLength(4);
@@ -208,7 +211,7 @@ test.describe("Table-Based Seating System", () => {
     let tierData;
     try {
       const tierId = await client.mutation(api.tickets.mutations.createTicketTier, {
-        eventId: testEventId,
+        eventId: testEventId as any,
         name: "Table Package (4 Seats)",
         description: "Purchase entire table with 4 seats",
         price: 40000, // $400 for table
@@ -219,7 +222,7 @@ test.describe("Table-Based Seating System", () => {
 
       // Get tier data
       tierData = await client.query(api.events.queries.getEventTicketTiers, {
-        eventId: testEventId,
+        eventId: testEventId as any,
       });
 
       console.log(`  ✓ Table package tier created`);
@@ -329,7 +332,7 @@ test.describe("Table-Based Seating System", () => {
     let individualTierId;
     try {
       individualTierId = await client.mutation(api.tickets.mutations.createTicketTier, {
-        eventId: testEventId,
+        eventId: testEventId as any,
         name: "Individual Seats",
         description: "Purchase individual seats",
         price: 10000, // $100 per seat
@@ -350,100 +353,21 @@ test.describe("Table-Based Seating System", () => {
     let order1Id, order2Id;
 
     try {
-      order1Id = await client.mutation(api.orders.mutations.createOrder, {
-        eventId: testEventId,
-        items: [
-          {
-            ticketTierId: individualTierId,
-            quantity: 4,
-            price: 10000,
-          },
-        ],
-        buyerInfo: {
-          firstName: "Customer",
-          lastName: "One",
-          email: "customer1@test.com",
-          phone: "555-0001",
-        },
-      });
-
-      order2Id = await client.mutation(api.orders.mutations.createOrder, {
-        eventId: testEventId,
-        items: [
-          {
-            ticketTierId: individualTierId,
-            quantity: 4,
-            price: 10000,
-          },
-        ],
-        buyerInfo: {
-          firstName: "Customer",
-          lastName: "Two",
-          email: "customer2@test.com",
-          phone: "555-0002",
-        },
-      });
-
-      console.log(`  ✓ Order 1: ${order1Id}`);
-      console.log(`  ✓ Order 2: ${order2Id}`);
-    } catch (error: any) {
-      console.error("  ❌ Failed to create orders:", error.message);
-      throw error;
-    }
-
-    // Create tickets for both orders
-    console.log("  🎟️  Step 3: Creating tickets...");
-
-    let ticket1Ids, ticket2Ids;
-    try {
-      // Get order details to create tickets
-      ticket1Ids = [];
-      ticket2Ids = [];
-
-      // Create 4 tickets for each order
-      for (let i = 0; i < 4; i++) {
-        const t1 = await client.mutation(api.tickets.mutations.createTicket, {
-          orderId: order1Id,
-          ticketTierId: individualTierId,
-          attendeeInfo: {
-            firstName: `Attendee${i + 1}`,
-            lastName: "Customer1",
-            email: `attendee${i + 1}@customer1.com`,
-          },
-        });
-        ticket1Ids.push(t1);
-
-        const t2 = await client.mutation(api.tickets.mutations.createTicket, {
-          orderId: order2Id,
-          ticketTierId: individualTierId,
-          attendeeInfo: {
-            firstName: `Attendee${i + 1}`,
-            lastName: "Customer2",
-            email: `attendee${i + 1}@customer2.com`,
-          },
-        });
-        ticket2Ids.push(t2);
-      }
-
-      console.log(`  ✓ Created ${ticket1Ids.length} tickets for Order 1`);
-      console.log(`  ✓ Created ${ticket2Ids.length} tickets for Order 2`);
-    } catch (error: any) {
-      console.error("  ❌ Failed to create tickets:", error.message);
-      throw error;
-    }
-
-    // Reserve seats for both customers (different tables)
-    console.log("  🪑 Step 4: Reserving seats at different tables...");
-
-    try {
-      // Customer 1: Reserve all 4 seats at Table 1
-      await client.mutation(api.seating.mutations.reserveSeats, {
-        seatingChartId: seatingChartId,
-        ticketId: ticket1Ids[0],
-        orderId: order1Id,
-        seats: [
+      // Order 1 with seat selection at Table 1
+      order1Id = await client.mutation(api.tickets.mutations.createOrder, {
+        eventId: testEventId as any,
+        ticketTierId: individualTierId as any,
+        quantity: 4,
+        buyerEmail: "customer1@test.com",
+        buyerName: "Customer One",
+        subtotalCents: 40000,
+        platformFeeCents: 0,
+        processingFeeCents: 0,
+        totalCents: 40000,
+        selectedSeats: [
           {
             sectionId: "section-main",
+            sectionName: "Main Floor",
             tableId: "table-1",
             tableNumber: 1,
             seatId: "table-1-seat-1",
@@ -451,6 +375,7 @@ test.describe("Table-Based Seating System", () => {
           },
           {
             sectionId: "section-main",
+            sectionName: "Main Floor",
             tableId: "table-1",
             tableNumber: 1,
             seatId: "table-1-seat-2",
@@ -458,6 +383,7 @@ test.describe("Table-Based Seating System", () => {
           },
           {
             sectionId: "section-main",
+            sectionName: "Main Floor",
             tableId: "table-1",
             tableNumber: 1,
             seatId: "table-1-seat-3",
@@ -465,6 +391,7 @@ test.describe("Table-Based Seating System", () => {
           },
           {
             sectionId: "section-main",
+            sectionName: "Main Floor",
             tableId: "table-1",
             tableNumber: 1,
             seatId: "table-1-seat-4",
@@ -473,16 +400,21 @@ test.describe("Table-Based Seating System", () => {
         ],
       });
 
-      console.log("  ✓ Customer 1: Reserved Table 1 (4 seats)");
-
-      // Customer 2: Reserve all 4 seats at Table 2
-      await client.mutation(api.seating.mutations.reserveSeats, {
-        seatingChartId: seatingChartId,
-        ticketId: ticket2Ids[0],
-        orderId: order2Id,
-        seats: [
+      // Order 2 with seat selection at Table 2
+      order2Id = await client.mutation(api.tickets.mutations.createOrder, {
+        eventId: testEventId as any,
+        ticketTierId: individualTierId as any,
+        quantity: 4,
+        buyerEmail: "customer2@test.com",
+        buyerName: "Customer Two",
+        subtotalCents: 40000,
+        platformFeeCents: 0,
+        processingFeeCents: 0,
+        totalCents: 40000,
+        selectedSeats: [
           {
             sectionId: "section-main",
+            sectionName: "Main Floor",
             tableId: "table-2",
             tableNumber: 2,
             seatId: "table-2-seat-1",
@@ -490,6 +422,7 @@ test.describe("Table-Based Seating System", () => {
           },
           {
             sectionId: "section-main",
+            sectionName: "Main Floor",
             tableId: "table-2",
             tableNumber: 2,
             seatId: "table-2-seat-2",
@@ -497,6 +430,7 @@ test.describe("Table-Based Seating System", () => {
           },
           {
             sectionId: "section-main",
+            sectionName: "Main Floor",
             tableId: "table-2",
             tableNumber: 2,
             seatId: "table-2-seat-3",
@@ -504,6 +438,7 @@ test.describe("Table-Based Seating System", () => {
           },
           {
             sectionId: "section-main",
+            sectionName: "Main Floor",
             tableId: "table-2",
             tableNumber: 2,
             seatId: "table-2-seat-4",
@@ -512,7 +447,32 @@ test.describe("Table-Based Seating System", () => {
         ],
       });
 
-      console.log("  ✓ Customer 2: Reserved Table 2 (4 seats)");
+      console.log(`  ✓ Order 1 created: ${order1Id}`);
+      console.log(`  ✓ Order 2 created: ${order2Id}`);
+    } catch (error: any) {
+      console.error("  ❌ Failed to create orders:", error.message);
+      throw error;
+    }
+
+    // Complete orders to generate tickets and reserve seats
+    console.log("  🎟️  Step 3: Completing orders (generates tickets and reserves seats)...");
+
+    try {
+      // Complete both orders - this automatically creates tickets and reserves seats
+      await client.mutation(api.tickets.mutations.completeOrder, {
+        orderId: order1Id as any,
+        paymentId: "test-payment-1",
+        paymentMethod: "TEST",
+      });
+
+      await client.mutation(api.tickets.mutations.completeOrder, {
+        orderId: order2Id as any,
+        paymentId: "test-payment-2",
+        paymentMethod: "TEST",
+      });
+
+      console.log("  ✓ Order 1 completed (4 seats at Table 1 reserved)");
+      console.log("  ✓ Order 2 completed (4 seats at Table 2 reserved)");
     } catch (error: any) {
       console.error("  ❌ Failed to reserve seats:", error.message);
       throw error;
@@ -522,34 +482,45 @@ test.describe("Table-Based Seating System", () => {
     console.log("  ✅ Step 5: Verifying reservations...");
 
     const seatingChart = await client.query(api.seating.queries.getEventSeatingChart, {
-      eventId: testEventId,
+      eventId: testEventId as any,
     });
 
+    if (!seatingChart) {
+      throw new Error("Seating chart not found");
+    }
     expect(seatingChart.reservedSeats).toBe(8); // 4 + 4 seats reserved
     console.log(`  ✓ Total reserved seats: ${seatingChart.reservedSeats}/16`);
 
-    // Verify no conflicts - try to reserve same seat again (should fail)
+    // Verify no conflicts - try to create order with already reserved seats (should fail)
     console.log("  🔒 Step 6: Testing conflict prevention...");
 
     let conflictDetected = false;
     try {
-      await client.mutation(api.seating.mutations.reserveSeats, {
-        seatingChartId: seatingChartId,
-        ticketId: ticket1Ids[1],
-        orderId: order1Id,
-        seats: [
+      // Try to create a new order with seats that are already reserved
+      const conflictOrderId = await client.mutation(api.tickets.mutations.createOrder, {
+        eventId: testEventId as any,
+        ticketTierId: individualTierId as any,
+        quantity: 1,
+        buyerEmail: "customer3@test.com",
+        buyerName: "Customer Three",
+        subtotalCents: 10000,
+        platformFeeCents: 0,
+        processingFeeCents: 0,
+        totalCents: 10000,
+        selectedSeats: [
           {
             sectionId: "section-main",
+            sectionName: "Main Floor",
             tableId: "table-1",
             tableNumber: 1,
-            seatId: "table-1-seat-1", // Already reserved
+            seatId: "table-1-seat-1", // Already reserved by Order 1
             seatNumber: "1",
           },
         ],
       });
       console.log("  ❌ FAIL: Double reservation was allowed!");
     } catch (error: any) {
-      conflictDetected = error.message.includes("already reserved");
+      conflictDetected = error.message.includes("already reserved") || error.message.includes("not available");
       console.log(`  ✓ Conflict detected: ${error.message}`);
     }
 
@@ -578,7 +549,7 @@ test.describe("Table-Based Seating System", () => {
     let assignments;
     try {
       assignments = await client.query(api.seating.queries.getEventTableAssignments, {
-        eventId: testEventId,
+        eventId: testEventId as any,
       });
 
       console.log(`  ✓ Retrieved assignments for ${testEventId}`);
@@ -591,6 +562,10 @@ test.describe("Table-Based Seating System", () => {
     console.log("  ✅ Step 2: Verifying assignment data...");
 
     expect(assignments).toBeDefined();
+
+    if (!assignments) {
+      throw new Error("Assignments not found");
+    }
 
     if (assignments.sections && assignments.sections.length > 0) {
       console.log(`  ✓ Found ${assignments.sections.length} section(s)`);

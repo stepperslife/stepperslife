@@ -9,14 +9,18 @@
 
 /**
  * Platform administrator emails
- * These emails are automatically granted admin access
+ *
+ * To add new admins, add their email to this array.
+ * In the future, this could be moved to a database table for dynamic management.
  */
 export const ADMIN_EMAILS = [
-  "iradwatkins@gmail.com",
   "bobbygwatkins@gmail.com",
   "admin-test@stepperslife.com", // Temporary for testing
   "platformadmin@stepperslife.com", // Platform admin for testing
 ] as const;
+
+/** Primary admin email for system operations */
+export const PRIMARY_ADMIN_EMAIL = "bobbygwatkins@gmail.com";
 
 /**
  * Check if an email is an admin email

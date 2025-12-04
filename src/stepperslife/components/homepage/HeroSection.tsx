@@ -33,7 +33,7 @@ export function HeroSection() {
                 Explore Events
               </Link>
               <Link
-                href="/stores"
+                href="/marketplace"
                 className="inline-flex h-12 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 Browse Marketplace

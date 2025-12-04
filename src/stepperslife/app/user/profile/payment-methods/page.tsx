@@ -11,7 +11,7 @@ export default function PaymentMethodsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data - will be replaced with actual Convex query
-  const paymentMethods = [];
+  const paymentMethods: any[] = [];
 
   const getCardIcon = (brand: string) => {
     // In production, would return actual card brand icons

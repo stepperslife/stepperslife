@@ -25,13 +25,15 @@ export const createTestPublishedEvent = mutation({
         name: "Test Organizer",
         email: args.organizerEmail || "test-organizer@stepperslife.com",
         role: "organizer",
-        // @ts-ignore - passwordHash type issue in schema
         passwordHash: "$2a$10$abc123", // Dummy hash for testing
         authProvider: "password",
         createdAt: Date.now(),
         updatedAt: Date.now(),
       });
-      organizer = { _id: organizerId };
+      organizer = await ctx.db.get(organizerId);
+      if (!organizer) {
+        throw new Error("Failed to create test organizer");
+      }
     }
 
     // Create test event with PUBLISHED status
@@ -106,10 +108,10 @@ export const createTestPublishedEvent = mutation({
 export const deleteAllTestEvents = mutation({
   args: {},
   handler: async (ctx) => {
-    const testEvents = await ctx.db
-      .query("events")
-      .filter((q) => q.or(q.eq(q.field("name"), "Test Event"), q.like("name", "Test Event - %")))
-      .collect();
+    const allEvents = await ctx.db.query("events").collect();
+    const testEvents = allEvents.filter(
+      (event) => event.name === "Test Event" || event.name.startsWith("Test Event - ")
+    );
 
     for (const event of testEvents) {
       await ctx.db.delete(event._id);

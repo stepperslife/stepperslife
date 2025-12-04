@@ -57,6 +57,7 @@ export function EventsGrid({ events }: EventsGridProps) {
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="hidden sm:flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => scroll("left")}
                 className="p-2 rounded-full bg-card shadow-md hover:bg-background transition-colors"
                 aria-label="Scroll left"
@@ -64,6 +65,7 @@ export function EventsGrid({ events }: EventsGridProps) {
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
+                type="button"
                 onClick={() => scroll("right")}
                 className="p-2 rounded-full bg-card shadow-md hover:bg-background transition-colors"
                 aria-label="Scroll right"
@@ -116,7 +118,9 @@ export function EventsGrid({ events }: EventsGridProps) {
                       src={imageUrl}
                       alt={event.name}
                       fill
+                      sizes="(max-width: 768px) 300px, 350px"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
                       unoptimized={true}
                     />
                     {event.isFeatured && (

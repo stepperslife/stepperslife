@@ -6,11 +6,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, MapPin, Clock, Users } from "lucide-react";
 import Link from "next/link";
 
+interface StaffEvent {
+  id: string;
+  name: string;
+  date: number;
+  startTime: number;
+  location: string;
+  expectedAttendance: number;
+}
+
 export default function UpcomingEventsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data
-  const events = [];
+  const events: StaffEvent[] = [];
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString("en-US", {
@@ -64,7 +73,7 @@ export default function UpcomingEventsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {events.map((event: any) => (
+          {events.map((event) => (
             <Card key={event.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">

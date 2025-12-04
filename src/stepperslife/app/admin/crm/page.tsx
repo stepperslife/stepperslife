@@ -88,6 +88,7 @@ export default function CRMPage() {
           <p className="text-muted-foreground mt-1">Manage event contacts and organizers</p>
         </div>
         <button
+          type="button"
           onClick={exportToCSV}
           className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-success/90 transition-colors"
         >
@@ -224,6 +225,7 @@ export default function CRMPage() {
                     <p>No contacts found</p>
                     {searchQuery && (
                       <button
+                        type="button"
                         onClick={() => setSearchQuery("")}
                         className="text-primary hover:underline mt-2"
                       >
@@ -318,6 +320,7 @@ export default function CRMPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
+                          type="button"
                           onClick={() => handleDelete(contact._id, contact.name)}
                           className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                           title="Delete contact"

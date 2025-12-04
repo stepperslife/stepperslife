@@ -29,6 +29,42 @@ import ProductOptionInput, {
   type SelectedOption,
 } from "@/components/marketplace/ProductOptionInput";
 
+// Type definitions
+interface ProductVariant {
+  id: string;
+  name: string;
+  options: {
+    size?: string;
+    color?: string;
+  };
+  price?: number;
+  sku?: string;
+  inventoryQuantity: number;
+  image?: string;
+}
+
+interface ExtendedProductOption {
+  id: string;
+  name: string;
+  description?: string;
+  type: string;
+  required: boolean;
+  displayOrder: number;
+  choices?: Array<{
+    id: string;
+    label: string;
+    priceModifier: number;
+    image?: string;
+    default?: boolean;
+  }>;
+  priceModifier?: number;
+  minLength?: number;
+  maxLength?: number;
+  minValue?: number;
+  maxValue?: number;
+  placeholder?: string;
+}
+
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -39,7 +75,7 @@ export default function ProductDetailPage() {
 
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [selectedOptions, setSelectedOptions] = useState<{ size?: string; color?: string }>({});
   const [selectedProductOptions, setSelectedProductOptions] = useState<
     Record<string, SelectedOption>
@@ -86,8 +122,8 @@ export default function ProductDetailPage() {
   // Get current variant if selections are complete
   const currentVariant =
     product.hasVariants && product.variants && selectedOptions.size && selectedOptions.color
-      ? product.variants.find(
-          (v: any) =>
+      ? (product.variants as ProductVariant[]).find(
+          (v) =>
             v.options.size === selectedOptions.size && v.options.color === selectedOptions.color
         )
       : null;
@@ -136,13 +172,13 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     // If product has variants, find the selected variant
-    let variant = null;
+    let variant: ProductVariant | undefined = undefined;
     let variantPrice = product.price;
     let productImage = product.primaryImage;
 
     if (product.hasVariants && product.variants && selectedOptions.size && selectedOptions.color) {
-      variant = product.variants.find(
-        (v: any) =>
+      variant = (product.variants as ProductVariant[]).find(
+        (v) =>
           v.options.size === selectedOptions.size && v.options.color === selectedOptions.color
       );
       if (variant) {
@@ -174,13 +210,13 @@ export default function ProductDetailPage() {
 
   const handleBuyNow = () => {
     // If product has variants, find the selected variant
-    let variant = null;
+    let variant: ProductVariant | undefined = undefined;
     let variantPrice = product.price;
     let productImage = product.primaryImage;
 
     if (product.hasVariants && product.variants && selectedOptions.size && selectedOptions.color) {
-      variant = product.variants.find(
-        (v: any) =>
+      variant = (product.variants as ProductVariant[]).find(
+        (v) =>
           v.options.size === selectedOptions.size && v.options.color === selectedOptions.color
       );
       if (variant) {
@@ -257,6 +293,7 @@ export default function ProductDetailPage() {
                 <div className="grid grid-cols-4 gap-2">
                   {allImages.map((image, index) => (
                     <button
+                      type="button"
                       key={index}
                       onClick={() => setSelectedImage(index)}
                       className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
@@ -296,11 +333,15 @@ export default function ProductDetailPage() {
                     className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors mb-3"
                   >
                     {product.vendor.logo ? (
-                      <img
-                        src={product.vendor.logo}
-                        alt={product.vendor.storeName}
-                        className="w-5 h-5 rounded-full object-cover"
-                      />
+                      <div className="relative w-5 h-5">
+                        <Image
+                          src={product.vendor.logo}
+                          alt={product.vendor.storeName}
+                          fill
+                          className="rounded-full object-cover"
+                          sizes="20px"
+                        />
+                      </div>
                     ) : (
                       <Store className="w-4 h-4" />
                     )}
@@ -397,11 +438,12 @@ export default function ProductDetailPage() {
                 <div className="space-y-4">
                   {/* Extract unique sizes and colors */}
                   {(() => {
+                    const variants = product.variants as ProductVariant[];
                     const sizes = Array.from(
-                      new Set(product.variants.map((v: any) => v.options.size).filter(Boolean))
+                      new Set(variants.map((v) => v.options.size).filter(Boolean))
                     );
                     const colors = Array.from(
-                      new Set(product.variants.map((v: any) => v.options.color).filter(Boolean))
+                      new Set(variants.map((v) => v.options.color).filter(Boolean))
                     );
 
                     return (
@@ -416,10 +458,11 @@ export default function ProductDetailPage() {
                               )}
                             </label>
                             <div className="flex flex-wrap gap-2">
-                              {sizes.map((size: any) => (
+                              {sizes.map((size) => (
                                 <button
+                                  type="button"
                                   key={size}
-                                  onClick={() => setSelectedOptions({ ...selectedOptions, size })}
+                                  onClick={() => setSelectedOptions({ ...selectedOptions, size: size as string })}
                                   className={`px-4 py-2 border-2 rounded-lg font-medium transition-all ${
                                     selectedOptions.size === size
                                       ? "border-primary bg-primary text-white"
@@ -443,10 +486,11 @@ export default function ProductDetailPage() {
                               )}
                             </label>
                             <div className="flex flex-wrap gap-2">
-                              {colors.map((color: any) => (
+                              {colors.map((color) => (
                                 <button
+                                  type="button"
                                   key={color}
-                                  onClick={() => setSelectedOptions({ ...selectedOptions, color })}
+                                  onClick={() => setSelectedOptions({ ...selectedOptions, color: color as string })}
                                   className={`px-4 py-2 border-2 rounded-lg font-medium transition-all ${
                                     selectedOptions.color === color
                                       ? "border-primary bg-primary text-white"
@@ -464,8 +508,8 @@ export default function ProductDetailPage() {
                         {selectedOptions.size &&
                           selectedOptions.color &&
                           (() => {
-                            const variant = product.variants.find(
-                              (v: any) =>
+                            const variant = variants.find(
+                              (v) =>
                                 v.options.size === selectedOptions.size &&
                                 v.options.color === selectedOptions.color
                             );
@@ -494,12 +538,13 @@ export default function ProductDetailPage() {
               )}
 
               {/* Product Options */}
-              {product.options && product.options.length > 0 && (
+              {(product as { options?: ExtendedProductOption[] }).options &&
+               (product as { options?: ExtendedProductOption[] }).options!.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-foreground">Customization Options</h3>
-                  {product.options
-                    .sort((a, b) => a.displayOrder - b.displayOrder)
-                    .map((option) => (
+                  {(product as { options?: ExtendedProductOption[] }).options!
+                    .sort((a: ExtendedProductOption, b: ExtendedProductOption) => a.displayOrder - b.displayOrder)
+                    .map((option: ExtendedProductOption) => (
                       <ProductOptionInput
                         key={option.id}
                         option={option as ProductOption}
@@ -517,6 +562,7 @@ export default function ProductDetailPage() {
                   <div className="flex items-center gap-4">
                     <div className="flex items-center border border-input rounded-lg">
                       <button
+                        type="button"
                         onClick={() => handleQuantityChange(-1)}
                         disabled={quantity <= 1}
                         className="p-2 hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed rounded-l-lg"
@@ -525,6 +571,7 @@ export default function ProductDetailPage() {
                       </button>
                       <span className="px-6 py-2 font-semibold">{quantity}</span>
                       <button
+                        type="button"
                         onClick={() => handleQuantityChange(1)}
                         disabled={quantity >= maxQuantity}
                         className="p-2 hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg"
@@ -545,6 +592,7 @@ export default function ProductDetailPage() {
               {/* Action Buttons */}
               <div className="space-y-3">
                 <button
+                  type="button"
                   onClick={handleBuyNow}
                   disabled={isOutOfStock}
                   className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-lg font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -553,6 +601,7 @@ export default function ProductDetailPage() {
                   Buy Now
                 </button>
                 <button
+                  type="button"
                   onClick={handleAddToCart}
                   disabled={isOutOfStock}
                   className="w-full flex items-center justify-center gap-2 px-6 py-4 border-2 border-primary text-primary text-lg font-semibold rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

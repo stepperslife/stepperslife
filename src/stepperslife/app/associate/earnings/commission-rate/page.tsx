@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function CommissionRatePage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const commissionRates = [];
+  const commissionRates: any[] = [];
 
   return (
     <div className="p-6 space-y-6">

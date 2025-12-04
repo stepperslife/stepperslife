@@ -13,6 +13,9 @@ export const addPaymentConfigsToAllEvents = mutation({
     const results = [];
 
     for (const event of events) {
+      // Skip events without organizerId
+      if (!event.organizerId) continue;
+
       // Check if payment config already exists
       const existingConfig = await ctx.db
         .query("eventPaymentConfig")
@@ -23,11 +26,14 @@ export const addPaymentConfigsToAllEvents = mutation({
         // Create payment config
         const paymentConfigId = await ctx.db.insert("eventPaymentConfig", {
           eventId: event._id,
-          model: "CREDIT_CARD",
+          organizerId: event.organizerId,
+          paymentModel: "CREDIT_CARD",
+          customerPaymentMethods: ["STRIPE"],
           platformFeePercent: 0,
           platformFeeFixed: 0,
-          stripeFeePercent: 0,
-          stripeFeeFixed: 0,
+          processingFeePercent: 0,
+          charityDiscount: false,
+          lowPriceDiscount: false,
           isActive: true,
           createdAt: Date.now(),
           updatedAt: Date.now(),

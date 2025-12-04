@@ -10,7 +10,7 @@ import { getNotificationIcon } from "@/lib/utils/notification-helpers";
 
 export default function AssociateNotificationsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const notifications = [];
+  const notifications: any[] = [];
 
   return (
     <div className="p-6 space-y-6">

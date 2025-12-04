@@ -43,7 +43,6 @@ async function sendEmail(
       return { success: false, error: error.message }
     }
 
-    console.log('Email sent successfully:', data?.id)
     return { success: true, messageId: data?.id }
   } catch (err) {
     console.error('Email sending error:', err)

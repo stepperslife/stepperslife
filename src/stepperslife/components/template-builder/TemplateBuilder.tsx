@@ -232,6 +232,7 @@ export default function TemplateBuilder({
           {/* Undo/Redo */}
           <div className="flex items-center gap-1">
             <button
+              type="button"
               onClick={handleUndo}
               disabled={historyIndex <= 0}
               className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
@@ -240,6 +241,7 @@ export default function TemplateBuilder({
               <Undo2 className="w-5 h-5" />
             </button>
             <button
+              type="button"
               onClick={handleRedo}
               disabled={historyIndex >= history.length - 1}
               className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
@@ -251,6 +253,7 @@ export default function TemplateBuilder({
 
           {/* Clear all */}
           <button
+            type="button"
             onClick={handleClearAll}
             disabled={items.length === 0}
             className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
@@ -280,6 +283,7 @@ export default function TemplateBuilder({
           <div className="flex items-center gap-2">
             {onCancel && (
               <button
+                type="button"
                 onClick={onCancel}
                 className="px-4 py-2 border-2 border-border text-foreground rounded-lg hover:bg-muted transition-colors font-medium"
               >
@@ -287,6 +291,7 @@ export default function TemplateBuilder({
               </button>
             )}
             <button
+              type="button"
               onClick={handleSave}
               disabled={items.length === 0}
               className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"

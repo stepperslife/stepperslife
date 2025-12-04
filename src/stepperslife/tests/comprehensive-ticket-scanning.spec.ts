@@ -36,7 +36,7 @@ const TEST_EVENT = {
 // Test state
 let convex: ConvexHttpClient;
 let organizerId: Id<"users">;
-let staffId: Id<"users">;
+let staffId: Id<"eventStaff">;
 let eventId: Id<"events">;
 let ticketIds: Id<"tickets">[] = [];
 let qrCodes: string[] = [];
@@ -55,16 +55,16 @@ test.describe('Ticket Scanning & Check-In System', () => {
 
     // 1. Create organizer
     console.log('1. Creating organizer account...');
+    const organizerEmail = `organizer-scan-${Date.now()}@test.com`;
     await page.goto(`${BASE_URL}/register`);
-    await page.fill('input[name="email"]', `organizer-scan-${Date.now()}@test.com`);
+    await page.fill('input[name="email"]', organizerEmail);
     await page.fill('input[name="password"]', 'TestPassword123!');
     await page.fill('input[name="name"]', 'Scan Test Organizer');
     await page.click('button[type="submit"]');
     await page.waitForURL('**/organizer/dashboard', { timeout: 10000 });
 
     // Get organizer ID from database
-    const users = await convex.query(api.users.queries.getAllUsers, {});
-    const organizer = users.find(u => u.email?.includes('organizer-scan'));
+    const organizer = await convex.query(api.users.queries.getUserByEmail, { email: organizerEmail });
     expect(organizer).toBeDefined();
     organizerId = organizer!._id;
     console.log(`   ✅ Organizer created: ${organizerId}`);
@@ -139,9 +139,9 @@ test.describe('Ticket Scanning & Check-In System', () => {
     await page.waitForURL('**/order-confirmation/**', { timeout: 15000 });
 
     // Get ticket IDs and QR codes
-    const tickets = await convex.query(api.tickets.queries.getTicketsForEvent, { eventId });
+    const tickets = await convex.query(api.testing.helpers.getTicketsForEvent, { eventId });
     ticketIds = tickets.map(t => t._id);
-    qrCodes = tickets.map(t => t.ticketCode);
+    qrCodes = tickets.map(t => t.ticketCode!);
 
     expect(ticketIds.length).toBe(5);
     console.log(`   ✅ 5 tickets purchased`);
@@ -210,14 +210,15 @@ test.describe('Ticket Scanning & Check-In System', () => {
     console.log('   ✅ Success message displayed');
 
     // Verify ticket status changed in database
-    const ticket = await convex.query(api.tickets.queries.getTicketByCode, {
+    const ticketData = await convex.query(api.tickets.queries.getTicketByCode, {
       ticketCode: firstTicketCode
     });
-    expect(ticket).toBeDefined();
-    expect(ticket.status).toBe('SCANNED');
-    expect(ticket.scannedAt).toBeDefined();
-    console.log(`   ✅ Ticket status: ${ticket.status}`);
-    console.log(`   ✅ Scanned at: ${new Date(ticket.scannedAt!).toLocaleString()}`);
+    expect(ticketData).toBeDefined();
+    expect(ticketData).not.toBeNull();
+    expect(ticketData!.ticket.status).toBe('SCANNED');
+    expect(ticketData!.ticket.scannedAt).toBeDefined();
+    console.log(`   ✅ Ticket status: ${ticketData!.ticket.status}`);
+    console.log(`   ✅ Scanned at: ${new Date(ticketData!.ticket.scannedAt!).toLocaleString()}`);
 
     console.log('\n✅ Valid ticket scan test PASSED\n');
   });
@@ -240,13 +241,14 @@ test.describe('Ticket Scanning & Check-In System', () => {
     console.log('   ✅ Error message displayed: "Already Scanned"');
 
     // Verify ticket still has only ONE scan timestamp
-    const ticket = await convex.query(api.tickets.queries.getTicketByCode, {
+    const ticketData = await convex.query(api.tickets.queries.getTicketByCode, {
       ticketCode: firstTicketCode
     });
-    expect(ticket.status).toBe('SCANNED');
+    expect(ticketData).not.toBeNull();
+    expect(ticketData!.ticket.status).toBe('SCANNED');
 
     // Check scan count (if implemented)
-    const scanHistory = await convex.query(api.tickets.queries.getScanHistory, {
+    const scanHistory = await convex.query(api.testing.helpers.getScanHistory, {
       ticketId: ticketIds[0]
     });
     expect(scanHistory.length).toBe(1); // Only ONE scan allowed
@@ -270,15 +272,16 @@ test.describe('Ticket Scanning & Check-In System', () => {
       await page.waitForTimeout(1500);
 
       // Verify success
-      const ticket = await convex.query(api.tickets.queries.getTicketByCode, {
+      const ticketData = await convex.query(api.tickets.queries.getTicketByCode, {
         ticketCode
       });
-      expect(ticket.status).toBe('SCANNED');
+      expect(ticketData).not.toBeNull();
+      expect(ticketData!.ticket.status).toBe('SCANNED');
       console.log(`      ✅ Ticket ${i + 1} scanned successfully`);
     }
 
     // Verify 4 tickets now scanned (1 from previous test + 3 from this test)
-    const allTickets = await convex.query(api.tickets.queries.getTicketsForEvent, { eventId });
+    const allTickets = await convex.query(api.testing.helpers.getTicketsForEvent, { eventId });
     const scannedCount = allTickets.filter(t => t.status === 'SCANNED').length;
     expect(scannedCount).toBe(4);
     console.log(`\n   ✅ Total scanned: ${scannedCount}/5 tickets`);
@@ -303,10 +306,10 @@ test.describe('Ticket Scanning & Check-In System', () => {
     console.log('   ✅ Error message displayed: "Invalid Ticket"');
 
     // Verify no ticket created
-    const ticket = await convex.query(api.tickets.queries.getTicketByCode, {
+    const ticketData = await convex.query(api.tickets.queries.getTicketByCode, {
       ticketCode: fakeQRCode
     });
-    expect(ticket).toBeNull();
+    expect(ticketData).toBeNull();
     console.log('   ✅ No ticket record created');
 
     console.log('\n✅ Invalid QR code rejection test PASSED\n');
@@ -358,7 +361,7 @@ test.describe('Ticket Scanning & Check-In System', () => {
     await page.waitForTimeout(2000);
 
     // Verify all 5 tickets now scanned
-    const allTickets = await convex.query(api.tickets.queries.getTicketsForEvent, { eventId });
+    const allTickets = await convex.query(api.testing.helpers.getTicketsForEvent, { eventId });
     const scannedCount = allTickets.filter(t => t.status === 'SCANNED').length;
     expect(scannedCount).toBe(5);
     console.log(`   ✅ All tickets scanned: ${scannedCount}/5`);

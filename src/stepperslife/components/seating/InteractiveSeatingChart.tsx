@@ -53,9 +53,9 @@ export default function InteractiveSeatingChart({
   const [hoveredTable, setHoveredTable] = useState<string | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [sessionId] = useState(
-    () => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    () => `session-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
   );
-  const cleanupIntervalRef = useRef<NodeJS.Timeout>();
+  const cleanupIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Accessibility filters
   const [seatFilters, setSeatFilters] = useState<SeatFilters>({
@@ -199,7 +199,24 @@ export default function InteractiveSeatingChart({
       return 0;
     }
 
-    return tier.currentPrice || tier.price || 0;
+    // Calculate current price from pricing tiers if available
+    if (tier.pricingTiers && tier.pricingTiers.length > 0) {
+      const now = Date.now();
+      const sortedTiers = [...tier.pricingTiers].sort((a, b) => a.availableFrom - b.availableFrom);
+
+      // Find the current active tier
+      let currentTier = sortedTiers[0];
+      for (const priceTier of sortedTiers) {
+        if (now >= priceTier.availableFrom && (!priceTier.availableUntil || now < priceTier.availableUntil)) {
+          currentTier = priceTier;
+          break;
+        }
+      }
+
+      return currentTier.price;
+    }
+
+    return tier.price || 0;
   };
 
   // Filter seats based on accessibility filters

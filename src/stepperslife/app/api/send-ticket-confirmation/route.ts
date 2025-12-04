@@ -318,10 +318,13 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    if (emailResponse.error) {
+      throw new Error(emailResponse.error.message);
+    }
 
     return NextResponse.json({
       success: true,
-      emailId: emailResponse.id,
+      emailId: emailResponse.data?.id,
       message: "Ticket confirmation email sent successfully",
     });
   } catch (error) {

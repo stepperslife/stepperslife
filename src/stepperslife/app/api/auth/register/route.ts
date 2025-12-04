@@ -66,8 +66,7 @@ export async function POST(request: NextRequest) {
     // Initialize credits for the new user (300 welcome bonus)
     try {
       await convex.mutation(api.credits.mutations.initializeCredits, {
-        userId,
-        initialCredits: 300,
+        organizerId: userId,
       });
     } catch (error) {
       console.error("Failed to initialize credits:", error);

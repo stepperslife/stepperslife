@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function AssociatesSalesPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const associates = [];
+  const associates: any[] = [];
 
   return (
     <div className="p-6 space-y-6">

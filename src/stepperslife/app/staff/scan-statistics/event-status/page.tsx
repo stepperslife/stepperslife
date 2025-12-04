@@ -6,11 +6,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Calendar, Users, CheckCircle, Clock } from "lucide-react";
 import Link from "next/link";
 
+interface Event {
+  id: string;
+  name: string;
+  location: string;
+  scannedCount: number;
+  soldCount: number;
+  capacity: number;
+  waitingCount: number;
+  scanRate: number;
+}
+
 export default function EventStatusPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data
-  const events = [];
+  const events: Event[] = [];
 
   return (
     <div className="p-6 space-y-6">
@@ -42,7 +53,7 @@ export default function EventStatusPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {events.map((event: any) => (
+          {events.map((event) => (
             <Card key={event.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">

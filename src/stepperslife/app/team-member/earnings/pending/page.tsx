@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function PendingPayoutsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const pendingPayouts = [];
+  const pendingPayouts: any[] = [];
   const totalPending = 0;
 
   return (

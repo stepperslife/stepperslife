@@ -15,8 +15,8 @@ export default function StaffSettingsPage() {
   const [notifyOnOnlineSales, setNotifyOnOnlineSales] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Get staff positions
-  const staffPositions = useQuery(api.staff.queries.getStaffDashboard);
+  // Get staff positions - using getStaffEvents which returns eventId, eventName, staffId
+  const staffPositions = useQuery(api.staff.queries.getStaffEvents);
 
   // Get staff member details
   const staffMember = useQuery(
@@ -63,8 +63,9 @@ export default function StaffSettingsPage() {
       // TODO: Update notification preferences when implemented
 
       alert("Settings saved successfully!");
-    } catch (error: any) {
-      alert(`Failed to save settings: ${error.message}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      alert(`Failed to save settings: ${errorMessage}`);
     } finally {
       setIsSaving(false);
     }
@@ -217,6 +218,7 @@ export default function StaffSettingsPage() {
       {/* Save Button */}
       <div className="flex items-center gap-4">
         <button
+          type="button"
           onClick={handleSave}
           disabled={isSaving}
           className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"

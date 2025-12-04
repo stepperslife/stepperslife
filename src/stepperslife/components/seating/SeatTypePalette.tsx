@@ -107,6 +107,7 @@ export default function SeatTypePalette({
           const isSelected = currentType === seatType.type;
           return (
             <button
+              type="button"
               key={seatType.type}
               onClick={() => onTypeSelect(seatType.type)}
               title={seatType.description}

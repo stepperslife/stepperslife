@@ -223,7 +223,6 @@ export const createRealWorldTestEvents = mutation({
       organizerId: organizer!._id,
       discountType: "PERCENTAGE",
       discountValue: 100, // 100% off
-      maxUses: undefined,
       usedCount: 0,
       isActive: true,
       createdAt: now,
@@ -288,9 +287,9 @@ export const createRealWorldTestEvents = mutation({
       sold: 45,
       isActive: true,
       pricingTiers: [
-        { name: "Super Early Bird", price: 8500, endDate: now + 7 * oneDay },
-        { name: "Early Bird", price: 9500, endDate: now + 14 * oneDay },
-        { name: "Advance", price: 11000, endDate: now + 21 * oneDay },
+        { name: "Super Early Bird", price: 8500, availableFrom: now, availableUntil: now + 7 * oneDay },
+        { name: "Early Bird", price: 9500, availableFrom: now + 7 * oneDay, availableUntil: now + 14 * oneDay },
+        { name: "Advance", price: 11000, availableFrom: now + 14 * oneDay, availableUntil: now + 21 * oneDay },
       ],
       version: 1,
       createdAt: now,
@@ -308,7 +307,7 @@ export const createRealWorldTestEvents = mutation({
       sold: 22,
       isActive: true,
       pricingTiers: [
-        { name: "Early Bird", price: 14500, endDate: now + 14 * oneDay },
+        { name: "Early Bird", price: 14500, availableFrom: now, availableUntil: now + 14 * oneDay },
       ],
       version: 1,
       createdAt: now,
@@ -376,6 +375,7 @@ export const createRealWorldTestEvents = mutation({
       organizerId: organizer!._id,
       discountType: "PERCENTAGE",
       discountValue: 100,
+      usedCount: 0,
       isActive: true,
       createdAt: now,
       updatedAt: now,
@@ -449,6 +449,7 @@ export const createRealWorldTestEvents = mutation({
       organizerId: organizer!._id,
       discountType: "PERCENTAGE",
       discountValue: 100,
+      usedCount: 0,
       isActive: true,
       createdAt: now,
       updatedAt: now,
@@ -468,13 +469,15 @@ export const createRealWorldTestEvents = mutation({
     // Set up PREPAY model for Event 1 (organizer prepaid)
     await ctx.db.insert("eventPaymentConfig", {
       eventId: event1Id,
+      organizerId: organizer!._id,
       paymentModel: "PREPAY",
       customerPaymentMethods: ["STRIPE", "PAYPAL", "CASH"],
       platformFeePercent: 3.7,
       platformFeeFixed: 179, // $1.79
       processingFeePercent: 2.9,
-      processingFeeFixed: 30, // $0.30
-      isConfigured: true,
+      isActive: true,
+      charityDiscount: false,
+      lowPriceDiscount: false,
       createdAt: now,
       updatedAt: now,
     });
@@ -482,13 +485,15 @@ export const createRealWorldTestEvents = mutation({
     // Set up CREDIT_CARD model for Event 2 (fees passed to customer)
     await ctx.db.insert("eventPaymentConfig", {
       eventId: event2Id,
+      organizerId: organizer!._id,
       paymentModel: "CREDIT_CARD",
       customerPaymentMethods: ["STRIPE"],
       platformFeePercent: 3.7,
       platformFeeFixed: 179,
       processingFeePercent: 2.9,
-      processingFeeFixed: 30,
-      isConfigured: true,
+      isActive: true,
+      charityDiscount: false,
+      lowPriceDiscount: false,
       createdAt: now,
       updatedAt: now,
     });
@@ -496,13 +501,15 @@ export const createRealWorldTestEvents = mutation({
     // PREPAY for Event 3
     await ctx.db.insert("eventPaymentConfig", {
       eventId: event3Id,
+      organizerId: organizer!._id,
       paymentModel: "PREPAY",
       customerPaymentMethods: ["STRIPE", "CASH"],
       platformFeePercent: 3.7,
       platformFeeFixed: 179,
       processingFeePercent: 2.9,
-      processingFeeFixed: 30,
-      isConfigured: true,
+      isActive: true,
+      charityDiscount: false,
+      lowPriceDiscount: false,
       createdAt: now,
       updatedAt: now,
     });
@@ -550,7 +557,7 @@ export const cleanupTestEvents = mutation({
     const events = await ctx.db.query("events").collect();
     const testEvents = events.filter((e) => e.organizerId === organizer._id);
 
-    let cleaned = {
+    const cleaned = {
       events: 0,
       tiers: 0,
       bundles: 0,
@@ -699,6 +706,9 @@ export const createTestStaffAndAssociates = mutation({
     if (!event) {
       throw new Error("Event not found");
     }
+    if (!event.organizerId) {
+      throw new Error("Event has no organizer");
+    }
 
     const results: any = {
       staff: [],
@@ -724,9 +734,11 @@ export const createTestStaffAndAssociates = mutation({
       role: "STAFF",
       isActive: true,
       canScan: true,
-      commissionRate: 0, // No commission for door staff
+      commissionType: "PERCENTAGE",
+      commissionValue: 0, // No commission for door staff
+      commissionEarned: 0,
+      ticketsSold: 0,
       referralCode: "MARCUS2024",
-      dateJoined: now,
       createdAt: now,
       updatedAt: now,
     });
@@ -759,9 +771,11 @@ export const createTestStaffAndAssociates = mutation({
       role: "TEAM_MEMBERS",
       isActive: true,
       canScan: true,
-      commissionRate: 5, // 5% commission
+      commissionType: "PERCENTAGE",
+      commissionValue: 5, // 5% commission
+      commissionEarned: 0,
+      ticketsSold: 0,
       referralCode: "TAMIKA5",
-      dateJoined: now,
       createdAt: now,
       updatedAt: now,
     });
@@ -795,9 +809,11 @@ export const createTestStaffAndAssociates = mutation({
       role: "ASSOCIATES",
       isActive: true,
       canScan: false,
-      commissionRate: 10, // 10% commission for top sellers
+      commissionType: "PERCENTAGE",
+      commissionValue: 10, // 10% commission for top sellers
+      commissionEarned: 0,
+      ticketsSold: 0,
       referralCode: "DARNELL10",
-      dateJoined: now,
       createdAt: now,
       updatedAt: now,
     });
@@ -831,9 +847,11 @@ export const createTestStaffAndAssociates = mutation({
       role: "ASSOCIATES",
       isActive: true,
       canScan: false,
-      commissionRate: 7, // 7% standard commission
+      commissionType: "PERCENTAGE",
+      commissionValue: 7, // 7% standard commission
+      commissionEarned: 0,
+      ticketsSold: 0,
       referralCode: "ANGELA7",
-      dateJoined: now,
       createdAt: now,
       updatedAt: now,
     });
@@ -864,13 +882,16 @@ export const createTestStaffAndAssociates = mutation({
       organizerId: event.organizerId,
       name: "Jerome Banks",
       email: "subseller@stepperslife.com",
-      role: "SUB_SELLERS",
+      role: "ASSOCIATES", // Sub-sellers are ASSOCIATES with parent assignment
       isActive: true,
       canScan: false,
-      commissionRate: 5, // 5% for sub-sellers
+      commissionType: "PERCENTAGE",
+      commissionValue: 5, // 5% for sub-sellers
+      commissionEarned: 0,
+      ticketsSold: 0,
       referralCode: "JEROME5",
-      parentStaffId: associateRecord1, // Under Darnell
-      dateJoined: now,
+      assignedByStaffId: associateRecord1, // Under Darnell
+      hierarchyLevel: 2,
       createdAt: now,
       updatedAt: now,
     });
@@ -997,12 +1018,13 @@ export const simulateCustomerPurchases = mutation({
       // Create order
       const orderId = await ctx.db.insert("orders", {
         eventId: args.eventId,
-        userId: customerUser!._id,
-        attendeeEmail: customer.email,
-        attendeeName: customer.name,
+        buyerId: customerUser!._id,
+        buyerEmail: customer.email,
+        buyerName: customer.name,
         status: "COMPLETED",
         subtotalCents: subtotal,
         platformFeeCents: platformFee,
+        processingFeeCents: 0,
         totalCents: totalCents,
         paymentMethod: Math.random() > 0.5 ? "STRIPE" : "PAYPAL",
         stripePaymentIntentId: `pi_test_${Date.now()}_${i}`,
@@ -1273,7 +1295,7 @@ export const getFullTestStatus = query({
         date: event.startDate ? new Date(event.startDate).toLocaleDateString() : "TBD",
         status: event.status,
         imageUrl: event.imageUrl,
-        location: event.location?.venueName || "TBD",
+        location: typeof event.location === "string" ? event.location : (event.location?.venueName || "TBD"),
         ticketTiers: tiers.map((t) => ({
           id: t._id,
           name: t.name,
@@ -1443,15 +1465,18 @@ async function createTestStaffAndAssociatesInternal(ctx: any, args: { eventId: a
   if (!event) {
     throw new Error("Event not found");
   }
+  if (!event.organizerId) {
+    throw new Error("Event has no organizer");
+  }
 
   const results: any = { staff: [], referralCodes: [] };
 
   // Create staff members (simplified version for internal use)
   const staffData = [
-    { name: "Marcus Johnson", email: "scanner1@stepperslife.com", role: "STAFF", canScan: true, commission: 0, code: "MARCUS2024" },
-    { name: "Tamika Williams", email: "coordinator@stepperslife.com", role: "TEAM_MEMBERS", canScan: true, commission: 5, code: "TAMIKA5" },
-    { name: "Darnell Thompson", email: "topseller@stepperslife.com", role: "ASSOCIATES", canScan: false, commission: 10, code: "DARNELL10" },
-    { name: "Angela Davis", email: "seller@stepperslife.com", role: "ASSOCIATES", canScan: false, commission: 7, code: "ANGELA7" },
+    { name: "Marcus Johnson", email: "scanner1@stepperslife.com", role: "STAFF" as const, canScan: true, commission: 0, code: "MARCUS2024" },
+    { name: "Tamika Williams", email: "coordinator@stepperslife.com", role: "TEAM_MEMBERS" as const, canScan: true, commission: 5, code: "TAMIKA5" },
+    { name: "Darnell Thompson", email: "topseller@stepperslife.com", role: "ASSOCIATES" as const, canScan: false, commission: 10, code: "DARNELL10" },
+    { name: "Angela Davis", email: "seller@stepperslife.com", role: "ASSOCIATES" as const, canScan: false, commission: 7, code: "ANGELA7" },
   ];
 
   for (const s of staffData) {
@@ -1472,9 +1497,11 @@ async function createTestStaffAndAssociatesInternal(ctx: any, args: { eventId: a
       role: s.role,
       isActive: true,
       canScan: s.canScan,
-      commissionRate: s.commission,
+      commissionType: "PERCENTAGE",
+      commissionValue: s.commission,
+      commissionEarned: 0,
+      ticketsSold: 0,
       referralCode: s.code,
-      dateJoined: now,
       createdAt: now,
       updatedAt: now,
     });
@@ -1523,8 +1550,8 @@ async function simulateCustomerPurchasesInternal(ctx: any, args: { eventId: any;
     }
 
     const orderId = await ctx.db.insert("orders", {
-      eventId: args.eventId, userId: user._id, attendeeEmail: customer.email, attendeeName: customer.name,
-      status: "COMPLETED", subtotalCents: subtotal, platformFeeCents: platformFee, totalCents,
+      eventId: args.eventId, buyerId: user._id, buyerEmail: customer.email, buyerName: customer.name,
+      status: "COMPLETED", subtotalCents: subtotal, platformFeeCents: platformFee, processingFeeCents: 0, totalCents,
       paymentMethod: Math.random() > 0.5 ? "STRIPE" : "PAYPAL",
       stripePaymentIntentId: `pi_test_${Date.now()}_${i}`,
       paidAt: now - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000),
@@ -1736,7 +1763,6 @@ async function createTestEventsInternal(ctx: any, args: { organizerEmail?: strin
       organizerId: organizer!._id,
       discountType: "PERCENTAGE",
       discountValue: 100,
-      maxUses: undefined,
       usedCount: 0,
       isActive: true,
       createdAt: now,

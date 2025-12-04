@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function PastEventsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const pastEvents = [];
+  const pastEvents: any[] = [];
 
   return (
     <div className="p-6 space-y-6">

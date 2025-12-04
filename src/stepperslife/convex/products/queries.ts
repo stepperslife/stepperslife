@@ -40,9 +40,9 @@ export const getActiveProducts = query({
             ...product,
             vendor: vendor ? {
               _id: vendor._id,
-              storeName: vendor.storeName,
+              storeName: vendor.name,
               slug: vendor.slug,
-              logo: vendor.logo,
+              logo: vendor.logoUrl,
             } : null,
           };
         }
@@ -68,9 +68,9 @@ export const getProductById = query({
         ...product,
         vendor: vendor ? {
           _id: vendor._id,
-          storeName: vendor.storeName,
+          storeName: vendor.name,
           slug: vendor.slug,
-          logo: vendor.logo,
+          logo: vendor.logoUrl,
           description: vendor.description,
         } : null,
       };

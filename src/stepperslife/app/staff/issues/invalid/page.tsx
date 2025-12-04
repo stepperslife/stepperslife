@@ -6,11 +6,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { XCircle, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
 
+interface InvalidTicket {
+  id: string;
+  ticketNumber: string;
+  eventName: string;
+  reason: string;
+  timestamp: number;
+}
+
 export default function InvalidTicketsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data
-  const invalidTickets = [];
+  const invalidTickets: InvalidTicket[] = [];
 
   const formatTime = (timestamp: number) => {
     return new Date(timestamp).toLocaleString("en-US", {
@@ -51,7 +59,7 @@ export default function InvalidTicketsPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {invalidTickets.map((ticket: any) => (
+          {invalidTickets.map((ticket) => (
             <Card key={ticket.id} className="border-destructive bg-destructive/10">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">

@@ -115,6 +115,7 @@ export default function ClaimEventsPage() {
 
             {/* Filter Toggle Button */}
             <button
+              type="button"
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors ${
                 showFilters
@@ -196,6 +197,7 @@ export default function ClaimEventsPage() {
                   {/* Clear Filters Button */}
                   {hasActiveFilters && (
                     <button
+                      type="button"
                       onClick={clearFilters}
                       className="mt-3 text-sm text-red-600 hover:text-red-700 font-medium"
                     >
@@ -301,9 +303,9 @@ export default function ClaimEventsPage() {
                           </div>
                         )}
 
-                        {event.category && (
+                        {event.categories && event.categories.length > 0 && (
                           <span className="inline-block px-2 py-1 text-xs font-semibold bg-accent text-primary rounded-full">
-                            {event.category}
+                            {event.categories[0]}
                           </span>
                         )}
                       </div>
@@ -327,12 +329,14 @@ export default function ClaimEventsPage() {
                           )}
                           <div className="flex gap-2">
                             <button
+                              type="button"
                               onClick={() => handleClaimEvent(event._id)}
                               className="flex-1 px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                             >
                               Confirm Claim
                             </button>
                             <button
+                              type="button"
                               onClick={() => {
                                 setClaimingEventId(null);
                                 setClaimCode("");
@@ -345,6 +349,7 @@ export default function ClaimEventsPage() {
                         </div>
                       ) : (
                         <button
+                          type="button"
                           onClick={() => setClaimingEventId(event._id)}
                           className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                         >

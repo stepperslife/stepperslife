@@ -9,14 +9,24 @@ import { Ticket, Calendar, Download, Search, DollarSign, CheckCircle, XCircle } 
 import Link from "next/link";
 import { useState } from "react";
 
+interface Transaction {
+  id: string;
+  eventName: string;
+  transactionId: string;
+  date: number;
+  quantity: number;
+  amount: number;
+  status: "completed" | "refunded" | "cancelled" | string;
+}
+
 export default function TicketHistoryPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Mock data - will be replaced with actual Convex query
-  const transactions = [];
+  const transactions: Transaction[] = [];
 
-  const filteredTransactions = transactions.filter((transaction: any) =>
+  const filteredTransactions = transactions.filter((transaction) =>
     transaction.eventName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     transaction.transactionId.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -64,7 +74,7 @@ export default function TicketHistoryPage() {
   };
 
   const totalSpent = transactions.reduce(
-    (sum: number, t: any) => sum + (t.status === "completed" ? t.amount : 0),
+    (sum, t) => sum + (t.status === "completed" ? t.amount : 0),
     0
   );
 
@@ -117,7 +127,7 @@ export default function TicketHistoryPage() {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Tickets</p>
                 <p className="text-2xl font-bold mt-1">
-                  {transactions.reduce((sum: number, t: any) => sum + t.quantity, 0)}
+                  {transactions.reduce((sum, t) => sum + t.quantity, 0)}
                 </p>
               </div>
               <Ticket className="h-8 w-8 text-muted-foreground" />
@@ -171,7 +181,7 @@ export default function TicketHistoryPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredTransactions.map((transaction: any, index: number) => (
+                    {filteredTransactions.map((transaction, index) => (
                       <tr key={transaction.id} className={index % 2 === 0 ? "bg-muted/20" : ""}>
                         <td className="p-4 text-sm">
                           {formatDate(transaction.date)}

@@ -74,6 +74,7 @@ function CollapsibleSection({
   return (
     <div className="border-b border-border last:border-0">
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-6 py-3 hover:bg-muted transition-colors"
       >
@@ -180,7 +181,8 @@ export default function PropertiesPanel({
         <div className="bg-primary px-6 py-4 text-white sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold">{isTable ? `Edit Table` : `Edit Section`}</h2>
-            <button onClick={onClose} className="p-1 hover:bg-white/20 rounded transition-colors">
+            <button
+              type="button" onClick={onClose} className="p-1 hover:bg-white/20 rounded transition-colors">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -348,6 +350,7 @@ export default function PropertiesPanel({
                   {data.rotation || 0}°
                 </span>
                 <button
+                  type="button"
                   onClick={handleRotate}
                   className="p-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors"
                   title="Rotate 15°"
@@ -402,6 +405,7 @@ export default function PropertiesPanel({
               {/* Auto-Arrange Button */}
               <div className="mt-4">
                 <button
+                  type="button"
                   onClick={handleAutoArrange}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all text-sm font-medium"
                 >
@@ -439,12 +443,14 @@ export default function PropertiesPanel({
         {/* Actions */}
         <div className="p-6 border-t border-border space-y-3 bg-muted">
           <button
+            type="button"
             onClick={onClose}
             className="w-full px-4 py-2.5 bg-card border border-border text-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm font-medium"
           >
             Done Editing
           </button>
           <button
+            type="button"
             onClick={() => {
               if (confirm(`Delete this ${isTable ? "table" : "section"}?`)) {
                 onDelete();

@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "../_generated/server";
-import { TRANSFER_STATUS, TRANSFER_CONFIG } from "../lib/roles";
+import { TRANSFER_STATUS, TRANSFER_CONFIG, PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Request a ticket transfer from one staff member to another
@@ -22,7 +22,7 @@ export const requestTransfer = mutation({
       console.warn("[requestTransfer] TESTING MODE - Using test user");
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       user = await ctx.db
@@ -139,7 +139,7 @@ export const acceptTransfer = mutation({
       console.warn("[acceptTransfer] TESTING MODE - Using test user");
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       user = await ctx.db

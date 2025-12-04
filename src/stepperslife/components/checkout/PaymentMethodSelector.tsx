@@ -41,7 +41,7 @@ function getPaymentMethodIcon(method: PaymentMethod) {
   switch (method) {
     case "card":
       return CreditCard;
-    case "cashapp":
+    case "paypal":
       return Smartphone;
     case "cash":
       return Banknote;
@@ -59,8 +59,8 @@ function getPaymentMethodDescription(method: PaymentMethod, processor?: Merchant
       return processor
         ? `Pay securely with ${getMerchantProcessorDisplayName(processor)}`
         : "Pay securely with your credit or debit card";
-    case "cashapp":
-      return "Scan QR code to pay with Cash App";
+    case "paypal":
+      return "Pay securely with PayPal";
     case "cash":
       return "Pay with cash when picking up your tickets (requires staff approval)";
     default:
@@ -77,7 +77,7 @@ export function PaymentMethodSelector({
   const methods: PaymentMethod[] = [];
 
   if (availableMethods.creditCard) methods.push("card");
-  if (availableMethods.cashApp) methods.push("cashapp");
+  if (availableMethods.paypal) methods.push("paypal");
   if (availableMethods.cash) methods.push("cash");
 
   // If no methods available, show error state

@@ -74,7 +74,8 @@ export async function POST(request: NextRequest) {
       if (convexOrderId) {
         await convex.mutation(api.tickets.mutations.completeOrder, {
           orderId: convexOrderId as Id<"orders">,
-          paymentIntentId: orderID,
+          paymentId: orderID,
+          paymentMethod: "PAYPAL",
         });
       }
 

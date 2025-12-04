@@ -25,6 +25,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { SquareClient, SquareEnvironment } from "square";
+import type * as Square from "square";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { randomUUID } from "crypto";
@@ -85,7 +86,7 @@ export async function POST(
       return NextResponse.json(
         createErrorResponse(errorMessage, {
           code: "VALIDATION_ERROR",
-          fields: validation.error.errors,
+          fields: validation.error.issues,
         }),
         { status: 400 }
       );
@@ -105,7 +106,7 @@ export async function POST(
 
     // Create payment with Square
     const idempotencyKey = randomUUID();
-    const paymentRequest = {
+    const paymentRequest: Square.CreatePaymentRequest = {
       sourceId,
       idempotencyKey,
       amountMoney: {
@@ -118,9 +119,9 @@ export async function POST(
       ...(verificationToken && { verificationToken }),
     };
 
-    const { result } = await squareClient.paymentsApi.createPayment(paymentRequest);
+    const response = await squareClient.payments.create(paymentRequest);
 
-    const payment: SquarePayment | undefined = result.payment;
+    const payment: Square.Payment | undefined = response.payment;
 
     if (!payment) {
       logPaymentError(LOG_PREFIX.SQUARE, new Error("Payment creation returned no payment object"), {
@@ -158,16 +159,14 @@ export async function POST(
           duration,
         });
 
-        return NextResponse.json(
-          createSuccessResponse(
-            {
-              paymentId: payment.id!,
-              credits,
-            },
-            SUCCESS_MESSAGES.CREDITS_PURCHASED(credits)
-          ),
-          { status: 200 }
-        );
+        const successResponse: PaymentSuccessResponse = {
+          success: true,
+          paymentId: payment.id!,
+          credits,
+          message: SUCCESS_MESSAGES.CREDITS_PURCHASED(credits),
+        };
+
+        return NextResponse.json(successResponse, { status: 200 });
       } catch (convexError: unknown) {
         // Payment succeeded but credit allocation failed
         logPaymentError(LOG_PREFIX.SQUARE, convexError, {

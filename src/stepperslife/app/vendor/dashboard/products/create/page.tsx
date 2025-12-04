@@ -63,7 +63,7 @@ export default function CreateProductPage() {
     user?._id ? { ownerId: user._id as Id<"users"> } : "skip"
   );
 
-  const createProduct = useMutation(api.products.createVendorProduct);
+  const createProduct = useMutation(api.products.mutations.createProduct);
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -174,6 +174,24 @@ export default function CreateProductPage() {
         weight: formData.weight ? parseInt(formData.weight) : undefined,
         shippingPrice: shippingPriceInCents,
         status: formData.status,
+      } as {
+        vendorId: Id<"vendors">;
+        name: string;
+        description: string;
+        price: number;
+        compareAtPrice?: number;
+        sku?: string;
+        inventoryQuantity: number;
+        trackInventory: boolean;
+        category?: string;
+        tags?: string[];
+        images?: string[];
+        primaryImage?: string;
+        hasVariants: boolean;
+        requiresShipping: boolean;
+        weight?: number;
+        shippingPrice?: number;
+        status: "ACTIVE" | "DRAFT";
       });
 
       toast.success("Product created successfully!");

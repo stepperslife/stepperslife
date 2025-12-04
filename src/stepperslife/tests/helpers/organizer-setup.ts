@@ -51,7 +51,7 @@ export class OrganizerSetupHelper {
    */
   async getCreditBalance(organizerId: Id<"users">): Promise<number> {
     try {
-      const credits = await this.convex.query(api.credits.queries.getOrganizerCredits, {
+      const credits = await this.convex.query(api.credits.queries.getCreditBalance, {
         organizerId
       });
       return credits?.creditsRemaining || 0;
@@ -105,7 +105,7 @@ export class OrganizerSetupHelper {
       console.error('Square payment failed:', error);
       return {
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       };
     }
   }
@@ -159,7 +159,7 @@ export class OrganizerSetupHelper {
       console.error('PayPal payment failed:', error);
       return {
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       };
     }
   }
@@ -174,12 +174,12 @@ export class OrganizerSetupHelper {
     console.log(`Adding ${creditAmount} test credits to organizer ${organizerId}`);
 
     try {
-      // This assumes you have a test mutation for adding credits
-      // You may need to create this mutation in your Convex schema
-      await this.convex.mutation(api.credits.mutations.addTestCredits, {
-        organizerId,
-        amount: creditAmount,
-        reason: "Automated test credit allocation"
+      // Use purchaseCredits mutation to add credits
+      await this.convex.mutation(api.credits.mutations.purchaseCredits, {
+        userId: organizerId,
+        credits: creditAmount,
+        amountPaid: creditAmount * 30, // $0.30 per credit
+        squarePaymentId: `test_${Date.now()}`
       });
 
       console.log(`Successfully added ${creditAmount} test credits`);
@@ -245,13 +245,14 @@ export class OrganizerSetupHelper {
       return {
         accountId: '',
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       };
     }
   }
 
   /**
    * Use test Stripe Connect account ID (for faster testing)
+   * Note: This function is a placeholder - updateStripeConnectAccount mutation doesn't exist yet
    */
   async useTestStripeAccount(
     organizerId: Id<"users">
@@ -261,18 +262,14 @@ export class OrganizerSetupHelper {
     // In test mode, you can use a pre-configured test Connect account
     const testAccountId = process.env.STRIPE_TEST_CONNECT_ACCOUNT_ID || 'acct_test_' + Date.now();
 
-    try {
-      // Update the organizer's payment config with the test account
-      await this.convex.mutation(api.paymentConfig.mutations.updateStripeConnectAccount, {
-        organizerId,
-        stripeAccountId: testAccountId
-      });
+    console.warn('Note: updateStripeConnectAccount mutation not implemented yet');
+    // TODO: Implement this mutation in convex/paymentConfig/mutations.ts
+    // await this.convex.mutation(api.paymentConfig.mutations.updateStripeConnectAccount, {
+    //   organizerId,
+    //   stripeAccountId: testAccountId
+    // });
 
-      return testAccountId;
-    } catch (error) {
-      console.error('Error setting test Stripe account:', error);
-      throw error;
-    }
+    return testAccountId;
   }
 
   /**
@@ -280,7 +277,7 @@ export class OrganizerSetupHelper {
    */
   async verifyFirstEventFreeCredits(organizerId: Id<"users">): Promise<boolean> {
     try {
-      const credits = await this.convex.query(api.credits.queries.getOrganizerCredits, {
+      const credits = await this.convex.query(api.credits.queries.getCreditBalance, {
         organizerId
       });
 

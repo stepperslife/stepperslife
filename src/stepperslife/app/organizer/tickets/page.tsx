@@ -13,12 +13,24 @@ import {
   Calendar,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Doc } from "@/convex/_generated/dataModel";
+
+// Extended event type with computed fields
+interface EventWithStats extends Doc<"events"> {
+  imageUrl?: string;
+  totalRevenue?: number;
+  ticketsSold?: number;
+  totalTickets?: number;
+}
 
 export default function TicketsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const events = useQuery(api.events.queries.getOrganizerEvents, {
+  const rawEvents = useQuery(api.events.queries.getOrganizerEvents, {
     userId: currentUser?._id,
   });
+
+  // Type cast to include computed fields that may be present
+  const events = rawEvents as EventWithStats[] | undefined;
 
   const isLoading = currentUser === undefined || events === undefined;
 
@@ -229,7 +241,7 @@ export default function TicketsPage() {
                               <Calendar className="w-5 h-5 text-gray-400 mr-3" />
                               <div>
                                 <div className="text-sm font-medium text-gray-900">
-                                  {event.title}
+                                  {event.name}
                                 </div>
                                 <div className="text-sm text-gray-500">
                                   {event.eventType || "Event"}

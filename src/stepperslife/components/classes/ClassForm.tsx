@@ -452,6 +452,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
               Cancel
             </Link>
             <button
+              type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
               className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

@@ -651,10 +651,9 @@ BEGIN TWO-PHASE EXTRACTION NOW.`;
 
     // Parse the JSON response
     let extractedData: any;
+    let cleanedText = extractedText.trim();
     try {
       // Remove markdown code blocks if present (handles all variations)
-      let cleanedText = extractedText.trim();
-
       // Remove opening markdown code block (```json or ```)
       if (cleanedText.startsWith("```json")) {
         cleanedText = cleanedText.substring(7);

@@ -155,6 +155,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
         <div className="grid md:grid-cols-3 gap-4 mb-6">
           {PACKAGES.map((pkg) => (
             <button
+              type="button"
               key={pkg.credits}
               onClick={() => setSelectedPackage(pkg)}
               className={`border-2 rounded-lg p-6 hover:shadow-lg transition-all text-center relative ${selectedPackage.credits === pkg.credits
@@ -185,6 +186,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
           <h3 className="font-semibold text-gray-900 mb-3">Payment Method</h3>
           <div className="grid grid-cols-2 gap-3">
             <button
+              type="button"
               onClick={() => setPaymentMethod("card")}
               className={`flex items-center justify-center gap-2 p-4 border-2 rounded-lg transition-all ${paymentMethod === "card"
                 ? "border-primary bg-accent"
@@ -195,6 +197,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
               <span className="font-medium">Credit Card</span>
             </button>
             <button
+              type="button"
               onClick={() => setPaymentMethod("paypal")}
               className={`flex items-center justify-center gap-2 p-4 border-2 rounded-lg transition-all ${paymentMethod === "paypal"
                 ? "border-primary bg-accent"
@@ -284,6 +287,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
         {paymentMethod === "card" && (
           <div className="flex items-center justify-end gap-3">
             <button
+              type="button"
               onClick={onClose}
               disabled={isProcessing}
               className="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
@@ -291,6 +295,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
               Cancel
             </button>
             <button
+              type="button"
               onClick={handlePurchase}
               disabled={isProcessing}
               className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
@@ -309,6 +314,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
         {paymentMethod === "paypal" && (
           <div className="flex justify-center">
             <button
+              type="button"
               onClick={onClose}
               className="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             >

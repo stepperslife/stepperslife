@@ -16,9 +16,10 @@ import { useState } from "react";
 
 export default function TicketInventoryPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const events = useQuery(api.events.queries.getOrganizerEvents, {
-    userId: currentUser?._id,
-  });
+  const events = useQuery(
+    api.events.queries.getOrganizerEvents,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -39,7 +40,7 @@ export default function TicketInventoryPage() {
   // Filter events by search query
   const filteredEvents =
     events?.filter((event) =>
-      event.title.toLowerCase().includes(searchQuery.toLowerCase())
+      event.name.toLowerCase().includes(searchQuery.toLowerCase())
     ) || [];
 
   // Calculate totals
@@ -182,7 +183,7 @@ export default function TicketInventoryPage() {
                                 href={`/organizer/events/${event._id}`}
                                 className="text-sm font-medium text-primary hover:underline"
                               >
-                                {event.title}
+                                {event.name}
                               </Link>
                               <div className="text-sm text-gray-500">
                                 {event.startDate

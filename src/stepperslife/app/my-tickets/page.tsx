@@ -33,6 +33,50 @@ import toast from "react-hot-toast";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 
+// Type for the ticket data - extending what the query returns with optional schema fields
+type TicketData = {
+  _id: Id<"tickets">;
+  ticketCode: string | undefined;
+  status: "CANCELLED" | "PENDING" | "VALID" | "SCANNED" | "REFUNDED" | "PENDING_ACTIVATION" | undefined;
+  scannedAt: number | undefined;
+  createdAt: number;
+  eventId?: Id<"events">; // Added for bundle filtering
+  attendeeEmail?: string; // From schema but not in current query
+  attendeeName?: string; // From schema but not in current query
+  bundleId?: string; // From schema but not in current query
+  bundleName?: string; // From schema but not in current query
+  event: {
+    _id: Id<"events">;
+    name: string;
+    startDate: number | undefined;
+    endDate: number | undefined;
+    location?: string | { // Can be either string or object
+      venueName?: string;
+      address?: string;
+      zipCode?: string;
+      city: string;
+      state: string;
+      country: string;
+    };
+    imageUrl: string | undefined;
+    eventType: string | undefined;
+  } | null;
+  tier: {
+    name: string;
+    price: number;
+  } | null;
+  order: {
+    _id: Id<"orders">;
+    totalCents: number;
+    paidAt: number | undefined;
+  } | null;
+  seat: {
+    sectionName: string;
+    rowLabel: string;
+    seatNumber: number;
+  } | null;
+};
+
 export default function MyTicketsPage() {
   // Check authentication status first
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -45,7 +89,7 @@ export default function MyTicketsPage() {
   );
 
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
-  const [transferModalTicket, setTransferModalTicket] = useState<any | null>(null);
+  const [transferModalTicket, setTransferModalTicket] = useState<TicketData | null>(null);
   const [transferEmail, setTransferEmail] = useState("");
   const [transferName, setTransferName] = useState("");
   const [isTransferring, setIsTransferring] = useState(false);
@@ -63,13 +107,13 @@ export default function MyTicketsPage() {
   }, []);
 
   // CRUD state management
-  const [editModalTicket, setEditModalTicket] = useState<any | null>(null);
+  const [editModalTicket, setEditModalTicket] = useState<TicketData | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [selectedTickets, setSelectedTickets] = useState<string[]>([]);
   const [bundleName, setBundleName] = useState("");
   const [showBundleModal, setShowBundleModal] = useState(false);
-  const [deleteConfirmTicket, setDeleteConfirmTicket] = useState<any | null>(null);
+  const [deleteConfirmTicket, setDeleteConfirmTicket] = useState<TicketData | null>(null);
 
   // Mutations
   const initiateTransfer = useMutation(api.transfers.mutations.initiateTransfer);
@@ -79,7 +123,9 @@ export default function MyTicketsPage() {
   const unbundleTickets = useMutation(api.tickets.mutations.unbundleTickets);
 
   // Group tickets by event
-  const groupedTickets = tickets?.reduce(
+  // Cast tickets to TicketData[] for proper typing
+  const ticketsData = tickets as unknown as TicketData[] | undefined;
+  const groupedTickets = ticketsData?.reduce(
     (acc, ticket) => {
       if (!ticket.event) return acc;
 
@@ -93,19 +139,19 @@ export default function MyTicketsPage() {
       acc[eventId].tickets.push(ticket);
       return acc;
     },
-    {} as Record<string, { event: any; tickets: any[] }>
+    {} as Record<string, { event: NonNullable<TicketData["event"]>; tickets: TicketData[] }>
   );
 
   // Separate upcoming and past events
   const now = Date.now();
   const upcomingEvents = groupedTickets
     ? Object.values(groupedTickets).filter(
-      (group: any) => group.event.startDate && group.event.startDate >= now
+      (group) => group.event.startDate && group.event.startDate >= now
     )
     : [];
   const pastEvents = groupedTickets
     ? Object.values(groupedTickets).filter(
-      (group: any) => !group.event.startDate || group.event.startDate < now
+      (group) => !group.event.startDate || group.event.startDate < now
     )
     : [];
 
@@ -126,7 +172,7 @@ export default function MyTicketsPage() {
     }
   };
 
-  const handleTransferTicket = (ticket: any) => {
+  const handleTransferTicket = (ticket: TicketData) => {
     setTransferModalTicket(ticket);
     setTransferEmail("");
     setTransferName("");
@@ -141,7 +187,7 @@ export default function MyTicketsPage() {
     setIsTransferring(true);
     try {
       await initiateTransfer({
-        ticketId: transferModalTicket._id as Id<"tickets">,
+        ticketId: transferModalTicket._id,
         toEmail: transferEmail,
         toName: transferName,
       });
@@ -150,15 +196,16 @@ export default function MyTicketsPage() {
         `Transfer initiated! An email has been sent to ${transferEmail} to accept the ticket.`
       );
       setTransferModalTicket(null);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to transfer ticket");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to transfer ticket";
+      toast.error(errorMessage);
     } finally {
       setIsTransferring(false);
     }
   };
 
   // Edit ticket functionality
-  const handleEditTicket = (ticket: any) => {
+  const handleEditTicket = (ticket: TicketData) => {
     setEditModalTicket(ticket);
     setEditName(ticket.attendeeName || "");
     setEditEmail(ticket.attendeeEmail || "");
@@ -169,20 +216,21 @@ export default function MyTicketsPage() {
 
     try {
       await updateTicket({
-        ticketId: editModalTicket._id as Id<"tickets">,
+        ticketId: editModalTicket._id,
         attendeeName: editName,
         attendeeEmail: editEmail,
       });
 
       toast.success("Ticket updated successfully!");
       setEditModalTicket(null);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update ticket");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update ticket";
+      toast.error(errorMessage);
     }
   };
 
   // Delete ticket functionality
-  const handleDeleteTicket = async (ticket: any) => {
+  const handleDeleteTicket = async (ticket: TicketData) => {
     setDeleteConfirmTicket(ticket);
   };
 
@@ -191,13 +239,14 @@ export default function MyTicketsPage() {
 
     try {
       await deleteTicket({
-        ticketId: deleteConfirmTicket._id as Id<"tickets">,
+        ticketId: deleteConfirmTicket._id,
       });
 
       toast.success("Ticket cancelled successfully");
       setDeleteConfirmTicket(null);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to cancel ticket");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to cancel ticket";
+      toast.error(errorMessage);
     }
   };
 
@@ -229,8 +278,9 @@ export default function MyTicketsPage() {
       setSelectedTickets([]);
       setBundleName("");
       setShowBundleModal(false);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create bundle");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to create bundle";
+      toast.error(errorMessage);
     }
   };
 
@@ -241,13 +291,14 @@ export default function MyTicketsPage() {
       });
 
       toast.success("Tickets unbundled successfully!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to unbundle tickets");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to unbundle tickets";
+      toast.error(errorMessage);
     }
   };
 
   // Check if ticket is editable
-  const isTicketEditable = (ticket: any) => {
+  const isTicketEditable = (ticket: TicketData) => {
     if (ticket.status === "SCANNED" || ticket.status === "CANCELLED") return false;
     if (ticket.event?.startDate && Date.now() >= ticket.event.startDate) return false;
     return true;
@@ -325,8 +376,8 @@ export default function MyTicketsPage() {
   }
 
   // Group bundled tickets
-  const bundledTickets: Record<string, any[]> = {};
-  tickets.forEach((ticket) => {
+  const bundledTickets: Record<string, TicketData[]> = {};
+  ticketsData?.forEach((ticket) => {
     if (ticket.bundleId) {
       if (!bundledTickets[ticket.bundleId]) {
         bundledTickets[ticket.bundleId] = [];
@@ -355,6 +406,7 @@ export default function MyTicketsPage() {
                   {selectedTickets.length} ticket{selectedTickets.length !== 1 ? "s" : ""} selected
                 </span>
                 <button
+                  type="button"
                   onClick={() => setShowBundleModal(true)}
                   className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
                 >
@@ -362,6 +414,7 @@ export default function MyTicketsPage() {
                   Create Bundle
                 </button>
                 <button
+                  type="button"
                   onClick={() => setSelectedTickets([])}
                   className="px-4 py-2 border border-border rounded-lg hover:bg-muted"
                 >
@@ -451,9 +504,9 @@ export default function MyTicketsPage() {
                                       <div className="text-sm text-muted-foreground mt-1">
                                         {ticket.attendeeEmail}
                                       </div>
-                                      {ticket.tierName && (
+                                      {ticket.tier?.name && (
                                         <div className="text-sm text-muted-foreground mt-1">
-                                          {ticket.tierName}
+                                          {ticket.tier.name}
                                         </div>
                                       )}
                                     </div>
@@ -464,6 +517,7 @@ export default function MyTicketsPage() {
                                     {editable && (
                                       <>
                                         <button
+                                          type="button"
                                           onClick={() => handleEditTicket(ticket)}
                                           className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
                                           title="Edit ticket"
@@ -471,6 +525,7 @@ export default function MyTicketsPage() {
                                           <Edit className="w-4 h-4" />
                                         </button>
                                         <button
+                                          type="button"
                                           onClick={() => handleTransferTicket(ticket)}
                                           className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
                                           title="Transfer ticket"
@@ -478,6 +533,7 @@ export default function MyTicketsPage() {
                                           <Send className="w-4 h-4" />
                                         </button>
                                         <button
+                                          type="button"
                                           onClick={() => handleDeleteTicket(ticket)}
                                           className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                                           title="Cancel ticket"
@@ -488,6 +544,7 @@ export default function MyTicketsPage() {
                                     )}
 
                                     <button
+                                      type="button"
                                       onClick={() =>
                                         setExpandedTicket(isExpanded ? null : ticket._id)
                                       }
@@ -514,7 +571,7 @@ export default function MyTicketsPage() {
                                     >
                                       <div className="flex flex-col items-center">
                                         <QRCodeSVG
-                                          value={ticket.ticketCode}
+                                          value={ticket.ticketCode || ""}
                                           size={200}
                                           level="H"
                                           includeMargin={true}
@@ -524,8 +581,9 @@ export default function MyTicketsPage() {
                                         </p>
                                         <div className="flex gap-2 mt-4">
                                           <button
+                                            type="button"
                                             onClick={() =>
-                                              handleShareTicket(ticket.ticketCode, event.name)
+                                              handleShareTicket(ticket.ticketCode || "", event.name)
                                             }
                                             className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm"
                                           >
@@ -533,8 +591,9 @@ export default function MyTicketsPage() {
                                             Share
                                           </button>
                                           <button
+                                            type="button"
                                             onClick={() =>
-                                              handleDownloadTicket(ticket.ticketCode, event.name)
+                                              handleDownloadTicket(ticket.ticketCode || "", event.name)
                                             }
                                             className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted text-sm"
                                           >
@@ -572,6 +631,7 @@ export default function MyTicketsPage() {
                                 </span>
                               </div>
                               <button
+                                type="button"
                                 onClick={() => handleUnbundle(bundleInThisEvent.map((t) => t._id))}
                                 className="flex items-center gap-1 px-3 py-1 text-sm text-primary hover:bg-accent rounded-lg transition-colors"
                               >
@@ -666,6 +726,7 @@ export default function MyTicketsPage() {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold">Transfer Ticket</h3>
                 <button
+                  type="button"
                   onClick={() => setTransferModalTicket(null)}
                   className="text-gray-500 hover:text-gray-700"
                 >
@@ -702,6 +763,7 @@ export default function MyTicketsPage() {
 
                 <div className="flex gap-3 pt-2">
                   <button
+                    type="button"
                     onClick={handleSubmitTransfer}
                     disabled={isTransferring}
                     className="flex-1 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50"
@@ -709,6 +771,7 @@ export default function MyTicketsPage() {
                     {isTransferring ? "Transferring..." : "Transfer Ticket"}
                   </button>
                   <button
+                    type="button"
                     onClick={() => setTransferModalTicket(null)}
                     className="flex-1 border border-border px-4 py-2 rounded-lg hover:bg-muted"
                   >
@@ -731,6 +794,7 @@ export default function MyTicketsPage() {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold">Edit Ticket</h3>
                 <button
+                  type="button"
                   onClick={() => setEditModalTicket(null)}
                   className="text-gray-500 hover:text-gray-700"
                 >
@@ -767,12 +831,14 @@ export default function MyTicketsPage() {
 
                 <div className="flex gap-3 pt-2">
                   <button
+                    type="button"
                     onClick={handleSubmitEdit}
                     className="flex-1 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90"
                   >
                     Save Changes
                   </button>
                   <button
+                    type="button"
                     onClick={() => setEditModalTicket(null)}
                     className="flex-1 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50"
                   >
@@ -795,6 +861,7 @@ export default function MyTicketsPage() {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold">Create Bundle</h3>
                 <button
+                  type="button"
                   onClick={() => setShowBundleModal(false)}
                   className="text-gray-500 hover:text-gray-700"
                 >
@@ -825,12 +892,14 @@ export default function MyTicketsPage() {
 
                 <div className="flex gap-3 pt-2">
                   <button
+                    type="button"
                     onClick={handleCreateBundle}
                     className="flex-1 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90"
                   >
                     Create Bundle
                   </button>
                   <button
+                    type="button"
                     onClick={() => setShowBundleModal(false)}
                     className="flex-1 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50"
                   >
@@ -869,12 +938,14 @@ export default function MyTicketsPage() {
 
               <div className="flex gap-3">
                 <button
+                  type="button"
                   onClick={confirmDelete}
                   className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
                 >
                   Yes, Cancel Ticket
                 </button>
                 <button
+                  type="button"
                   onClick={() => setDeleteConfirmTicket(null)}
                   className="flex-1 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50"
                 >

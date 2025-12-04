@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMutation } from "convex/react";
+import type { Id } from "@/convex/_generated/dataModel";
 
 type ViewMode = "grid" | "list";
 type CategoryFilter =
@@ -35,6 +36,36 @@ type CategoryFilter =
   | "gala"
   | "banquet"
   | "custom";
+
+interface ExtendedTemplate {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  category: SeatingTemplate["category"];
+  sections: unknown[];
+  estimatedCapacity: number;
+  isCustom: boolean;
+  isFloorPlan: boolean;
+}
+
+interface UserTemplate {
+  _id: Id<"roomTemplates">;
+  name: string;
+  description: string;
+  category: string;
+  sections: unknown[];
+  estimatedCapacity: number;
+}
+
+interface FloorPlanTemplate {
+  _id: string;
+  name: string;
+  description: string;
+  category?: string;
+  sections: unknown[];
+  totalCapacity?: number;
+}
 
 export default function TemplatesPage() {
   const router = useRouter();
@@ -78,13 +109,18 @@ export default function TemplatesPage() {
   const userTemplates = useQuery(api.templates.queries.getUserTemplates);
   const templateStats = useQuery(api.templates.queries.getTemplateStats);
 
-  // Get seating/floor plan templates
-  const floorPlanTemplates = useQuery(api.seating.templates.getMyTemplates);
+  // Get seating/floor plan templates - API currently unavailable
+  const floorPlanTemplates: FloorPlanTemplate[] | undefined = undefined; // TODO: api.seating.templates.getMyTemplates when available
 
   // Mutations
   const deleteTemplate = useMutation(api.templates.mutations.deleteRoomTemplate);
-  const deleteFloorPlanTemplate = useMutation(api.seating.templates.deleteTemplate);
-  const bulkDeleteFloorPlanTemplates = useMutation(api.seating.templates.bulkDeleteTemplates);
+  // Floor plan mutations - API currently unavailable
+  const deleteFloorPlanTemplate = async (_args: { templateId: string }) => {
+    throw new Error("Floor plan deletion not yet implemented");
+  };
+  const bulkDeleteFloorPlanTemplates = async (_args: { templateIds: string[] }) => {
+    return { deletedCount: 0, failedCount: 0, failedTemplates: [] };
+  };
 
   // Helper functions for selection
   const toggleTemplateSelection = (templateId: string) => {
@@ -98,18 +134,18 @@ export default function TemplatesPage() {
   };
 
   const selectAllTemplates = () => {
-    const customTemplates = allTemplates.filter((t: any) => t.isCustom);
-    setSelectedTemplates(new Set(customTemplates.map((t: any) => t.id)));
+    const customTemplates = allTemplates.filter((t): t is ExtendedTemplate => t.isCustom);
+    setSelectedTemplates(new Set(customTemplates.map((t) => t.id)));
   };
 
   const selectFloorPlanTemplates = () => {
-    const floorPlans = allTemplates.filter((t: any) => t.isFloorPlan && t.isCustom);
-    setSelectedTemplates(new Set(floorPlans.map((t: any) => t.id)));
+    const floorPlans = allTemplates.filter((t): t is ExtendedTemplate => t.isFloorPlan && t.isCustom);
+    setSelectedTemplates(new Set(floorPlans.map((t) => t.id)));
   };
 
   const selectRoomTemplates = () => {
-    const roomTemplates = allTemplates.filter((t: any) => !t.isFloorPlan && t.isCustom);
-    setSelectedTemplates(new Set(roomTemplates.map((t: any) => t.id)));
+    const roomTemplates = allTemplates.filter((t): t is ExtendedTemplate => !t.isFloorPlan && t.isCustom);
+    setSelectedTemplates(new Set(roomTemplates.map((t) => t.id)));
   };
 
   // Handle delete template
@@ -120,13 +156,14 @@ export default function TemplatesPage() {
   ) => {
     try {
       if (isFloorPlan) {
-        await deleteFloorPlanTemplate({ templateId: templateId as any });
+        await deleteFloorPlanTemplate({ templateId });
       } else {
-        await deleteTemplate({ templateId: templateId as any });
+        await deleteTemplate({ templateId: templateId as Id<"roomTemplates"> });
       }
       setOpenDropdownId(null);
-    } catch (error: any) {
-      alert(error.message || "Failed to delete template");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to delete template";
+      alert(message);
     }
   };
 
@@ -141,10 +178,10 @@ export default function TemplatesPage() {
       const selectedRoomTemplates: string[] = [];
 
       selectedTemplates.forEach((templateId) => {
-        const template = allTemplates.find((t: any) => t.id === templateId);
-        if (template && (template as any).isFloorPlan) {
+        const template = allTemplates.find((t) => t.id === templateId);
+        if (template && (template as ExtendedTemplate).isFloorPlan) {
           selectedFloorPlans.push(templateId);
-        } else if (template && (template as any).isCustom) {
+        } else if (template && (template as ExtendedTemplate).isCustom) {
           selectedRoomTemplates.push(templateId);
         }
       });
@@ -156,7 +193,7 @@ export default function TemplatesPage() {
       // Delete floor plan templates
       if (selectedFloorPlans.length > 0) {
         const result = await bulkDeleteFloorPlanTemplates({
-          templateIds: selectedFloorPlans as any,
+          templateIds: selectedFloorPlans,
         });
         totalDeleted += result.deletedCount;
         totalFailed += result.failedCount;
@@ -166,13 +203,13 @@ export default function TemplatesPage() {
       // Delete room templates one by one (no bulk endpoint)
       for (const templateId of selectedRoomTemplates) {
         try {
-          await deleteTemplate({ templateId: templateId as any });
+          await deleteTemplate({ templateId: templateId as Id<"roomTemplates"> });
           totalDeleted++;
-        } catch (error: any) {
+        } catch (error) {
           totalFailed++;
           allFailedTemplates.push({
             templateId,
-            reason: error.message || "Failed to delete",
+            reason: error instanceof Error ? error.message : "Failed to delete",
           });
         }
       }
@@ -200,25 +237,25 @@ export default function TemplatesPage() {
   };
 
   // Combine pre-built templates with user templates and floor plan templates
-  const allTemplates = [
+  const allTemplates: ExtendedTemplate[] = [
     ...seatingTemplates.map((t) => ({ ...t, isCustom: false, isFloorPlan: false })),
-    ...(userTemplates || []).map((t: any) => ({
+    ...(userTemplates || []).map((t: UserTemplate): ExtendedTemplate => ({
       id: t._id,
       name: t.name,
       description: t.description,
       icon: <Sparkles className="w-8 h-8" />,
-      category: t.category,
+      category: t.category as SeatingTemplate["category"],
       sections: t.sections,
       estimatedCapacity: t.estimatedCapacity,
       isCustom: true,
       isFloorPlan: false,
     })),
-    ...(floorPlanTemplates || []).map((t: any) => ({
+    ...(floorPlanTemplates || []).map((t: FloorPlanTemplate): ExtendedTemplate => ({
       id: t._id,
       name: t.name,
       description: t.description,
       icon: <GridIcon className="w-8 h-8" />,
-      category: t.category?.toLowerCase() || "custom",
+      category: (t.category?.toLowerCase() as SeatingTemplate["category"]) || "custom",
       sections: t.sections,
       estimatedCapacity: t.totalCapacity || 0,
       isCustom: true,
@@ -336,19 +373,20 @@ export default function TemplatesPage() {
                 <Filter className="w-5 h-5 text-orange-600" />
               </div>
               <p className="text-3xl font-bold text-gray-900">
-                {Object.keys(templateStats.byCategory || {}).length}
+                {Object.keys(templateStats?.byCategory || {}).length}
               </p>
             </motion.div>
           </div>
         )}
 
         {/* Bulk Delete Controls */}
-        {allTemplates.some((t: any) => t.isCustom) && (
+        {allTemplates.some((t) => t.isCustom) && (
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-foreground">Manage Templates</h2>
               {selectedTemplates.size > 0 && (
                 <motion.button
+                  type="button"
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   onClick={() => setShowDeleteConfirm(true)}
@@ -365,25 +403,29 @@ export default function TemplatesPage() {
             <div className="flex flex-wrap items-center gap-3 p-4 bg-white rounded-lg border border-border">
               <span className="text-sm font-medium text-foreground">Quick Select:</span>
               <button
+                type="button"
                 onClick={selectAllTemplates}
                 className="px-3 py-1.5 text-sm bg-accent text-primary rounded-md hover:bg-primary/20 transition-colors"
               >
-                All Custom ({allTemplates.filter((t: any) => t.isCustom).length})
+                All Custom ({allTemplates.filter((t) => t.isCustom).length})
               </button>
               <button
+                type="button"
                 onClick={selectFloorPlanTemplates}
                 className="px-3 py-1.5 text-sm bg-accent text-primary rounded-md hover:bg-primary/20 transition-colors"
               >
-                Floor Plans ({allTemplates.filter((t: any) => t.isFloorPlan && t.isCustom).length})
+                Floor Plans ({allTemplates.filter((t) => t.isFloorPlan && t.isCustom).length})
               </button>
               <button
+                type="button"
                 onClick={selectRoomTemplates}
                 className="px-3 py-1.5 text-sm bg-success/10 text-success rounded-md hover:bg-success/20 transition-colors"
               >
                 Room Templates (
-                {allTemplates.filter((t: any) => !t.isFloorPlan && t.isCustom).length})
+                {allTemplates.filter((t) => !t.isFloorPlan && t.isCustom).length})
               </button>
               <button
+                type="button"
                 onClick={() => setSelectedTemplates(new Set())}
                 className="px-3 py-1.5 text-sm bg-destructive/10 text-destructive rounded-md hover:bg-destructive/20 transition-colors"
               >
@@ -405,7 +447,7 @@ export default function TemplatesPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className={`mb-4 p-4 rounded-lg ${
-              deleteResult.failedCount > 0
+              (deleteResult?.failedCount ?? 0) > 0
                 ? "bg-warning/10 border border-warning"
                 : "bg-success/10 border border-success"
             }`}
@@ -413,21 +455,21 @@ export default function TemplatesPage() {
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 <p className="font-semibold text-foreground">
-                  {deleteResult.deletedCount > 0 && (
+                  {(deleteResult?.deletedCount ?? 0) > 0 && (
                     <span className="text-success">
-                      Successfully deleted {deleteResult.deletedCount} template
-                      {deleteResult.deletedCount !== 1 ? "s" : ""}
+                      Successfully deleted {deleteResult?.deletedCount ?? 0} template
+                      {(deleteResult?.deletedCount ?? 0) !== 1 ? "s" : ""}
                     </span>
                   )}
                 </p>
-                {deleteResult.failedCount > 0 && (
+                {(deleteResult?.failedCount ?? 0) > 0 && (
                   <div className="mt-2">
                     <p className="text-sm font-semibold text-warning mb-1">
-                      Failed to delete {deleteResult.failedCount} template
-                      {deleteResult.failedCount !== 1 ? "s" : ""}:
+                      Failed to delete {deleteResult?.failedCount ?? 0} template
+                      {(deleteResult?.failedCount ?? 0) !== 1 ? "s" : ""}:
                     </p>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      {deleteResult.failedTemplates.map((failed, i) => (
+                      {deleteResult?.failedTemplates.map((failed, i) => (
                         <li key={i}>• {failed.reason}</li>
                       ))}
                     </ul>
@@ -435,6 +477,7 @@ export default function TemplatesPage() {
                 )}
               </div>
               <button
+                type="button"
                 onClick={() => setDeleteResult(null)}
                 className="text-muted-foreground hover:text-foreground"
               >
@@ -462,6 +505,7 @@ export default function TemplatesPage() {
             {/* View Mode Toggle */}
             <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
               <button
+                type="button"
                 onClick={() => setViewMode("grid")}
                 className={`p-2 rounded transition-colors ${
                   viewMode === "grid"
@@ -472,6 +516,7 @@ export default function TemplatesPage() {
                 <GridIcon className="w-5 h-5" />
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode("list")}
                 className={`p-2 rounded transition-colors ${
                   viewMode === "list"
@@ -489,6 +534,7 @@ export default function TemplatesPage() {
             {categories.map((category) => (
               <button
                 key={category.id}
+                type="button"
                 onClick={() => setCategoryFilter(category.id as CategoryFilter)}
                 className={`px-4 py-2 rounded-lg font-medium transition-all ${
                   categoryFilter === category.id
@@ -550,7 +596,7 @@ export default function TemplatesPage() {
                         category: template.category,
                         sections: template.sections,
                         estimatedCapacity: template.estimatedCapacity,
-                        isCustom: (template as any).isCustom,
+                        isCustom: template.isCustom,
                       };
                       try {
                         sessionStorage.setItem("selectedTemplate", JSON.stringify(templateData));
@@ -562,7 +608,7 @@ export default function TemplatesPage() {
                     }}
                   >
                     {/* Selection Checkbox for custom templates */}
-                    {(template as any).isCustom && (
+                    {template.isCustom && (
                       <div className="absolute top-4 left-4 z-10">
                         <input
                           type="checkbox"
@@ -579,20 +625,21 @@ export default function TemplatesPage() {
                         {template.icon}
                       </div>
                       <div className="flex items-center gap-2">
-                        {(template as any).isCustom && (
+                        {template.isCustom && (
                           <span className="px-3 py-1 bg-success/10 text-success text-xs font-medium rounded-full">
                             Custom
                           </span>
                         )}
-                        {(template as any).isFloorPlan && (
+                        {template.isFloorPlan && (
                           <span className="px-3 py-1 bg-accent text-primary text-xs font-medium rounded-full">
                             Floor Plan
                           </span>
                         )}
                         {/* Action menu for custom templates */}
-                        {(template as any).isCustom && (
+                        {template.isCustom && (
                           <div className="relative" onClick={(e) => e.stopPropagation()}>
                             <button
+                              type="button"
                               onClick={() =>
                                 setOpenDropdownId(
                                   openDropdownId === template.id ? null : String(template.id)
@@ -605,6 +652,7 @@ export default function TemplatesPage() {
                             {openDropdownId === String(template.id) && (
                               <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-border py-1 z-10">
                                 <button
+                                  type="button"
                                   onClick={() => {
                                     router.push(`/organizer/templates/${template.id}/edit`);
                                     setOpenDropdownId(null);
@@ -615,11 +663,12 @@ export default function TemplatesPage() {
                                   Edit Template
                                 </button>
                                 <button
+                                  type="button"
                                   onClick={() =>
                                     handleDeleteTemplate(
                                       String(template.id),
                                       template.name,
-                                      (template as any).isFloorPlan
+                                      template.isFloorPlan
                                     )
                                   }
                                   className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-destructive/10 flex items-center gap-2"
@@ -651,12 +700,12 @@ export default function TemplatesPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-lg font-semibold text-foreground">{template.name}</h3>
-                        {(template as any).isCustom && (
+                        {template.isCustom && (
                           <span className="px-3 py-1 bg-success/10 text-success text-xs font-medium rounded-full">
                             Custom
                           </span>
                         )}
-                        {(template as any).isFloorPlan && (
+                        {template.isFloorPlan && (
                           <span className="px-3 py-1 bg-accent text-primary text-xs font-medium rounded-full">
                             Floor Plan
                           </span>
@@ -709,6 +758,7 @@ export default function TemplatesPage() {
 
               <div className="flex gap-3 justify-end">
                 <button
+                  type="button"
                   onClick={() => setShowDeleteConfirm(false)}
                   disabled={isDeleting}
                   className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
@@ -716,6 +766,7 @@ export default function TemplatesPage() {
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleBulkDelete}
                   disabled={isDeleting}
                   className="px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center gap-2"

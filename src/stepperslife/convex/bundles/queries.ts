@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "../_generated/server";
+import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Get all bundles for an event
@@ -306,7 +307,7 @@ export const getAllOrganizerBundles = query({
       console.warn("[getAllOrganizerBundles] TESTING MODE - Using test user");
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       user = await ctx.db

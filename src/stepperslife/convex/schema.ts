@@ -288,6 +288,9 @@ export default defineSchema({
     saleEnd: v.optional(v.number()),
     isActive: v.boolean(),
 
+    // Multi-day events - track which day this tier is for
+    dayNumber: v.optional(v.number()), // For multi-day events: 1, 2, 3, etc.
+
     // Table Package - Sell entire tables as single units
     isTablePackage: v.optional(v.boolean()), // LEGACY: True if this tier sells whole tables
     tableCapacity: v.optional(v.number()), // Number of seats per table (4, 6, 8, 10, etc.)
@@ -547,6 +550,22 @@ export default defineSchema({
     .index("by_staff_user", ["staffUserId"])
     .index("by_order", ["orderId"])
     .index("by_payment_method", ["staffId", "paymentMethod"]),
+
+  // Staff tier-specific allocations for multi-day events and bundles
+  staffTierAllocations: defineTable({
+    staffId: v.id("eventStaff"),
+    eventId: v.id("events"),
+    tierId: v.id("ticketTiers"),
+    allocatedQuantity: v.number(), // Total allocated to this staff for this tier
+    soldQuantity: v.number(), // Number sold by this staff
+    remainingQuantity: v.number(), // Remaining available to sell
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_staff", ["staffId"])
+    .index("by_event", ["eventId"])
+    .index("by_tier", ["tierId"])
+    .index("by_staff_and_tier", ["staffId", "tierId"]),
 
   // Staff to staff ticket transfers
   staffTicketTransfers: defineTable({
@@ -996,6 +1015,24 @@ export default defineSchema({
     .index("by_seat", ["seatingChartId", "sectionId", "seatId"])
     .index("by_table", ["seatingChartId", "sectionId", "tableId"])
     .index("by_status", ["status"]),
+
+  // Seating Shares - Shareable links for group seat selection
+  seatingShares: defineTable({
+    eventId: v.id("events"),
+    shareToken: v.string(), // Unique token for the share link
+    initiatorName: v.string(),
+    initiatorEmail: v.optional(v.string()),
+    sectionId: v.string(),
+    tableId: v.optional(v.string()),
+    selectedSeats: v.array(v.string()),
+    isActive: v.boolean(),
+    expiresAt: v.number(),
+    viewCount: v.number(),
+    joinedCount: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_event", ["eventId"])
+    .index("by_token", ["shareToken"]),
 
   // Waitlist for sold-out events
   eventWaitlist: defineTable({

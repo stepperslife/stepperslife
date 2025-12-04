@@ -48,7 +48,7 @@ test.describe('Concurrent Sales & Race Condition Prevention', () => {
     await page.click('button[type="submit"]');
     await page.waitForURL('**/organizer/dashboard', { timeout: 10000 });
 
-    const users = await convex.query(api.users.queries.getAllUsers, {});
+    const users = await convex.query(api.adminPanel.queries.getAllUsers, {});
     const organizer = users.find(u => u.email?.includes('organizer-race'));
     organizerId = organizer!._id;
     console.log(`   ✅ Organizer created: ${organizerId}`);
@@ -132,7 +132,7 @@ test.describe('Concurrent Sales & Race Condition Prevention', () => {
       } catch (error) {
         await userPage.close();
         await context.close();
-        return { userId: index + 1, success: false, error: error.message };
+        return { userId: index + 1, success: false, error: error instanceof Error ? error.message : String(error) };
       }
     });
 
@@ -166,7 +166,7 @@ test.describe('Concurrent Sales & Race Condition Prevention', () => {
     expect(tier.quantityAvailable).toBe(0);
     console.log(`   ✅ Database verification: Sold ${tier.quantitySold}, Available ${tier.quantityAvailable}`);
 
-    const tickets = await convex.query(api.tickets.queries.getTicketsForEvent, { eventId });
+    const tickets = await convex.query(api.tickets.queries.getTicketsByEvent, { eventId });
     expect(tickets.length).toBe(1); // Only 1 ticket created
     console.log(`   ✅ Ticket count: ${tickets.length} (correct)`);
 
@@ -258,7 +258,7 @@ test.describe('Concurrent Sales & Race Condition Prevention', () => {
     expect(tier.quantitySold).toBe(10);
     expect(tier.quantityAvailable).toBe(0);
 
-    const tickets = await convex.query(api.tickets.queries.getTicketsForEvent, { eventId: newEventId });
+    const tickets = await convex.query(api.tickets.queries.getTicketsByEvent, { eventId: newEventId });
     expect(tickets.length).toBe(10); // Exactly 10 tickets
 
     console.log(`\n   ✅ Sold exactly 10 tickets (no overselling)`);
@@ -388,7 +388,7 @@ test.describe('Concurrent Sales & Race Condition Prevention', () => {
     expect(soldCount).toBe(100);
     expect(soldCount).toBeLessThanOrEqual(100); // MUST NOT oversell
 
-    const tickets = await convex.query(api.tickets.queries.getTicketsForEvent, { eventId: stressEventId });
+    const tickets = await convex.query(api.tickets.queries.getTicketsByEvent, { eventId: stressEventId });
     expect(tickets.length).toBe(100);
 
     console.log(`\n   ✅ CRITICAL: Sold exactly ${soldCount} tickets`);

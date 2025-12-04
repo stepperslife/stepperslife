@@ -95,8 +95,8 @@ export const webhookEventSchema = z.object({
   event_type: z.string().optional(),
   type: z.string().optional(),
   id: z.string().optional(),
-  resource: z.record(z.unknown()).optional(),
-  data: z.record(z.unknown()).optional(),
+  resource: z.record(z.string(), z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type WebhookEvent = z.infer<typeof webhookEventSchema>;
@@ -122,7 +122,7 @@ export function validateRequest<T>(
  * Format Zod validation errors into user-friendly messages
  */
 export function formatValidationError(error: z.ZodError): string {
-  const firstError = error.errors[0];
+  const firstError = error.issues[0];
   if (firstError) {
     return `${firstError.path.join('.')}: ${firstError.message}`;
   }

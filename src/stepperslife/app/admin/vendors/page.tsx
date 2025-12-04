@@ -285,7 +285,7 @@ export default function AdminVendorsPage() {
                           {formatCurrency(vendor.totalSales || 0)}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {vendor.totalOrders || 0} orders
+                          {(vendor as { totalOrders?: number }).totalOrders || 0} orders
                         </p>
                       </td>
                       <td className="p-4">
@@ -309,6 +309,7 @@ export default function AdminVendorsPage() {
                           </Link>
                           <div className="relative">
                             <button
+                              type="button"
                               onClick={() =>
                                 setSelectedVendor(selectedVendor === vendor._id ? null : vendor._id)
                               }
@@ -321,6 +322,7 @@ export default function AdminVendorsPage() {
                                 {vendor.status === "PENDING" && (
                                   <>
                                     <button
+                                      type="button"
                                       onClick={() => {
                                         setActionModal({
                                           type: "approve",
@@ -334,6 +336,7 @@ export default function AdminVendorsPage() {
                                       Approve
                                     </button>
                                     <button
+                                      type="button"
                                       onClick={() => {
                                         setActionModal({
                                           type: "reject",
@@ -350,6 +353,7 @@ export default function AdminVendorsPage() {
                                 )}
                                 {vendor.status === "APPROVED" && (
                                   <button
+                                    type="button"
                                     onClick={() => {
                                       setActionModal({
                                         type: "suspend",
@@ -365,6 +369,7 @@ export default function AdminVendorsPage() {
                                 )}
                                 {(vendor.status === "SUSPENDED" || vendor.status === "REJECTED") && (
                                   <button
+                                    type="button"
                                     onClick={() => {
                                       setActionModal({
                                         type: "reactivate",
@@ -442,6 +447,7 @@ export default function AdminVendorsPage() {
 
             <div className="flex gap-3 justify-end">
               <button
+                type="button"
                 onClick={() => {
                   setActionModal(null);
                   setRejectionReason("");
@@ -451,6 +457,7 @@ export default function AdminVendorsPage() {
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleAction}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   actionModal.type === "approve" || actionModal.type === "reactivate"

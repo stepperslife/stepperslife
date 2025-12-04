@@ -45,6 +45,7 @@ export default function PropertyPanel({
         <h3 className="text-lg font-bold text-foreground">Properties</h3>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => onDuplicateItem(selectedItem.id)}
             className="p-2 text-primary hover:bg-accent rounded-lg transition-colors"
             title="Duplicate item"
@@ -52,6 +53,7 @@ export default function PropertyPanel({
             <Copy className="w-5 h-5" />
           </button>
           <button
+            type="button"
             onClick={() => onDeleteItem(selectedItem.id)}
             className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
             title="Delete item"
@@ -141,6 +143,7 @@ function TableProperties({ table, onUpdate }: TablePropertiesProps) {
             { shape: "SQUARE" as const, icon: <Square className="w-5 h-5" />, label: "Square" },
           ].map(({ shape, icon, label }) => (
             <button
+              type="button"
               key={shape}
               onClick={() => onUpdate({ shape })}
               className={`flex flex-col items-center justify-center p-2 border-2 rounded-lg transition-all ${
@@ -164,6 +167,7 @@ function TableProperties({ table, onUpdate }: TablePropertiesProps) {
         </label>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => onUpdate({ capacity: Math.max(1, table.capacity - 1) })}
             className="p-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors"
             title="Decrease capacity"
@@ -179,6 +183,7 @@ function TableProperties({ table, onUpdate }: TablePropertiesProps) {
             className="flex-1 text-center px-3 py-2.5 border-2 border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-primary font-semibold text-lg transition-all"
           />
           <button
+            type="button"
             onClick={() => onUpdate({ capacity: Math.min(20, table.capacity + 1) })}
             className="p-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors"
             title="Increase capacity"
@@ -198,6 +203,7 @@ function TableProperties({ table, onUpdate }: TablePropertiesProps) {
         <div className="grid grid-cols-4 gap-2">
           {SECTION_COLORS.map((color) => (
             <button
+              type="button"
               key={color}
               onClick={() => onUpdate({ color })}
               className={`w-full h-10 rounded-lg border-2 transition-all ${
@@ -298,6 +304,7 @@ function RowSectionProperties({ rowSection, onUpdate }: RowSectionPropertiesProp
         <div className="grid grid-cols-4 gap-2">
           {SECTION_COLORS.map((color) => (
             <button
+              type="button"
               key={color}
               onClick={() => onUpdate({ color })}
               className={`w-full h-10 rounded-lg border-2 transition-all ${
@@ -368,6 +375,7 @@ function StageProperties({ stage, onUpdate }: StagePropertiesProps) {
         </label>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() =>
               onUpdate({ size: { ...stage.size, width: Math.max(50, stage.size.width - 10) } })
             }
@@ -387,6 +395,7 @@ function StageProperties({ stage, onUpdate }: StagePropertiesProps) {
           />
           <span className="text-sm text-muted-foreground w-8">px</span>
           <button
+            type="button"
             onClick={() =>
               onUpdate({ size: { ...stage.size, width: Math.min(500, stage.size.width + 10) } })
             }
@@ -405,6 +414,7 @@ function StageProperties({ stage, onUpdate }: StagePropertiesProps) {
         </label>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() =>
               onUpdate({ size: { ...stage.size, height: Math.max(50, stage.size.height - 10) } })
             }
@@ -424,6 +434,7 @@ function StageProperties({ stage, onUpdate }: StagePropertiesProps) {
           />
           <span className="text-sm text-muted-foreground w-8">px</span>
           <button
+            type="button"
             onClick={() =>
               onUpdate({ size: { ...stage.size, height: Math.min(500, stage.size.height + 10) } })
             }
@@ -443,6 +454,7 @@ function StageProperties({ stage, onUpdate }: StagePropertiesProps) {
         <div className="grid grid-cols-4 gap-2">
           {SECTION_COLORS.map((color) => (
             <button
+              type="button"
               key={color}
               onClick={() => onUpdate({ color })}
               className={`w-full h-10 rounded-lg border-2 transition-all ${
@@ -513,6 +525,7 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
         </label>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() =>
               onUpdate({
                 size: { ...danceFloor.size, width: Math.max(50, danceFloor.size.width - 10) },
@@ -534,6 +547,7 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
           />
           <span className="text-sm text-muted-foreground w-8">px</span>
           <button
+            type="button"
             onClick={() =>
               onUpdate({
                 size: { ...danceFloor.size, width: Math.min(500, danceFloor.size.width + 10) },
@@ -554,6 +568,7 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
         </label>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() =>
               onUpdate({
                 size: { ...danceFloor.size, height: Math.max(50, danceFloor.size.height - 10) },
@@ -575,6 +590,7 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
           />
           <span className="text-sm text-muted-foreground w-8">px</span>
           <button
+            type="button"
             onClick={() =>
               onUpdate({
                 size: { ...danceFloor.size, height: Math.min(500, danceFloor.size.height + 10) },
@@ -596,6 +612,7 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
         <div className="grid grid-cols-4 gap-2">
           {SECTION_COLORS.map((color) => (
             <button
+              type="button"
               key={color}
               onClick={() => onUpdate({ color })}
               className={`w-full h-10 rounded-lg border-2 transition-all ${

@@ -4,6 +4,8 @@
  *
  * GET /api/testing/setup-events - Create test events
  * DELETE /api/testing/setup-events - Clean up test events
+ *
+ * WARNING: This endpoint is for testing only and is disabled in production
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -12,7 +14,20 @@ import { api } from "@/convex/_generated/api";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
+// Block access in production
+function isProduction(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
 export async function GET(request: NextRequest) {
+  // Block in production
+  if (isProduction()) {
+    return NextResponse.json(
+      { error: "Testing endpoints are disabled in production" },
+      { status: 403 }
+    );
+  }
+
   try {
     // Check for organizer email parameter
     const searchParams = request.nextUrl.searchParams;
@@ -35,6 +50,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  // Block in production
+  if (isProduction()) {
+    return NextResponse.json(
+      { error: "Testing endpoints are disabled in production" },
+      { status: 403 }
+    );
+  }
+
   try {
     // Run the cleanup mutation
     const result = await convex.mutation(

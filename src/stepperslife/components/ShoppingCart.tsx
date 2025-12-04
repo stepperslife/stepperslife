@@ -25,6 +25,15 @@ export function ShoppingCart() {
       <div
         className="fixed inset-0 bg-black/50 z-40 transition-opacity"
         onClick={() => setIsCartOpen(false)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsCartOpen(false);
+          }
+        }}
+        aria-label="Close cart"
       />
 
       {/* Cart Drawer */}
@@ -36,8 +45,10 @@ export function ShoppingCart() {
             <h2 className="text-2xl font-bold text-foreground">Shopping Cart</h2>
           </div>
           <button
+            type="button"
             onClick={() => setIsCartOpen(false)}
             className="p-2 hover:bg-muted rounded-lg transition-colors"
+            aria-label="Close shopping cart"
           >
             <X className="w-6 h-6 text-muted-foreground" />
           </button>
@@ -103,8 +114,10 @@ export function ShoppingCart() {
                     <div className="flex items-center gap-3">
                       <div className="flex items-center border border-input rounded-lg">
                         <button
+                          type="button"
                           onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                           className="p-1 hover:bg-muted rounded-l-lg"
+                          aria-label="Decrease quantity"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
@@ -112,17 +125,20 @@ export function ShoppingCart() {
                           {item.quantity}
                         </span>
                         <button
+                          type="button"
                           onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                           className="p-1 hover:bg-muted rounded-r-lg"
+                          aria-label="Increase quantity"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
                       </div>
 
                       <button
+                        type="button"
                         onClick={() => removeFromCart(item.productId)}
                         className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                        title="Remove from cart"
+                        aria-label="Remove from cart"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -158,6 +174,7 @@ export function ShoppingCart() {
 
             {/* Checkout Button */}
             <button
+              type="button"
               onClick={handleCheckout}
               className="w-full px-6 py-4 bg-primary text-white text-lg font-semibold rounded-lg hover:bg-primary/90 transition-colors"
             >

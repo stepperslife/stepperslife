@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default function AvailableTicketsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const tickets = [];
+  const tickets: any[] = [];
 
   return (
     <div className="p-6 space-y-6">

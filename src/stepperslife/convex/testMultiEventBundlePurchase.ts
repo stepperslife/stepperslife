@@ -29,7 +29,7 @@ export const testMultiEventBundlePurchase = mutation({
     // Get test user
     const testUser = await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("email"), "iradwatkins@gmail.com"))
+      .filter((q) => q.eq(q.field("email"), "bobbygwatkins@gmail.com"))
       .first();
 
     if (!testUser) {
@@ -52,7 +52,7 @@ export const testMultiEventBundlePurchase = mutation({
       eventId: primaryEventId,
       bundleId: multiEventBundle._id,
       quantity: 1,
-      buyerEmail: "iradwatkins@gmail.com",
+      buyerEmail: "bobbygwatkins@gmail.com",
       buyerName: "Test Buyer",
       subtotalCents: bundlePrice,
       platformFeeCents,

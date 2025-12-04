@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
+import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Get settlement dashboard for an event organizer
@@ -19,7 +20,7 @@ export const getOrganizerSettlement = query({
       console.warn("[getOrganizerSettlement] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -159,7 +160,7 @@ export const getStaffSettlementDetails = query({
       console.warn("[getStaffSettlementDetails] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -291,7 +292,7 @@ export const markSettlementPaid = mutation({
       console.warn("[markSettlementPaid] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -341,7 +342,7 @@ export const markSettlementPending = mutation({
       console.warn("[markSettlementPending] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db

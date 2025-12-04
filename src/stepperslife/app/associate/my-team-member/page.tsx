@@ -6,9 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { User, Mail, Phone, MessageCircle, Calendar, Ticket } from "lucide-react";
 
+interface TeamMember {
+  name: string;
+  email: string;
+  phone?: string;
+  _creationTime?: number;
+}
+
 export default function MyTeamMemberPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const teamMember = null; // Will be fetched from Convex
+  const teamMember = null as TeamMember | null; // Will be fetched from Convex
 
   return (
     <div className="p-6 space-y-6">

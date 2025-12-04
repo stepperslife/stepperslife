@@ -37,7 +37,9 @@ export function ClassesSpotlight() {
                     src={course.thumbnailUrl}
                     alt={course.title}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
                   />
                   <div className="absolute left-3 top-3">
                     <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
@@ -54,7 +56,9 @@ export function ClassesSpotlight() {
                         src={course.instructorPhoto}
                         alt={course.instructorName}
                         fill
+                        sizes="32px"
                         className="object-cover"
+                        loading="lazy"
                       />
                     </div>
                     <span className="text-sm font-medium">

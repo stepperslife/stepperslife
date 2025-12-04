@@ -53,14 +53,16 @@ export function OrganizerPrepayment({
 
     try {
       // Step 1: Record the credit purchase transaction
-      if (currentUser?._id) {
-        await purchaseCredits({
-          credits: estimatedTickets,
-          paymentId: result.paymentId,
-          paymentMethod: "SQUARE",
-          amountCents: totalAmountCents,
-        });
+      if (!currentUser?._id) {
+        throw new Error("User not found");
       }
+
+      await purchaseCredits({
+        userId: currentUser._id,
+        credits: estimatedTickets,
+        squarePaymentId: result.paymentId,
+        amountPaid: totalAmountCents,
+      });
 
       // Step 2: Configure the event with PREPAY model
       await configurePayment({
@@ -93,14 +95,16 @@ export function OrganizerPrepayment({
 
     try {
       // Step 1: Record the credit purchase transaction
-      if (currentUser?._id) {
-        await purchaseCredits({
-          credits: estimatedTickets,
-          paymentId: result.paymentId,
-          paymentMethod: "CASHAPP",
-          amountCents: totalAmountCents,
-        });
+      if (!currentUser?._id) {
+        throw new Error("User not found");
       }
+
+      await purchaseCredits({
+        userId: currentUser._id,
+        credits: estimatedTickets,
+        squarePaymentId: result.paymentId,
+        amountPaid: totalAmountCents,
+      });
 
       // Step 2: Configure the event with PREPAY model
       await configurePayment({
@@ -229,6 +233,7 @@ export function OrganizerPrepayment({
       <div className="grid md:grid-cols-2 gap-6">
         {/* Square Payment */}
         <button
+          type="button"
           onClick={() => handlePaymentMethodSelect("square")}
           className="bg-white rounded-lg border-2 border-border p-6 text-left hover:border-primary hover:shadow-lg transition-all"
         >
@@ -264,6 +269,7 @@ export function OrganizerPrepayment({
 
         {/* CashApp Payment */}
         <button
+          type="button"
           onClick={() => handlePaymentMethodSelect("cashapp")}
           className="bg-white rounded-lg border-2 border-border p-6 text-left hover:border-success hover:shadow-lg transition-all"
         >

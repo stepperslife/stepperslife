@@ -27,6 +27,7 @@ export default function BuyTableButton({
 
   return (
     <button
+      type="button"
       onClick={onBuyTable}
       className={`
         group relative inline-flex items-center gap-2 px-4 py-2

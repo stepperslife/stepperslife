@@ -70,7 +70,9 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
   const deleteBundle = useMutation(api.bundles.mutations.deleteTicketBundle);
 
   // Fetch all events from this organizer (for multi-event bundle creation)
-  const organizerEvents = useQuery(api.events.queries.getOrganizerEvents);
+  const organizerEvents = useQuery(api.events.queries.getOrganizerEvents, {
+    userId: undefined,
+  });
 
   // Fetch tiers from multiple events when in multi-event mode
   const multiEventTiers = useQuery(
@@ -237,6 +239,8 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
       totalQuantity: bundle.totalQuantity.toString(),
       saleStart: bundle.saleStart ? new Date(bundle.saleStart).toISOString().split("T")[0] : "",
       saleEnd: bundle.saleEnd ? new Date(bundle.saleEnd).toISOString().split("T")[0] : "",
+      bundleType: bundle.bundleType || "SINGLE_EVENT",
+      selectedEventIds: bundle.eventIds || [eventId],
     });
     setEditingBundleId(bundle._id);
     setIsCreating(true);
@@ -401,13 +405,14 @@ export function BundleEditor({ eventId }: BundleEditorProps) {
               <select
                 onChange={(e) => {
                   if (e.target.value) {
+                    const selectedTierId = e.target.value as Id<"ticketTiers">;
                     const selectedTier = availableTiers?.find(
-                      (t) => t._id === (e.target.value as Id<"ticketTiers">)
+                      (t) => t._id === selectedTierId
                     );
                     if (selectedTier) {
                       const evtId = (selectedTier as any).eventId;
                       const evtName = (selectedTier as any).eventName;
-                      addTierToBundle(selectedTier._id, evtId, evtName);
+                      addTierToBundle(selectedTierId, evtId, evtName);
                     }
                     e.target.value = "";
                   }

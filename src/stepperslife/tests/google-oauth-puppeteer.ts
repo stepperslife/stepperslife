@@ -5,7 +5,7 @@
  * for capturing detailed screenshots, PDFs, and monitoring the OAuth flow
  */
 
-import puppeteer from 'puppeteer';
+import puppeteer, { ElementHandle } from 'puppeteer';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -16,7 +16,7 @@ interface NetworkLog {
   url: string;
   method?: string;
   status?: number;
-  headers: any;
+  headers: Record<string, string>;
   timestamp: string;
 }
 
@@ -102,10 +102,11 @@ async function testGoogleOAuthWithPuppeteer() {
 
   // Monitor errors
   page.on('pageerror', (error) => {
-    console.error('❌ Page Error:', error.message);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('❌ Page Error:', message);
     consoleLogs.push({
       type: 'error',
-      text: error.message,
+      text: message,
       timestamp: new Date().toISOString()
     });
   });
@@ -135,21 +136,23 @@ async function testGoogleOAuthWithPuppeteer() {
     // Test 2: Find Google login button
     console.log('\n📍 Step 2: Locate Google login button');
 
-    const googleButton = await page.waitForSelector('button:has-text("Continue with Google")', {
-      timeout: 10000
+    const googleButton = await page.evaluateHandle(() => {
+      const buttons = Array.from(document.querySelectorAll('button'));
+      return buttons.find(btn => btn.textContent?.includes('Continue with Google')) || null;
     });
 
-    if (!googleButton) {
+    const elementHandle = googleButton.asElement();
+    if (!elementHandle) {
       throw new Error('Google login button not found');
     }
 
     // Highlight the button for screenshot
     await page.evaluate((button) => {
-      if (button) {
+      if (button && button instanceof HTMLElement) {
         button.style.border = '3px solid red';
         button.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.5)';
       }
-    }, googleButton);
+    }, elementHandle);
 
     await page.screenshot({
       path: 'test-results/puppeteer-screenshots/02-google-button-highlighted.png',
@@ -162,7 +165,7 @@ async function testGoogleOAuthWithPuppeteer() {
     console.log('\n📍 Step 3: Inspect button properties');
 
     const buttonInfo = await page.evaluate((button) => {
-      if (!button) return null;
+      if (!button || !(button instanceof HTMLButtonElement)) return null;
       return {
         text: button.textContent?.trim(),
         classes: button.className,
@@ -170,15 +173,18 @@ async function testGoogleOAuthWithPuppeteer() {
         enabled: !button.disabled,
         bounds: button.getBoundingClientRect()
       };
-    }, googleButton);
+    }, elementHandle);
 
     console.log('  Button properties:', buttonInfo);
 
     // Test 4: Hover over button
     console.log('\n📍 Step 4: Hover over Google button');
 
-    await googleButton.hover();
-    await page.waitForTimeout(500);
+    // Reuse elementHandle from earlier
+    if (elementHandle) {
+      await (elementHandle as ElementHandle<Element>).hover();
+    }
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     await page.screenshot({
       path: 'test-results/puppeteer-screenshots/03-button-hover.png',
@@ -197,10 +203,12 @@ async function testGoogleOAuthWithPuppeteer() {
       console.log('  ⚠️  Navigation timeout (may be expected for OAuth redirect)');
     });
 
-    await googleButton.click();
+    if (elementHandle) {
+      await (elementHandle as ElementHandle<Element>).click();
+    }
     await navigationPromise;
 
-    await page.waitForTimeout(3000);
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     await page.screenshot({
       path: 'test-results/puppeteer-screenshots/04-after-click.png',
@@ -348,8 +356,9 @@ async function testGoogleOAuthWithPuppeteer() {
     console.log(`   - OAuth Flow: ${summary.oauthFlowInitiated ? 'Initiated' : 'Not Detected'}`);
     console.log(`\n📁 Results saved to test-results/puppeteer-* directories`);
 
-  } catch (error: any) {
-    console.error('\n❌ Test failed:', error.message);
+  } catch (error) {
+    const err = error as Error;
+    console.error('\n❌ Test failed:', err.message);
 
     // Capture error state
     await page.screenshot({
@@ -361,8 +370,8 @@ async function testGoogleOAuthWithPuppeteer() {
     fs.writeFileSync(
       'test-results/puppeteer-logs/error.json',
       JSON.stringify({
-        error: error.message,
-        stack: error.stack,
+        error: err.message,
+        stack: err.stack,
         timestamp: new Date().toISOString(),
         url: page.url()
       }, null, 2)

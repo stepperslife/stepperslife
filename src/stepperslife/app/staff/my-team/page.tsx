@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-type StaffRole = "SELLER" | "SCANNER";
+type StaffRole = "STAFF" | "TEAM_MEMBERS";
 
 export default function MyTeamPage() {
   const [showAddSubSeller, setShowAddSubSeller] = useState(false);
@@ -26,7 +26,7 @@ export default function MyTeamPage() {
     name: "",
     email: "",
     phone: "",
-    role: "SELLER" as StaffRole,
+    role: "TEAM_MEMBERS" as StaffRole,
     parentCommissionPercent: "",
     subSellerCommissionPercent: "",
     autoAssignToNewEvents: true,
@@ -68,7 +68,7 @@ export default function MyTeamPage() {
         email: formData.email,
         phone: formData.phone || undefined,
         role: formData.role,
-        canScan: formData.role === "SCANNER",
+        canScan: formData.role === "STAFF",
         parentCommissionPercent: parentPercent,
         subSellerCommissionPercent: subSellerPercent,
         autoAssignToNewEvents: formData.autoAssignToNewEvents,
@@ -80,7 +80,7 @@ export default function MyTeamPage() {
         name: "",
         email: "",
         phone: "",
-        role: "SELLER",
+        role: "TEAM_MEMBERS",
         parentCommissionPercent: "",
         subSellerCommissionPercent: "",
         autoAssignToNewEvents: true,
@@ -168,6 +168,7 @@ export default function MyTeamPage() {
       {/* Add Sub-Seller Button */}
       <div className="mb-6">
         <button
+          type="button"
           onClick={() => setShowAddSubSeller(true)}
           className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition flex items-center gap-2 font-semibold"
         >
@@ -256,6 +257,7 @@ export default function MyTeamPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
+                        type="button"
                         onClick={() =>
                           handleToggleAutoAssign(
                             subSeller._id,
@@ -279,6 +281,7 @@ export default function MyTeamPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
+                        type="button"
                         onClick={() => handleRemoveSubSeller(subSeller._id)}
                         className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                         title="Remove sub-seller"
@@ -359,8 +362,8 @@ export default function MyTeamPage() {
                     }
                     className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                   >
-                    <option value="SELLER">Seller</option>
-                    <option value="SCANNER">Scanner</option>
+                    <option value="STAFF">Staff</option>
+                    <option value="TEAM_MEMBERS">Team Members</option>
                   </select>
                 </div>
 

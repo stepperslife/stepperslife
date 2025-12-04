@@ -8,13 +8,22 @@ import { Bell, Check, Trash2, Settings } from "lucide-react";
 import { formatTime } from "@/lib/utils/time-formatting";
 import { getNotificationIcon } from "@/lib/utils/notification-helpers";
 
+interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  timestamp: number;
+  read: boolean;
+}
+
 export default function StaffNotificationsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   // Mock data
-  const notifications = [];
+  const notifications: Notification[] = [];
 
-  const unreadCount = notifications.filter((n: any) => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <div className="p-6 space-y-6">
@@ -61,7 +70,7 @@ export default function StaffNotificationsPage() {
         </Card>
       ) : (
         <div className="space-y-2">
-          {notifications.map((notification: any) => (
+          {notifications.map((notification) => (
             <Card
               key={notification.id}
               className={`hover:shadow-md transition-shadow cursor-pointer ${

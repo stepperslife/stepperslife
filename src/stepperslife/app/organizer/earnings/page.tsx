@@ -34,8 +34,9 @@ export default function EarningsPage() {
   }
 
   // Calculate earnings
-  const totalRevenue =
-    events?.reduce((sum, event) => sum + (event.totalRevenue || 0), 0) || 0;
+  // Note: Revenue calculation would require fetching orders for each event
+  // For now, using ticketsSold as a placeholder until revenue tracking is implemented
+  const totalRevenue = 0; // TODO: Calculate from orders
   const pendingPayout = totalRevenue; // TODO: Calculate actual pending amount
   const totalPaidOut = 0; // TODO: Get from payouts table
   const nextPayoutDate = "Next Monday"; // TODO: Calculate actual payout date
@@ -243,7 +244,7 @@ export default function EarningsPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {events.slice(0, 10).map((event) => {
-                    const revenue = event.totalRevenue || 0;
+                    const revenue = 0; // TODO: Calculate from orders
                     const ticketsSold = event.ticketsSold || 0;
 
                     return (
@@ -253,7 +254,7 @@ export default function EarningsPage() {
                             href={`/organizer/events/${event._id}`}
                             className="text-sm font-medium text-primary hover:underline"
                           >
-                            {event.title}
+                            {event.name}
                           </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">

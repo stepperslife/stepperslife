@@ -99,17 +99,8 @@ async function handlePaymentCreated(data: any) {
   }
 
   try {
-    // Find order by external payment ID
-    const orders = await convex.query(api.orders.queries.listOrders, {
-      status: "pending",
-    });
-
-    const order = orders.find((o: any) => o.squarePaymentId === payment.id);
-    if (!order) {
-      return;
-    }
-
-    // Payment is created - typically moves to APPROVED quickly
+    // Payment is created - typically moves to APPROVED/COMPLETED quickly
+    // We'll handle the actual order update in handlePaymentUpdated
   } catch (error) {
     console.error("[Square Webhook] Error handling payment created:", error);
   }
@@ -123,31 +114,29 @@ async function handlePaymentUpdated(data: any) {
     return;
   }
 
+  // Extract order ID from payment metadata
+  const orderId = payment.reference_id;
+  if (!orderId) {
+    console.warn("[Square Webhook] No reference_id in payment object");
+    return;
+  }
+
   try {
-    // Find order by Square payment ID
-    const orders = await convex.query(api.orders.queries.listOrders, {
-      status: "pending",
-    });
-
-    const order = orders.find((o: any) => o.squarePaymentId === payment.id);
-    if (!order) {
-      return;
-    }
-
     // Check payment status
     if (payment.status === "COMPLETED") {
 
       // Complete the order
       await convex.mutation(api.tickets.mutations.completeOrder, {
-        orderId: order._id as Id<"orders">,
-        paymentIntentId: payment.id,
+        orderId: orderId as Id<"orders">,
+        paymentId: payment.id,
+        paymentMethod: "SQUARE",
       });
 
     } else if (payment.status === "FAILED" || payment.status === "CANCELED") {
 
-      // Cancel the order
-      await convex.mutation(api.orders.mutations.cancelOrder, {
-        orderId: order._id as Id<"orders">,
+      // Mark the order as failed
+      await convex.mutation(api.orders.mutations.markOrderFailed, {
+        orderId: orderId as Id<"orders">,
         reason: `Payment ${payment.status.toLowerCase()}`,
       });
     }
@@ -165,19 +154,24 @@ async function handleRefundCreated(data: any) {
   }
 
   try {
-    // Find order by payment ID
-    const orders = await convex.query(api.orders.queries.listOrders, {});
-    const order = orders.find((o: any) => o.squarePaymentId === refund.payment_id);
-
-    if (!order) {
+    // Use Square payment ID to track refund
+    const paymentId = refund.payment_id;
+    if (!paymentId) {
+      console.warn("[Square Webhook] No payment_id in refund object");
       return;
     }
 
+    // Note: Square customer payments are deprecated. This handler remains for legacy support.
+    // The markOrderRefunded mutation searches by stripePaymentIntentId, which won't find
+    // Square payments. For proper Square refund handling, the orders schema would need
+    // a squarePaymentId field and markOrderRefunded would need to support multiple payment types.
+    console.warn("[Square Webhook] Square customer payments are deprecated. Refund handling may not work correctly.");
 
-    // Update order status
-    await convex.mutation(api.orders.mutations.updateOrderStatus, {
-      orderId: order._id as Id<"orders">,
-      status: "refunded",
+    // Attempt to mark order as refunded (will likely not find the order)
+    await convex.mutation(api.orders.mutations.markOrderRefunded, {
+      paymentIntentId: paymentId,
+      refundAmount: refund.amount_money?.amount || 0,
+      refundReason: refund.reason || "requested_by_customer",
     });
 
   } catch (error) {

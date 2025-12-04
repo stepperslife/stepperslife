@@ -40,7 +40,7 @@ export default function PaymentMethodsPage() {
               <p className="text-gray-600 mt-1">Manage how you receive payouts</p>
             </div>
             {hasStripeConnected && (
-              <button className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">
+              <button type="button" className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">
                 <Plus className="w-5 h-5" />
                 Add Payment Method
               </button>

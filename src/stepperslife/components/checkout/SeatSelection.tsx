@@ -320,6 +320,7 @@ export default function SeatSelection({
 
                           return (
                             <button
+                              type="button"
                               key={seat.id}
                               onClick={() => {
                                 if (isAvailable) {
@@ -437,6 +438,7 @@ export default function SeatSelection({
                               </div>
 
                               <button
+                                type="button"
                                 onClick={() => {
                                   if (tableFullyAvailable) {
                                     selectEntireTable(
@@ -497,6 +499,7 @@ export default function SeatSelection({
 
                                 return (
                                   <button
+                                    type="button"
                                     key={seat.id}
                                     onClick={() => {
                                       if (isAvailable) {

@@ -36,6 +36,7 @@ export const createBasicPaymentConfigs = internalMutation({
         eventId: event._id,
         organizerId: event.organizerId!,
         paymentModel: "CREDIT_CARD",
+        customerPaymentMethods: ["STRIPE"],
         isActive: true,
         activatedAt: Date.now(),
         platformFeePercent: 5,

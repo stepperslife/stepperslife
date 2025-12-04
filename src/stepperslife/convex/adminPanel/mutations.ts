@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, internalMutation, action, internalQuery } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { parseEventDateTime } from "../lib/timezone";
-import { USER_ROLES } from "../lib/roles";
+import { USER_ROLES, PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 import { PermissionChecker, requireAdmin } from "../lib/permissions";
 
 /**
@@ -124,7 +124,7 @@ export const updateEventStatus = mutation({
       console.warn("[updateEventStatus] TESTING MODE - No authentication");
       admin = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       admin = await ctx.db
@@ -407,7 +407,7 @@ export const deleteTicket = mutation({
       console.warn("[deleteTicket] TESTING MODE - No authentication");
       admin = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       admin = await ctx.db
@@ -461,7 +461,7 @@ export const deleteOrder = mutation({
       console.warn("[deleteOrder] TESTING MODE - No authentication");
       admin = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       admin = await ctx.db

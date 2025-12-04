@@ -22,9 +22,37 @@ import {
   LogIn,
   Loader2,
 } from "lucide-react";
-import type { Id } from "@/convex/_generated/dataModel";
+import type { Id, Doc } from "@/convex/_generated/dataModel";
 
 type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY_FOR_PICKUP" | "COMPLETED" | "CANCELLED";
+
+interface FoodOrder extends Doc<"foodOrders"> {
+  _id: Id<"foodOrders">;
+  orderNumber: string;
+  restaurantId: Id<"restaurants">;
+  customerId?: Id<"users">;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  items: Array<{
+    menuItemId: Id<"menuItems">;
+    name: string;
+    price: number;
+    quantity: number;
+    notes?: string;
+  }>;
+  subtotal: number;
+  tax: number;
+  total: number;
+  pickupTime?: number;
+  specialInstructions?: string;
+  status: string;
+  paymentStatus: string;
+  placedAt: number;
+  readyAt?: number;
+  completedAt?: number;
+  paymentMethod?: string;
+}
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; bgColor: string; icon: typeof Clock }> = {
   PENDING: { label: "Order Placed", color: "text-yellow-700 dark:text-yellow-300", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: Clock },
@@ -91,7 +119,7 @@ export default function MyFoodOrdersPage() {
   }
 
   // Filter orders
-  const filteredOrders = orders?.filter(order => {
+  const filteredOrders = orders?.filter((order: FoodOrder) => {
     // Search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -108,8 +136,8 @@ export default function MyFoodOrdersPage() {
 
   // Calculate stats
   const totalOrders = orders?.length || 0;
-  const totalSpent = orders?.reduce((sum, o) => sum + o.total, 0) || 0;
-  const activeOrders = orders?.filter(o => !["COMPLETED", "CANCELLED"].includes(o.status)).length || 0;
+  const totalSpent = orders?.reduce((sum: number, o: FoodOrder) => sum + o.total, 0) || 0;
+  const activeOrders = orders?.filter((o: FoodOrder) => !["COMPLETED", "CANCELLED"].includes(o.status)).length || 0;
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString("en-US", {
@@ -245,7 +273,7 @@ export default function MyFoodOrdersPage() {
           ) : (
             /* Orders List */
             <div className="space-y-4">
-              {filteredOrders.map((order) => (
+              {filteredOrders.map((order: FoodOrder) => (
                 <div
                   key={order._id}
                   className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow"
@@ -272,7 +300,7 @@ export default function MyFoodOrdersPage() {
                   {/* Order Items */}
                   <div className="p-5 bg-muted/30">
                     <div className="space-y-2 mb-4">
-                      {order.items.map((item, idx) => (
+                      {order.items.map((item: FoodOrder['items'][number], idx: number) => (
                         <div key={idx} className="flex justify-between text-sm">
                           <span>
                             <span className="font-medium">{item.quantity}x</span> {item.name}

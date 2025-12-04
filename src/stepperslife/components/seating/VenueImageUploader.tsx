@@ -114,6 +114,7 @@ export default function VenueImageUploader({
   if (compact && !isExpanded && !preview) {
     return (
       <button
+        type="button"
         onClick={() => setIsExpanded(true)}
         className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-muted hover:bg-muted/80 border-2 border-dashed border-border hover:border-muted-foreground rounded-lg transition-all text-sm font-medium text-muted-foreground"
       >
@@ -134,6 +135,7 @@ export default function VenueImageUploader({
         </div>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => setIsExpanded(!isExpanded)}
             className="p-1 hover:bg-muted/80 rounded transition-colors"
             title={isExpanded ? "Collapse" : "Expand preview"}
@@ -145,6 +147,7 @@ export default function VenueImageUploader({
             )}
           </button>
           <button
+            type="button"
             onClick={handleRemove}
             className="p-1 hover:bg-destructive/10 rounded transition-colors"
             title="Remove image"
@@ -162,6 +165,7 @@ export default function VenueImageUploader({
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-sm font-semibold text-foreground">Venue Background Image</h3>
           <button
+            type="button"
             onClick={() => setIsExpanded(false)}
             className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
           >
@@ -186,6 +190,7 @@ export default function VenueImageUploader({
           <div className="flex items-center gap-2">
             {!preview && (
               <button
+                type="button"
                 onClick={scrollToCanvas}
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
               >
@@ -194,6 +199,7 @@ export default function VenueImageUploader({
             )}
             {preview && (
               <button
+                type="button"
                 onClick={handleRemove}
                 className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
               >

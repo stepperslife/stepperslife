@@ -629,7 +629,7 @@ test.describe('STAFF HIERARCHY Complete Workflow', () => {
     // Test STAFF cannot access TEAM routes
     await page.goto(`${BASE_URL}/team/dashboard`);
     await page.waitForTimeout(1000);
-    let staffUrl = page.url();
+    const staffUrl = page.url();
     if (staffUrl.includes('/login') || staffUrl.includes('/unauthorized') || !staffUrl.includes('/team')) {
       console.log('✓ STAFF cannot access /team routes');
     }
@@ -637,7 +637,7 @@ test.describe('STAFF HIERARCHY Complete Workflow', () => {
     // Test ASSOCIATE cannot access TEAM management
     await page.goto(`${BASE_URL}/team/associates/add`);
     await page.waitForTimeout(1000);
-    let assocUrl = page.url();
+    const assocUrl = page.url();
     if (assocUrl.includes('/login') || assocUrl.includes('/unauthorized') || !assocUrl.includes('/team')) {
       console.log('✓ ASSOCIATE cannot access team management');
     }
@@ -645,7 +645,7 @@ test.describe('STAFF HIERARCHY Complete Workflow', () => {
     // Test ASSOCIATE cannot access STAFF scanning
     await page.goto(`${BASE_URL}/staff/scan-tickets`);
     await page.waitForTimeout(1000);
-    let scanUrl = page.url();
+    const scanUrl = page.url();
     if (scanUrl.includes('/login') || scanUrl.includes('/unauthorized')) {
       console.log('✓ ASSOCIATE cannot access scanning (unless canScan=true)');
     }

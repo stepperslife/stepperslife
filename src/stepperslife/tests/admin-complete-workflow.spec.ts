@@ -24,7 +24,7 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3004';
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL || 'https://neighborly-swordfish-681.convex.cloud';
 
 // Admin test user credentials
-const ADMIN_EMAIL = 'iradwatkins@gmail.com';
+const ADMIN_EMAIL = 'bobbygwatkins@gmail.com';
 const ADMIN_NAME = 'Test Admin';
 
 let convex: ConvexHttpClient;
@@ -78,12 +78,12 @@ test.describe('ADMIN Role Complete Workflow', () => {
     // Query platform analytics via Convex
     const analytics = await convex.query(api.adminPanel.queries.getPlatformAnalytics);
     expect(analytics).toBeDefined();
-    expect(analytics.totalUsers).toBeGreaterThanOrEqual(0);
-    expect(analytics.totalEvents).toBeGreaterThanOrEqual(0);
+    expect(analytics.users.total).toBeGreaterThanOrEqual(0);
+    expect(analytics.events.total).toBeGreaterThanOrEqual(0);
     console.log('✓ Platform analytics query successful');
-    console.log(`  - Total Users: ${analytics.totalUsers}`);
-    console.log(`  - Total Events: ${analytics.totalEvents}`);
-    console.log(`  - Platform Revenue: $${analytics.platformRevenue || 0}`);
+    console.log(`  - Total Users: ${analytics.users.total}`);
+    console.log(`  - Total Events: ${analytics.events.total}`);
+    console.log(`  - Platform Revenue: $${analytics.revenue.platformRevenue || 0}`);
   });
 
   test('ADMIN-2: User management - Search and view users', async ({ page }) => {
@@ -98,7 +98,7 @@ test.describe('ADMIN Role Complete Workflow', () => {
     console.log('✓ Users management page loaded');
 
     // Query all users via Convex
-    const users = await convex.query(api.adminPanel.queries.getAllUsers);
+    const users = await convex.query(api.adminPanel.queries.getAllUsers, {});
     expect(users).toBeDefined();
     expect(Array.isArray(users)).toBe(true);
     console.log(`✓ Found ${users.length} users in database`);
@@ -146,7 +146,7 @@ test.describe('ADMIN Role Complete Workflow', () => {
     console.log('✓ Events management page loaded');
 
     // Query all events via Convex
-    const allEvents = await convex.query(api.adminPanel.queries.getAllEvents);
+    const allEvents = await convex.query(api.adminPanel.queries.getAllEvents, {});
     expect(allEvents).toBeDefined();
     expect(Array.isArray(allEvents)).toBe(true);
     console.log(`✓ Found ${allEvents.length} total events`);
@@ -184,8 +184,8 @@ test.describe('ADMIN Role Complete Workflow', () => {
 
     try {
       // Query for existing test events
-      const allEvents = await convex.query(api.adminPanel.queries.getAllEvents);
-      const testEvent = allEvents.find(e => e.title?.includes('Test Event') || e.status === 'DRAFT');
+      const allEvents = await convex.query(api.adminPanel.queries.getAllEvents, {});
+      const testEvent = allEvents.find(e => e.name?.includes('Test Event') || e.status === 'DRAFT');
 
       if (testEvent) {
         testEventId = testEvent._id;
@@ -196,7 +196,7 @@ test.describe('ADMIN Role Complete Workflow', () => {
 
       // Test status change if we have an event
       if (testEventId) {
-        const originalEvent = await convex.query(api.events.queries.getEvent, { eventId: testEventId });
+        const originalEvent = await convex.query(api.events.queries.getEventById, { eventId: testEventId });
         const originalStatus = originalEvent?.status;
         console.log(`✓ Event current status: ${originalStatus}`);
 
@@ -230,18 +230,19 @@ test.describe('ADMIN Role Complete Workflow', () => {
 
     // Query recent activity (orders)
     const recentActivity = await convex.query(api.adminPanel.queries.getRecentActivity);
-    expect(Array.isArray(recentActivity)).toBe(true);
-    console.log(`✓ Found ${recentActivity.length} recent orders`);
+    expect(recentActivity).toBeDefined();
+    expect(Array.isArray(recentActivity.orders)).toBe(true);
+    console.log(`✓ Found ${recentActivity.orders.length} recent orders`);
 
     // Verify order data structure
-    if (recentActivity.length > 0) {
-      const firstOrder = recentActivity[0];
+    if (recentActivity.orders.length > 0) {
+      const firstOrder = recentActivity.orders[0];
       expect(firstOrder).toHaveProperty('_id');
-      expect(firstOrder).toHaveProperty('amount');
+      expect(firstOrder).toHaveProperty('totalCents');
       expect(firstOrder).toHaveProperty('status');
       console.log(`✓ Order structure validated`);
       console.log(`  - Order ID: ${firstOrder._id}`);
-      console.log(`  - Amount: $${firstOrder.amount}`);
+      console.log(`  - Amount: $${(firstOrder.totalCents || 0) / 100}`);
       console.log(`  - Status: ${firstOrder.status}`);
     }
 
@@ -369,8 +370,8 @@ test.describe('ADMIN Role Complete Workflow', () => {
       const creditStats = await convex.query(api.admin.queries.getCreditStats);
       if (creditStats) {
         console.log('✓ Credit statistics query successful');
-        console.log(`  - Total credits in system: ${creditStats.totalCredits || 0}`);
-        console.log(`  - Organizers with credits: ${creditStats.organizersWithCredits || 0}`);
+        console.log(`  - Total credits in system: ${creditStats.overall.totalCreditsTotal || 0}`);
+        console.log(`  - Organizers with credits: ${creditStats.organizers.totalOrganizers || 0}`);
       }
     } catch (error) {
       console.log('⚠ Credit stats query not available (may be optional)');
@@ -500,7 +501,7 @@ test.describe('ADMIN Role Complete Workflow', () => {
     ];
 
     let successCount = 0;
-    let totalPages = adminPages.length;
+    const totalPages = adminPages.length;
 
     for (const adminPage of adminPages) {
       try {
@@ -573,28 +574,28 @@ test.describe('ADMIN Role Complete Workflow', () => {
 
     // Verify all analytics fields are present
     expect(analytics).toBeDefined();
-    expect(analytics).toHaveProperty('totalUsers');
-    expect(analytics).toHaveProperty('totalEvents');
-    expect(analytics).toHaveProperty('totalOrders');
-    expect(analytics).toHaveProperty('ticketsSold');
-    expect(analytics).toHaveProperty('platformRevenue');
+    expect(analytics).toHaveProperty('users');
+    expect(analytics).toHaveProperty('events');
+    expect(analytics).toHaveProperty('orders');
+    expect(analytics).toHaveProperty('tickets');
+    expect(analytics).toHaveProperty('revenue');
 
     console.log('✓ Platform Analytics Summary:');
-    console.log(`  - Total Users: ${analytics.totalUsers}`);
-    console.log(`  - Total Organizers: ${analytics.organizerCount || 0}`);
-    console.log(`  - Total Events: ${analytics.totalEvents}`);
-    console.log(`  - Published Events: ${analytics.publishedEvents || 0}`);
-    console.log(`  - Total Orders: ${analytics.totalOrders || 0}`);
-    console.log(`  - Tickets Sold: ${analytics.ticketsSold}`);
-    console.log(`  - Platform Revenue: $${analytics.platformRevenue || 0}`);
-    console.log(`  - GMV (Gross Merchandise Value): $${analytics.gmv || 0}`);
-    console.log(`  - Average Order Value: $${analytics.averageOrderValue || 0}`);
+    console.log(`  - Total Users: ${analytics.users.total}`);
+    console.log(`  - Total Organizers: ${analytics.users.organizers || 0}`);
+    console.log(`  - Total Events: ${analytics.events.total}`);
+    console.log(`  - Published Events: ${analytics.events.published || 0}`);
+    console.log(`  - Total Orders: ${analytics.orders.total || 0}`);
+    console.log(`  - Tickets Sold: ${analytics.tickets.total}`);
+    console.log(`  - Platform Revenue: $${(analytics.revenue.platformRevenue || 0) / 100}`);
+    console.log(`  - GMV (Gross Merchandise Value): $${(analytics.revenue.gmv || 0) / 100}`);
+    console.log(`  - Average Order Value: $${(analytics.revenue.averageOrderValue || 0) / 100}`);
 
     // Verify numeric values are valid
-    expect(typeof analytics.totalUsers).toBe('number');
-    expect(typeof analytics.totalEvents).toBe('number');
-    expect(analytics.totalUsers).toBeGreaterThanOrEqual(0);
-    expect(analytics.totalEvents).toBeGreaterThanOrEqual(0);
+    expect(typeof analytics.users.total).toBe('number');
+    expect(typeof analytics.events.total).toBe('number');
+    expect(analytics.users.total).toBeGreaterThanOrEqual(0);
+    expect(analytics.events.total).toBeGreaterThanOrEqual(0);
 
     console.log('✓ All analytics data validated successfully');
   });
@@ -622,8 +623,8 @@ test.describe('ADMIN Role Complete Workflow', () => {
       const flyerStats = await convex.query(api.admin.queries.getFlyerUploadStats);
       if (flyerStats) {
         console.log('✓ Flyer upload statistics available');
-        console.log(`  - Total uploads: ${flyerStats.totalUploads || 0}`);
-        console.log(`  - Pending processing: ${flyerStats.pending || 0}`);
+        console.log(`  - Total uploads: ${flyerStats.flyers.totalUploaded || 0}`);
+        console.log(`  - Pending processing: ${flyerStats.flyers.pendingExtraction || 0}`);
       }
     } catch (error) {
       console.log('⚠ Flyer stats query not available (feature may be optional)');

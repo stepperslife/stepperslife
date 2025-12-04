@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/useAuth";
-import { Id } from "@/convex/_generated/dataModel";
+import { Id, Doc } from "@/convex/_generated/dataModel";
 import Link from "next/link";
 import {
   Package,
@@ -19,11 +19,11 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-const STATUS_LABELS = {
+const STATUS_LABELS: Record<"ACTIVE" | "DRAFT" | "ARCHIVED", { label: string; color: string }> = {
   ACTIVE: { label: "Active", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" },
   DRAFT: { label: "Draft", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300" },
   ARCHIVED: { label: "Archived", color: "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300" },
-};
+} as const;
 
 export default function VendorProductsPage() {
   const { user } = useAuth();
@@ -39,12 +39,12 @@ export default function VendorProductsPage() {
 
   // Get products
   const products = useQuery(
-    api.products.getProductsByVendor,
+    api.products.queries.getProductsByVendor,
     vendor?._id ? { vendorId: vendor._id } : "skip"
   );
 
   // Delete mutation
-  const deleteProduct = useMutation(api.products.deleteVendorProduct);
+  const deleteProduct = useMutation(api.products.mutations.deleteVendorProduct);
 
   const handleDelete = async () => {
     if (!deleteProductId || !vendor?._id) return;
@@ -60,7 +60,7 @@ export default function VendorProductsPage() {
   };
 
   // Filter products
-  const filteredProducts = products?.filter((product) => {
+  const filteredProducts = products?.filter((product: Doc<"products">) => {
     const matchesSearch =
       searchQuery === "" ||
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -148,7 +148,7 @@ export default function VendorProductsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filteredProducts.map((product) => (
+                {filteredProducts.map((product: Doc<"products">) => (
                   <tr key={product._id} className="hover:bg-muted/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
@@ -210,6 +210,7 @@ export default function VendorProductsPage() {
                           <Edit className="w-4 h-4" />
                         </Link>
                         <button
+                          type="button"
                           onClick={() => setDeleteProductId(product._id)}
                           className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                           title="Delete product"
@@ -251,12 +252,14 @@ export default function VendorProductsPage() {
             </p>
             <div className="flex gap-3">
               <button
+                type="button"
                 onClick={() => setDeleteProductId(null)}
                 className="flex-1 px-4 py-2 border border-border rounded-lg font-medium hover:bg-muted transition-colors"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleDelete}
                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
               >

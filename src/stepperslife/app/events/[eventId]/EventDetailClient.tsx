@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Calendar,
   MapPin,
@@ -185,6 +186,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
             </Link>
 
             <button
+              type="button"
               onClick={handleShare}
               className="inline-flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
             >
@@ -208,11 +210,14 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               className="md:col-span-2"
             >
               <div className="relative w-full bg-muted rounded-xl overflow-hidden shadow-lg sticky top-24">
-                <div onClick={() => setShowFlyerModal(true)} className="cursor-pointer">
-                  <img
+                <div onClick={() => setShowFlyerModal(true)} className="cursor-pointer aspect-[3/4]">
+                  <Image
                     src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
                     alt={eventDetails.name}
-                    className="w-full h-auto object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 40vw"
+                    className="object-cover"
+                    priority
                   />
                 </div>
 
@@ -412,6 +417,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                   </p>
                                   {isSoldOut && (
                                     <button
+                                      type="button"
                                       onClick={() => handleJoinWaitlist(tier._id)}
                                       className="flex items-center gap-1 px-3 py-1 bg-warning text-white rounded text-sm font-medium hover:bg-warning/90 transition-colors"
                                     >
@@ -449,10 +455,10 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                           </span>
                         </div>
                         <Link
-                          href="/bundles"
+                          href="/events"
                           className="text-sm text-primary hover:text-primary font-medium flex items-center gap-1"
                         >
-                          View All Bundles
+                          View All Events
                           <ExternalLink className="w-3 h-3" />
                         </Link>
                       </div>
@@ -540,7 +546,8 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                 {bundle.available} bundle{bundle.available !== 1 ? "s" : ""}{" "}
                                 available
                               </p>
-                              <button className="text-sm text-primary hover:text-primary font-medium">
+                              <button
+                                type="button" className="text-sm text-primary hover:text-primary font-medium">
                                 View Details →
                               </button>
                             </div>
@@ -581,6 +588,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   className="mb-6"
                 >
                   <button
+                    type="button"
                     onClick={() => setShowSeatingModal(true)}
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-primary/40 text-primary rounded-lg hover:bg-accent transition-colors font-medium"
                   >
@@ -599,6 +607,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     className="mb-6"
                   >
                     <button
+                      type="button"
                       onClick={() => handleJoinWaitlist()}
                       className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-warning text-white rounded-lg hover:bg-warning/90 transition-colors font-semibold text-lg shadow-md hover:shadow-lg"
                     >
@@ -732,6 +741,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   <h2 className="text-2xl font-bold text-foreground">Seating Chart</h2>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setShowSeatingModal(false)}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
@@ -741,17 +751,19 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
               {/* Venue Image */}
               {seatingChart.venueImageUrl && (
-                <div className="mb-6 rounded-lg overflow-hidden border border-border">
-                  <img
+                <div className="mb-6 rounded-lg overflow-hidden border border-border relative aspect-video">
+                  <Image
                     src={seatingChart.venueImageUrl}
                     alt="Venue Layout"
-                    className="w-full h-auto"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 1024px"
+                    className="object-contain"
                   />
                 </div>
               )}
 
               {/* Interactive Ballroom Chart for TABLE_BASED layouts */}
-              {seatingChart.layoutType === "TABLE_BASED" ? (
+              {(seatingChart as any).seatingStyle === "TABLE_BASED" ? (
                 <div className="mb-6">
                   <InteractiveSeatingChart
                     eventId={eventId}
@@ -843,7 +855,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               )}
 
               {/* Legend - Only show for ROW_BASED layouts */}
-              {seatingChart.layoutType !== "TABLE_BASED" && (
+              {(seatingChart as any).seatingStyle !== "TABLE_BASED" && (
                 <div className="mt-6 pt-6 border-t border-border">
                   <h4 className="font-semibold text-foreground mb-3">Legend</h4>
                   <div className="flex flex-wrap gap-4 text-sm">
@@ -895,6 +907,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   <h2 className="text-xl font-bold text-foreground">Join Waitlist</h2>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setShowWaitlistModal(false)}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
@@ -965,6 +978,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
               <div className="flex gap-3 mt-6">
                 <button
+                  type="button"
                   onClick={handleSubmitWaitlist}
                   disabled={isJoiningWaitlist}
                   className="flex-1 px-6 py-3 bg-warning text-white rounded-lg hover:bg-warning/90 transition-colors font-medium disabled:bg-muted disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -982,6 +996,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   )}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowWaitlistModal(false)}
                   className="px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors font-medium"
                 >
@@ -1012,6 +1027,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
             >
               {/* Close button */}
               <button
+                type="button"
                 onClick={() => setShowFlyerModal(false)}
                 className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
               >
@@ -1019,11 +1035,16 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               </button>
 
               {/* Full-size flyer image */}
-              <img
-                src={eventDetails.imageUrl}
-                alt={eventDetails.name}
-                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-              />
+              <div className="relative max-w-full max-h-[90vh]">
+                <Image
+                  src={eventDetails.imageUrl}
+                  alt={eventDetails.name}
+                  width={1200}
+                  height={1600}
+                  className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                  priority
+                />
+              </div>
 
               {/* Hint text */}
               <p className="absolute -bottom-10 left-0 right-0 text-center text-white text-sm opacity-75">

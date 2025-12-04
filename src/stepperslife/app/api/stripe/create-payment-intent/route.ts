@@ -2,6 +2,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
+import crypto from "crypto";
+
+// Generate idempotency key to prevent duplicate payments
+function generateIdempotencyKey(orderId: string, amount: number): string {
+  const data = `${orderId}-${amount}-${Date.now()}`;
+  return crypto.createHash("sha256").update(data).digest("hex").substring(0, 32);
+}
 
 // Validate environment variables
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
@@ -18,7 +25,7 @@ if (!CONVEX_URL) {
 // Initialize Stripe client
 const stripe = STRIPE_SECRET_KEY
   ? new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-10-29.clover",
     })
   : null;
 
@@ -105,6 +112,11 @@ export async function POST(request: NextRequest) {
     // Create Payment Intent based on charge pattern
     let paymentIntent;
 
+    // Generate idempotency key to prevent duplicate payments on retry
+    const idempotencyKey = orderId
+      ? generateIdempotencyKey(orderId, amount)
+      : generateIdempotencyKey(crypto.randomUUID(), amount);
+
     if (useDirectCharge) {
       // DIRECT CHARGE Pattern
       // Payment goes directly to organizer's connected account
@@ -127,6 +139,7 @@ export async function POST(request: NextRequest) {
         },
         {
           stripeAccount: stripeAccountId, // Charge on organizer's account
+          idempotencyKey: idempotencyKey, // Prevent duplicate charges
         }
       );
     } else {
@@ -134,23 +147,28 @@ export async function POST(request: NextRequest) {
       // Payment goes to platform first, then automatically transfers to organizer
       // Platform keeps application_fee_amount
 
-      paymentIntent = await stripe.paymentIntents.create({
-        amount: amount,
-        currency: currency,
-        application_fee_amount: platformFee, // Platform's cut
-        transfer_data: {
-          destination: stripeAccountId, // Organizer's account
+      paymentIntent = await stripe.paymentIntents.create(
+        {
+          amount: amount,
+          currency: currency,
+          application_fee_amount: platformFee, // Platform's cut
+          transfer_data: {
+            destination: stripeAccountId, // Organizer's account
+          },
+          metadata: {
+            orderId: orderId || "",
+            orderNumber: orderNumber || "",
+            chargePattern: "DESTINATION",
+            ...metadata,
+          },
+          automatic_payment_methods: {
+            enabled: true, // Supports cards, Apple Pay, Google Pay
+          },
         },
-        metadata: {
-          orderId: orderId || "",
-          orderNumber: orderNumber || "",
-          chargePattern: "DESTINATION",
-          ...metadata,
-        },
-        automatic_payment_methods: {
-          enabled: true, // Supports cards, Apple Pay, Google Pay
-        },
-      });
+        {
+          idempotencyKey: idempotencyKey, // Prevent duplicate charges
+        }
+      );
     }
 
     return NextResponse.json({

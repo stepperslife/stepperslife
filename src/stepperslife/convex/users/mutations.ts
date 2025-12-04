@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, internalMutation } from "../_generated/server";
-import { isAdminEmail } from "../lib/roles";
+import { isAdminEmail, PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Create or update user from OAuth sign-in
@@ -277,12 +277,8 @@ export const updateStripeAccountStatus = mutation({
   },
   handler: async (ctx, args) => {
     // Find user by Stripe account ID
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_stripeConnectedAccountId", (q) =>
-        q.eq("stripeConnectedAccountId", args.accountId)
-      )
-      .first();
+    const users = await ctx.db.query("users").collect();
+    const user = users.find((u) => u.stripeConnectedAccountId === args.accountId);
 
     if (!user) {
       // This is okay - might be a test account or deleted user
@@ -834,8 +830,7 @@ export const bootstrapAdmin = mutation({
 
     // Only allow specific admin emails to be bootstrapped
     const adminEmails = [
-      "iradwatkins@gmail.com",
-      "bobbygwatkins@gmail.com",
+      PRIMARY_ADMIN_EMAIL,
       "admin-test@stepperslife.com",
       "platformadmin@stepperslife.com",
     ];

@@ -41,6 +41,10 @@ export const createTicketTier = mutation({
     }
 
     // Get the event organizer as the user
+    if (!event.organizerId) {
+      throw new Error("Event has no organizer");
+    }
+
     const user = await ctx.db.get(event.organizerId);
 
     if (!user) {
@@ -644,7 +648,7 @@ export const completeOrder = mutation({
 
     // PRODUCTION: Update sold count with optimistic locking to prevent race conditions
     const now = Date.now();
-    for (const [tierId, count] of tierSoldCount.entries()) {
+    for (const [tierId, count] of Array.from(tierSoldCount.entries())) {
       const tier = await ctx.db.get(tierId as Id<"ticketTiers">);
       if (tier && "sold" in tier) {
         const currentVersion = tier.version || 0;
@@ -708,7 +712,9 @@ export const completeOrder = mutation({
           orderId: args.orderId,
           ticketCount,
           commissionAmount: commission,
-          paymentMethod: args.paymentMethod as "SQUARE" | "STRIPE" | "ONLINE" | "FREE" | "TEST",
+          paymentMethod: args.paymentMethod === "TEST" || args.paymentMethod === "FREE"
+            ? "ONLINE"
+            : (args.paymentMethod as "SQUARE" | "STRIPE" | "CASH" | "ONLINE" | "CASH_APP"),
           createdAt: Date.now(),
         });
       }
@@ -1330,9 +1336,14 @@ export const deleteTicket = mutation({
     }
 
     // Check ownership
+    if (!identity.email) {
+      throw new Error("User email not found");
+    }
+
+    const userEmail = identity.email;
     const user = await ctx.db
       .query("users")
-      .withIndex("by_email", (q) => q.eq("email", identity.email))
+      .withIndex("by_email", (q) => q.eq("email", userEmail))
       .first();
 
     if (!user) {

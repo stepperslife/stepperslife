@@ -100,7 +100,7 @@ export default function RestaurantSettingsClient() {
               <LogIn className="w-12 h-12 text-orange-600 mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-4">Sign In Required</h1>
               <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
-                <Link href="/auth/sign-in">Sign In</Link>
+                <Link href="/login">Sign In</Link>
               </Button>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
-import { query, mutation, action } from "./_generated/server";
+import { query, mutation, action, internalMutation } from "./_generated/server";
 import { api, internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 
 // Generate order number
 function generateOrderNumber(): string {
@@ -53,7 +54,7 @@ export const getById = query({
 });
 
 // Create food order (internal mutation - returns order details)
-export const create = mutation({
+export const create = internalMutation({
   args: {
     restaurantId: v.id("restaurants"),
     customerId: v.optional(v.id("users")),
@@ -74,7 +75,14 @@ export const create = mutation({
     specialInstructions: v.optional(v.string()),
     paymentMethod: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    orderId: Id<"foodOrders">;
+    orderNumber: string;
+    restaurantId: Id<"restaurants">;
+    customerName: string;
+    total: number;
+    itemCount: number;
+  }> => {
     const orderNumber = generateOrderNumber();
     const now = Date.now();
 
@@ -120,9 +128,16 @@ export const createWithNotification = action({
     specialInstructions: v.optional(v.string()),
     paymentMethod: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    orderId: Id<"foodOrders">;
+    orderNumber: string;
+    restaurantId: Id<"restaurants">;
+    customerName: string;
+    total: number;
+    itemCount: number;
+  }> => {
     // Create the order
-    const orderResult = await ctx.runMutation(api.foodOrders.create, args);
+    const orderResult = await ctx.runMutation(internal.foodOrders.create, args);
 
     // Trigger notification to restaurant
     try {
@@ -147,12 +162,17 @@ export const createWithNotification = action({
 });
 
 // Update order status
-export const updateStatus = mutation({
+export const updateStatus = internalMutation({
   args: {
     id: v.id("foodOrders"),
     status: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    orderId: Id<"foodOrders">;
+    orderNumber: string | undefined;
+    customerId: Id<"users"> | undefined;
+    status: string;
+  }> => {
     const updates: Record<string, unknown> = { status: args.status };
 
     if (args.status === "READY_FOR_PICKUP") {
@@ -161,12 +181,11 @@ export const updateStatus = mutation({
       updates.completedAt = Date.now();
     }
 
-    const result = await ctx.db.patch(args.id, updates);
+    await ctx.db.patch(args.id, updates);
 
     // Return order info for notification
     const order = await ctx.db.get(args.id);
     return {
-      result,
       orderId: args.id,
       orderNumber: order?.orderNumber,
       customerId: order?.customerId,
@@ -182,15 +201,13 @@ export const updateStatusWithNotification = action({
     status: v.string(),
   },
   handler: async (ctx, args): Promise<{
-    result: null;
-    orderId: string;
+    orderId: Id<"foodOrders">;
     orderNumber: string | undefined;
-    customerId: string | undefined;
+    customerId: Id<"users"> | undefined;
     status: string;
   }> => {
-    // Update the status using direct mutation reference
-    const foodOrdersApi = api.foodOrders as any;
-    const updateResult = await ctx.runMutation(foodOrdersApi.updateStatus, {
+    // Update the status using internal mutation reference
+    const updateResult = await ctx.runMutation(internal.foodOrders.updateStatus, {
       id: args.id,
       status: args.status,
     });
@@ -198,10 +215,8 @@ export const updateStatusWithNotification = action({
     // Send notification to customer if they have a subscription
     if (updateResult.customerId) {
       try {
-        // Use direct reference to avoid circular type issues
-        const notificationsApi = api.notifications as any;
         await ctx.runAction(
-          notificationsApi.customerNotifications.notifyOrderStatusUpdate,
+          api.notifications.customerNotifications.notifyOrderStatusUpdate,
           {
             foodOrderId: args.id,
             customerId: updateResult.customerId,

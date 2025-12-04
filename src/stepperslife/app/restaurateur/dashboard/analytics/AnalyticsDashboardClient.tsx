@@ -78,7 +78,7 @@ export default function AnalyticsDashboardClient() {
                 Please sign in to view your restaurant analytics.
               </p>
               <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
-                <Link href="/auth/sign-in">Sign In</Link>
+                <Link href="/login">Sign In</Link>
               </Button>
             </div>
           </div>
@@ -157,7 +157,7 @@ export default function AnalyticsDashboardClient() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-white">Analytics</h1>
-                  <p className="text-white/80 text-sm">{restaurant.name} - Last 30 Days</p>
+                  <p className="text-white/80 text-sm">{restaurant?.name} - Last 30 Days</p>
                 </div>
               </div>
             </div>

@@ -10,7 +10,7 @@ import { useState } from "react";
 
 export default function SoldTicketsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const soldTickets = [];
+  const soldTickets: any[] = [];
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredTickets = soldTickets.filter((ticket: any) =>

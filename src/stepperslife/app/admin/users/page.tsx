@@ -272,6 +272,7 @@ export default function UsersManagementPage() {
 
                         {/* Delete Button */}
                         <button
+                          type="button"
                           onClick={() => handleDeleteUser(user._id, user.name || user.email)}
                           className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                           title="Delete user"

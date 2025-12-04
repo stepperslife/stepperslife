@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
-import { HIERARCHY_CONFIG, STAFF_ROLES } from "../lib/roles";
+import { HIERARCHY_CONFIG, STAFF_ROLES, PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Generate a unique referral code for a staff member
@@ -212,7 +212,7 @@ export const updateStaffMember = mutation({
       throw new Error("You don't have permission to update this staff member");
     }
 
-    const updates: any = {
+    const updates: Record<string, unknown> = {
       updatedAt: Date.now(),
     };
 
@@ -252,7 +252,7 @@ export const registerCashSale = mutation({
       console.warn("[registerCashSale] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -351,7 +351,7 @@ export const createCashSale = mutation({
       console.warn("[createCashSale] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -581,7 +581,7 @@ export const removeStaffMember = mutation({
       console.warn("[removeStaffMember] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -672,7 +672,7 @@ export const updateStaffPermissions = mutation({
     }
 
     // Update permissions
-    const updates: any = {
+    const updates: Record<string, unknown> = {
       updatedAt: Date.now(),
     };
 
@@ -836,7 +836,7 @@ export const assignSubSeller = mutation({
       console.warn("[assignSubSeller] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -1032,7 +1032,7 @@ export const addGlobalStaff = mutation({
       console.warn("[addGlobalStaff] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -1138,7 +1138,7 @@ export const toggleStaffAutoAssign = mutation({
       console.warn("[toggleStaffAutoAssign] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -1199,7 +1199,7 @@ export const addGlobalSubSeller = mutation({
       console.warn("[addGlobalSubSeller] TESTING MODE - Using test user");
       currentUser = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
     } else {
       currentUser = await ctx.db
@@ -1376,6 +1376,9 @@ export const copyRosterFromEvent = mutation({
 
     if (!identity?.email) {
       console.warn("[copyRosterFromEvent] TESTING MODE - Using event organizer");
+      if (!targetEvent.organizerId) {
+        throw new Error("Event has no organizer");
+      }
       currentUser = await ctx.db.get(targetEvent.organizerId);
     } else {
       currentUser = await ctx.db
@@ -1480,8 +1483,8 @@ export const copyRosterFromEvent = mutation({
         const newParentId = staffIdMap.get(staff.assignedByStaffId);
 
         if (newStaffId && newParentId) {
-          await ctx.db.patch(newStaffId as any, {
-            assignedByStaffId: newParentId as any,
+          await ctx.db.patch(newStaffId as never, {
+            assignedByStaffId: newParentId as never,
           });
         }
       }

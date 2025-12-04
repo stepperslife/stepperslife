@@ -110,6 +110,7 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
               </Link>
 
               <button
+                type="button"
                 onClick={handleShare}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
               >

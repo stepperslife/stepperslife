@@ -4,6 +4,7 @@ import { Id } from "../_generated/dataModel";
 import { getCurrentUser, requireEventOwnership } from "../lib/auth";
 import { internal } from "../_generated/api";
 import { getTimestamps, getUpdateTimestamp } from "../lib/helpers";
+import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Create a new event
@@ -314,7 +315,7 @@ export const configurePayment = mutation({
       // Use test user for development
       user = await ctx.db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", "iradwatkins@gmail.com"))
+        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
         .first();
       if (!user) throw new Error("Test user not found");
 
@@ -367,6 +368,7 @@ export const configurePayment = mutation({
       ticketsAllocated: args.model === "PREPAY" ? 0 : undefined,
       stripeConnectAccountId:
         args.model === "CREDIT_CARD" ? user.stripeConnectedAccountId : undefined,
+      customerPaymentMethods: args.model === "PREPAY" ? ["CASH"] : ["STRIPE"],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -936,14 +938,14 @@ export const deleteEvent = mutation({
 
     // Check if event has already started
     const now = Date.now();
-    if (event.startDate < now) {
+    if (event.startDate && event.startDate < now) {
       throw new Error("Cannot delete an event that has already started");
     }
 
     // Check if there are any sold tickets
     const tickets = await ctx.db
       .query("tickets")
-      .withIndex("by_eventId", (q) => q.eq("eventId", args.eventId))
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
       .collect();
 
     if (tickets.length > 0) {

@@ -109,6 +109,7 @@ export function OrderSummary({
               )}
               {onRemoveDiscount && (
                 <button
+                  type="button"
                   onClick={onRemoveDiscount}
                   className="text-xs text-muted-foreground hover:text-foreground underline"
                 >
@@ -133,6 +134,7 @@ export function OrderSummary({
       {hasFees && (
         <div className="py-4 border-t border-border">
           <button
+            type="button"
             onClick={() => setFeeBreakdownExpanded(!feeBreakdownExpanded)}
             className="w-full flex items-center justify-between text-foreground hover:text-foreground transition-colors"
           >
@@ -202,6 +204,7 @@ export function CompactOrderSummary({ items, total }: Pick<OrderSummaryProps, "i
   return (
     <div className="bg-card rounded-lg shadow-md p-4">
       <button
+        type="button"
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between"
       >

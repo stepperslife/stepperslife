@@ -27,7 +27,11 @@ export default function SettlementDashboard() {
     selectedEventId ? { eventId: selectedEventId } : {}
   );
 
-  const organizerEvents = useQuery(api.events.queries.getOrganizerEvents);
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const organizerEvents = useQuery(
+    api.events.queries.getOrganizerEvents,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
+  );
 
   const markPaid = useMutation(api.staff.settlement.markSettlementPaid);
   const markPending = useMutation(api.staff.settlement.markSettlementPending);
@@ -117,6 +121,7 @@ export default function SettlementDashboard() {
         </select>
 
         <button
+          type="button"
           onClick={exportToCSV}
           className="ml-auto px-4 py-2 bg-success text-white rounded-lg hover:bg-success/90 transition-colors flex items-center gap-2"
         >
@@ -265,6 +270,7 @@ export default function SettlementDashboard() {
                     <div className="mt-3 flex gap-2">
                       {staff.settlementStatus === "PENDING" ? (
                         <button
+                          type="button"
                           onClick={() => handleMarkPaid(staff.staffId)}
                           className="px-3 py-1 bg-success text-white text-sm rounded hover:bg-success/90 transition-colors"
                         >
@@ -272,6 +278,7 @@ export default function SettlementDashboard() {
                         </button>
                       ) : (
                         <button
+                          type="button"
                           onClick={() => handleMarkPending(staff.staffId)}
                           className="px-3 py-1 bg-muted text-foreground text-sm rounded hover:bg-muted/80 transition-colors"
                         >
@@ -279,6 +286,7 @@ export default function SettlementDashboard() {
                         </button>
                       )}
                       <button
+                        type="button"
                         onClick={() =>
                           setExpandedStaffId(
                             expandedStaffId === staff.staffId ? null : staff.staffId

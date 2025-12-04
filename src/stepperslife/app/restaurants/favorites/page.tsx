@@ -51,7 +51,7 @@ export default function FavoritesPage() {
                 Create an account or sign in to save your favorite restaurants for quick access.
               </p>
               <Button asChild className="bg-orange-600 hover:bg-orange-700">
-                <Link href="/auth/sign-in">Sign In</Link>
+                <Link href="/login">Sign In</Link>
               </Button>
             </div>
           </div>

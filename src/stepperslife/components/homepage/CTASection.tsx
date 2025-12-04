@@ -22,7 +22,7 @@ export function CTASection() {
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/settings"
+                href="/organizer/onboarding"
                 className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               >
                 Start Organizing
@@ -52,7 +52,7 @@ export function CTASection() {
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/settings"
+                href="/vendor/onboarding"
                 className="inline-flex h-12 items-center justify-center rounded-md bg-success px-6 text-sm font-medium text-white hover:bg-success/90"
               >
                 Start Selling

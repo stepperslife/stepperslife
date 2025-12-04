@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { ArrowLeft, DollarSign, CheckCircle2, Ticket, CreditCard, Wallet } from "lucide-react";
+import { ArrowLeft, DollarSign, CheckCircle2, Ticket, CreditCard, Wallet, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function RegisterSalePage() {
@@ -16,7 +16,14 @@ export default function RegisterSalePage() {
   const [buyerEmail, setBuyerEmail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"CASH" | "CASH_APP">("CASH");
   const [isSuccess, setIsSuccess] = useState(false);
-  const [successData, setSuccessData] = useState<any>(null);
+  const [successData, setSuccessData] = useState<{
+    success: boolean;
+    orderId: Id<"orders">;
+    ticketIds: Id<"tickets">[];
+    activationCodes: string[];
+    totalPrice: number;
+    commission: number;
+  } | null>(null);
 
   const staffPositions = useQuery(api.staff.queries.getStaffDashboard);
   const eventDetails = useQuery(
@@ -165,6 +172,7 @@ export default function RegisterSalePage() {
           {/* Action Buttons */}
           <div className="space-y-3">
             <button
+              type="button"
               onClick={handleReset}
               className="w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
             >
@@ -197,9 +205,10 @@ export default function RegisterSalePage() {
             <h3 className="font-semibold text-foreground mb-4">Select Your Position</h3>
             <div className="space-y-3">
               {staffPositions
-                .filter((p) => p.event && p.role === "SELLER")
+                .filter((p) => p.event)
                 .map((position) => (
                   <button
+                    type="button"
                     key={position._id}
                     onClick={() => {
                       setSelectedStaffId(position._id);
@@ -229,6 +238,7 @@ export default function RegisterSalePage() {
               <div className="space-y-3">
                 {eventDetails.ticketTiers?.map((tier) => (
                   <button
+                    type="button"
                     key={tier._id}
                     onClick={() => setSelectedTierId(tier._id)}
                     className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
@@ -308,6 +318,7 @@ export default function RegisterSalePage() {
               <h3 className="font-semibold text-foreground mb-4">Payment Method</h3>
               <div className="grid grid-cols-2 gap-3">
                 <button
+                  type="button"
                   onClick={() => setPaymentMethod("CASH")}
                   className={`p-4 border-2 rounded-lg transition-all ${
                     paymentMethod === "CASH"
@@ -319,6 +330,7 @@ export default function RegisterSalePage() {
                   <p className="font-semibold text-foreground">Cash</p>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setPaymentMethod("CASH_APP")}
                   className={`p-4 border-2 rounded-lg transition-all ${
                     paymentMethod === "CASH_APP"
@@ -386,6 +398,7 @@ export default function RegisterSalePage() {
               </div>
 
               <button
+                type="button"
                 onClick={handleSubmit}
                 disabled={!buyerName}
                 className={`w-full px-6 py-4 rounded-lg font-semibold transition-all ${

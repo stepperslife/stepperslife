@@ -4,14 +4,15 @@
  */
 
 import { v } from "convex/values";
-import { mutation, query } from "../_generated/server";
+import { mutation, query, MutationCtx, QueryCtx } from "../_generated/server";
 import { requireEventOwnership } from "../lib/auth";
+import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Get authenticated user - requires valid authentication
  * @throws Error if not authenticated
  */
-async function getAuthenticatedUser(ctx: any) {
+async function getAuthenticatedUser(ctx: MutationCtx | QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
 
   // TESTING MODE: Use fallback test user
@@ -19,7 +20,7 @@ async function getAuthenticatedUser(ctx: any) {
     console.warn("[getAuthenticatedUser] TESTING MODE - Using test user");
     const user = await ctx.db
       .query("users")
-      .withIndex("by_email", (q: any) => q.eq("email", "iradwatkins@gmail.com"))
+      .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
       .first();
 
     if (!user) {
@@ -29,9 +30,12 @@ async function getAuthenticatedUser(ctx: any) {
     return user;
   }
 
+  // At this point, we know identity.email exists due to the check above
+  const userEmail = identity.email;
+
   const user = await ctx.db
     .query("users")
-    .withIndex("by_email", (q: any) => q.eq("email", identity.email))
+    .withIndex("by_email", (q) => q.eq("email", userEmail))
     .first();
 
   if (!user) {

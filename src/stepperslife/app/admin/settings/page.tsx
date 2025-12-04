@@ -44,6 +44,7 @@ export default function AdminSettingsPage() {
             const isActive = activeTab === tab.id;
             return (
               <button
+                type="button"
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`

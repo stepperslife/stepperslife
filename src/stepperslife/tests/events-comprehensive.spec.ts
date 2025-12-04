@@ -1341,7 +1341,7 @@ test.describe("Section 3: Ticket Purchase Flow", () => {
 
 test.describe("Section 4: Organizer Event Creation", () => {
   const testData = generateTestData();
-  let createdEventId: string | null = null;
+  const createdEventId: string | null = null;
 
   test("login as organizer", async ({ page }) => {
     console.log("\n🔐 Testing Organizer Login");

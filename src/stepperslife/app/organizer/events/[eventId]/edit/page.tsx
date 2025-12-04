@@ -11,6 +11,40 @@ import { ImageUpload } from "@/components/upload/ImageUpload";
 import { getTimezoneFromLocation, getTimezoneName } from "@/lib/timezone";
 import { format } from "date-fns";
 
+interface User {
+  _id: string;
+  email: string;
+  name?: string;
+  role?: "admin" | "organizer" | "user";
+  image?: string;
+}
+
+interface EventLocation {
+  venueName?: string;
+  address?: string;
+  city: string;
+  state: string;
+  zipCode?: string;
+  country: string;
+}
+
+interface Event {
+  _id: Id<"events">;
+  name: string;
+  description?: string;
+  organizerId?: Id<"users">;
+  organizerName?: string;
+  eventType?: "SAVE_THE_DATE" | "FREE_EVENT" | "TICKETED_EVENT" | "SEATED_EVENT" | "CLASS";
+  startDate?: number;
+  endDate?: number;
+  location?: EventLocation | string;
+  images?: Id<"_storage">[];
+  imageUrl?: string;
+  categories?: string[];
+  capacity?: number;
+  status?: "DRAFT" | "PUBLISHED" | "CANCELLED" | "COMPLETED";
+}
+
 const EVENT_CATEGORIES = [
   "Set",
   "Workshop",
@@ -27,7 +61,7 @@ export default function EditEventPage() {
   const eventId = params.eventId as Id<"events">;
 
   const event = useQuery(api.events.queries.getEventById, { eventId });
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   // Fetch current user from API
   useEffect(() => {
@@ -155,9 +189,9 @@ export default function EditEventPage() {
       });
 
       router.push(`/organizer/events/${eventId}`);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Update error:", error);
-      alert(error.message || "Failed to update event");
+      alert(error instanceof Error ? error.message : "Failed to update event");
     } finally {
       setIsSubmitting(false);
     }
@@ -167,6 +201,19 @@ export default function EditEventPage() {
     return (
       <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (event === null) {
+    return (
+      <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+        <div className="bg-card rounded-lg shadow-md p-8 max-w-md text-center">
+          <p className="text-foreground">Event not found.</p>
+          <Link href="/organizer/events" className="mt-4 inline-block text-primary hover:underline">
+            Back to Events
+          </Link>
+        </div>
       </div>
     );
   }

@@ -163,6 +163,7 @@ export default function Canvas({
       {/* Zoom controls */}
       <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 bg-white rounded-lg shadow-lg border border-gray-300 p-2">
         <button
+          type="button"
           onClick={handleZoomIn}
           disabled={zoom >= 2}
           className="px-3 py-2 bg-accent text-primary rounded hover:bg-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg"
@@ -171,6 +172,7 @@ export default function Canvas({
           +
         </button>
         <button
+          type="button"
           onClick={handleZoomReset}
           className="px-3 py-1 bg-gray-50 text-gray-700 rounded hover:bg-gray-100 transition-colors text-xs font-medium"
           title="Reset Zoom"
@@ -178,6 +180,7 @@ export default function Canvas({
           {Math.round(zoom * 100)}%
         </button>
         <button
+          type="button"
           onClick={handleZoomOut}
           disabled={zoom <= 0.5}
           className="px-3 py-2 bg-accent text-primary rounded hover:bg-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg"

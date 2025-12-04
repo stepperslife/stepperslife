@@ -8,9 +8,19 @@ import { Input } from "@/components/ui/input";
 import { HelpCircle, MessageCircle, AlertCircle, CheckCircle, Clock, Search } from "lucide-react";
 import { useState } from "react";
 
+interface SupportTicket {
+  id: string;
+  subject: string;
+  status: string;
+  message: string;
+  userName: string;
+  userEmail: string;
+  createdAt: number;
+}
+
 export default function AdminSupportPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const supportTickets = [];
+  const supportTickets: SupportTicket[] = [];
   const [searchTerm, setSearchTerm] = useState("");
 
   const getStatusBadge = (status: string) => {
@@ -125,7 +135,7 @@ export default function AdminSupportPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {supportTickets.map((ticket: any) => (
+              {supportTickets.map((ticket) => (
                 <div key={ticket.id} className="flex items-start gap-4 p-4 border rounded-lg hover:shadow-md transition-shadow">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">

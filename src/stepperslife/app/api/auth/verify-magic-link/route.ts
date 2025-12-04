@@ -3,12 +3,16 @@ import { api } from "@/convex/_generated/api";
 import { hashToken, isTokenExpired } from "@/lib/auth/magic-link";
 import { SignJWT } from "jose";
 import { convexClient as convex } from "@/lib/auth/convex-client";
+import { isValidRedirectPath } from "@/lib/auth/redirects";
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const token = searchParams.get("token");
-    const callbackUrl = searchParams.get("callbackUrl") || "/";
+    const rawCallbackUrl = searchParams.get("callbackUrl") || "/";
+
+    // Validate callback URL to prevent open redirect attacks
+    const callbackUrl = isValidRedirectPath(rawCallbackUrl) ? rawCallbackUrl : "/user/dashboard";
 
     if (!token) {
       return NextResponse.redirect(new URL("/login?error=invalid-token", request.url));

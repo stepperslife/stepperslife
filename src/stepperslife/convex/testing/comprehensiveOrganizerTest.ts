@@ -88,7 +88,7 @@ export const purchaseCredits = mutation({
     }
 
     // Record transaction (schema requires specific fields)
-    const transactionData: any = {
+    const baseTransactionData = {
       organizerId: args.organizerId,
       ticketsPurchased: args.quantity,
       amountPaid: totalCost * 100, // Convert to cents
@@ -99,15 +99,22 @@ export const purchaseCredits = mutation({
 
     // Add payment method-specific ID
     if (args.paymentMethod === "STRIPE") {
-      transactionData.stripePaymentIntentId = args.paymentId;
+      await ctx.db.insert("creditTransactions", {
+        ...baseTransactionData,
+        stripePaymentIntentId: args.paymentId,
+      });
     } else if (args.paymentMethod === "SQUARE") {
-      transactionData.squarePaymentId = args.paymentId;
+      await ctx.db.insert("creditTransactions", {
+        ...baseTransactionData,
+        squarePaymentId: args.paymentId,
+      });
     } else if (args.paymentMethod === "CASHAPP") {
       // Cash App uses Square infrastructure
-      transactionData.squarePaymentId = args.paymentId;
+      await ctx.db.insert("creditTransactions", {
+        ...baseTransactionData,
+        squarePaymentId: args.paymentId,
+      });
     }
-
-    await ctx.db.insert("creditTransactions", transactionData);
 
     // Update credit balance
     await ctx.db.patch(creditAccount._id, {
@@ -270,6 +277,10 @@ export const addTeamMember = mutation({
     const referralCode = `TEAM_${event._id.slice(0, 8)}_${teamMemberUser._id.slice(0, 8)}`;
 
     // Add as staff with TEAM_MEMBERS role and 100% commission (matching schema)
+    if (!event.organizerId) {
+      throw new Error("Event organizerId is required");
+    }
+
     const staffId = await ctx.db.insert("eventStaff", {
       eventId: args.eventId,
       organizerId: event.organizerId,
@@ -376,6 +387,10 @@ export const addAssociate = mutation({
     const referralCode = `ASSOC_${event._id.slice(0, 8)}_${associateUser._id.slice(0, 8)}`;
 
     // Add as staff with ASSOCIATES role and fixed commission (matching schema)
+    if (!event.organizerId) {
+      throw new Error("Event organizerId is required");
+    }
+
     const staffId = await ctx.db.insert("eventStaff", {
       eventId: args.eventId,
       organizerId: event.organizerId,
@@ -508,10 +523,10 @@ export const simulateCustomerPurchase = mutation({
         const netAmountCents = subtotalCents - processingFeeCents; // What organizer receives
         let commissionAmountCents = 0;
 
-        if (staff.commissionType === "PERCENTAGE") {
+        if (staff.commissionType === "PERCENTAGE" && staff.commissionValue !== undefined) {
           // Team members get percentage of net amount
           commissionAmountCents = Math.round((netAmountCents * staff.commissionValue) / 100);
-        } else if (staff.commissionType === "FIXED") {
+        } else if (staff.commissionType === "FIXED" && staff.commissionValue !== undefined) {
           // Associates get fixed dollar amount per ticket (stored in dollars, convert to cents)
           commissionAmountCents = Math.round(staff.commissionValue * args.quantity * 100);
         }
@@ -608,7 +623,26 @@ export const getTestSummary = query({
       .collect();
 
     // Get all staff across all events
-    const allStaff = [];
+    const allStaff: Array<{
+      _id: Id<"eventStaff">;
+      _creationTime: number;
+      eventId?: Id<"events">;
+      organizerId: Id<"users">;
+      staffUserId: Id<"users">;
+      email: string;
+      name: string;
+      role: "STAFF" | "TEAM_MEMBERS" | "ASSOCIATES";
+      commissionType?: "PERCENTAGE" | "FIXED";
+      commissionValue?: number;
+      commissionEarned: number;
+      ticketsSold: number;
+      allocatedTickets?: number;
+      isActive: boolean;
+      referralCode: string;
+      createdAt: number;
+      updatedAt: number;
+      eventName: string;
+    }> = [];
     for (const event of events) {
       const eventStaff = await ctx.db
         .query("eventStaff")
@@ -625,6 +659,16 @@ export const getTestSummary = query({
         .withIndex("by_event", (q) => q.eq("eventId", event._id))
         .collect();
       allOrders.push(...eventOrders);
+    }
+
+    // Get all tickets to calculate quantity sold
+    const allTickets = [];
+    for (const event of events) {
+      const eventTickets = await ctx.db
+        .query("tickets")
+        .withIndex("by_event", (q) => q.eq("eventId", event._id))
+        .collect();
+      allTickets.push(...eventTickets);
     }
 
     return {
@@ -660,14 +704,14 @@ export const getTestSummary = query({
         role: s.role,
         ticketsAllocated: s.allocatedTickets || 0,
         ticketsSold: s.ticketsSold,
-        commission: `${s.commissionType === "PERCENTAGE" ? s.commissionValue + "%" : "$" + s.commissionValue}`,
+        commission: `${s.commissionType === "PERCENTAGE" ? (s.commissionValue || 0) + "%" : "$" + (s.commissionValue || 0)}`,
       })),
       sales: {
         totalOrders: allOrders.length,
-        totalTicketsSold: allOrders.reduce((sum, o) => sum + o.quantity, 0),
-        totalRevenue: allOrders.reduce((sum, o) => sum + o.totalAmount, 0),
-        totalFees: allOrders.reduce((sum, o) => sum + o.platformFee, 0),
-        netRevenue: allOrders.reduce((sum, o) => sum + o.netAmount, 0),
+        totalTicketsSold: allTickets.length,
+        totalRevenue: allOrders.reduce((sum, o) => sum + (o.totalCents / 100), 0), // Convert cents to dollars
+        totalFees: allOrders.reduce((sum, o) => sum + (o.platformFeeCents / 100), 0), // Convert cents to dollars
+        netRevenue: allOrders.reduce((sum, o) => sum + ((o.subtotalCents - o.processingFeeCents) / 100), 0), // Convert cents to dollars
       },
     };
   },

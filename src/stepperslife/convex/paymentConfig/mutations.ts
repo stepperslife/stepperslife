@@ -335,7 +335,7 @@ export const deactivatePaymentConfig = mutation({
 export const updatePaymentMethods = mutation({
   args: {
     eventId: v.id("events"),
-    merchantProcessor: v.union(v.literal("SQUARE"), v.literal("STRIPE"), v.literal("PAYPAL")),
+    merchantProcessor: v.union(v.literal("STRIPE"), v.literal("PAYPAL")),
     creditCardEnabled: v.boolean(),
     cashAppEnabled: v.boolean(),
   },
@@ -367,10 +367,9 @@ export const updatePaymentMethods = mutation({
     }
 
     // Update payment config
+    // Note: creditCardEnabled and cashAppEnabled are managed via customerPaymentMethods array
     await ctx.db.patch(config._id, {
       merchantProcessor: args.merchantProcessor,
-      creditCardEnabled: args.creditCardEnabled,
-      cashAppEnabled: args.cashAppEnabled,
       updatedAt: Date.now(),
     });
 

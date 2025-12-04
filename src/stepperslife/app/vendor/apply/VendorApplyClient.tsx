@@ -264,6 +264,7 @@ export default function VendorApplyClient() {
                 </ul>
               </div>
               <button
+                type="button"
                 onClick={() => router.push("/marketplace")}
                 className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
               >

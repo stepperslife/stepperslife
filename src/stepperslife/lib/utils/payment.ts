@@ -197,7 +197,7 @@ export function isTimeoutError(error: unknown): boolean {
  * Generate unique request ID for tracking
  */
 export function generateRequestId(): string {
-  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 }
 
 /**
@@ -211,6 +211,15 @@ export function logPaymentEvent(
   const timestamp = new Date().toISOString();
   const requestId = generateRequestId();
 
+  console.log(
+    JSON.stringify({
+      timestamp,
+      requestId,
+      prefix,
+      event,
+      ...data,
+    })
+  );
 }
 
 /**
@@ -273,9 +282,16 @@ export function isValidCurrency(currency: string): boolean {
  * Useful for preventing duplicate payments
  */
 export function generateIdempotencyKey(data: Record<string, unknown>): string {
-  const crypto = require('crypto');
+  // Use Web Crypto API for browser compatibility
   const dataString = JSON.stringify(data, Object.keys(data).sort());
-  return crypto.createHash('sha256').update(dataString).digest('hex');
+  // Simple hash alternative for browser environments
+  let hash = 0;
+  for (let i = 0; i < dataString.length; i++) {
+    const char = dataString.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(36);
 }
 
 // ============================================================================
@@ -303,11 +319,16 @@ export function createErrorResponse(
   error: string,
   details?: unknown
 ): { success: false; error: string; details?: unknown } {
-  return {
+  const response: { success: false; error: string; details?: unknown } = {
     success: false,
     error,
-    ...(details && { details }),
   };
+
+  if (details !== undefined) {
+    response.details = details;
+  }
+
+  return response;
 }
 
 // ============================================================================

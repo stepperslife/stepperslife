@@ -37,7 +37,7 @@ const TEST_CARD_CVC = '123';
 
 let convex: ConvexHttpClient;
 let testEventId: Id<"events"> | null = null;
-let testOrderId: Id<"orders"> | null = null;
+const testOrderId: Id<"orders"> | null = null;
 
 test.beforeAll(async () => {
   convex = new ConvexHttpClient(CONVEX_URL);
@@ -103,7 +103,7 @@ test.describe('USER/CUSTOMER Role Complete Workflow', () => {
     }
 
     // Query published events
-    const publishedEvents = await convex.query(api.events.queries.getPublishedEvents);
+    const publishedEvents = await convex.query(api.public.queries.getPublishedEvents, {});
     expect(Array.isArray(publishedEvents)).toBe(true);
     console.log(`✓ Found ${publishedEvents.length} published events in database`);
 
@@ -188,15 +188,14 @@ test.describe('USER/CUSTOMER Role Complete Workflow', () => {
     }
 
     // Query event details via API
-    const eventDetails = await convex.query(api.events.queries.getPublicEventDetails, {
+    const eventDetails = await convex.query(api.public.queries.getPublicEventDetails, {
       eventId: testEventId
     });
 
     if (eventDetails) {
       console.log(`✓ Event details retrieved`);
-      console.log(`  - Title: ${eventDetails.title}`);
+      console.log(`  - Name: ${eventDetails.name}`);
       console.log(`  - Status: ${eventDetails.status}`);
-      console.log(`  - Type: ${eventDetails.type}`);
     }
 
     console.log('✓ Event detail page validated');
@@ -271,8 +270,8 @@ test.describe('USER/CUSTOMER Role Complete Workflow', () => {
     console.log('\n🎫 USER-5: Testing free event registration...');
 
     // Query for free events
-    const allEvents = await convex.query(api.events.queries.getPublishedEvents);
-    const freeEvent = allEvents.find((e: any) => e.type === 'FREE_EVENT');
+    const allEvents = await convex.query(api.public.queries.getPublishedEvents, {});
+    const freeEvent = allEvents.find((e: any) => e.eventType === 'FREE_EVENT' || e.isFree === true);
 
     if (freeEvent) {
       console.log(`✓ Found free event: ${freeEvent._id}`);
@@ -700,7 +699,7 @@ test.describe('USER/CUSTOMER Role Complete Workflow', () => {
     console.log('\n🎫 USER-18: Testing waitlist functionality...');
 
     // Query for sold-out events
-    const allEvents = await convex.query(api.events.queries.getPublishedEvents);
+    const allEvents = await convex.query(api.public.queries.getPublishedEvents, {});
     const soldOutEvent = allEvents.find((e: any) => {
       // Check if event has sold-out tiers
       return e.ticketsSold >= e.capacity;

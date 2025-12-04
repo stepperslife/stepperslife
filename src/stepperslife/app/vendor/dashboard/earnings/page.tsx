@@ -126,7 +126,7 @@ export default function VendorEarningsPage() {
             </div>
           </div>
           <p className="text-3xl font-bold text-foreground">
-            {formatCurrency(summary?.paidOut || 0)}
+            {formatCurrency(summary?.paidEarnings || 0)}
           </p>
           <p className="text-sm text-muted-foreground">Total Paid Out</p>
         </div>
@@ -225,7 +225,7 @@ export default function VendorEarningsPage() {
                         {formatCurrency(earning.grossAmount)}
                       </td>
                       <td className="p-4 text-sm text-muted-foreground">
-                        -{formatCurrency(earning.commissionAmount)} ({earning.commissionPercent}%)
+                        -{formatCurrency(earning.commissionAmount)} ({earning.commissionRate}%)
                       </td>
                       <td className="p-4 text-sm font-bold text-green-600">
                         {formatCurrency(earning.netAmount)}

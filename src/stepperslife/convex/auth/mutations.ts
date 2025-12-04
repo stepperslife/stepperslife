@@ -157,10 +157,10 @@ export const verifyMagicLinkToken = mutation({
     });
 
     // Initialize credits for new organizers
-    if ((user.role === "organizer" || user.role === "admin") && !user.createdAt) {
+    if (user.role === "organizer" || user.role === "admin") {
       const existingCredits = await ctx.db
         .query("organizerCredits")
-        .withIndex("by_organizerId", (q) => q.eq("organizerId", user._id))
+        .withIndex("by_organizer", (q) => q.eq("organizerId", user._id))
         .first();
 
       if (!existingCredits) {

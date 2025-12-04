@@ -329,6 +329,7 @@ export default function OrganizerEventsPage() {
                     </div>
                   </div>
                   <button
+                    type="button"
                     onClick={() => setShowWelcomeBanner(false)}
                     className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 p-1"
                     aria-label="Close welcome banner"
@@ -499,6 +500,7 @@ export default function OrganizerEventsPage() {
                 )}
               </div>
               <button
+                type="button"
                 onClick={() => setDeleteResult(null)}
                 className="text-gray-400 hover:text-gray-600"
               >
@@ -533,24 +535,28 @@ export default function OrganizerEventsPage() {
                 Quick Select:
               </span>
               <button
+                type="button"
                 onClick={selectAllEvents}
                 className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-accent text-primary rounded-md hover:bg-primary/20 transition-colors"
               >
                 All ({events.length})
               </button>
               <button
+                type="button"
                 onClick={selectEventsWithTickets}
                 className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-success/10 text-success rounded-md hover:bg-success/20 transition-colors"
               >
                 With Tickets ({events.filter((e) => hasTicketsSold(e)).length})
               </button>
               <button
+                type="button"
                 onClick={selectEventsWithoutTickets}
                 className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-muted text-foreground rounded-md hover:bg-muted/80 transition-colors"
               >
                 No Tickets ({events.filter((e) => !hasTicketsSold(e)).length})
               </button>
               <button
+                type="button"
                 onClick={() => setSelectedEvents(new Set())}
                 className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-destructive/10 text-destructive rounded-md hover:bg-destructive/20 transition-colors"
               >
@@ -706,6 +712,7 @@ export default function OrganizerEventsPage() {
 
                         {/* Publish/Unpublish Button - Prominent */}
                         <button
+                          type="button"
                           onClick={() => handleTogglePublish(event._id, event.status || "DRAFT")}
                           className={`flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm rounded-lg transition-all flex-1 sm:flex-none font-semibold shadow-md ${
                             event.status === "PUBLISHED"
@@ -821,6 +828,7 @@ export default function OrganizerEventsPage() {
 
               <div className="flex gap-3 justify-end">
                 <button
+                  type="button"
                   onClick={() => setShowDeleteConfirm(false)}
                   disabled={isDeleting}
                   className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
@@ -828,6 +836,7 @@ export default function OrganizerEventsPage() {
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleBulkDelete}
                   disabled={isDeleting}
                   className="px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center gap-2"

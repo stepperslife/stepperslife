@@ -5,7 +5,6 @@
  */
 
 import { spawn } from 'child_process';
-import path from 'path';
 
 interface TestPhase {
   name: string;
@@ -125,15 +124,16 @@ class ComprehensiveTestRunner {
 
       } catch (error) {
         const duration = Date.now() - startTime;
+        const errorMessage = error instanceof Error ? error.message : String(error);
 
         this.results.set(phase.name, {
           passed: false,
           duration,
-          output: error.message
+          output: errorMessage
         });
 
         console.error(`\n✗ ${phase.name} failed after ${(duration / 1000).toFixed(2)}s`);
-        console.error(`Error: ${error.message}`);
+        console.error(`Error: ${errorMessage}`);
 
         if (stopOnFailure && !phase.optional) {
           console.error('\n[ABORT] Stopping due to failure in required phase');
@@ -156,7 +156,7 @@ class ComprehensiveTestRunner {
 
       const child = spawn(phase.command, phase.args, {
         cwd: process.cwd(),
-        env: process.env,
+        env: process.env as NodeJS.ProcessEnv,
         stdio: ['pipe', 'pipe', 'pipe']
       });
 
@@ -239,7 +239,8 @@ class ComprehensiveTestRunner {
       console.log(`\n✓ ${phase.name} completed successfully`);
       process.exit(0);
     } catch (error) {
-      console.error(`\n✗ ${phase.name} failed: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`\n✗ ${phase.name} failed: ${errorMessage}`);
       process.exit(1);
     }
   }

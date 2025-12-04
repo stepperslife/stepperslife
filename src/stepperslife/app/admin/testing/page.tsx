@@ -89,6 +89,7 @@ export default function TestingDashboard() {
               </p>
             </div>
             <button
+              type="button"
               onClick={runCompleteE2ETest}
               disabled={isLoading}
               className="flex items-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-lg font-bold hover:bg-purple-50 transition-colors disabled:opacity-50 whitespace-nowrap"
@@ -108,6 +109,7 @@ export default function TestingDashboard() {
           <h2 className="text-lg font-bold text-foreground mb-4">Individual Test Actions</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button
+              type="button"
               onClick={runTestSetup}
               disabled={isLoading}
               className="flex flex-col items-center gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors disabled:opacity-50"
@@ -116,6 +118,7 @@ export default function TestingDashboard() {
               <span className="text-sm font-medium">Create Events</span>
             </button>
             <button
+              type="button"
               onClick={() => runAction("add-staff")}
               disabled={isLoading}
               className="flex flex-col items-center gap-2 p-4 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors disabled:opacity-50"
@@ -124,6 +127,7 @@ export default function TestingDashboard() {
               <span className="text-sm font-medium">Add Staff</span>
             </button>
             <button
+              type="button"
               onClick={() => runAction("simulate-purchases")}
               disabled={isLoading}
               className="flex flex-col items-center gap-2 p-4 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors disabled:opacity-50"
@@ -132,6 +136,7 @@ export default function TestingDashboard() {
               <span className="text-sm font-medium">Simulate Purchases</span>
             </button>
             <button
+              type="button"
               onClick={() => runAction("simulate-scanning")}
               disabled={isLoading}
               className="flex flex-col items-center gap-2 p-4 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors disabled:opacity-50"
@@ -142,6 +147,7 @@ export default function TestingDashboard() {
           </div>
           <div className="mt-4 flex gap-4">
             <button
+              type="button"
               onClick={cleanupTestData}
               disabled={isLoading}
               className="flex items-center gap-2 px-4 py-2 bg-destructive/10 text-destructive rounded-lg hover:bg-destructive/20 transition-colors disabled:opacity-50"
@@ -494,6 +500,7 @@ export default function TestingDashboard() {
               Click "Run Full E2E Test" to create test events, staff, customers, purchases, and tickets
             </p>
             <button
+              type="button"
               onClick={runCompleteE2ETest}
               disabled={isLoading}
               className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700 transition-colors disabled:opacity-50"

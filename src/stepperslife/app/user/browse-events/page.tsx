@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Doc } from "@/convex/_generated/dataModel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,19 +11,24 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function BrowseEventsPage() {
-  const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const events = useQuery(api.events.queries.listPublicEvents) || [];
+  const events = useQuery(api.events.queries.getClaimableEvents) || [];
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentTime] = useState(() => Date.now());
 
   // Filter events based on search
-  const filteredEvents = events.filter((event) =>
-    event.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    event.location?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredEvents = events.filter((event: Doc<"events">) => {
+    const locationString = typeof event.location === "string"
+      ? event.location
+      : event.location?.city || "";
+    return (
+      event.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      locationString.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   // Categorize events
   const upcomingEvents = filteredEvents.filter(
-    (event) => event.startDate && event.startDate > Date.now()
+    (event: Doc<"events">) => event.startDate && event.startDate > currentTime
   );
   const featuredEvents = upcomingEvents.slice(0, 3);
 
@@ -74,7 +80,7 @@ export default function BrowseEventsPage() {
         <div>
           <h2 className="text-2xl font-bold mb-4">Featured Events</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {featuredEvents.map((event) => (
+            {featuredEvents.map((event: Doc<"events">) => (
               <Card key={event._id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex justify-between items-start">
@@ -94,13 +100,17 @@ export default function BrowseEventsPage() {
                   <div className="space-y-3">
                     <div className="flex items-start gap-2 text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4 mt-0.5" />
-                      <span className="line-clamp-1">{event.location || "Location TBA"}</span>
+                      <span className="line-clamp-1">
+                        {typeof event.location === "string"
+                          ? event.location
+                          : event.location?.city || "Location TBA"}
+                      </span>
                     </div>
                     <div className="text-sm">
                       <span className="font-semibold text-lg text-primary">
-                        ${event.basePrice || "0"}
+                        ${event.price ? (event.price / 100).toFixed(2) : "Free"}
                       </span>
-                      <span className="text-muted-foreground"> per ticket</span>
+                      {event.price && <span className="text-muted-foreground"> per ticket</span>}
                     </div>
                     <div className="flex gap-2">
                       <Button asChild className="flex-1">
@@ -135,7 +145,7 @@ export default function BrowseEventsPage() {
           </Card>
         ) : (
           <div className="grid gap-4">
-            {filteredEvents.map((event) => (
+            {filteredEvents.map((event: Doc<"events">) => (
               <Card key={event._id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
@@ -171,15 +181,19 @@ export default function BrowseEventsPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4" />
-                              <span>{event.location || "Location TBA"}</span>
+                              <span>
+                                {typeof event.location === "string"
+                                  ? event.location
+                                  : event.location?.city || "Location TBA"}
+                              </span>
                             </div>
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-primary">
-                            ${event.basePrice || "0"}
+                            ${event.price ? (event.price / 100).toFixed(2) : "Free"}
                           </div>
-                          <div className="text-xs text-muted-foreground">per ticket</div>
+                          {event.price && <div className="text-xs text-muted-foreground">per ticket</div>}
                         </div>
                       </div>
 

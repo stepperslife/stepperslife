@@ -49,7 +49,7 @@ export default function AdminVendorDetailPage() {
 
   // Get vendor products
   const products = useQuery(
-    api.products.getProductsByVendor,
+    api.products.queries.getProductsByVendor,
     vendorId ? { vendorId: vendorId as Id<"vendors"> } : "skip"
   );
 
@@ -164,7 +164,7 @@ export default function AdminVendorDetailPage() {
                 <ShoppingBag className="w-5 h-5 text-blue-600" />
                 <span className="text-sm text-muted-foreground">Orders</span>
               </div>
-              <p className="text-2xl font-bold text-foreground">{vendor.totalOrders || 0}</p>
+              <p className="text-2xl font-bold text-foreground">{earningsSummary?.orderCount || 0}</p>
             </div>
             <div className="bg-card rounded-xl border border-border p-4">
               <div className="flex items-center gap-2 mb-2">
@@ -211,7 +211,7 @@ export default function AdminVendorDetailPage() {
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Processing</p>
                 <p className="text-xl font-bold text-blue-600">
-                  {formatCurrency(earningsSummary?.processingAmount || 0)}
+                  {formatCurrency(earningsSummary?.processingEarnings || 0)}
                 </p>
               </div>
             </div>
@@ -225,7 +225,7 @@ export default function AdminVendorDetailPage() {
             </div>
             {products && products.length > 0 ? (
               <div className="space-y-3">
-                {products.slice(0, 5).map((product) => (
+                {products.slice(0, 5).map((product: any) => (
                   <div
                     key={product._id}
                     className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
@@ -354,7 +354,6 @@ export default function AdminVendorDetailPage() {
                     {vendor.city && vendor.state && ", "}
                     {vendor.state} {vendor.zipCode}
                   </p>
-                  {vendor.country && <p>{vendor.country}</p>}
                 </div>
               </div>
             </div>
@@ -393,6 +392,7 @@ export default function AdminVendorDetailPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold text-foreground">Commission</h2>
               <button
+                type="button"
                 onClick={() => {
                   setNewCommission(String(vendor.commissionPercent || 15));
                   setShowCommissionModal(true);
@@ -421,21 +421,21 @@ export default function AdminVendorDetailPage() {
                   <p className="text-foreground">{formatDate(vendor.createdAt)}</p>
                 </div>
               </div>
-              {vendor.approvedAt && (
+              {vendor.reviewedAt && vendor.status === "APPROVED" && (
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-600" />
                   <div>
                     <p className="text-muted-foreground">Approved</p>
-                    <p className="text-foreground">{formatDate(vendor.approvedAt)}</p>
+                    <p className="text-foreground">{formatDate(vendor.reviewedAt)}</p>
                   </div>
                 </div>
               )}
-              {vendor.suspendedAt && (
+              {vendor.reviewedAt && vendor.status === "SUSPENDED" && (
                 <div className="flex items-center gap-3">
                   <AlertTriangle className="w-4 h-4 text-red-600" />
                   <div>
                     <p className="text-muted-foreground">Suspended</p>
-                    <p className="text-foreground">{formatDate(vendor.suspendedAt)}</p>
+                    <p className="text-foreground">{formatDate(vendor.reviewedAt)}</p>
                   </div>
                 </div>
               )}
@@ -473,12 +473,14 @@ export default function AdminVendorDetailPage() {
             </div>
             <div className="flex gap-3 justify-end">
               <button
+                type="button"
                 onClick={() => setShowCommissionModal(false)}
                 className="px-4 py-2 border border-border rounded-lg font-medium hover:bg-muted transition-colors"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleUpdateCommission}
                 disabled={isUpdating}
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"

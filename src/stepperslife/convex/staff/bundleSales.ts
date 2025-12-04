@@ -4,13 +4,15 @@
  */
 
 import { v } from "convex/values";
-import { mutation, query } from "../_generated/server";
+import { mutation, query, QueryCtx, MutationCtx } from "../_generated/server";
+import { Id } from "../_generated/dataModel";
+import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 
 /**
  * Get authenticated user - requires valid authentication
  * @throws Error if not authenticated
  */
-async function getAuthenticatedUser(ctx: any) {
+async function getAuthenticatedUser(ctx: QueryCtx | MutationCtx) {
   const identity = await ctx.auth.getUserIdentity();
 
   // TESTING MODE: Use fallback test user
@@ -18,7 +20,7 @@ async function getAuthenticatedUser(ctx: any) {
     console.warn("[getAuthenticatedUser] TESTING MODE - Using test user");
     const user = await ctx.db
       .query("users")
-      .withIndex("by_email", (q: any) => q.eq("email", "iradwatkins@gmail.com"))
+      .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
       .first();
 
     if (!user) {
@@ -28,9 +30,15 @@ async function getAuthenticatedUser(ctx: any) {
     return user;
   }
 
+  // At this point, we know identity.email exists because of the check above
+  const email = identity.email;
+  if (!email) {
+    throw new Error("User email not found");
+  }
+
   const user = await ctx.db
     .query("users")
-    .withIndex("by_email", (q: any) => q.eq("email", identity.email))
+    .withIndex("by_email", (q) => q.eq("email", email))
     .first();
 
   if (!user) {
@@ -44,7 +52,11 @@ async function getAuthenticatedUser(ctx: any) {
  * Internal helper function to check bundle eligibility
  * Can be called from both queries and mutations
  */
-async function checkBundleEligibility(ctx: any, staffId: any, bundleId: any) {
+async function checkBundleEligibility(
+  ctx: QueryCtx | MutationCtx,
+  staffId: Id<"eventStaff">,
+  bundleId: Id<"ticketBundles">
+) {
   // Get bundle
   const bundle = await ctx.db.get(bundleId);
   if (!bundle) {
@@ -54,7 +66,7 @@ async function checkBundleEligibility(ctx: any, staffId: any, bundleId: any) {
   // Get staff allocations
   const allocations = await ctx.db
     .query("staffTierAllocations")
-    .withIndex("by_staff", (q: any) => q.eq("staffId", staffId))
+    .withIndex("by_staff", (q) => q.eq("staffId", staffId))
     .collect();
 
   // Check if staff has allocations for all required tiers
@@ -62,7 +74,7 @@ async function checkBundleEligibility(ctx: any, staffId: any, bundleId: any) {
   const insufficientTiers: Array<{ name: string; has: number; needs: number }> = [];
 
   for (const includedTier of bundle.includedTiers) {
-    const allocation = allocations.find((a: any) => a.tierId === includedTier.tierId);
+    const allocation = allocations.find((a) => a.tierId === includedTier.tierId);
 
     if (!allocation) {
       // Get tier name for better error message
@@ -164,7 +176,7 @@ export const createStaffBundleSale = mutation({
     bundleId: v.id("ticketBundles"),
     buyerName: v.string(),
     buyerEmail: v.string(),
-    paymentMethod: v.union(v.literal("CASH"), v.literal("CASH_APP"), v.literal("ZELLE")),
+    paymentMethod: v.union(v.literal("CASH"), v.literal("CASH_APP")),
   },
   handler: async (ctx, args) => {
     const user = await getAuthenticatedUser(ctx);
@@ -226,7 +238,7 @@ export const createStaffBundleSale = mutation({
     });
 
     // Create tickets for each tier in the bundle
-    const ticketIds: string[] = [];
+    const ticketIds: Id<"tickets">[] = [];
     let totalCommission = 0;
 
     for (const includedTier of bundle.includedTiers) {
@@ -255,10 +267,10 @@ export const createStaffBundleSale = mutation({
           attendeeName: args.buyerName,
           attendeeEmail: args.buyerEmail,
           ticketCode,
-          status: "ACTIVE",
+          status: "VALID",
           price: proRatedPrice,
           soldByStaffId: args.staffId,
-          bundleId: args.bundleId,
+          bundleId: args.bundleId as string,
           createdAt: now,
           updatedAt: now,
         });

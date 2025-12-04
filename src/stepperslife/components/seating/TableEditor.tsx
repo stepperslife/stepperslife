@@ -115,7 +115,8 @@ export default function TableEditor({ table, onUpdate, onDelete, onClose }: Tabl
         <div className="bg-primary px-6 py-4 text-white sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold">Edit Table</h2>
-            <button onClick={onClose} className="p-1 hover:bg-white/20 rounded transition-colors">
+            <button
+              type="button" onClick={onClose} className="p-1 hover:bg-white/20 rounded transition-colors">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -219,6 +220,7 @@ export default function TableEditor({ table, onUpdate, onDelete, onClose }: Tabl
 
           {/* Auto-Arrange Button */}
           <button
+            type="button"
             onClick={handleAutoArrange}
             className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
           >
@@ -302,6 +304,7 @@ export default function TableEditor({ table, onUpdate, onDelete, onClose }: Tabl
                 {table.rotation || 0}°
               </span>
               <button
+                type="button"
                 onClick={handleRotate}
                 className="p-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors"
                 title="Rotate 15°"
@@ -341,12 +344,14 @@ export default function TableEditor({ table, onUpdate, onDelete, onClose }: Tabl
           {/* Actions */}
           <div className="pt-4 border-t border-border space-y-3">
             <button
+              type="button"
               onClick={onClose}
               className="w-full px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors font-medium"
             >
               Done Editing
             </button>
             <button
+              type="button"
               onClick={() => {
                 if (confirm(`Delete Table ${table.number}?`)) {
                   onDelete();

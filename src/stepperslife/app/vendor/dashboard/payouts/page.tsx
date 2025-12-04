@@ -129,6 +129,7 @@ export default function VendorPayoutsPage() {
           <p className="text-muted-foreground">Request and track your payouts</p>
         </div>
         <button
+          type="button"
           onClick={() => setShowRequestModal(true)}
           disabled={!canRequestPayout || hasPendingPayout}
           className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -343,12 +344,14 @@ export default function VendorPayoutsPage() {
             {/* Actions */}
             <div className="flex gap-3 justify-end">
               <button
+                type="button"
                 onClick={() => setShowRequestModal(false)}
                 className="px-4 py-2 border border-border rounded-lg font-medium hover:bg-muted transition-colors"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleRequestPayout}
                 disabled={isSubmitting}
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"

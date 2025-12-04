@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function PayoutHistoryPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const payouts = [];
+  const payouts: any[] = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

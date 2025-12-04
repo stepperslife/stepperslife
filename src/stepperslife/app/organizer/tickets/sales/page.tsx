@@ -13,12 +13,23 @@ import {
   BarChart3,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Doc, Id } from "@/convex/_generated/dataModel";
+
+// Extended event type with computed fields
+interface EventWithStats extends Doc<"events"> {
+  imageUrl?: string;
+  totalRevenue?: number;
+  ticketsSold?: number;
+}
 
 export default function TicketSalesPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const events = useQuery(api.events.queries.getOrganizerEvents, {
+  const rawEvents = useQuery(api.events.queries.getOrganizerEvents, {
     userId: currentUser?._id,
   });
+
+  // Type assertion to include extended fields
+  const events = rawEvents as EventWithStats[] | undefined;
 
   const isLoading = currentUser === undefined || events === undefined;
 
@@ -162,7 +173,7 @@ export default function TicketSalesPage() {
                               href={`/organizer/events/${event._id}`}
                               className="text-sm font-medium text-primary hover:underline truncate block"
                             >
-                              {event.title}
+                              {event.name}
                             </Link>
                             <p className="text-xs text-gray-500">
                               {(event.ticketsSold || 0).toLocaleString()} tickets sold
@@ -225,7 +236,7 @@ export default function TicketSalesPage() {
                               href={`/organizer/events/${event._id}`}
                               className="text-sm font-medium text-primary hover:underline truncate block"
                             >
-                              {event.title}
+                              {event.name}
                             </Link>
                             <p className="text-xs text-gray-500">
                               ${(event.totalRevenue || 0).toLocaleString()} revenue

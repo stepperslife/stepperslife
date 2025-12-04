@@ -220,6 +220,7 @@ export default function VariantsManager({
         </div>
 
         <button
+          type="button"
           onClick={handleGenerateCombinations}
           disabled={isGenerating || !colors.trim() || !sizes.trim()}
           className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
@@ -390,6 +391,7 @@ export default function VariantsManager({
                         {editingVariant === variant.id ? (
                           <>
                             <button
+                              type="button"
                               onClick={() => handleUpdateVariant(variant.id)}
                               className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors"
                               title="Save changes"
@@ -397,6 +399,7 @@ export default function VariantsManager({
                               <Save className="w-4 h-4" />
                             </button>
                             <button
+                              type="button"
                               onClick={() => setEditingVariant(null)}
                               className="p-1 text-gray-600 hover:bg-gray-50 rounded transition-colors"
                               title="Cancel"
@@ -407,12 +410,14 @@ export default function VariantsManager({
                         ) : (
                           <>
                             <button
+                              type="button"
                               onClick={() => startEditing(variant)}
                               className="px-2 py-1 text-xs bg-accent text-primary rounded hover:bg-primary/20 transition-colors"
                             >
                               Edit
                             </button>
                             <button
+                              type="button"
                               onClick={() => handleDeleteVariant(variant.id, variant.name)}
                               className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                               title="Delete variant"
