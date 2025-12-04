@@ -88,7 +88,7 @@ export default function MyTicketsPage() {
     shouldFetch ? {} : "skip"
   );
 
-  const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
+  // expandedTicket state removed - QR codes now always visible for VALID tickets
   const [transferModalTicket, setTransferModalTicket] = useState<TicketData | null>(null);
   const [transferEmail, setTransferEmail] = useState("");
   const [transferName, setTransferName] = useState("");
@@ -142,18 +142,40 @@ export default function MyTicketsPage() {
     {} as Record<string, { event: NonNullable<TicketData["event"]>; tickets: TicketData[] }>
   );
 
-  // Separate upcoming and past events
+  // Separate upcoming and past events, filtering out cancelled/refunded from main view
   const now = Date.now();
+
+  // For upcoming events, filter out CANCELLED and REFUNDED tickets
   const upcomingEvents = groupedTickets
-    ? Object.values(groupedTickets).filter(
-      (group) => group.event.startDate && group.event.startDate >= now
-    )
+    ? Object.values(groupedTickets)
+        .filter((group) => group.event.startDate && group.event.startDate >= now)
+        .map((group) => ({
+          ...group,
+          tickets: group.tickets.filter(
+            (t) => t.status !== "CANCELLED" && t.status !== "REFUNDED"
+          ),
+        }))
+        .filter((group) => group.tickets.length > 0)
     : [];
+
+  // For past events, show all except cancelled/refunded
   const pastEvents = groupedTickets
-    ? Object.values(groupedTickets).filter(
-      (group) => !group.event.startDate || group.event.startDate < now
-    )
+    ? Object.values(groupedTickets)
+        .filter((group) => !group.event.startDate || group.event.startDate < now)
+        .map((group) => ({
+          ...group,
+          tickets: group.tickets.filter(
+            (t) => t.status !== "CANCELLED" && t.status !== "REFUNDED"
+          ),
+        }))
+        .filter((group) => group.tickets.length > 0)
     : [];
+
+  // Archived tickets (CANCELLED and REFUNDED) - grouped by event
+  const archivedTickets = ticketsData?.filter(
+    (t) => t.status === "CANCELLED" || t.status === "REFUNDED"
+  ) || [];
+  const [showArchived, setShowArchived] = useState(false);
 
   const handleDownloadTicket = (ticketCode: string, eventName: string) => {
     // Create a simple download by opening the ticket in a new window
@@ -434,88 +456,217 @@ export default function MyTicketsPage() {
                     key={event._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-lg shadow-md overflow-hidden"
+                    className="bg-card rounded-xl shadow-lg overflow-hidden border border-border"
                   >
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="text-2xl font-bold text-gray-900">{event.name}</h3>
-                          <div className="flex items-center gap-4 mt-2 text-gray-600">
-                            {event.startDate && (
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
-                                {format(new Date(event.startDate), "PPP")}
-                              </span>
-                            )}
+                    {/* Event Header with Image - Eventbrite Style */}
+                    <div className="relative">
+                      {/* Event Image */}
+                      <div className="h-48 md:h-56 bg-gradient-to-br from-primary/20 to-primary/5 relative overflow-hidden">
+                        {event.imageUrl ? (
+                          <img
+                            src={event.imageUrl}
+                            alt={event.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Ticket className="w-16 h-16 text-primary/30" />
+                          </div>
+                        )}
+                        {/* Gradient overlay for text readability */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      </div>
+
+                      {/* Event Info Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 text-white">
+                        <div className="flex justify-between items-end">
+                          <div>
+                            <h3 className="text-xl md:text-2xl font-bold drop-shadow-lg">{event.name}</h3>
+                            <div className="flex flex-wrap items-center gap-3 mt-2 text-white/90 text-sm">
+                              {event.startDate && (
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-4 h-4" />
+                                  {format(new Date(event.startDate), "EEE, MMM d, yyyy 'at' h:mm a")}
+                                </span>
+                              )}
+                            </div>
                             {event.location && (
-                              <span className="flex items-center gap-1">
+                              <span className="flex items-center gap-1 mt-1 text-white/80 text-sm">
                                 <MapPin className="w-4 h-4" />
                                 {formatEventLocation(event.location)}
                               </span>
                             )}
                           </div>
+                          <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                            {eventTickets.length} ticket{eventTickets.length !== 1 ? "s" : ""}
+                          </span>
                         </div>
-                        <span className="bg-accent text-primary px-3 py-1 rounded-full text-sm font-medium">
-                          {eventTickets.length} ticket{eventTickets.length !== 1 ? "s" : ""}
-                        </span>
                       </div>
+                    </div>
 
-                      <div className="space-y-3">
+                    {/* Tickets List - Eventbrite Style with Prominent QR */}
+                    <div className="p-4 md:p-6">
+                      <div className="space-y-4">
                         {eventTickets.map((ticket) => {
-                          const isExpanded = expandedTicket === ticket._id;
                           const editable = isTicketEditable(ticket);
 
                           return (
                             <div
                               key={ticket._id}
-                              className={`border rounded-lg transition-all ${selectedTickets.includes(ticket._id)
-                                ? "border-primary bg-accent"
-                                : "border-border"
-                                }`}
+                              className={`border-2 rounded-xl overflow-hidden transition-all ${
+                                selectedTickets.includes(ticket._id)
+                                  ? "border-primary bg-accent/30"
+                                  : ticket.status === "VALID"
+                                    ? "border-success/30 bg-success/5"
+                                    : "border-border bg-card"
+                              }`}
                             >
-                              <div className="p-4">
-                                <div className="flex justify-between items-start">
-                                  <div className="flex items-start gap-3 flex-1">
-                                    {/* Selection checkbox */}
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedTickets.includes(ticket._id)}
-                                      onChange={() => handleToggleTicketSelection(ticket._id)}
-                                      className="mt-1"
-                                      disabled={!editable}
-                                    />
+                              {/* Ticket Card - Side by Side Layout */}
+                              <div className="flex flex-col md:flex-row">
+                                {/* Left Side - QR Code (Always Visible for VALID) */}
+                                <div className="md:w-48 flex-shrink-0 bg-white p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-dashed border-border">
+                                  {ticket.status === "VALID" && ticket.ticketCode ? (
+                                    <>
+                                      <QRCodeSVG
+                                        value={ticket.ticketCode}
+                                        size={140}
+                                        level="H"
+                                        includeMargin={false}
+                                        className="rounded-lg"
+                                      />
+                                      <p className="text-[10px] text-muted-foreground mt-2 font-mono">
+                                        {ticket.ticketCode}
+                                      </p>
+                                    </>
+                                  ) : ticket.status === "PENDING" ? (
+                                    <div className="text-center p-2">
+                                      <div className="w-24 h-24 bg-warning/10 rounded-lg flex items-center justify-center mb-2">
+                                        <AlertCircle className="w-10 h-10 text-warning" />
+                                      </div>
+                                      <p className="text-xs text-warning font-medium">Awaiting Payment</p>
+                                    </div>
+                                  ) : ticket.status === "PENDING_ACTIVATION" ? (
+                                    <div className="text-center p-2">
+                                      <div className="w-24 h-24 bg-orange-100 rounded-lg flex items-center justify-center mb-2">
+                                        <AlertCircle className="w-10 h-10 text-orange-500" />
+                                      </div>
+                                      <Link
+                                        href="/activate"
+                                        className="text-xs text-orange-600 font-medium hover:underline"
+                                      >
+                                        Tap to Activate
+                                      </Link>
+                                    </div>
+                                  ) : (
+                                    <div className="text-center p-2">
+                                      <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center mb-2">
+                                        <QrCode className="w-10 h-10 text-muted-foreground" />
+                                      </div>
+                                      <p className="text-xs text-muted-foreground">Not Available</p>
+                                    </div>
+                                  )}
+                                </div>
 
+                                {/* Right Side - Ticket Info */}
+                                <div className="flex-1 p-4">
+                                  <div className="flex justify-between items-start">
                                     <div className="flex-1">
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-medium">
-                                          {ticket.attendeeName || "Unnamed Ticket"}
+                                      {/* Attendee Name & Status */}
+                                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                                        <span className="font-semibold text-foreground text-lg">
+                                          {ticket.attendeeName || "Guest"}
                                         </span>
-                                        {ticket.bundleId && (
-                                          <span className="px-2 py-1 bg-accent text-primary text-xs rounded-full">
-                                            {ticket.bundleName || "Bundled"}
+                                        {ticket.status === "VALID" && (
+                                          <span className="px-2 py-0.5 bg-success text-white text-xs rounded-full font-medium">
+                                            Ready
                                           </span>
                                         )}
-                                        {ticket.status === "CANCELLED" && (
-                                          <span className="px-2 py-1 bg-destructive/10 text-destructive text-xs rounded-full">
-                                            Cancelled
+                                        {ticket.status === "PENDING" && (
+                                          <span className="px-2 py-0.5 bg-warning text-white text-xs rounded-full font-medium">
+                                            Pending
+                                          </span>
+                                        )}
+                                        {ticket.status === "PENDING_ACTIVATION" && (
+                                          <span className="px-2 py-0.5 bg-orange-500 text-white text-xs rounded-full font-medium">
+                                            Activate
                                           </span>
                                         )}
                                       </div>
-                                      <div className="text-sm text-muted-foreground mt-1">
+
+                                      {/* Email */}
+                                      <p className="text-sm text-muted-foreground">
                                         {ticket.attendeeEmail}
+                                      </p>
+
+                                      {/* Tier & Bundle */}
+                                      <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                        {ticket.tier?.name && (
+                                          <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded font-medium">
+                                            {ticket.tier.name}
+                                          </span>
+                                        )}
+                                        {ticket.bundleId && (
+                                          <span className="px-2 py-1 bg-accent text-primary text-xs rounded">
+                                            {ticket.bundleName || "Bundle"}
+                                          </span>
+                                        )}
                                       </div>
-                                      {ticket.tier?.name && (
-                                        <div className="text-sm text-muted-foreground mt-1">
-                                          {ticket.tier.name}
+
+                                      {/* Seat Info if available */}
+                                      {ticket.seat && (
+                                        <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground">
+                                          <Armchair className="w-4 h-4" />
+                                          <span>
+                                            {ticket.seat.sectionName} • Row {ticket.seat.rowLabel} • Seat {ticket.seat.seatNumber}
+                                          </span>
                                         </div>
+                                      )}
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex flex-col items-end gap-2">
+                                      {/* Selection checkbox for bundling */}
+                                      {editable && (
+                                        <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                                          <input
+                                            type="checkbox"
+                                            checked={selectedTickets.includes(ticket._id)}
+                                            onChange={() => handleToggleTicketSelection(ticket._id)}
+                                            className="rounded"
+                                          />
+                                          Select
+                                        </label>
                                       )}
                                     </div>
                                   </div>
 
-                                  <div className="flex items-center gap-2">
-                                    {/* Action buttons */}
+                                  {/* Bottom Actions */}
+                                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
+                                    <div className="flex items-center gap-2">
+                                      {ticket.status === "VALID" && (
+                                        <>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleShareTicket(ticket.ticketCode || "", event.name)}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                          >
+                                            <Share2 className="w-4 h-4" />
+                                            Share
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleDownloadTicket(ticket.ticketCode || "", event.name)}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors"
+                                          >
+                                            <Download className="w-4 h-4" />
+                                            Save
+                                          </button>
+                                        </>
+                                      )}
+                                    </div>
+
                                     {editable && (
-                                      <>
+                                      <div className="flex items-center gap-1">
                                         <button
                                           type="button"
                                           onClick={() => handleEditTicket(ticket)}
@@ -540,71 +691,10 @@ export default function MyTicketsPage() {
                                         >
                                           <Trash2 className="w-4 h-4" />
                                         </button>
-                                      </>
+                                      </div>
                                     )}
-
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        setExpandedTicket(isExpanded ? null : ticket._id)
-                                      }
-                                      className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
-                                    >
-                                      {isExpanded ? (
-                                        <ChevronUp className="w-4 h-4" />
-                                      ) : (
-                                        <ChevronDown className="w-4 h-4" />
-                                      )}
-                                    </button>
                                   </div>
                                 </div>
-
-                                {/* Expanded content */}
-                                <AnimatePresence>
-                                  {isExpanded && ticket.ticketCode && (
-                                    <motion.div
-                                      initial={{ height: 0, opacity: 0 }}
-                                      animate={{ height: "auto", opacity: 1 }}
-                                      exit={{ height: 0, opacity: 0 }}
-                                      transition={{ duration: 0.3 }}
-                                      className="mt-4 pt-4 border-t"
-                                    >
-                                      <div className="flex flex-col items-center">
-                                        <QRCodeSVG
-                                          value={ticket.ticketCode || ""}
-                                          size={200}
-                                          level="H"
-                                          includeMargin={true}
-                                        />
-                                        <p className="text-xs text-muted-foreground mt-2">
-                                          Ticket Code: {ticket.ticketCode}
-                                        </p>
-                                        <div className="flex gap-2 mt-4">
-                                          <button
-                                            type="button"
-                                            onClick={() =>
-                                              handleShareTicket(ticket.ticketCode || "", event.name)
-                                            }
-                                            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm"
-                                          >
-                                            <Share2 className="w-4 h-4" />
-                                            Share
-                                          </button>
-                                          <button
-                                            type="button"
-                                            onClick={() =>
-                                              handleDownloadTicket(ticket.ticketCode || "", event.name)
-                                            }
-                                            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted text-sm"
-                                          >
-                                            <Download className="w-4 h-4" />
-                                            Download
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
                               </div>
                             </div>
                           );
@@ -651,7 +741,7 @@ export default function MyTicketsPage() {
 
           {/* Past Events Section */}
           {pastEvents.length > 0 && (
-            <div>
+            <div className="mb-8">
               <h2 className="text-xl font-semibold text-foreground mb-4">Past Events</h2>
               <div className="space-y-6">
                 {pastEvents.map(({ event, tickets: eventTickets }) => (
@@ -659,47 +749,75 @@ export default function MyTicketsPage() {
                     key={event._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-lg shadow-md overflow-hidden opacity-75"
+                    className="bg-card rounded-xl shadow-md overflow-hidden border border-border opacity-75"
                   >
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="text-2xl font-bold text-gray-900">{event.name}</h3>
-                          <div className="flex items-center gap-4 mt-2 text-gray-600">
-                            {event.startDate && (
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
-                                {format(new Date(event.startDate), "PPP")}
-                              </span>
-                            )}
-                            {event.location && (
-                              <span className="flex items-center gap-1">
-                                <MapPin className="w-4 h-4" />
-                                {formatEventLocation(event.location)}
-                              </span>
-                            )}
+                    {/* Event Header with Image */}
+                    <div className="relative">
+                      <div className="h-32 md:h-40 bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
+                        {event.imageUrl ? (
+                          <img
+                            src={event.imageUrl}
+                            alt={event.name}
+                            className="w-full h-full object-cover grayscale-[30%]"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Ticket className="w-12 h-12 text-muted-foreground/30" />
                           </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <h3 className="text-lg md:text-xl font-bold">{event.name}</h3>
+                        <div className="flex items-center gap-3 mt-1 text-white/80 text-sm">
+                          {event.startDate && (
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              {format(new Date(event.startDate), "PPP")}
+                            </span>
+                          )}
+                          {event.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-4 h-4" />
+                              {formatEventLocation(event.location)}
+                            </span>
+                          )}
                         </div>
-                        <span className="bg-muted text-foreground px-3 py-1 rounded-full text-sm font-medium">
+                        <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
                           {eventTickets.length} ticket{eventTickets.length !== 1 ? "s" : ""}
                         </span>
                       </div>
+                    </div>
 
+                    {/* Tickets List */}
+                    <div className="p-4">
                       <div className="space-y-3">
                         {eventTickets.map((ticket) => (
-                          <div key={ticket._id} className="border border-border rounded-lg p-4">
+                          <div key={ticket._id} className="border border-border rounded-lg p-4 bg-muted/30">
                             <div className="flex justify-between items-start">
                               <div>
-                                <div className="font-medium">
+                                <div className="font-medium text-foreground">
                                   {ticket.attendeeName || "Unnamed Ticket"}
                                 </div>
                                 <div className="text-sm text-muted-foreground mt-1">
                                   {ticket.attendeeEmail}
                                 </div>
+                                {ticket.tier?.name && (
+                                  <div className="text-xs text-muted-foreground mt-1">
+                                    {ticket.tier.name}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex flex-col items-end gap-1">
                                 {ticket.status === "SCANNED" && (
-                                  <span className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-success/10 text-success text-xs rounded-full">
+                                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-success/10 text-success text-xs rounded-full">
                                     <Check className="w-3 h-3" />
-                                    Scanned
+                                    Attended
+                                  </span>
+                                )}
+                                {ticket.status === "VALID" && (
+                                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
+                                    Unused
                                   </span>
                                 )}
                               </div>
@@ -711,6 +829,73 @@ export default function MyTicketsPage() {
                   </motion.div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Archived Tickets Section (Cancelled/Refunded) */}
+          {archivedTickets.length > 0 && (
+            <div className="mt-8">
+              <button
+                type="button"
+                onClick={() => setShowArchived(!showArchived)}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showArchived ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+                <span className="text-sm">
+                  {showArchived ? "Hide" : "Show"} {archivedTickets.length} cancelled/refunded ticket{archivedTickets.length !== 1 ? "s" : ""}
+                </span>
+              </button>
+
+              <AnimatePresence>
+                {showArchived && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-4 space-y-3"
+                  >
+                    {archivedTickets.map((ticket) => (
+                      <div
+                        key={ticket._id}
+                        className="bg-muted/50 border border-border rounded-lg p-4 opacity-60"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-muted-foreground">
+                                {ticket.attendeeName || "Unnamed Ticket"}
+                              </span>
+                              {ticket.status === "CANCELLED" && (
+                                <span className="px-2 py-1 bg-destructive/10 text-destructive text-xs rounded-full">
+                                  Cancelled
+                                </span>
+                              )}
+                              {ticket.status === "REFUNDED" && (
+                                <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
+                                  Refunded
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-muted-foreground mt-1">
+                              {ticket.event?.name || "Unknown Event"}
+                            </div>
+                            {ticket.tier?.name && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {ticket.tier.name}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )}
         </div>

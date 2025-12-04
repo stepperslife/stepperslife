@@ -63,6 +63,11 @@ export const getMyTickets = query({
           status: ticket.status,
           scannedAt: ticket.scannedAt,
           createdAt: ticket.createdAt,
+          eventId: ticket.eventId,
+          attendeeEmail: ticket.attendeeEmail,
+          attendeeName: ticket.attendeeName,
+          bundleId: ticket.bundleId,
+          bundleName: ticket.bundleName,
           event: event
             ? {
                 _id: event._id,

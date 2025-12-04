@@ -80,6 +80,14 @@ export const scanTicket = mutation({
       };
     }
 
+    if (ticket.status === "PENDING") {
+      return {
+        success: false,
+        error: "PENDING_PAYMENT",
+        message: "This ticket is pending payment approval. Cannot scan until activated.",
+      };
+    }
+
     // Get ticket tier for display
     const tier = ticket.ticketTierId ? await ctx.db.get(ticket.ticketTierId) : null;
 

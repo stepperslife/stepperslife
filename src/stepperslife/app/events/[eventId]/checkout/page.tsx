@@ -247,6 +247,14 @@ export default function CheckoutPage() {
       return;
     }
 
+    // For cash payments, require user to be logged in
+    if (paymentMethod === "cash" && !currentUser) {
+      toast.dismiss(loadingToast);
+      toast.error("Please sign in to complete a cash payment purchase. Your account links tickets to your profile.");
+      router.push(`/login?redirect=/events/${eventId}/checkout`);
+      return;
+    }
+
     // Stripe Connect is only required for CREDIT_CARD model events with online payment
     // Cash payments don't need Stripe Connect - they're validated by organizer at door
 
@@ -1062,10 +1070,32 @@ export default function CheckoutPage() {
                   className="bg-white rounded-lg shadow-md p-6"
                 >
                   <h3 className="font-semibold text-gray-900 mb-4">Your Information</h3>
+
+                  {/* Cash payment login notice */}
+                  {paymentMethod === "cash" && !currentUser && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+                      <p className="text-sm text-amber-800">
+                        <strong>Note:</strong> Cash payments require you to be signed in.
+                        <Link href={`/login?redirect=/events/${eventId}/checkout`} className="text-primary underline ml-1">
+                          Sign in here
+                        </Link>
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Show logged-in user info for cash payments */}
+                  {paymentMethod === "cash" && currentUser && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                      <p className="text-sm text-green-800">
+                        ✓ Signed in as <strong>{currentUser.email}</strong>
+                      </p>
+                    </div>
+                  )}
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name
+                        Full Name <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1073,11 +1103,12 @@ export default function CheckoutPage() {
                         onChange={(e) => setBuyerName(e.target.value)}
                         placeholder="John Doe"
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                        required
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address
+                        Email Address <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="email"
@@ -1085,6 +1116,7 @@ export default function CheckoutPage() {
                         onChange={(e) => setBuyerEmail(e.target.value)}
                         placeholder="john@example.com"
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                        required
                       />
                     </div>
                   </div>
