@@ -256,7 +256,7 @@ export const notifyNewFoodOrder = action({
 
     // Send push notification
     const pushResult = await ctx.runMutation(
-      internal["notifications/restaurantNotifications"].sendToRestaurant,
+      internal.notifications.restaurantNotifications.sendToRestaurant,
       {
         restaurantId: args.restaurantId,
         type: "FOOD_ORDER",
@@ -274,7 +274,7 @@ export const notifyNewFoodOrder = action({
     if (!pushResult.success || pushResult.sent === 0) {
       // Schedule email notification as fallback
       await ctx.runMutation(
-        internal["notifications/restaurantNotifications"].scheduleEmailNotification,
+        internal.notifications.restaurantNotifications.scheduleEmailNotification,
         {
           restaurantId: args.restaurantId,
           foodOrderId: args.foodOrderId,
@@ -347,7 +347,7 @@ export const sendTestNotification = action({
   },
   handler: async (ctx, args): Promise<{ success: boolean; sent: number }> => {
     const result = await ctx.runMutation(
-      internal["notifications/restaurantNotifications"].sendToRestaurant,
+      internal.notifications.restaurantNotifications.sendToRestaurant,
       {
         restaurantId: args.restaurantId,
         type: "TEST",
