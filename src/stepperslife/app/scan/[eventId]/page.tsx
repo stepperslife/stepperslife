@@ -99,10 +99,12 @@ export default function EventScanningPage() {
         (result) => {
 
           // Extract ticket code from URL or use directly
-          let ticketCode = result.data;
-          if (result.data.includes("/ticket/")) {
-            const parts = result.data.split("/ticket/");
+          let ticketCode = result.data.trim();
+          if (ticketCode.includes("/ticket/")) {
+            const parts = ticketCode.split("/ticket/");
             ticketCode = parts[1];
+            // Remove any trailing slashes or query params
+            ticketCode = ticketCode.split("?")[0].split("#")[0].replace(/\/$/, "");
           }
 
           // Scanner keeps running for continuous scanning

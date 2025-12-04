@@ -33,6 +33,64 @@ import toast from "react-hot-toast";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 
+// Type definitions based on the getMyTickets query return type
+type TicketEvent = {
+  _id: Id<"events">;
+  name: string;
+  startDate?: number;
+  endDate?: number;
+  location?: string | {
+    venueName?: string;
+    address?: string;
+    city: string;
+    state: string;
+    zipCode?: string;
+    country: string;
+  };
+  imageUrl?: string;
+  eventType?: "SAVE_THE_DATE" | "FREE_EVENT" | "TICKETED_EVENT" | "SEATED_EVENT" | "CLASS";
+};
+
+type TicketTier = {
+  name: string;
+  price: number;
+};
+
+type TicketOrder = {
+  _id: Id<"orders">;
+  totalCents: number;
+  paidAt?: number;
+};
+
+type SeatInfo = {
+  sectionName: string;
+  rowLabel: string;
+  seatNumber: string;
+};
+
+type MyTicket = {
+  _id: Id<"tickets">;
+  ticketCode?: string;
+  status?: "VALID" | "SCANNED" | "CANCELLED" | "REFUNDED" | "PENDING_ACTIVATION";
+  scannedAt?: number;
+  createdAt: number;
+  event: TicketEvent | null;
+  tier: TicketTier | null;
+  order: TicketOrder | null;
+  seat: SeatInfo | null;
+  attendeeName?: string;
+  attendeeEmail?: string;
+  eventId?: Id<"events">;
+  tierName?: string;
+  bundleId?: string;
+  bundleName?: string;
+};
+
+type EventGroup = {
+  event: TicketEvent;
+  tickets: MyTicket[];
+};
+
 export default function MyTicketsPage() {
   // Check authentication status first
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -45,7 +103,7 @@ export default function MyTicketsPage() {
   );
 
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
-  const [transferModalTicket, setTransferModalTicket] = useState<any | null>(null);
+  const [transferModalTicket, setTransferModalTicket] = useState<MyTicket | null>(null);
   const [transferEmail, setTransferEmail] = useState("");
   const [transferName, setTransferName] = useState("");
   const [isTransferring, setIsTransferring] = useState(false);
@@ -63,13 +121,13 @@ export default function MyTicketsPage() {
   }, []);
 
   // CRUD state management
-  const [editModalTicket, setEditModalTicket] = useState<any | null>(null);
+  const [editModalTicket, setEditModalTicket] = useState<MyTicket | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [selectedTickets, setSelectedTickets] = useState<string[]>([]);
   const [bundleName, setBundleName] = useState("");
   const [showBundleModal, setShowBundleModal] = useState(false);
-  const [deleteConfirmTicket, setDeleteConfirmTicket] = useState<any | null>(null);
+  const [deleteConfirmTicket, setDeleteConfirmTicket] = useState<MyTicket | null>(null);
 
   // Mutations
   const initiateTransfer = useMutation(api.transfers.mutations.initiateTransfer);
@@ -93,19 +151,19 @@ export default function MyTicketsPage() {
       acc[eventId].tickets.push(ticket);
       return acc;
     },
-    {} as Record<string, { event: any; tickets: any[] }>
+    {} as Record<string, EventGroup>
   );
 
   // Separate upcoming and past events
   const now = Date.now();
   const upcomingEvents = groupedTickets
     ? Object.values(groupedTickets).filter(
-      (group: any) => group.event.startDate && group.event.startDate >= now
+      (group) => group.event.startDate && group.event.startDate >= now
     )
     : [];
   const pastEvents = groupedTickets
     ? Object.values(groupedTickets).filter(
-      (group: any) => !group.event.startDate || group.event.startDate < now
+      (group) => !group.event.startDate || group.event.startDate < now
     )
     : [];
 
@@ -126,7 +184,7 @@ export default function MyTicketsPage() {
     }
   };
 
-  const handleTransferTicket = (ticket: any) => {
+  const handleTransferTicket = (ticket: MyTicket) => {
     setTransferModalTicket(ticket);
     setTransferEmail("");
     setTransferName("");
@@ -158,7 +216,7 @@ export default function MyTicketsPage() {
   };
 
   // Edit ticket functionality
-  const handleEditTicket = (ticket: any) => {
+  const handleEditTicket = (ticket: MyTicket) => {
     setEditModalTicket(ticket);
     setEditName(ticket.attendeeName || "");
     setEditEmail(ticket.attendeeEmail || "");
@@ -182,7 +240,7 @@ export default function MyTicketsPage() {
   };
 
   // Delete ticket functionality
-  const handleDeleteTicket = async (ticket: any) => {
+  const handleDeleteTicket = async (ticket: MyTicket) => {
     setDeleteConfirmTicket(ticket);
   };
 
@@ -247,7 +305,7 @@ export default function MyTicketsPage() {
   };
 
   // Check if ticket is editable
-  const isTicketEditable = (ticket: any) => {
+  const isTicketEditable = (ticket: MyTicket) => {
     if (ticket.status === "SCANNED" || ticket.status === "CANCELLED") return false;
     if (ticket.event?.startDate && Date.now() >= ticket.event.startDate) return false;
     return true;
@@ -325,7 +383,7 @@ export default function MyTicketsPage() {
   }
 
   // Group bundled tickets
-  const bundledTickets: Record<string, any[]> = {};
+  const bundledTickets: Record<string, MyTicket[]> = {};
   tickets.forEach((ticket) => {
     if (ticket.bundleId) {
       if (!bundledTickets[ticket.bundleId]) {
@@ -514,7 +572,7 @@ export default function MyTicketsPage() {
                                     >
                                       <div className="flex flex-col items-center">
                                         <QRCodeSVG
-                                          value={ticket.ticketCode}
+                                          value={`https://stepperslife.com/ticket/${ticket.ticketCode}`}
                                           size={200}
                                           level="H"
                                           includeMargin={true}
