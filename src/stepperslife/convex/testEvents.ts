@@ -66,7 +66,7 @@ export const createSingleTicketEvent = mutation({
       eventType: "TICKETED_EVENT",
       description:
         "Join us for an evening of steppin' and socializing! Perfect for beginners and experienced steppers alike. Live DJ, refreshments, and great vibes guaranteed.",
-      categories: ["Social", "Set"],
+      categories: ["Set"],
       startDate: addDays(14), // 2 weeks from now
       endDate: addDays(14) + 4 * 60 * 60 * 1000, // +4 hours
       timezone: "America/Chicago",
@@ -117,7 +117,7 @@ export const createMultiDayEvent = mutation({
       eventType: "TICKETED_EVENT",
       description:
         "Three days of intensive stepping workshops with master instructors! Learn advanced techniques, classic moves, and connect with steppers from across the country. Each day features different workshop themes.",
-      categories: ["Workshop", "Class"],
+      categories: ["Workshop"],
       startDate: addDays(30), // 1 month from now
       endDate: addDays(32) + 4 * 60 * 60 * 1000, // 3 days later
       timezone: "America/New_York",
@@ -184,7 +184,7 @@ export const createBundleEvent = mutation({
       eventType: "TICKETED_EVENT",
       description:
         "The ultimate stepping experience in Las Vegas! Three incredible nights of non-stop steppin' featuring live bands, celebrity DJs, and steppers from around the world. Individual day passes or save with our Festival Pass!",
-      categories: ["Festival", "Set", "Social"],
+      categories: ["Weekend Event", "Set"],
       startDate: addDays(60), // 2 months from now
       endDate: addDays(62) + 6 * 60 * 60 * 1000, // 3 days
       timezone: "America/Los_Angeles",
@@ -275,7 +275,7 @@ export const createEarlyBirdEvent = mutation({
       eventType: "TICKETED_EVENT",
       description:
         "Ring in the New Year with elegance and style! Black-tie stepping gala featuring champagne toast at midnight, gourmet dinner, live orchestra, and the best steppers in NYC. Limited capacity - early bird pricing available!",
-      categories: ["Gala", "Set", "Special Event"],
+      categories: ["Holiday Event", "Set"],
       startDate: addDays(90), // 3 months from now
       endDate: addDays(90) + 6 * 60 * 60 * 1000, // +6 hours
       timezone: "America/New_York",
@@ -346,7 +346,7 @@ export const createSeatingChartEvent = mutation({
       eventType: "TICKETED_EVENT",
       description:
         "An intimate evening combining fine dining with exceptional stepping. Five-course gourmet meal followed by a premium stepping set with live music. Reserved table seating ensures you and your party sit together. VIP table includes premium champagne service.",
-      categories: ["Dinner", "Set", "VIP"],
+      categories: ["Set"],
       startDate: addDays(42), // 6 weeks from now
       endDate: addDays(42) + 5 * 60 * 60 * 1000, // +5 hours
       timezone: "America/Chicago",
@@ -587,7 +587,7 @@ export const resetAndCreateFresh = mutation({
       organizerId: organizer!._id,
       organizerName: organizer!.name || "SteppersLife Events",
       eventType: "TICKETED_EVENT",
-      categories: ["Social", "Dance"],
+      categories: ["Set"],
       eventDateLiteral: new Date(fridayDate).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
       eventTimeLiteral: "8:00 PM - 12:00 AM",
       eventTimezone: "America/Chicago",
@@ -648,7 +648,7 @@ export const resetAndCreateFresh = mutation({
       organizerId: organizer!._id,
       organizerName: organizer!.name || "SteppersLife Events",
       eventType: "TICKETED_EVENT",
-      categories: ["Gala", "Formal"],
+      categories: ["Set", "Holiday Event"],
       eventDateLiteral: new Date(saturdayDate).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
       eventTimeLiteral: "6:00 PM - 2:00 AM",
       eventTimezone: "America/Chicago",
