@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import {
   Settings as SettingsIcon,
@@ -13,6 +13,8 @@ import {
   AlertCircle,
   CheckCircle2,
   Info,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -372,6 +374,29 @@ function NotificationSettings() {
 }
 
 function SecuritySettings() {
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetResult, setResetResult] = useState<any>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const resetDatabase = useMutation(api.admin.cleanup.resetAll);
+
+  const handleReset = async () => {
+    if (!confirmReset) {
+      setConfirmReset(true);
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      const result = await resetDatabase({ keepUserEmail: "thestepperslife@gmail.com" });
+      setResetResult(result);
+      setConfirmReset(false);
+    } catch (error: any) {
+      alert("Reset failed: " + error.message);
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -474,6 +499,77 @@ function SecuritySettings() {
             Admin dashboard access control is currently disabled for testing. Re-enable
             authentication before deploying to production to prevent unauthorized access.
           </p>
+        </div>
+      </div>
+
+      {/* Database Reset - DANGER ZONE */}
+      <div className="space-y-4 pt-6 border-t-2 border-destructive">
+        <h3 className="font-semibold text-destructive flex items-center gap-2">
+          <Trash2 className="w-5 h-5" />
+          Danger Zone - Database Reset
+        </h3>
+
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+          <p className="text-sm text-destructive mb-4">
+            <strong>WARNING:</strong> This will permanently delete ALL events, tickets, orders,
+            ticket tiers, payment configs, and users (except thestepperslife@gmail.com).
+            This action cannot be undone!
+          </p>
+
+          {resetResult && (
+            <div className="bg-white rounded-lg p-4 mb-4 text-sm">
+              <p className="font-semibold text-success mb-2">Reset Complete!</p>
+              <ul className="space-y-1 text-foreground">
+                <li>Events deleted: {resetResult.events}</li>
+                <li>Tickets deleted: {resetResult.tickets}</li>
+                <li>Orders deleted: {resetResult.orders}</li>
+                <li>Ticket tiers deleted: {resetResult.ticketTiers}</li>
+                <li>Payment configs deleted: {resetResult.paymentConfigs}</li>
+                <li>Staff records deleted: {resetResult.staff}</li>
+                <li>Bundles deleted: {resetResult.bundles}</li>
+                <li>Users deleted: {resetResult.users}</li>
+              </ul>
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            {confirmReset ? (
+              <>
+                <button
+                  onClick={handleReset}
+                  disabled={isResetting}
+                  className="px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 font-medium flex items-center gap-2 disabled:opacity-50"
+                >
+                  {isResetting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Resetting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      Yes, Delete Everything
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => setConfirmReset(false)}
+                  disabled={isResetting}
+                  className="px-4 py-2 border border-border rounded-lg hover:bg-muted"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={handleReset}
+                className="px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 font-medium flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Reset Database
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
