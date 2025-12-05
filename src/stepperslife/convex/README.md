@@ -1,3 +1,29 @@
+# SteppersLife Convex Backend
+
+## Project Configuration
+
+**IMPORTANT: Use the correct Convex project!**
+
+| Environment | Project Name | Slug | Deployment |
+|------------|--------------|------|------------|
+| **Production** | Events.stepperslife | events-stepperslife | `prod:expert-vulture-775` |
+| **Development** | Events.stepperslife | events-stepperslife | `dev:fearless-dragon-613` |
+
+### Deploy Commands
+
+```bash
+# Deploy to production
+CONVEX_DEPLOYMENT=prod:expert-vulture-775 npx convex deploy --yes
+
+# Deploy to development
+CONVEX_DEPLOYMENT=dev:fearless-dragon-613 npx convex deploy --yes
+
+# Run a function on production
+CONVEX_DEPLOYMENT=prod:expert-vulture-775 npx convex run admin/cleanup:resetAll '{"keepUserEmail": "thestepperslife@gmail.com"}'
+```
+
+---
+
 # Welcome to your Convex functions directory!
 
 Write your Convex functions here.
