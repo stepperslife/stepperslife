@@ -32,7 +32,6 @@ import type * as credits_queries from "../credits/queries.js";
 import type * as crm_mutations from "../crm/mutations.js";
 import type * as crm_queries from "../crm/queries.js";
 import type * as crons from "../crons.js";
-import type * as debug from "../debug.js";
 import type * as discounts_mutations from "../discounts/mutations.js";
 import type * as discounts_queries from "../discounts/queries.js";
 import type * as events_allocations from "../events/allocations.js";
@@ -164,7 +163,6 @@ declare const fullApi: ApiFromModules<{
   "crm/mutations": typeof crm_mutations;
   "crm/queries": typeof crm_queries;
   crons: typeof crons;
-  debug: typeof debug;
   "discounts/mutations": typeof discounts_mutations;
   "discounts/queries": typeof discounts_queries;
   "events/allocations": typeof events_allocations;
