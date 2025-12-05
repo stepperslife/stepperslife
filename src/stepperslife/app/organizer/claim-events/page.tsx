@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { formatEventDate } from "@/lib/date-format";
 import debounce from "lodash/debounce";
+import { EVENT_CATEGORIES } from "@/lib/constants";
 
 export default function ClaimEventsPage() {
   // Search and filter state
@@ -31,19 +32,6 @@ export default function ClaimEventsPage() {
   });
 
   const claimEventMutation = useMutation(api.events.mutations.claimEvent);
-
-  // Categories for filter dropdown
-  const categories = [
-    "Social",
-    "Workshop",
-    "Party",
-    "Concert",
-    "Dance",
-    "Community",
-    "Educational",
-    "Networking",
-    "Other",
-  ];
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -159,7 +147,7 @@ export default function ClaimEventsPage() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       >
                         <option value="">All Categories</option>
-                        {categories.map((cat) => (
+                        {EVENT_CATEGORIES.map((cat) => (
                           <option key={cat} value={cat}>
                             {cat}
                           </option>

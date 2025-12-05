@@ -13,6 +13,7 @@ import { getTimezoneFromLocation, getTimezoneName } from "@/lib/timezone";
 import { Id } from "@/convex/_generated/dataModel";
 import { toDate } from "date-fns-tz";
 import { format as formatDate } from "date-fns";
+import { EVENT_CATEGORIES } from "@/lib/constants";
 
 type EventType = "TICKETED_EVENT" | "FREE_EVENT" | "SAVE_THE_DATE"; // | "BALLROOM_EVENT"; // Ballroom feature hidden
 
@@ -23,16 +24,6 @@ interface TicketTier {
   price: string;
   quantity: string;
 }
-
-const EVENT_CATEGORIES = [
-  "Set",
-  "Workshop",
-  "Save the Date",
-  "Cruise",
-  "Outdoors Steppin",
-  "Holiday Event",
-  "Weekend Event",
-];
 
 export default function CreateEventPage() {
   const router = useRouter();

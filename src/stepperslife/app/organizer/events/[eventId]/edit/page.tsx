@@ -10,6 +10,7 @@ import Link from "next/link";
 import { ImageUpload } from "@/components/upload/ImageUpload";
 import { getTimezoneFromLocation, getTimezoneName } from "@/lib/timezone";
 import { format } from "date-fns";
+import { EVENT_CATEGORIES } from "@/lib/constants";
 
 interface User {
   _id: string;
@@ -44,16 +45,6 @@ interface Event {
   capacity?: number;
   status?: "DRAFT" | "PUBLISHED" | "CANCELLED" | "COMPLETED";
 }
-
-const EVENT_CATEGORIES = [
-  "Set",
-  "Workshop",
-  "Save the Date",
-  "Cruise",
-  "Outdoors Steppin",
-  "Holiday Event",
-  "Weekend Event",
-];
 
 export default function EditEventPage() {
   const params = useParams();
