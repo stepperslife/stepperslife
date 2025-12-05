@@ -1,6 +1,7 @@
 import { mutation } from "./_generated/server";
 import { api } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
+import { v } from "convex/values";
 
 /**
  * Helper function to calculate future dates
@@ -503,5 +504,250 @@ export const createSeatingChartEvent = mutation({
     });
 
     return { eventId, name: "Elegant Dinner & Set" };
+  },
+});
+
+/**
+ * Reset all data and create fresh test events with tickets
+ */
+export const resetAndCreateFresh = mutation({
+  args: {
+    testUserEmail: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const cleaned = { tickets: 0, orders: 0, bundles: 0, tiers: 0, configs: 0, events: 0 };
+    const testEmail = args.testUserEmail || "tickettest@stepperslife.com";
+
+    // ========== STEP 1: DELETE EVERYTHING ==========
+    const allTickets = await ctx.db.query("tickets").collect();
+    for (const ticket of allTickets) {
+      await ctx.db.delete(ticket._id);
+      cleaned.tickets++;
+    }
+
+    const allOrders = await ctx.db.query("orders").collect();
+    for (const order of allOrders) {
+      await ctx.db.delete(order._id);
+      cleaned.orders++;
+    }
+
+    const allBundles = await ctx.db.query("ticketBundles").collect();
+    for (const bundle of allBundles) {
+      await ctx.db.delete(bundle._id);
+      cleaned.bundles++;
+    }
+
+    const allTiers = await ctx.db.query("ticketTiers").collect();
+    for (const tier of allTiers) {
+      await ctx.db.delete(tier._id);
+      cleaned.tiers++;
+    }
+
+    const allConfigs = await ctx.db.query("eventPaymentConfig").collect();
+    for (const config of allConfigs) {
+      await ctx.db.delete(config._id);
+      cleaned.configs++;
+    }
+
+    const allEvents = await ctx.db.query("events").collect();
+    for (const event of allEvents) {
+      await ctx.db.delete(event._id);
+      cleaned.events++;
+    }
+
+    // ========== STEP 2: GET OR CREATE ORGANIZER ==========
+    let organizer = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", "thestepperslife@gmail.com"))
+      .first();
+
+    if (!organizer) {
+      const organizerId = await ctx.db.insert("users", {
+        email: "thestepperslife@gmail.com",
+        name: "SteppersLife Events",
+        role: "organizer",
+        authProvider: "google",
+        canCreateTicketedEvents: true,
+        createdAt: now,
+        updatedAt: now,
+      });
+      organizer = await ctx.db.get(organizerId);
+    }
+
+    // ========== STEP 3: CREATE 4 FRESH EVENTS ==========
+    const events: Array<{ id: string; name: string }> = [];
+
+    // Event 1: Friday Night Social
+    const fridayDate = now + 2 * oneDay;
+    const event1Id = await ctx.db.insert("events", {
+      name: "Friday Night Steppers Social",
+      description: "Join us for an evening of smooth Chicago stepping!",
+      organizerId: organizer!._id,
+      organizerName: organizer!.name || "SteppersLife Events",
+      eventType: "TICKETED_EVENT",
+      categories: ["Social", "Dance"],
+      eventDateLiteral: new Date(fridayDate).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
+      eventTimeLiteral: "8:00 PM - 12:00 AM",
+      eventTimezone: "America/Chicago",
+      timezone: "America/Chicago",
+      startDate: fridayDate + 20 * 60 * 60 * 1000,
+      endDate: fridayDate + 24 * 60 * 60 * 1000,
+      location: { venueName: "The Steppers Lounge", address: "123 State Street", city: "Chicago", state: "IL", zipCode: "60601", country: "USA" },
+      imageUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&h=800&fit=crop&q=80",
+      capacity: 200,
+      status: "PUBLISHED",
+      ticketsVisible: true,
+      paymentModelSelected: true,
+      ticketsSold: 0,
+      allowWaitlist: false,
+      allowTransfers: true,
+      maxTicketsPerOrder: 10,
+      minTicketsPerOrder: 1,
+      socialShareCount: 0,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    const event1General = await ctx.db.insert("ticketTiers", {
+      eventId: event1Id,
+      name: "General Admission",
+      description: "Full access to the event",
+      price: 2500,
+      quantity: 150,
+      sold: 0,
+      isActive: true,
+      version: 1,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    await ctx.db.insert("eventPaymentConfig", {
+      eventId: event1Id,
+      organizerId: organizer!._id,
+      paymentModel: "PREPAY",
+      customerPaymentMethods: ["STRIPE", "CASH"],
+      platformFeePercent: 3.7,
+      platformFeeFixed: 179,
+      processingFeePercent: 2.9,
+      isActive: true,
+      charityDiscount: false,
+      lowPriceDiscount: false,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    events.push({ id: event1Id as string, name: "Friday Night Steppers Social" });
+
+    // Event 2: Annual Gala
+    const saturdayDate = now + 8 * oneDay;
+    const event2Id = await ctx.db.insert("events", {
+      name: "Annual Steppers Gala",
+      description: "Our premier annual event!",
+      organizerId: organizer!._id,
+      organizerName: organizer!.name || "SteppersLife Events",
+      eventType: "TICKETED_EVENT",
+      categories: ["Gala", "Formal"],
+      eventDateLiteral: new Date(saturdayDate).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
+      eventTimeLiteral: "6:00 PM - 2:00 AM",
+      eventTimezone: "America/Chicago",
+      timezone: "America/Chicago",
+      startDate: saturdayDate + 18 * 60 * 60 * 1000,
+      endDate: saturdayDate + 26 * 60 * 60 * 1000,
+      location: { venueName: "The Grand Ballroom", address: "500 N Michigan Ave", city: "Chicago", state: "IL", zipCode: "60611", country: "USA" },
+      imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&h=800&fit=crop&q=80",
+      capacity: 400,
+      status: "PUBLISHED",
+      ticketsVisible: true,
+      paymentModelSelected: true,
+      ticketsSold: 0,
+      allowWaitlist: false,
+      allowTransfers: true,
+      maxTicketsPerOrder: 10,
+      minTicketsPerOrder: 1,
+      socialShareCount: 0,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    const event2Early = await ctx.db.insert("ticketTiers", {
+      eventId: event2Id,
+      name: "Early Bird",
+      description: "Limited early bird pricing!",
+      price: 6500,
+      quantity: 100,
+      sold: 0,
+      isActive: true,
+      version: 1,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    await ctx.db.insert("eventPaymentConfig", {
+      eventId: event2Id,
+      organizerId: organizer!._id,
+      paymentModel: "PREPAY",
+      customerPaymentMethods: ["STRIPE", "CASH"],
+      platformFeePercent: 3.7,
+      platformFeeFixed: 179,
+      processingFeePercent: 2.9,
+      isActive: true,
+      charityDiscount: false,
+      lowPriceDiscount: false,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    events.push({ id: event2Id as string, name: "Annual Steppers Gala" });
+
+    // ========== STEP 4: CREATE TEST TICKETS ==========
+    const testUser = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", testEmail))
+      .first();
+
+    const testTickets: Array<{ code: string; event: string }> = [];
+
+    if (testUser) {
+      // Create ticket for Event 1
+      const ticket1Code = `TKT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      await ctx.db.insert("tickets", {
+        eventId: event1Id,
+        ticketTierId: event1General,
+        attendeeId: testUser._id,
+        ticketCode: ticket1Code,
+        attendeeName: testUser.name || "Test User",
+        attendeeEmail: testUser.email,
+        status: "VALID",
+        createdAt: now,
+      });
+      testTickets.push({ code: ticket1Code, event: "Friday Night Steppers Social" });
+
+      // Create ticket for Event 2
+      const ticket2Code = `TKT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      await ctx.db.insert("tickets", {
+        eventId: event2Id,
+        ticketTierId: event2Early,
+        attendeeId: testUser._id,
+        ticketCode: ticket2Code,
+        attendeeName: testUser.name || "Test User",
+        attendeeEmail: testUser.email,
+        status: "VALID",
+        createdAt: now,
+      });
+      testTickets.push({ code: ticket2Code, event: "Annual Steppers Gala" });
+    }
+
+    return {
+      success: true,
+      cleaned,
+      events,
+      testUser: testUser ? {
+        email: testEmail,
+        tickets: testTickets,
+      } : null,
+      message: `Deleted ${cleaned.events} events, ${cleaned.tickets} tickets. Created 2 fresh events.`,
+    };
   },
 });
