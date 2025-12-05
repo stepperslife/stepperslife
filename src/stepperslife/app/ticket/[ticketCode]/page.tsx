@@ -194,12 +194,10 @@ export default function TicketValidationPage() {
                 <div className="flex justify-center mb-4">
                   <div className="p-4 bg-white border-4 border-border rounded-lg">
                     <QRCodeSVG
-                      value={`https://stepperslife.com/ticket/${ticket.ticketCode}`}
+                      value={ticket.ticketCode}
                       size={200}
-                      level="H"
-                      includeMargin={true}
-                      bgColor="#ffffff"
-                      fgColor="#000000"
+                      level="M"
+                      marginSize={2}
                     />
                   </div>
                 </div>
