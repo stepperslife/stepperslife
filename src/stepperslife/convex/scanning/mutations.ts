@@ -88,6 +88,23 @@ export const scanTicket = mutation({
       };
     }
 
+    if (ticket.status === "PENDING_ACTIVATION") {
+      return {
+        success: false,
+        error: "PENDING_ACTIVATION",
+        message: "This ticket requires activation. Customer must enter activation code first.",
+      };
+    }
+
+    // Only VALID tickets can be scanned
+    if (ticket.status !== "VALID") {
+      return {
+        success: false,
+        error: "INVALID_STATUS",
+        message: `This ticket has status "${ticket.status}" and cannot be scanned.`,
+      };
+    }
+
     // Get ticket tier for display
     const tier = ticket.ticketTierId ? await ctx.db.get(ticket.ticketTierId) : null;
 

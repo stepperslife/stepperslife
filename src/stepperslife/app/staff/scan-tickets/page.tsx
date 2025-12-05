@@ -1,227 +1,460 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import QrScanner from "qr-scanner";
+import {
+  QrCode,
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+  Camera,
+  Clock,
+  Play,
+  Square,
+  Calendar,
+  MapPin,
+  ChevronRight,
+  AlertCircle,
+} from "lucide-react";
+import { format } from "date-fns";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { QrCode, Camera, CheckCircle, XCircle, AlertCircle, Scan } from "lucide-react";
-import { useState } from "react";
 
-export default function ScanTicketsPage() {
-  const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const [scanResult, setScanResult] = useState<{
-    status: "success" | "error" | "warning" | null;
-    message: string;
-    ticket?: any;
-  }>({ status: null, message: "" });
+export default function StaffScanTicketsPage() {
+  const router = useRouter();
+  const events = useQuery(api.scanning.queries.getMyScannableEvents);
 
+  // Scanner state
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [lastScanResult, setLastScanResult] = useState<any>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [manualTicketCode, setManualTicketCode] = useState("");
   const [isScanning, setIsScanning] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
+  const [scannerError, setScannerError] = useState<string>("");
+  const [lastScannedCode, setLastScannedCode] = useState<string>("");
 
-  const handleScan = () => {
-    setIsScanning(true);
-    // TODO: Implement actual QR code scanning
-    setTimeout(() => {
-      // Mock scan result
-      setScanResult({
-        status: "success",
-        message: "Ticket valid! Entry granted.",
-        ticket: {
-          ticketNumber: "TKT-12345",
-          eventName: "Summer Festival 2024",
-          holderName: "John Doe",
-          ticketType: "General Admission",
-        },
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const scannerRef = useRef<QrScanner | null>(null);
+
+  const stats = useQuery(
+    api.scanning.queries.getEventScanStats,
+    selectedEventId ? { eventId: selectedEventId as any } : "skip"
+  );
+  const recentScans = useQuery(
+    api.scanning.queries.getRecentScans,
+    selectedEventId ? { eventId: selectedEventId as any, limit: 10 } : "skip"
+  );
+  const scanTicket = useMutation(api.scanning.mutations.scanTicket);
+
+  const processTicket = async (ticketCode: string) => {
+    if (!selectedEventId) return;
+    if (ticketCode === lastScannedCode) return;
+
+    setLastScannedCode(ticketCode);
+    setIsProcessing(true);
+
+    try {
+      const result = await scanTicket({
+        ticketCode: ticketCode.trim(),
+        eventId: selectedEventId as any,
       });
+
+      setLastScanResult(result);
+
+      setTimeout(() => {
+        setLastScanResult(null);
+        setLastScannedCode("");
+      }, 3000);
+    } catch (error) {
+      console.error("Scan error:", error);
+      setLastScanResult({
+        success: false,
+        error: "SCAN_ERROR",
+        message: "Failed to process ticket. Please try again.",
+      });
+      setTimeout(() => {
+        setLastScanResult(null);
+        setLastScannedCode("");
+      }, 3000);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const startScanner = async () => {
+    if (!videoRef.current || scannerRef.current) return;
+
+    setIsStarting(true);
+    setScannerError("");
+
+    try {
+      QrScanner.WORKER_PATH = "/qr-scanner-worker.min.js";
+
+      const hasCamera = await QrScanner.hasCamera();
+      if (!hasCamera) {
+        throw new Error("No camera detected on this device");
+      }
+
+      if (videoRef.current) {
+        videoRef.current.setAttribute("autoplay", "");
+        videoRef.current.setAttribute("muted", "");
+        videoRef.current.setAttribute("playsinline", "");
+      }
+
+      const scanner = new QrScanner(
+        videoRef.current,
+        (result) => {
+          let ticketCode = result.data;
+          if (result.data.includes("/ticket/")) {
+            const parts = result.data.split("/ticket/");
+            ticketCode = parts[1];
+          }
+          processTicket(ticketCode);
+        },
+        {
+          highlightScanRegion: true,
+          highlightCodeOutline: true,
+          preferredCamera: "environment",
+          maxScansPerSecond: 5,
+        }
+      );
+
+      await scanner.start();
+      scannerRef.current = scanner;
+      setIsScanning(true);
+      setIsStarting(false);
+    } catch (error: any) {
+      let errorMessage = "Failed to start camera.";
+      if (error.name === "NotAllowedError") {
+        errorMessage = "Camera permission denied. Please allow camera access.";
+      } else if (error.name === "NotFoundError") {
+        errorMessage = "No camera found on this device.";
+      } else if (error.name === "NotReadableError") {
+        errorMessage = "Camera is already in use.";
+      } else {
+        errorMessage = error?.message || errorMessage;
+      }
+      setScannerError(errorMessage);
       setIsScanning(false);
-    }, 1500);
-  };
-
-  const getScanResultIcon = () => {
-    switch (scanResult.status) {
-      case "success":
-        return <CheckCircle className="h-16 w-16 text-success" />;
-      case "error":
-        return <XCircle className="h-16 w-16 text-destructive" />;
-      case "warning":
-        return <AlertCircle className="h-16 w-16 text-warning" />;
-      default:
-        return <QrCode className="h-16 w-16 text-muted-foreground" />;
+      setIsStarting(false);
     }
   };
 
-  const getScanResultColor = () => {
-    switch (scanResult.status) {
-      case "success":
-        return "bg-success/10 border-success";
-      case "error":
-        return "bg-destructive/10 border-destructive";
-      case "warning":
-        return "bg-warning/10 border-warning";
-      default:
-        return "bg-muted border-border";
+  const stopScanner = () => {
+    if (scannerRef.current) {
+      scannerRef.current.stop();
+      scannerRef.current.destroy();
+      scannerRef.current = null;
+      setIsScanning(false);
     }
   };
+
+  const handleManualScan = async () => {
+    if (!manualTicketCode.trim()) return;
+    await processTicket(manualTicketCode);
+    setManualTicketCode("");
+  };
+
+  useEffect(() => {
+    return () => {
+      stopScanner();
+    };
+  }, []);
+
+  if (events === undefined) {
+    return (
+      <div className="p-6 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="inline-block w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-lg">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Event selection view
+  if (!selectedEventId) {
+    return (
+      <div className="p-6 space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Scan Tickets</h1>
+          <p className="text-muted-foreground mt-2">
+            Select an event to start scanning tickets
+          </p>
+        </div>
+
+        {events.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <QrCode className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h2 className="text-xl font-semibold mb-2">No Events Available</h2>
+              <p className="text-muted-foreground">
+                You don't have permission to scan tickets for any events.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {events.map((event) => (
+              <Card
+                key={event._id}
+                className="cursor-pointer hover:border-primary transition-colors"
+                onClick={() => setSelectedEventId(event._id)}
+              >
+                <CardContent className="p-0">
+                  <div className="flex">
+                    {event.imageUrl ? (
+                      <div className="w-32 h-32 flex-shrink-0">
+                        <img
+                          src={event.imageUrl}
+                          alt={event.name}
+                          className="w-full h-full object-cover rounded-l-lg"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-32 h-32 flex-shrink-0 bg-primary/10 flex items-center justify-center rounded-l-lg">
+                        <Calendar className="w-8 h-8 text-primary" />
+                      </div>
+                    )}
+                    <div className="flex-1 p-4">
+                      <h3 className="font-semibold mb-2">{event.name}</h3>
+                      {event.startDate && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                          <Calendar className="w-4 h-4" />
+                          {format(event.startDate, "MMM d, yyyy 'at' h:mm a")}
+                        </div>
+                      )}
+                      {event.location && typeof event.location === "object" && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <MapPin className="w-4 h-4" />
+                          {event.location.venueName || event.location.city}
+                        </div>
+                      )}
+                      <div className="mt-2 flex items-center text-primary font-medium">
+                        Start Scanning <ChevronRight className="w-4 h-4 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Scanner view
+  const selectedEvent = events.find((e) => e._id === selectedEventId);
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Scan Tickets</h1>
-        <p className="text-muted-foreground mt-2">
-          Scan QR codes to validate and check-in attendees
-        </p>
+      {/* Header with back button */}
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            stopScanner();
+            setSelectedEventId(null);
+          }}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 className="text-xl font-bold">{selectedEvent?.name}</h1>
+          <p className="text-sm text-muted-foreground">Scanning tickets</p>
+        </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Today's Scans</p>
-                <p className="text-2xl font-bold mt-1">0</p>
+      {/* Stats */}
+      {stats && (
+        <div className="grid grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-success">{stats.scanned}</div>
+              <div className="text-xs text-muted-foreground">Scanned</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-warning">{stats.remaining}</div>
+              <div className="text-xs text-muted-foreground">Ready</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-orange-500">
+                {(stats.pending || 0) + (stats.pendingActivation || 0)}
               </div>
-              <Scan className="h-8 w-8 text-muted-foreground" />
-            </div>
-          </CardContent>
-        </Card>
+              <div className="text-xs text-muted-foreground">Pending</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold">{stats.total}</div>
+              <div className="text-xs text-muted-foreground">Total</div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Valid Tickets</p>
-                <p className="text-2xl font-bold mt-1 text-success">0</p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-success" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Invalid Tickets</p>
-                <p className="text-2xl font-bold mt-1 text-destructive">0</p>
-              </div>
-              <XCircle className="h-8 w-8 text-destructive" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Scan Rate</p>
-                <p className="text-2xl font-bold mt-1">0/min</p>
-              </div>
-              <AlertCircle className="h-8 w-8 text-muted-foreground" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Scanner Interface */}
+      {/* Scanner */}
       <Card>
         <CardHeader>
-          <CardTitle>QR Code Scanner</CardTitle>
-          <CardDescription>
-            Point your camera at the ticket QR code to scan
-          </CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <QrCode className="h-5 w-5" />
+            QR Scanner
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center space-y-6">
-            {/* Scanner View */}
-            <div className={`w-full max-w-md aspect-square border-4 rounded-lg flex items-center justify-center ${getScanResultColor()}`}>
-              {isScanning ? (
+          {/* Video Preview */}
+          <div className="relative bg-muted rounded-xl mb-4" style={{ minHeight: "300px" }}>
+            {!isScanning && (
+              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="animate-pulse">
-                    <Camera className="h-24 w-24 mx-auto text-primary mb-4" />
-                  </div>
-                  <p className="text-lg font-semibold">Scanning...</p>
+                  <Camera className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">Camera not active</p>
                 </div>
-              ) : scanResult.status ? (
-                <div className="text-center p-8">
-                  <div className="mb-4">{getScanResultIcon()}</div>
-                  <p className="text-xl font-bold mb-2">{scanResult.message}</p>
-                  {scanResult.ticket && (
-                    <div className="mt-4 space-y-2 text-sm text-left bg-white p-4 rounded-lg">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Ticket:</span>
-                        <span className="font-medium">{scanResult.ticket.ticketNumber}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Event:</span>
-                        <span className="font-medium">{scanResult.ticket.eventName}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Holder:</span>
-                        <span className="font-medium">{scanResult.ticket.holderName}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Type:</span>
-                        <span className="font-medium">{scanResult.ticket.ticketType}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center">
-                  <QrCode className="h-24 w-24 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-lg text-muted-foreground">
-                    Ready to scan
-                  </p>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
+            <video
+              ref={videoRef}
+              style={{
+                width: "100%",
+                maxHeight: "400px",
+                objectFit: "cover",
+                borderRadius: "0.75rem",
+              }}
+            />
+          </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3">
+          {/* Controls */}
+          <div className="space-y-3">
+            {!isScanning ? (
               <Button
+                className="w-full"
                 size="lg"
-                onClick={handleScan}
-                disabled={isScanning}
+                onClick={startScanner}
+                disabled={isStarting}
               >
-                <Camera className="h-5 w-5 mr-2" />
-                {isScanning ? "Scanning..." : scanResult.status ? "Scan Next" : "Start Scanning"}
+                {isStarting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Starting...
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-5 h-5 mr-2" />
+                    Start Scanner
+                  </>
+                )}
               </Button>
-              {scanResult.status && (
+            ) : (
+              <>
+                <div className="bg-success/10 border border-success rounded-lg p-3 text-center">
+                  <p className="text-success font-semibold">✓ Scanner Active</p>
+                </div>
                 <Button
+                  className="w-full"
+                  variant="destructive"
                   size="lg"
-                  variant="outline"
-                  onClick={() => setScanResult({ status: null, message: "" })}
+                  onClick={stopScanner}
                 >
-                  Clear Result
+                  <Square className="w-5 h-5 mr-2" />
+                  Stop Scanner
                 </Button>
-              )}
-            </div>
+              </>
+            )}
 
-            {/* Manual Entry Option */}
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-2">
-                Camera not working?
-              </p>
-              <Button variant="link">Enter Ticket Number Manually</Button>
+            {scannerError && (
+              <div className="bg-destructive/10 border border-destructive rounded-lg p-3">
+                <p className="text-destructive text-sm text-center">{scannerError}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Manual Entry */}
+          <div className="mt-6 pt-6 border-t">
+            <h4 className="font-semibold mb-3">Manual Entry</h4>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={manualTicketCode}
+                onChange={(e) => setManualTicketCode(e.target.value.toUpperCase())}
+                onKeyPress={(e) => e.key === "Enter" && handleManualScan()}
+                placeholder="TKT-XXXXXXXX"
+                className="flex-1 px-4 py-2 text-center font-mono font-bold bg-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary uppercase"
+                disabled={isProcessing}
+              />
+              <Button
+                onClick={handleManualScan}
+                disabled={!manualTicketCode.trim() || isProcessing}
+              >
+                {isProcessing ? "..." : "Check In"}
+              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Scan Result Modal */}
+      {lastScanResult && (
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center ${
+            lastScanResult.success ? "bg-success" : "bg-destructive"
+          }`}
+        >
+          <div className="text-center px-6 max-w-md">
+            {lastScanResult.success ? (
+              <CheckCircle className="w-24 h-24 text-white mx-auto mb-4" />
+            ) : (
+              <XCircle className="w-24 h-24 text-white mx-auto mb-4" />
+            )}
+            <h3 className="text-3xl font-bold text-white mb-2">
+              {lastScanResult.success ? "✓ Valid!" : "✗ Invalid"}
+            </h3>
+            <p className="text-white text-lg mb-4">{lastScanResult.message}</p>
+            {lastScanResult.ticket && (
+              <div className="bg-white/20 rounded-xl p-4 text-white">
+                <p className="text-xl font-bold">{lastScanResult.ticket.attendeeName}</p>
+                <p>{lastScanResult.ticket.tierName}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Recent Scans */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Scans</CardTitle>
-          <CardDescription>Last 5 ticket scans</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            <p>No scans yet</p>
-            <p className="text-sm mt-2">Scanned tickets will appear here</p>
-          </div>
-        </CardContent>
-      </Card>
+      {recentScans && recentScans.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Recent Scans
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {recentScans.map((scan, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div>
+                    <div className="font-medium">{scan.attendeeName}</div>
+                    <div className="text-sm text-muted-foreground">{scan.tierName}</div>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {scan.scannedAt && format(scan.scannedAt, "h:mm a")}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -19,17 +19,24 @@ export const getEventScanStats = query({
     const totalTickets = allTickets.length;
     const scannedTickets = allTickets.filter((t) => t.status === "SCANNED").length;
     const validTickets = allTickets.filter((t) => t.status === "VALID").length;
+    const pendingTickets = allTickets.filter((t) => t.status === "PENDING").length;
+    const pendingActivationTickets = allTickets.filter((t) => t.status === "PENDING_ACTIVATION").length;
     const cancelledTickets = allTickets.filter((t) => t.status === "CANCELLED").length;
     const refundedTickets = allTickets.filter((t) => t.status === "REFUNDED").length;
 
+    // Total active tickets (excluding cancelled/refunded)
+    const activeTickets = scannedTickets + validTickets + pendingTickets + pendingActivationTickets;
+
     return {
-      total: totalTickets,
+      total: activeTickets,
       scanned: scannedTickets,
       valid: validTickets,
-      remaining: validTickets,
+      remaining: validTickets, // Only VALID tickets can be scanned
+      pending: pendingTickets,
+      pendingActivation: pendingActivationTickets,
       cancelled: cancelledTickets,
       refunded: refundedTickets,
-      percentageScanned: totalTickets > 0 ? Math.round((scannedTickets / totalTickets) * 100) : 0,
+      percentageScanned: activeTickets > 0 ? Math.round((scannedTickets / activeTickets) * 100) : 0,
     };
   },
 });
