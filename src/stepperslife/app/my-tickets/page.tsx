@@ -528,11 +528,12 @@ export default function MyTicketsPage() {
                                   {ticket.status === "VALID" && ticket.ticketCode ? (
                                     <>
                                       <QRCodeSVG
-                                        value={ticket.ticketCode}
+                                        value={`https://stepperslife.com/ticket/${ticket.ticketCode}`}
                                         size={140}
                                         level="H"
-                                        includeMargin={false}
-                                        className="rounded-lg"
+                                        includeMargin={true}
+                                        bgColor="#ffffff"
+                                        fgColor="#000000"
                                       />
                                       <p className="text-[10px] text-muted-foreground mt-2 font-mono">
                                         {ticket.ticketCode}
