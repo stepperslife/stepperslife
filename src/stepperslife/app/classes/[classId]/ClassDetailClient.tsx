@@ -13,6 +13,8 @@ import {
   ExternalLink,
   BookOpen,
   Tag,
+  DollarSign,
+  Clock,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate, formatEventTime } from "@/lib/date-format";
@@ -21,6 +23,50 @@ import { PublicFooter } from "@/components/layout/PublicFooter";
 
 interface ClassDetailClientProps {
   classId: Id<"events">;
+}
+
+// Format class days for recurring classes
+function formatClassDays(classDays: string[] | undefined): string {
+  if (!classDays || classDays.length === 0) return "";
+
+  const dayLabels: Record<string, string> = {
+    monday: "Monday",
+    tuesday: "Tuesday",
+    wednesday: "Wednesday",
+    thursday: "Thursday",
+    friday: "Friday",
+    saturday: "Saturday",
+    sunday: "Sunday",
+  };
+
+  const formattedDays = classDays.map((day) => dayLabels[day] || day).join(", ");
+  return `Every ${formattedDays}`;
+}
+
+// Format time from 24-hour to 12-hour format
+function formatClassTimeDisplay(time: string | undefined): string {
+  if (!time) return "";
+  const [hours, minutes] = time.split(":").map(Number);
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const hour12 = hours % 12 || 12;
+  return `${hour12}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+}
+
+// Format price
+function formatPrice(priceInCents: number | undefined): string {
+  if (priceInCents === undefined || priceInCents === 0) return "Free";
+  return `$${(priceInCents / 100).toFixed(2)}`;
+}
+
+// Format date for display
+function formatDateDisplay(timestamp: number | undefined): string {
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
@@ -91,7 +137,15 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
     }
   };
 
-  const isPast = classDetails.endDate ? classDetails.endDate < Date.now() : false;
+  // Check if class is ongoing or has ended
+  const isPast = classDetails.classEndDate
+    ? classDetails.classEndDate < Date.now()
+    : classDetails.endDate
+      ? classDetails.endDate < Date.now()
+      : false;
+
+  // Determine if this is a recurring class (has classDays) or legacy single-date class
+  const isRecurringClass = classDetails.classDays && classDetails.classDays.length > 0;
 
   return (
     <>
@@ -193,8 +247,34 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
 
                 {/* Class Details Card */}
                 <div className="bg-card rounded-lg border border-border p-6 mb-6">
-                  {/* Date & Time */}
-                  {classDetails.startDate && (
+                  {/* Schedule - Recurring or Legacy */}
+                  {isRecurringClass ? (
+                    <div className="flex items-start gap-3 mb-4 pb-4 border-b border-border">
+                      <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-semibold text-foreground text-lg">
+                          {formatClassDays(classDetails.classDays)}
+                        </p>
+                        {classDetails.classTime && (
+                          <p className="text-muted-foreground flex items-center gap-1 mt-1">
+                            <Clock className="w-4 h-4" />
+                            at {formatClassTimeDisplay(classDetails.classTime)}
+                          </p>
+                        )}
+                        {/* Start/End dates for recurring class */}
+                        <div className="text-sm text-muted-foreground mt-2">
+                          {classDetails.classStartDate && (
+                            <p>Starting: {formatDateDisplay(classDetails.classStartDate)}</p>
+                          )}
+                          {classDetails.classEndDate ? (
+                            <p>Until: {formatDateDisplay(classDetails.classEndDate)}</p>
+                          ) : (
+                            <p className="text-primary">Ongoing class</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : classDetails.startDate ? (
                     <div className="flex items-start gap-3 mb-4 pb-4 border-b border-border">
                       <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                       <div>
@@ -211,6 +291,19 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
                             {classDetails.eventTimeLiteral}
                           </p>
                         )}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {/* Price Per Class */}
+                  {classDetails.pricePerClass !== undefined && (
+                    <div className="flex items-start gap-3 mb-4 pb-4 border-b border-border">
+                      <DollarSign className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-semibold text-foreground text-lg">
+                          {formatPrice(classDetails.pricePerClass)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">per class</p>
                       </div>
                     </div>
                   )}

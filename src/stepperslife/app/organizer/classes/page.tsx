@@ -12,11 +12,45 @@ import {
   Eye,
   EyeOff,
   MapPin,
+  DollarSign,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
 import { useState } from "react";
 import { Id } from "@/convex/_generated/dataModel";
+
+// Format class days for recurring classes
+function formatClassDays(classDays: string[] | undefined): string {
+  if (!classDays || classDays.length === 0) return "";
+
+  const dayLabels: Record<string, string> = {
+    monday: "Mon",
+    tuesday: "Tue",
+    wednesday: "Wed",
+    thursday: "Thu",
+    friday: "Fri",
+    saturday: "Sat",
+    sunday: "Sun",
+  };
+
+  const formattedDays = classDays.map((day) => dayLabels[day] || day).join(", ");
+  return `Every ${formattedDays}`;
+}
+
+// Format time from 24-hour to 12-hour format
+function formatClassTime(time: string | undefined): string {
+  if (!time) return "";
+  const [hours, minutes] = time.split(":").map(Number);
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const hour12 = hours % 12 || 12;
+  return `${hour12}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+}
+
+// Format price
+function formatPrice(priceInCents: number | undefined): string {
+  if (priceInCents === undefined || priceInCents === 0) return "Free";
+  return `$${(priceInCents / 100).toFixed(2)}`;
+}
 
 export default function OrganizerClassesPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
@@ -171,8 +205,18 @@ export default function OrganizerClassesPage() {
         ) : (
           <div className="space-y-4">
             {classes.map((classItem, index) => {
-              const isUpcoming = classItem.startDate && classItem.startDate > Date.now();
-              const isPast = classItem.endDate && classItem.endDate < Date.now();
+              // Check if class is ongoing or has ended
+              const isPast = classItem.classEndDate
+                ? classItem.classEndDate < Date.now()
+                : classItem.endDate
+                  ? classItem.endDate < Date.now()
+                  : false;
+
+              // Determine if this is a recurring class (has classDays) or legacy single-date class
+              const isRecurringClass = classItem.classDays && classItem.classDays.length > 0;
+
+              // For recurring classes, check if ongoing (no end date or end date in future)
+              const isOngoing = isRecurringClass && !classItem.classEndDate;
 
               return (
                 <motion.div
@@ -205,10 +249,24 @@ export default function OrganizerClassesPage() {
                           {classItem.name}
                         </h3>
                         <div className="flex flex-wrap items-center gap-2 text-xs md:text-sm text-muted-foreground">
-                          {classItem.startDate && (
+                          {/* Schedule - Recurring or Legacy */}
+                          {isRecurringClass ? (
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              {formatClassDays(classItem.classDays)}
+                              {classItem.classTime && ` at ${formatClassTime(classItem.classTime)}`}
+                            </span>
+                          ) : classItem.startDate ? (
                             <span className="flex items-center gap-1">
                               <Calendar className="w-4 h-4" />
                               {formatEventDate(classItem.startDate, classItem.timezone)}
+                            </span>
+                          ) : null}
+                          {/* Price */}
+                          {classItem.pricePerClass !== undefined && (
+                            <span className="flex items-center gap-1">
+                              <DollarSign className="w-4 h-4" />
+                              {formatPrice(classItem.pricePerClass)}/class
                             </span>
                           )}
                           {classItem.location && typeof classItem.location === "object" && (
@@ -234,9 +292,9 @@ export default function OrganizerClassesPage() {
                               Ended
                             </span>
                           )}
-                          {isUpcoming && (
+                          {isOngoing && (
                             <span className="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
-                              Upcoming
+                              Ongoing
                             </span>
                           )}
                         </div>

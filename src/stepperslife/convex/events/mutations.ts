@@ -21,8 +21,8 @@ export const createEvent = mutation({
     ),
     description: v.string(),
     categories: v.array(v.string()),
-    startDate: v.number(),
-    endDate: v.number(),
+    startDate: v.optional(v.number()), // Optional for CLASS type (uses classStartDate instead)
+    endDate: v.optional(v.number()), // Optional for CLASS type (uses classEndDate instead)
     timezone: v.string(),
     // Literal date/time fields for display without timezone conversion
     eventDateLiteral: v.optional(v.string()),
@@ -40,6 +40,12 @@ export const createEvent = mutation({
     doorPrice: v.optional(v.string()),
     imageUrl: v.optional(v.string()),
     images: v.optional(v.array(v.id("_storage"))),
+    // CLASS-specific fields (for recurring weekly classes)
+    classDays: v.optional(v.array(v.string())), // ["monday", "wednesday", "friday"]
+    classTime: v.optional(v.string()), // "7:00 PM"
+    classStartDate: v.optional(v.number()), // When the recurring class series begins
+    classEndDate: v.optional(v.number()), // When the recurring class series ends (null = ongoing)
+    pricePerClass: v.optional(v.number()), // Price per class in cents (0 = free)
   },
   handler: async (ctx, args) => {
     try {
@@ -69,6 +75,14 @@ export const createEvent = mutation({
         );
       }
 
+      // For CLASS type, use classStartDate as the startDate for sorting/indexing
+      const effectiveStartDate = args.eventType === "CLASS"
+        ? (args.classStartDate || Date.now())
+        : (args.startDate || Date.now());
+      const effectiveEndDate = args.eventType === "CLASS"
+        ? args.classEndDate
+        : args.endDate;
+
       // Create the event
       const eventId = await ctx.db.insert("events", {
         organizerId: user._id,
@@ -77,8 +91,8 @@ export const createEvent = mutation({
         description: args.description,
         eventType: args.eventType,
         categories: args.categories,
-        startDate: args.startDate,
-        endDate: args.endDate,
+        startDate: effectiveStartDate,
+        endDate: effectiveEndDate,
         timezone: args.timezone,
         // Store literal date/time strings for accurate display
         eventDateLiteral: args.eventDateLiteral,
@@ -88,6 +102,12 @@ export const createEvent = mutation({
         doorPrice: args.doorPrice,
         imageUrl: args.imageUrl,
         images: args.images || [],
+        // CLASS-specific fields
+        classDays: args.classDays,
+        classTime: args.classTime,
+        classStartDate: args.classStartDate,
+        classEndDate: args.classEndDate,
+        pricePerClass: args.pricePerClass,
         // PRODUCTION: Create events as DRAFT by default
         // Organizers must explicitly publish events after setup
         status: "DRAFT",
@@ -441,6 +461,12 @@ export const updateEvent = mutation({
         v.literal("COMPLETED")
       )
     ),
+    // CLASS-specific fields (for recurring weekly classes)
+    classDays: v.optional(v.array(v.string())),
+    classTime: v.optional(v.string()),
+    classStartDate: v.optional(v.number()),
+    classEndDate: v.optional(v.number()),
+    pricePerClass: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     // Verify event ownership
@@ -525,6 +551,25 @@ export const updateEvent = mutation({
     if (args.eventDateLiteral) updates.eventDateLiteral = args.eventDateLiteral;
     if (args.eventTimeLiteral) updates.eventTimeLiteral = args.eventTimeLiteral;
     if (args.eventTimezone) updates.eventTimezone = args.eventTimezone;
+
+    // Handle CLASS-specific fields
+    if (args.classDays !== undefined) updates.classDays = args.classDays;
+    if (args.classTime !== undefined) updates.classTime = args.classTime;
+    if (args.classStartDate !== undefined) {
+      updates.classStartDate = args.classStartDate;
+      // Also update startDate for CLASS events (used for sorting/indexing)
+      if (event.eventType === "CLASS") {
+        updates.startDate = args.classStartDate;
+      }
+    }
+    if (args.classEndDate !== undefined) {
+      updates.classEndDate = args.classEndDate;
+      // Also update endDate for CLASS events
+      if (event.eventType === "CLASS") {
+        updates.endDate = args.classEndDate;
+      }
+    }
+    if (args.pricePerClass !== undefined) updates.pricePerClass = args.pricePerClass;
 
     // Handle status changes
     if (args.status) updates.status = args.status;

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { ArrowLeft, Calendar, MapPin, FileText, BookOpen, Save } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, FileText, BookOpen, Save, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { ImageUpload } from "@/components/upload/ImageUpload";
 import { getTimezoneFromLocation, getTimezoneName } from "@/lib/timezone";
@@ -22,6 +22,16 @@ const CLASS_CATEGORIES = [
   "Detroit Ballroom",
   "Line Dance",
   "Hand Dance",
+];
+
+const DAYS_OF_WEEK = [
+  { id: "monday", label: "Monday", short: "Mon" },
+  { id: "tuesday", label: "Tuesday", short: "Tue" },
+  { id: "wednesday", label: "Wednesday", short: "Wed" },
+  { id: "thursday", label: "Thursday", short: "Thu" },
+  { id: "friday", label: "Friday", short: "Fri" },
+  { id: "saturday", label: "Saturday", short: "Sat" },
+  { id: "sunday", label: "Sunday", short: "Sun" },
 ];
 
 interface ClassFormProps {
@@ -43,11 +53,16 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
 
-  // Date & Time
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  // Class Schedule (Weekly recurring)
+  const [classDays, setClassDays] = useState<string[]>([]);
+  const [classTime, setClassTime] = useState("");
+  const [classStartDate, setClassStartDate] = useState("");
+  const [classEndDate, setClassEndDate] = useState("");
   const [timezone, setTimezone] = useState("America/New_York");
   const [detectedTimezone, setDetectedTimezone] = useState("");
+
+  // Pricing
+  const [pricePerClass, setPricePerClass] = useState("");
 
   // Location
   const [venueName, setVenueName] = useState("");
@@ -72,14 +87,25 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
       setDescription(existingClass.description || "");
       setCategories(existingClass.categories || []);
 
-      // Format dates for datetime-local input
-      if (existingClass.startDate) {
-        const startDateObj = new Date(existingClass.startDate);
-        setStartDate(formatDate(startDateObj, "yyyy-MM-dd'T'HH:mm"));
+      // Class schedule fields
+      if (existingClass.classDays) {
+        setClassDays(existingClass.classDays);
       }
-      if (existingClass.endDate) {
-        const endDateObj = new Date(existingClass.endDate);
-        setEndDate(formatDate(endDateObj, "yyyy-MM-dd'T'HH:mm"));
+      if (existingClass.classTime) {
+        setClassTime(existingClass.classTime);
+      }
+      if (existingClass.classStartDate) {
+        const startDateObj = new Date(existingClass.classStartDate);
+        setClassStartDate(formatDate(startDateObj, "yyyy-MM-dd"));
+      }
+      if (existingClass.classEndDate) {
+        const endDateObj = new Date(existingClass.classEndDate);
+        setClassEndDate(formatDate(endDateObj, "yyyy-MM-dd"));
+      }
+
+      // Price
+      if (existingClass.pricePerClass !== undefined && existingClass.pricePerClass !== null) {
+        setPricePerClass((existingClass.pricePerClass / 100).toString());
       }
 
       if (existingClass.timezone) {
@@ -120,13 +146,22 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
     }
   };
 
+  const handleDayToggle = (dayId: string) => {
+    if (classDays.includes(dayId)) {
+      setClassDays(classDays.filter((d) => d !== dayId));
+    } else {
+      setClassDays([...classDays, dayId]);
+    }
+  };
+
   const handleSubmit = async () => {
     // Validation
     const missingFields: string[] = [];
 
     if (!className) missingFields.push("Class Name");
     if (!description) missingFields.push("Description");
-    if (!startDate) missingFields.push("Start Date & Time");
+    if (classDays.length === 0) missingFields.push("Class Days (select at least one)");
+    if (!classTime) missingFields.push("Class Time");
     if (!city) missingFields.push("City");
     if (!state) missingFields.push("State");
 
@@ -140,15 +175,21 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
     setIsSubmitting(true);
 
     try {
-      const startDateObj = new Date(startDate);
-      const endDateObj = endDate ? new Date(endDate) : startDateObj;
+      // Convert class start/end dates to timestamps
+      const classStartDateUTC = classStartDate ? new Date(classStartDate).getTime() : Date.now();
+      const classEndDateUTC = classEndDate ? new Date(classEndDate).getTime() : undefined;
 
-      const startDateUTC = startDateObj.getTime();
-      const endDateUTC = endDateObj.getTime();
+      // Convert price from dollars to cents
+      const priceInCents = pricePerClass ? Math.round(parseFloat(pricePerClass) * 100) : 0;
 
-      // Extract literal date and time for display purposes
-      const eventDateLiteral = formatDate(startDateObj, "MMMM d, yyyy");
-      const eventTimeLiteral = formatDate(startDateObj, "h:mm a");
+      // Format the class time for display
+      const formattedClassTime = classTime;
+
+      // Create a display-friendly schedule string
+      const selectedDayLabels = DAYS_OF_WEEK
+        .filter((d) => classDays.includes(d.id))
+        .map((d) => d.label);
+      const daysDisplay = selectedDayLabels.join(", ");
 
       if (mode === "create") {
         const classData = {
@@ -156,12 +197,17 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
           eventType: "CLASS" as const,
           description,
           categories,
-          startDate: startDateUTC,
-          endDate: endDateUTC,
+          // New class schedule fields
+          classDays,
+          classTime: formattedClassTime,
+          classStartDate: classStartDateUTC,
+          classEndDate: classEndDateUTC,
+          pricePerClass: priceInCents,
+          // Keep timezone and location
           timezone,
-          eventDateLiteral,
-          eventTimeLiteral,
           eventTimezone: timezone,
+          eventTimeLiteral: formattedClassTime,
+          eventDateLiteral: `Every ${daysDisplay}`,
           location: {
             venueName: venueName || undefined,
             address: address || undefined,
@@ -182,12 +228,17 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
           name: className,
           description,
           categories,
-          startDate: startDateUTC,
-          endDate: endDateUTC,
+          // New class schedule fields
+          classDays,
+          classTime: formattedClassTime,
+          classStartDate: classStartDateUTC,
+          classEndDate: classEndDateUTC,
+          pricePerClass: priceInCents,
+          // Keep timezone and location
           timezone,
-          eventDateLiteral,
-          eventTimeLiteral,
           eventTimezone: timezone,
+          eventTimeLiteral: formattedClassTime,
+          eventDateLiteral: `Every ${daysDisplay}`,
           location: {
             venueName: venueName || undefined,
             address: address || undefined,
@@ -309,44 +360,127 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
             </div>
           </div>
 
-          {/* Date & Time */}
+          {/* Class Schedule */}
           <div className="bg-card rounded-lg shadow-sm border p-6">
             <div className="flex items-center gap-2 mb-4">
               <Calendar className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold text-foreground">Date & Time</h2>
+              <h2 className="text-lg font-semibold text-foreground">Class Schedule</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
+              {/* Days of Week */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Class Days *
+                </label>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Select the days when this class runs every week
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+                  {DAYS_OF_WEEK.map((day) => (
+                    <button
+                      key={day.id}
+                      type="button"
+                      onClick={() => handleDayToggle(day.id)}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors border ${
+                        classDays.includes(day.id)
+                          ? "bg-primary text-white border-primary"
+                          : "bg-background text-foreground border-input hover:bg-accent"
+                      }`}
+                    >
+                      <span className="hidden sm:inline">{day.label}</span>
+                      <span className="sm:hidden">{day.short}</span>
+                    </button>
+                  ))}
+                </div>
+                {classDays.length > 0 && (
+                  <p className="mt-2 text-sm text-primary">
+                    Every {DAYS_OF_WEEK.filter((d) => classDays.includes(d.id)).map((d) => d.label).join(", ")}
+                  </p>
+                )}
+              </div>
+
+              {/* Class Time */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">
-                  Start Date & Time *
+                  Class Time *
                 </label>
                 <input
-                  type="datetime-local"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  type="time"
+                  value={classTime}
+                  onChange={(e) => setClassTime(e.target.value)}
+                  className="w-full sm:w-48 px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  End Date & Time
-                </label>
-                <input
-                  type="datetime-local"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
-                />
+              {/* Start and End Dates */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Class Start Date
+                  </label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    When does this recurring class begin?
+                  </p>
+                  <input
+                    type="date"
+                    value={classStartDate}
+                    onChange={(e) => setClassStartDate(e.target.value)}
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Class End Date
+                  </label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Leave blank for ongoing classes
+                  </p>
+                  <input
+                    type="date"
+                    value={classEndDate}
+                    onChange={(e) => setClassEndDate(e.target.value)}
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  />
+                </div>
               </div>
+
+              {detectedTimezone && (
+                <p className="text-sm text-muted-foreground">
+                  Timezone: {detectedTimezone}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Pricing */}
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <DollarSign className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-semibold text-foreground">Pricing</h2>
             </div>
 
-            {detectedTimezone && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                Timezone: {detectedTimezone}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                Price Per Class
+              </label>
+              <p className="text-xs text-muted-foreground mb-2">
+                Enter 0 or leave blank for free classes
               </p>
-            )}
+              <div className="relative w-full sm:w-48">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={pricePerClass}
+                  onChange={(e) => setPricePerClass(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full pl-7 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Location */}

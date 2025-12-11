@@ -134,6 +134,13 @@ export default defineSchema({
     // Free event specific
     doorPrice: v.optional(v.string()),
 
+    // CLASS-specific fields (for recurring weekly classes)
+    classDays: v.optional(v.array(v.string())), // ["monday", "wednesday", "friday"]
+    classTime: v.optional(v.string()), // "7:00 PM"
+    classStartDate: v.optional(v.number()), // When the recurring class series begins (Unix timestamp)
+    classEndDate: v.optional(v.number()), // When the recurring class series ends (null = ongoing)
+    pricePerClass: v.optional(v.number()), // Price per class in cents (0 = free)
+
     // Social
     socialShareCount: v.optional(v.number()),
 

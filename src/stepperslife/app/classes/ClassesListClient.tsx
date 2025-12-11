@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
-import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen } from "lucide-react";
+import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen, DollarSign } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -34,7 +34,7 @@ export default function ClassesListClient() {
     }
   }, [classes]);
 
-  // Format date
+  // Format date (legacy, for non-recurring classes)
   function formatClassDate(timestamp: number, timezone?: string): string {
     const date = new Date(timestamp);
     return date.toLocaleDateString("en-US", {
@@ -44,6 +44,42 @@ export default function ClassesListClient() {
       day: "numeric",
       timeZone: timezone || "America/New_York",
     });
+  }
+
+  // Format class days for recurring classes
+  function formatClassDays(classDays: string[] | undefined): string {
+    if (!classDays || classDays.length === 0) return "";
+
+    const dayLabels: Record<string, string> = {
+      monday: "Monday",
+      tuesday: "Tuesday",
+      wednesday: "Wednesday",
+      thursday: "Thursday",
+      friday: "Friday",
+      saturday: "Saturday",
+      sunday: "Sunday",
+    };
+
+    const formattedDays = classDays
+      .map((day) => dayLabels[day] || day)
+      .join(", ");
+
+    return `Every ${formattedDays}`;
+  }
+
+  // Format time from 24-hour to 12-hour format
+  function formatClassTime(time: string | undefined): string {
+    if (!time) return "";
+    const [hours, minutes] = time.split(":").map(Number);
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const hour12 = hours % 12 || 12;
+    return `${hour12}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+  }
+
+  // Format price
+  function formatPrice(priceInCents: number | undefined): string {
+    if (priceInCents === undefined || priceInCents === 0) return "Free";
+    return `$${(priceInCents / 100).toFixed(2)}`;
   }
 
   // Show timeout error state
@@ -220,7 +256,15 @@ export default function ClassesListClient() {
 
               <div data-testid="classes-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {classes.map((classItem) => {
-                  const isPast = classItem.endDate && classItem.endDate < Date.now();
+                  // Check if class is ongoing or has ended
+                  const isPast = classItem.classEndDate
+                    ? classItem.classEndDate < Date.now()
+                    : classItem.endDate
+                      ? classItem.endDate < Date.now()
+                      : false;
+
+                  // Determine if this is a recurring class (has classDays) or legacy single-date class
+                  const isRecurringClass = classItem.classDays && classItem.classDays.length > 0;
 
                   return (
                     <Link
@@ -247,6 +291,12 @@ export default function ClassesListClient() {
                             Past Class
                           </div>
                         )}
+                        {/* Price Badge */}
+                        {classItem.pricePerClass !== undefined && (
+                          <div className="absolute top-2 left-2 bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+                            {formatPrice(classItem.pricePerClass)}/class
+                          </div>
+                        )}
                       </div>
 
                       {/* Class Details */}
@@ -259,8 +309,22 @@ export default function ClassesListClient() {
                           {classItem.description}
                         </p>
 
-                        {/* Date & Time */}
-                        {classItem.startDate && (
+                        {/* Schedule - Recurring or Legacy */}
+                        {isRecurringClass ? (
+                          <div className="flex items-start gap-2 mb-2 text-sm text-foreground">
+                            <Calendar className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                            <div>
+                              <div className="font-medium">
+                                {formatClassDays(classItem.classDays)}
+                              </div>
+                              {classItem.classTime && (
+                                <div className="text-muted-foreground">
+                                  at {formatClassTime(classItem.classTime)}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : classItem.startDate ? (
                           <div className="flex items-start gap-2 mb-2 text-sm text-foreground">
                             <Calendar className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
                             <div>
@@ -274,7 +338,7 @@ export default function ClassesListClient() {
                               )}
                             </div>
                           </div>
-                        )}
+                        ) : null}
 
                         {/* Location */}
                         {classItem.location && typeof classItem.location === "object" && (
