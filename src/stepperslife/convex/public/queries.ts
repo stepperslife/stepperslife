@@ -1,6 +1,16 @@
 import { v } from "convex/values";
 import { query } from "../_generated/server";
-import { EVENT_CATEGORIES } from "../../lib/constants";
+
+// Event categories - must match lib/constants.ts EVENT_CATEGORIES
+const EVENT_CATEGORIES = [
+  "Set",
+  "Workshop",
+  "Save the Date",
+  "Cruise",
+  "Outdoors Steppin",
+  "Holiday Event",
+  "Weekend Event",
+] as const;
 
 /**
  * Get all published events (public API for stepperslife.com)
