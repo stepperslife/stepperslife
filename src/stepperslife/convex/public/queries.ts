@@ -480,14 +480,30 @@ export const getFeaturedEvents = query({
 
 /**
  * Get event categories with counts
+ * Filters out CLASS events and past events to match getPublishedEvents default behavior
  */
 export const getCategories = query({
-  args: {},
-  handler: async (ctx) => {
-    const events = await ctx.db
+  args: {
+    includePast: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    const allEvents = await ctx.db
       .query("events")
       .withIndex("by_status", (q) => q.eq("status", "PUBLISHED"))
       .collect();
+
+    // Filter out CLASS events (to match getPublishedEvents behavior)
+    let events = allEvents.filter((e) => e.eventType !== "CLASS");
+
+    // Filter out past events by default (to match getPublishedEvents default behavior)
+    if (!args.includePast) {
+      events = events.filter((e) => {
+        const eventDate = e.endDate || e.startDate;
+        return eventDate && eventDate >= now;
+      });
+    }
 
     // Count events per category
     const categoryCounts = new Map<string, number>();

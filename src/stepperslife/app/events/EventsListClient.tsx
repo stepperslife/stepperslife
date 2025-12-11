@@ -21,7 +21,9 @@ export default function EventsListClient() {
     includePast: showPastEvents,
   });
 
-  const categories = useQuery(api.public.queries.getCategories, {});
+  const categories = useQuery(api.public.queries.getCategories, {
+    includePast: showPastEvents,
+  });
 
   // Timeout fallback - after 10 seconds, show error state
   useEffect(() => {
