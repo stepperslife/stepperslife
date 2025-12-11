@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { EventsSubNav } from "@/components/layout/EventsSubNav";
+import { EVENT_CATEGORIES } from "@/lib/constants";
 
 export default function EventsListClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,8 +21,6 @@ export default function EventsListClient() {
     category: selectedCategory,
     includePast: showPastEvents,
   });
-
-  const categories = useQuery(api.public.queries.getCategories, {});
 
   // Timeout fallback - after 10 seconds, show error state
   useEffect(() => {
@@ -148,9 +147,9 @@ export default function EventsListClient() {
                   className="pl-10 pr-10 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent appearance-none bg-background text-foreground"
                 >
                   <option value="">All Categories</option>
-                  {categories?.map((cat) => (
-                    <option key={cat.name} value={cat.name}>
-                      {cat.name} ({cat.count})
+                  {EVENT_CATEGORIES.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
                     </option>
                   ))}
                 </select>
