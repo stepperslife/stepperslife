@@ -65,6 +65,7 @@ export const markOrderFailed = mutation({
 
 /**
  * Mark an order as refunded (called from Stripe webhook)
+ * This also releases tickets back to inventory
  */
 export const markOrderRefunded = mutation({
   args: {
@@ -94,6 +95,8 @@ export const markOrderRefunded = mutation({
           status: "REFUNDED",
           updatedAt: Date.now(),
         });
+        // Release inventory for each order
+        await releaseOrderInventory(ctx, order._id);
       }
       return { success: true, count: orders.length };
     }
@@ -105,15 +108,84 @@ export const markOrderRefunded = mutation({
     }
 
     // Update order status
+    // Note: refundAmount and refundReason are passed in args but not stored in schema
+    // Consider adding these fields to the schema for better audit tracking
     await ctx.db.patch(order._id, {
       status: "REFUNDED",
-      updatedAt: Date.now(),
     });
 
+    // Release tickets back to inventory
+    const inventoryResult = await releaseOrderInventory(ctx, order._id);
 
-    // TODO: Release tickets back to inventory if needed
-    // This would require fetching orderItems and updating ticket tier quantities
-
-    return { success: true, alreadyRefunded: false };
+    return {
+      success: true,
+      alreadyRefunded: false,
+      inventoryReleased: inventoryResult.released,
+      ticketsCancelled: inventoryResult.ticketsCancelled,
+    };
   },
 });
+
+/**
+ * Helper function to release order inventory back to ticket tiers
+ */
+async function releaseOrderInventory(
+  ctx: any,
+  orderId: any
+): Promise<{ released: number; ticketsCancelled: number }> {
+  let released = 0;
+  let ticketsCancelled = 0;
+
+  try {
+    // Fetch all order items for this order
+    const orderItems = await ctx.db
+      .query("orderItems")
+      .withIndex("by_order", (q: any) => q.eq("orderId", orderId))
+      .collect();
+
+    // Group by ticketTierId to batch updates
+    const tierQuantities: Map<string, number> = new Map();
+
+    for (const item of orderItems) {
+      if (item.ticketTierId) {
+        const current = tierQuantities.get(item.ticketTierId) || 0;
+        tierQuantities.set(item.ticketTierId, current + 1);
+      }
+    }
+
+    // Update each ticket tier's sold count
+    for (const [tierId, quantity] of tierQuantities) {
+      const tier = await ctx.db.get(tierId);
+      if (tier) {
+        const newSold = Math.max(0, (tier.sold || 0) - quantity);
+        await ctx.db.patch(tierId, {
+          sold: newSold,
+        });
+        released += quantity;
+        console.log(`[Refund] Released ${quantity} tickets back to tier ${tierId}, new sold count: ${newSold}`);
+      }
+    }
+
+    // Cancel any associated tickets
+    const tickets = await ctx.db
+      .query("tickets")
+      .filter((q: any) => q.eq(q.field("orderId"), orderId))
+      .collect();
+
+    for (const ticket of tickets) {
+      if (ticket.status !== "CANCELLED" && ticket.status !== "REFUNDED") {
+        await ctx.db.patch(ticket._id, {
+          status: "REFUNDED",
+          updatedAt: Date.now(),
+        });
+        ticketsCancelled++;
+      }
+    }
+
+    console.log(`[Refund] Order ${orderId}: Released ${released} tickets to inventory, cancelled ${ticketsCancelled} tickets`);
+  } catch (error: any) {
+    console.error(`[Refund] Error releasing inventory for order ${orderId}:`, error);
+  }
+
+  return { released, ticketsCancelled };
+}

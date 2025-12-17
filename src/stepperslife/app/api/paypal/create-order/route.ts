@@ -9,17 +9,79 @@ const PAYPAL_API_BASE = process.env.PAYPAL_ENVIRONMENT === "sandbox"
 // Platform PayPal account for receiving fees
 const PLATFORM_PAYPAL_MERCHANT_ID = process.env.PAYPAL_MERCHANT_ID;
 
+// Timeout for PayPal API calls (30 seconds)
+const PAYPAL_TIMEOUT_MS = 30000;
+
+// Max retry attempts
+const MAX_RETRIES = 3;
+
 if (!PAYPAL_CLIENT_ID || !PAYPAL_SECRET_KEY) {
   console.error("[PayPal] CRITICAL: PayPal credentials not configured!");
 }
 
 /**
- * Get PayPal access token
+ * Fetch with timeout and retry logic
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  retries = MAX_RETRIES,
+  baseDelay = 1000
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), PAYPAL_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    // Retry on 5xx errors or rate limiting
+    if ((response.status >= 500 || response.status === 429) && retries > 0) {
+      const delay = baseDelay * Math.pow(2, MAX_RETRIES - retries);
+      console.log(`[PayPal] Retrying request after ${delay}ms (${retries} retries left)`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return fetchWithRetry(url, options, retries - 1, baseDelay);
+    }
+
+    return response;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+
+    if (error.name === "AbortError") {
+      if (retries > 0) {
+        const delay = baseDelay * Math.pow(2, MAX_RETRIES - retries);
+        console.log(`[PayPal] Request timeout, retrying after ${delay}ms (${retries} retries left)`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return fetchWithRetry(url, options, retries - 1, baseDelay);
+      }
+      throw new Error("PayPal API request timed out after multiple attempts");
+    }
+
+    if (retries > 0) {
+      const delay = baseDelay * Math.pow(2, MAX_RETRIES - retries);
+      console.log(`[PayPal] Request failed, retrying after ${delay}ms (${retries} retries left): ${error.message}`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return fetchWithRetry(url, options, retries - 1, baseDelay);
+    }
+
+    throw error;
+  }
+}
+
+/**
+ * Get PayPal access token with retry logic
  */
 async function getPayPalAccessToken(): Promise<string> {
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_SECRET_KEY) {
+    throw new Error("PayPal credentials not configured");
+  }
+
   const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET_KEY}`).toString("base64");
 
-  const response = await fetch(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
+  const response = await fetchWithRetry(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -29,7 +91,9 @@ async function getPayPalAccessToken(): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to get PayPal access token");
+    const errorText = await response.text();
+    console.error("[PayPal] Failed to get access token:", response.status, errorText);
+    throw new Error(`Failed to get PayPal access token: ${response.status}`);
   }
 
   const data = await response.json();
@@ -123,8 +187,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create PayPal order
-    const orderResponse = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
+    // Create PayPal order with retry logic
+    const orderResponse = await fetchWithRetry(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -148,7 +212,12 @@ export async function POST(request: NextRequest) {
       const errorData = await orderResponse.json();
       console.error("[PayPal] Create order failed:", errorData);
       return NextResponse.json(
-        { error: "Failed to create PayPal order", details: errorData },
+        {
+          success: false,
+          error: "Failed to create PayPal order",
+          details: errorData,
+          code: "PAYPAL_ORDER_CREATION_FAILED"
+        },
         { status: 500 }
       );
     }
@@ -163,13 +232,40 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
+      success: true,
       orderId: orderData.id,
       status: orderData.status,
     });
   } catch (error: any) {
     console.error("[PayPal] Create order error:", error);
+
+    // Generate unique request ID for debugging
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Determine error type and message
+    let errorCode = "INTERNAL_ERROR";
+    let errorMessage = "Failed to create PayPal order";
+
+    if (error.message?.includes("credentials")) {
+      errorCode = "PAYPAL_NOT_CONFIGURED";
+      errorMessage = "PayPal payment is temporarily unavailable";
+    } else if (error.message?.includes("timeout")) {
+      errorCode = "PAYPAL_TIMEOUT";
+      errorMessage = "PayPal service timed out. Please try again.";
+    } else if (error.message?.includes("access token")) {
+      errorCode = "PAYPAL_AUTH_FAILED";
+      errorMessage = "Unable to authenticate with PayPal";
+    }
+
     return NextResponse.json(
-      { error: error.message || "Failed to create PayPal order" },
+      {
+        success: false,
+        error: errorMessage,
+        details: {
+          code: errorCode,
+          requestId,
+        }
+      },
       { status: 500 }
     );
   }
