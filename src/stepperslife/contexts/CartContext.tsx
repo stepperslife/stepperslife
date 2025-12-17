@@ -32,8 +32,10 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (productId: Id<"products">) => void;
-  updateQuantity: (productId: Id<"products">, quantity: number) => void;
+  removeFromCart: (productId: Id<"products">, variantId?: string, productOptions?: SelectedProductOption[]) => void;
+  updateQuantity: (productId: Id<"products">, quantity: number, variantId?: string, productOptions?: SelectedProductOption[]) => void;
+  removeItemByIndex: (index: number) => void;
+  updateQuantityByIndex: (index: number, quantity: number) => void;
   clearCart: () => void;
   getItemCount: () => number;
   getSubtotal: () => number;
@@ -98,24 +100,54 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsCartOpen(true);
   };
 
-  const removeFromCart = (productId: Id<"products">) => {
-    setItems(currentItems =>
-      currentItems.filter(item => item.productId !== productId)
-    );
+  // Helper function to match cart items by productId, variantId, and productOptions
+  const matchCartItem = (item: CartItem, productId: Id<"products">, variantId?: string, productOptions?: SelectedProductOption[]) => {
+    if (item.productId !== productId) return false;
+    if (item.variantId !== variantId) return false;
+    const itemOptionsJson = JSON.stringify(item.productOptions || []);
+    const targetOptionsJson = JSON.stringify(productOptions || []);
+    return itemOptionsJson === targetOptionsJson;
   };
 
-  const updateQuantity = (productId: Id<"products">, quantity: number) => {
+  const removeFromCart = (productId: Id<"products">, variantId?: string, productOptions?: SelectedProductOption[]) => {
+    setItems(currentItems => {
+      // Find the first matching item and remove it
+      const indexToRemove = currentItems.findIndex(item =>
+        matchCartItem(item, productId, variantId, productOptions)
+      );
+      if (indexToRemove === -1) return currentItems;
+      return currentItems.filter((_, index) => index !== indexToRemove);
+    });
+  };
+
+  const updateQuantity = (productId: Id<"products">, quantity: number, variantId?: string, productOptions?: SelectedProductOption[]) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, variantId, productOptions);
       return;
     }
 
     setItems(currentItems =>
       currentItems.map(item =>
-        item.productId === productId
+        matchCartItem(item, productId, variantId, productOptions)
           ? { ...item, quantity }
           : item
       )
+    );
+  };
+
+  // Index-based operations for simpler cart UI updates
+  const removeItemByIndex = (index: number) => {
+    setItems(currentItems => currentItems.filter((_, i) => i !== index));
+  };
+
+  const updateQuantityByIndex = (index: number, quantity: number) => {
+    if (quantity <= 0) {
+      removeItemByIndex(index);
+      return;
+    }
+
+    setItems(currentItems =>
+      currentItems.map((item, i) => i === index ? { ...item, quantity } : item)
     );
   };
 
@@ -139,6 +171,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         addToCart,
         removeFromCart,
         updateQuantity,
+        removeItemByIndex,
+        updateQuantityByIndex,
         clearCart,
         getItemCount,
         getSubtotal,

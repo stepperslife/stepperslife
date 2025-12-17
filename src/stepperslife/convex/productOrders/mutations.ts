@@ -51,7 +51,9 @@ export const createProductOrder = mutation({
       }
     }
 
-    const taxAmount = 0; // TODO: Calculate tax based on location
+    // Calculate tax at 8.75% (standard rate for US)
+    const TAX_RATE = 0.0875;
+    const taxAmount = Math.round(subtotal * TAX_RATE);
     const totalAmount = subtotal + shippingCost + taxAmount;
 
     // Update inventory for each item

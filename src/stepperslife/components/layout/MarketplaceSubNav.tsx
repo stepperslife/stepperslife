@@ -9,7 +9,7 @@ export function MarketplaceSubNav() {
 
   const navItems = [
     { href: "/marketplace", label: "Browse Products", icon: ShoppingBag },
-    { href: "/user/my-orders", label: "My Orders", icon: Package },
+    { href: "/marketplace/orders", label: "My Orders", icon: Package },
     { href: "/help", label: "Help", icon: HelpCircle },
   ];
 
