@@ -65,12 +65,25 @@ interface ExtendedProductOption {
   placeholder?: string;
 }
 
+// Helper to check if a string looks like a valid Convex ID
+function isValidConvexId(id: string): boolean {
+  // Convex IDs are typically alphanumeric strings of specific length
+  return typeof id === 'string' && id.length > 10 && /^[a-z0-9]+$/i.test(id);
+}
+
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const productId = params.productId as Id<"products">;
+  const productIdParam = params.productId as string;
 
-  const product = useQuery(api.products.queries.getProductById, { productId });
+  // Validate the product ID format before querying
+  const isValidId = productIdParam && isValidConvexId(productIdParam);
+  const productId = isValidId ? (productIdParam as Id<"products">) : null;
+
+  const product = useQuery(
+    api.products.queries.getProductById,
+    productId ? { productId } : "skip"
+  );
   const { addToCart } = useCart();
 
   const [quantity, setQuantity] = useState(1);
@@ -81,7 +94,8 @@ export default function ProductDetailPage() {
     Record<string, SelectedOption>
   >({});
 
-  if (product === undefined) {
+  // Show loading state only for valid IDs that are being fetched
+  if (isValidId && product === undefined) {
     return (
       <>
         <PublicHeader />
@@ -93,7 +107,8 @@ export default function ProductDetailPage() {
     );
   }
 
-  if (product === null) {
+  // Show "not found" for invalid IDs or products that don't exist or still loading invalid
+  if (!isValidId || product === null || product === undefined) {
     return (
       <>
         <PublicHeader />
