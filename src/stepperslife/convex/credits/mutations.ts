@@ -101,45 +101,99 @@ export const purchaseCredits = mutation({
 });
 
 /**
- * Confirm credit purchase after Stripe webhook
+ * Create a pending credit purchase transaction
+ * Called when Stripe payment intent is created (before payment)
  */
-export const confirmCreditPurchase = mutation({
+export const createPendingCreditPurchase = mutation({
   args: {
+    organizerId: v.id("users"),
+    ticketsPurchased: v.number(),
+    amountPaid: v.number(),
+    pricePerTicket: v.number(),
     stripePaymentIntentId: v.string(),
   },
   handler: async (ctx, args) => {
-    // Find transaction
-    const transaction = await ctx.db
+    // Check if transaction already exists (idempotency)
+    const existing = await ctx.db
       .query("creditTransactions")
       .filter((q) => q.eq(q.field("stripePaymentIntentId"), args.stripePaymentIntentId))
       .first();
 
-    if (!transaction) {
-      throw new Error("Transaction not found");
+    if (existing) {
+      return { transactionId: existing._id, alreadyExists: true };
     }
 
-    if (transaction.status === "COMPLETED") {
-      return { success: true, message: "Already completed" };
-    }
-
-    // Update transaction status
-    await ctx.db.patch(transaction._id, {
-      status: "COMPLETED",
+    // Create pending transaction record
+    const transactionId = await ctx.db.insert("creditTransactions", {
+      organizerId: args.organizerId,
+      ticketsPurchased: args.ticketsPurchased,
+      amountPaid: args.amountPaid,
+      pricePerTicket: args.pricePerTicket,
+      stripePaymentIntentId: args.stripePaymentIntentId,
+      status: "PENDING",
+      purchasedAt: Date.now(),
     });
+
+    return { transactionId, alreadyExists: false };
+  },
+});
+
+/**
+ * Confirm credit purchase after Stripe webhook
+ * Can work with or without a pre-existing pending transaction
+ */
+export const confirmCreditPurchase = mutation({
+  args: {
+    organizerId: v.id("users"),
+    stripePaymentIntentId: v.string(),
+    ticketsPurchased: v.number(),
+    amountPaid: v.number(),
+    pricePerTicket: v.number(),
+  },
+  handler: async (ctx, args) => {
+    // Find existing transaction (if created during payment intent creation)
+    let transaction = await ctx.db
+      .query("creditTransactions")
+      .filter((q) => q.eq(q.field("stripePaymentIntentId"), args.stripePaymentIntentId))
+      .first();
+
+    if (transaction) {
+      // Transaction exists - check if already completed
+      if (transaction.status === "COMPLETED") {
+        return { success: true, message: "Already completed", creditId: null };
+      }
+
+      // Update transaction status to completed
+      await ctx.db.patch(transaction._id, {
+        status: "COMPLETED",
+      });
+    } else {
+      // No pending transaction - create a completed one directly
+      // This can happen if the pending creation failed or webhook arrives first
+      await ctx.db.insert("creditTransactions", {
+        organizerId: args.organizerId,
+        ticketsPurchased: args.ticketsPurchased,
+        amountPaid: args.amountPaid,
+        pricePerTicket: args.pricePerTicket,
+        stripePaymentIntentId: args.stripePaymentIntentId,
+        status: "COMPLETED",
+        purchasedAt: Date.now(),
+      });
+    }
 
     // Get or create credit balance
     const credits = await ctx.db
       .query("organizerCredits")
-      .withIndex("by_organizer", (q) => q.eq("organizerId", transaction.organizerId))
+      .withIndex("by_organizer", (q) => q.eq("organizerId", args.organizerId))
       .first();
 
     if (!credits) {
       // Initialize if doesn't exist
       const creditId = await ctx.db.insert("organizerCredits", {
-        organizerId: transaction.organizerId,
-        creditsTotal: transaction.ticketsPurchased,
+        organizerId: args.organizerId,
+        creditsTotal: args.ticketsPurchased,
         creditsUsed: 0,
-        creditsRemaining: transaction.ticketsPurchased,
+        creditsRemaining: args.ticketsPurchased,
         firstEventFreeUsed: false,
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -149,8 +203,8 @@ export const confirmCreditPurchase = mutation({
 
     // Add purchased credits to balance
     await ctx.db.patch(credits._id, {
-      creditsTotal: credits.creditsTotal + transaction.ticketsPurchased,
-      creditsRemaining: credits.creditsRemaining + transaction.ticketsPurchased,
+      creditsTotal: credits.creditsTotal + args.ticketsPurchased,
+      creditsRemaining: credits.creditsRemaining + args.ticketsPurchased,
       updatedAt: Date.now(),
     });
 

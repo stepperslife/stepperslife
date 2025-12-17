@@ -194,7 +194,7 @@ export default function TicketValidationPage() {
                 <div className="flex justify-center mb-4">
                   <div className="p-4 bg-white border-4 border-border rounded-lg">
                     <QRCodeSVG
-                      value={ticket.ticketCode}
+                      value={ticket.ticketCode || ticketCode}
                       size={200}
                       level="M"
                       marginSize={2}

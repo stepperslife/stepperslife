@@ -1,56 +1,90 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
+declare global {
+  interface Window {
+    paypal?: any;
+  }
+}
+
 interface PayPalPaymentProps {
-  amount: number; // in cents
-  orderId?: string;
-  currency?: string;
+  amount: number; // Total amount in cents
+  platformFee?: number; // Platform fee in cents (for split payments)
+  orderId?: string; // SteppersLife order ID
   description?: string;
+  organizerPaypalEmail?: string; // Organizer's PayPal email (for split payments)
+  organizerPaypalMerchantId?: string; // Organizer's PayPal Merchant ID
   onSuccess: (paypalOrderId: string) => void;
   onError: (error: string) => void;
 }
 
 export function PayPalPayment({
   amount,
+  platformFee = 0,
   orderId,
-  currency = "USD",
   description,
+  organizerPaypalEmail,
+  organizerPaypalMerchantId,
   onSuccess,
   onError,
 }: PayPalPaymentProps) {
-  const paypalRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     // Load PayPal SDK
+    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+
+    if (!clientId) {
+      console.error("[PayPal] Client ID not configured");
+      onError("PayPal is not configured");
+      return;
+    }
+
+    // Check if PayPal SDK is already loaded
+    if (window.paypal) {
+      renderPayPalButtons();
+      return;
+    }
+
+    // Load PayPal SDK script
     const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
     script.async = true;
-    script.onload = initializePayPal;
-    script.onerror = () => {
-      setError("Failed to load PayPal SDK");
-      setIsLoading(false);
+    script.onload = () => {
+      renderPayPalButtons();
     };
+    script.onerror = () => {
+      setIsLoading(false);
+      onError("Failed to load PayPal SDK");
+    };
+
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      // Cleanup: remove script if component unmounts before loading
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
-  }, [amount, orderId, currency, description]);
+  }, [amount, orderId]);
 
-  async function initializePayPal() {
-    const PayPal = (window as any).paypal;
-    if (!PayPal) {
-      setError("PayPal SDK not loaded");
+  const renderPayPalButtons = () => {
+    if (!window.paypal) {
       setIsLoading(false);
       return;
     }
 
-    try {
-      await PayPal.Buttons({
+    // Clear existing buttons
+    const container = document.getElementById("paypal-button-container");
+    if (container) {
+      container.innerHTML = "";
+    }
+
+    window.paypal
+      .Buttons({
         style: {
           layout: "vertical",
           color: "gold",
@@ -58,18 +92,18 @@ export function PayPalPayment({
           label: "paypal",
         },
         createOrder: async () => {
+          setIsProcessing(true);
           try {
-            // Create PayPal order via our API
             const response = await fetch("/api/paypal/create-order", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 amount,
-                currency,
+                platformFee,
                 orderId,
-                description: description || "Event Ticket Purchase",
+                description,
+                organizerPaypalEmail,
+                organizerPaypalMerchantId,
               }),
             });
 
@@ -79,71 +113,86 @@ export function PayPalPayment({
               throw new Error(data.error || "Failed to create PayPal order");
             }
 
-            return data.id;
-          } catch (err: any) {
-            onError(err.message || "Failed to create PayPal order");
-            throw err;
+            return data.orderId;
+          } catch (error: any) {
+            setIsProcessing(false);
+            onError(error.message || "Failed to create PayPal order");
+            throw error;
           }
         },
-        onApprove: async (data: any) => {
+        onApprove: async (data: { orderID: string }) => {
           try {
-            // Capture the payment
             const response = await fetch("/api/paypal/capture-order", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                orderID: data.orderID,
-                convexOrderId: orderId,
+                paypalOrderId: data.orderID,
+                steppersLifeOrderId: orderId,
               }),
             });
 
             const captureData = await response.json();
 
-            if (!response.ok || !captureData.success) {
-              throw new Error(captureData.error || "Payment capture failed");
+            if (!response.ok) {
+              throw new Error(captureData.error || "Failed to capture payment");
             }
 
-            onSuccess(data.orderID);
-          } catch (err: any) {
-            onError(err.message || "Payment capture failed");
+            if (captureData.status === "COMPLETED") {
+              onSuccess(data.orderID);
+            } else {
+              onError("Payment was not completed");
+            }
+          } catch (error: any) {
+            onError(error.message || "Failed to capture payment");
+          } finally {
+            setIsProcessing(false);
           }
         },
-        onError: (err: any) => {
-          console.error("PayPal error:", err);
-          onError(err.message || "PayPal payment failed");
-        },
         onCancel: () => {
-          onError("Payment cancelled");
+          setIsProcessing(false);
+          console.log("[PayPal] Payment cancelled by user");
         },
-      }).render(paypalRef.current);
-
-      setIsLoading(false);
-    } catch (err: any) {
-      console.error("Failed to initialize PayPal:", err);
-      setError("Failed to initialize PayPal buttons");
-      setIsLoading(false);
-    }
-  }
-
-  if (error) {
-    return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-        {error}
-      </div>
-    );
-  }
+        onError: (err: any) => {
+          setIsProcessing(false);
+          console.error("[PayPal] Button error:", err);
+          onError("PayPal encountered an error");
+        },
+      })
+      .render("#paypal-button-container")
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch((err: any) => {
+        console.error("[PayPal] Failed to render buttons:", err);
+        setIsLoading(false);
+        onError("Failed to load PayPal buttons");
+      });
+  };
 
   return (
-    <div className="w-full">
+    <div className="space-y-4">
       {isLoading && (
-        <div className="flex items-center justify-center p-8">
-          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           <span className="ml-2 text-gray-600">Loading PayPal...</span>
         </div>
       )}
-      <div ref={paypalRef} className={isLoading ? "hidden" : ""}></div>
+
+      {isProcessing && (
+        <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <span className="ml-2 text-gray-600">Processing payment...</span>
+        </div>
+      )}
+
+      <div
+        id="paypal-button-container"
+        className={isLoading ? "hidden" : ""}
+      ></div>
+
+      <p className="text-xs text-gray-500 text-center">
+        Secure payment powered by PayPal
+      </p>
     </div>
   );
 }

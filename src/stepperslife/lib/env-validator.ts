@@ -19,16 +19,7 @@ const requiredEnvVars = [
 const optionalEnvVars = [
   'SENTRY_DSN',
   'NEXT_PUBLIC_SENTRY_DSN',
-  'STRIPE_SECRET_KEY',
-  'STRIPE_PUBLISHABLE_KEY',
-  // Square is ONLY for organizer credit purchases (organizer → platform)
-  // NOT required for customer ticket purchases (customer → organizer via Stripe/PayPal/Cash)
-  'NEXT_PUBLIC_SQUARE_APPLICATION_ID',
-  'NEXT_PUBLIC_SQUARE_LOCATION_ID',
-  'NEXT_PUBLIC_SQUARE_ENVIRONMENT',
-  'SQUARE_ACCESS_TOKEN',
-  'SQUARE_LOCATION_ID',
-  'SQUARE_ENVIRONMENT',
+  'STRIPE_WEBHOOK_SECRET',
   'CONVEX_DEPLOY_KEY', // Only needed for deployment, not local dev
 ] as const;
 
@@ -61,7 +52,7 @@ export function validateEnv() {
   // Warn about optional variables in development
   if (warnings.length > 0 && process.env.NODE_ENV === 'development') {
     console.warn(
-      `⚠️  Optional environment variables not set:\n${warnings.map(k => `  - ${k}`).join('\n')}`
+      `Optional environment variables not set:\n${warnings.map(k => `  - ${k}`).join('\n')}`
     );
   }
 
@@ -89,24 +80,10 @@ export function validateEnv() {
     );
   }
 
-  // Validate Square environment consistency
-  const squarePublicEnv = process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT;
-  const squareServerEnv = process.env.SQUARE_ENVIRONMENT;
-  if (squarePublicEnv && squareServerEnv && squarePublicEnv !== squareServerEnv) {
-    throw new Error(
-      `Square environment mismatch: NEXT_PUBLIC_SQUARE_ENVIRONMENT="${squarePublicEnv}" but SQUARE_ENVIRONMENT="${squareServerEnv}". These must match.`
-    );
-  }
-
   // Validate API key formats
   const resendKey = process.env.RESEND_API_KEY;
   if (resendKey && !resendKey.startsWith('re_')) {
     throw new Error('RESEND_API_KEY must start with "re_" (invalid format)');
-  }
-
-  const squareToken = process.env.SQUARE_ACCESS_TOKEN;
-  if (squareToken && !squareToken.startsWith('EAAA')) {
-    console.warn('⚠️  SQUARE_ACCESS_TOKEN may have invalid format (expected to start with "EAAA")');
   }
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -122,7 +99,7 @@ export function validateEnv() {
   // Log successful validation in development
   if (process.env.NODE_ENV === 'development') {
     if (warnings.length > 0) {
-      console.warn(`⚠️  ${warnings.length} optional variable(s) not set`);
+      console.warn(`${warnings.length} optional variable(s) not set`);
     }
   }
 
@@ -136,9 +113,6 @@ export function validateEnv() {
 export const env = {
   CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL!,
   JWT_SECRET: process.env.JWT_SECRET,
-  SQUARE_ACCESS_TOKEN: process.env.SQUARE_ACCESS_TOKEN,
-  SQUARE_APPLICATION_ID: process.env.SQUARE_APPLICATION_ID,
-  SQUARE_LOCATION_ID: process.env.SQUARE_LOCATION_ID,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   NODE_ENV: process.env.NODE_ENV,
 } as const;

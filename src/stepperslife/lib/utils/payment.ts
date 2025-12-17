@@ -3,18 +3,16 @@
  *
  * Shared utilities for payment processing to reduce code duplication
  * and ensure consistent behavior across payment APIs
+ *
+ * Note: As of the Stripe-only migration, all payments go through Stripe
+ * (Card + Cash App Pay) or Cash (physical USD at door)
  */
 
-import { PRICING, TIMEOUTS, CURRENCIES, LOG_PREFIX } from '../constants/payment';
+import { PRICING, CURRENCIES } from '../constants/payment';
 
 // ============================================================================
 // Type Definitions
 // ============================================================================
-
-export interface PayPalAccessToken {
-  token: string;
-  expiresAt: number;
-}
 
 export interface PaymentAmount {
   cents: number;
@@ -26,83 +24,6 @@ export interface PaymentError {
   message: string;
   code?: string;
   details?: unknown;
-}
-
-// ============================================================================
-// PayPal Token Management with Caching
-// ============================================================================
-
-let cachedPayPalToken: PayPalAccessToken | null = null;
-
-/**
- * Get PayPal access token with caching to reduce API calls
- * Tokens are cached for 50 minutes (valid for 1 hour)
- */
-export async function getPayPalAccessToken(): Promise<string> {
-  const now = Date.now();
-
-  // Return cached token if still valid
-  if (cachedPayPalToken && cachedPayPalToken.expiresAt > now) {
-    return cachedPayPalToken.token;
-  }
-
-  // Fetch new token
-  const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
-  const PAYPAL_SECRET_KEY = process.env.PAYPAL_SECRET_KEY;
-  const PAYPAL_API_BASE = getPayPalApiBase();
-
-  if (!PAYPAL_CLIENT_ID || !PAYPAL_SECRET_KEY) {
-    throw new Error('PayPal credentials not configured');
-  }
-
-  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET_KEY}`).toString('base64');
-
-  try {
-    const response = await fetch(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: 'grant_type=client_credentials',
-      signal: AbortSignal.timeout(TIMEOUTS.PAYPAL_API_TIMEOUT),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error(`${LOG_PREFIX.PAYPAL} Token fetch failed:`, errorData);
-      throw new Error('Failed to obtain PayPal access token');
-    }
-
-    const data = await response.json();
-
-    // Cache token with expiration (token valid for 1 hour, cache for 50 min)
-    cachedPayPalToken = {
-      token: data.access_token,
-      expiresAt: now + TIMEOUTS.TOKEN_CACHE_DURATION,
-    };
-
-    return data.access_token;
-  } catch (error) {
-    console.error(`${LOG_PREFIX.PAYPAL} Token fetch error:`, error);
-    throw new Error('Failed to authenticate with PayPal');
-  }
-}
-
-/**
- * Get PayPal API base URL based on environment
- */
-export function getPayPalApiBase(): string {
-  return process.env.PAYPAL_ENVIRONMENT === 'sandbox'
-    ? 'https://api-m.sandbox.paypal.com'
-    : 'https://api-m.paypal.com';
-}
-
-/**
- * Clear cached PayPal token (useful for testing or error recovery)
- */
-export function clearPayPalTokenCache(): void {
-  cachedPayPalToken = null;
 }
 
 // ============================================================================
@@ -343,11 +264,8 @@ export function validatePaymentEnvironment(): {
   missing: string[];
 } {
   const required = [
-    'NEXT_PUBLIC_SQUARE_APPLICATION_ID',
-    'SQUARE_ACCESS_TOKEN',
-    'SQUARE_LOCATION_ID',
-    'PAYPAL_CLIENT_ID',
-    'PAYPAL_SECRET_KEY',
+    'STRIPE_SECRET_KEY',
+    'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
     'NEXT_PUBLIC_CONVEX_URL',
   ];
 

@@ -131,11 +131,12 @@ export async function POST(request: NextRequest) {
             orderId: orderId || "",
             orderNumber: orderNumber || "",
             chargePattern: "DIRECT",
+            chargeType: "SPLIT", // Identifies this as a split payment (ticket sales)
             ...metadata,
           },
-          automatic_payment_methods: {
-            enabled: true, // Supports cards, Apple Pay, Google Pay
-          },
+          // Explicitly enable Card and Cash App Pay for ticket purchases
+          // Note: Cash App Pay must be enabled in Stripe Dashboard first
+          payment_method_types: ["card", "cashapp"],
         },
         {
           stripeAccount: stripeAccountId, // Charge on organizer's account
@@ -159,11 +160,12 @@ export async function POST(request: NextRequest) {
             orderId: orderId || "",
             orderNumber: orderNumber || "",
             chargePattern: "DESTINATION",
+            chargeType: "SPLIT", // Identifies this as a split payment (ticket sales)
             ...metadata,
           },
-          automatic_payment_methods: {
-            enabled: true, // Supports cards, Apple Pay, Google Pay
-          },
+          // Explicitly enable Card and Cash App Pay for ticket purchases
+          // Note: Cash App Pay must be enabled in Stripe Dashboard first
+          payment_method_types: ["card", "cashapp"],
         },
         {
           idempotencyKey: idempotencyKey, // Prevent duplicate charges

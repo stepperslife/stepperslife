@@ -623,6 +623,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                   >
                     <Link
                       href={`/events/${eventId}/checkout`}
+                      data-testid="buy-tickets-btn"
                       className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold text-lg shadow-md hover:shadow-lg"
                     >
                       <Ticket className="w-5 h-5" />

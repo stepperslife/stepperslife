@@ -1,15 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { DollarSign, CreditCard, Smartphone, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
-import { SquareCardPayment } from "@/components/checkout/SquareCardPayment";
-import { CashAppQRPayment } from "@/components/checkout/CashAppPayment";
+import { DollarSign, CreditCard, Smartphone, CheckCircle, Loader2 } from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import toast from "react-hot-toast";
+
+// Initialize Stripe
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface OrganizerPrepaymentProps {
   eventId: string;
@@ -20,6 +28,182 @@ interface OrganizerPrepaymentProps {
   onCancel: () => void;
 }
 
+// Inner component that uses Stripe hooks
+function PrepaymentForm({
+  eventId,
+  eventName,
+  estimatedTickets,
+  pricePerTicket,
+  totalAmount,
+  userId,
+  onPaymentSuccess,
+  onBack,
+}: {
+  eventId: string;
+  eventName: string;
+  estimatedTickets: number;
+  pricePerTicket: number;
+  totalAmount: number;
+  userId: string;
+  onPaymentSuccess: () => void;
+  onBack: () => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const configurePayment = useMutation(api.events.mutations.configurePayment);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        setError(submitError.message || "Payment validation failed");
+        setIsProcessing(false);
+        return;
+      }
+
+      // Confirm the payment
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/organizer/events/${eventId}?prepay=success`,
+        },
+        redirect: "if_required",
+      });
+
+      if (confirmError) {
+        setError(confirmError.message || "Payment failed");
+        setIsProcessing(false);
+        return;
+      }
+
+      if (paymentIntent && paymentIntent.status === "succeeded") {
+        // Payment succeeded - now configure the event
+        const configToast = toast.loading("Activating your event...");
+
+        try {
+          await configurePayment({
+            eventId: eventId as Id<"events">,
+            model: "PREPAY",
+            ticketPrice: pricePerTicket,
+          });
+
+          toast.dismiss(configToast);
+          toast.success("Payment successful! Your event is now active.");
+          onPaymentSuccess();
+        } catch (configError: any) {
+          toast.dismiss(configToast);
+          toast.error(configError.message || "Failed to configure event. Please contact support.");
+          setError("Payment succeeded but event configuration failed. Please contact support.");
+        }
+      }
+    } catch (err: any) {
+      console.error("Payment error:", err);
+      setError(err.message || "An error occurred. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center mb-6">
+            <h3 className="text-xl font-bold text-foreground mb-2">Complete Payment</h3>
+            <p className="text-muted-foreground">
+              Prepay ${totalAmount.toFixed(2)} for {estimatedTickets} ticket credits
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            {/* Payment Element - supports Card + Cash App Pay */}
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <CreditCard className="w-5 h-5 text-muted-foreground" />
+                <h4 className="font-semibold text-foreground">Payment Details</h4>
+              </div>
+              <div className="border border-border rounded-lg p-4">
+                <PaymentElement
+                  options={{
+                    layout: "tabs",
+                  }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                <Smartphone className="w-3 h-3" />
+                Cash App Pay available for US customers
+              </p>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Payment Summary */}
+            <div className="bg-accent rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-muted-foreground">Ticket Credits:</span>
+                <span className="font-semibold text-foreground">{estimatedTickets} tickets</span>
+              </div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-muted-foreground">Price per ticket:</span>
+                <span className="font-semibold text-foreground">${pricePerTicket.toFixed(2)}</span>
+              </div>
+              <div className="border-t border-border pt-2 mt-2">
+                <div className="flex items-center justify-between text-lg font-bold">
+                  <span>Total:</span>
+                  <span className="text-primary">${totalAmount.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-between gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onBack}
+                disabled={isProcessing}
+              >
+                Back
+              </Button>
+              <Button
+                type="submit"
+                disabled={isProcessing || !stripe || !elements}
+                className="min-w-[150px]"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : (
+                  <>Pay ${totalAmount.toFixed(2)}</>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export function OrganizerPrepayment({
   eventId,
   eventName,
@@ -28,167 +212,92 @@ export function OrganizerPrepayment({
   onPaymentSuccess,
   onCancel,
 }: OrganizerPrepaymentProps) {
-  const [selectedMethod, setSelectedMethod] = useState<"square" | "cashapp" | null>(null);
   const [showPayment, setShowPayment] = useState(false);
-  const [isConfiguring, setIsConfiguring] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Get current user for userId
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
-  // Convex mutations
-  const configurePayment = useMutation(api.events.mutations.configurePayment);
-  const purchaseCredits = useMutation(api.credits.mutations.purchaseCredits);
-
   const totalAmount = estimatedTickets * pricePerTicket;
   const totalAmountCents = Math.round(totalAmount * 100);
 
-  const handlePaymentMethodSelect = (method: "square" | "cashapp") => {
-    setSelectedMethod(method);
-    setShowPayment(true);
-  };
+  // Create payment intent when proceeding to payment
+  const handleProceedToPayment = async () => {
+    if (!currentUser?._id) {
+      toast.error("Please log in to continue");
+      return;
+    }
 
-  const handleSquarePaymentSuccess = async (result: { paymentId: string; status: string }) => {
-    setIsConfiguring(true);
-    const loadingToast = toast.loading("Configuring your event...");
+    setIsLoading(true);
+    setError(null);
 
     try {
-      // Step 1: Record the credit purchase transaction
-      if (!currentUser?._id) {
-        throw new Error("User not found");
+      const response = await fetch("/api/stripe/create-platform-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: totalAmountCents,
+          productType: "CREDITS",
+          userId: currentUser._id,
+          ticketQuantity: estimatedTickets,
+          pricePerTicket: Math.round(pricePerTicket * 100), // Convert to cents
+          metadata: {
+            eventId,
+            eventName,
+            purchaseType: "PREPAY",
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+        setShowPayment(true);
+      } else {
+        setError(data.error || "Failed to initialize payment");
+        toast.error(data.error || "Failed to initialize payment");
       }
-
-      await purchaseCredits({
-        userId: currentUser._id,
-        credits: estimatedTickets,
-        squarePaymentId: result.paymentId,
-        amountPaid: totalAmountCents,
-      });
-
-      // Step 2: Configure the event with PREPAY model
-      await configurePayment({
-        eventId: eventId as Id<"events">,
-        model: "PREPAY",
-        ticketPrice: pricePerTicket,
-      });
-
-      toast.dismiss(loadingToast);
-      toast.success("Payment successful! Your event is now active.");
-      onPaymentSuccess();
-    } catch (error: any) {
-      console.error("[OrganizerPrepayment] Configuration error:", error);
-      toast.dismiss(loadingToast);
-      toast.error(error.message || "Failed to configure event. Please contact support.");
-      // Don't call onPaymentSuccess since configuration failed
+    } catch (err: any) {
+      console.error("Failed to create payment intent:", err);
+      setError("Failed to initialize payment. Please try again.");
+      toast.error("Failed to initialize payment. Please try again.");
     } finally {
-      setIsConfiguring(false);
+      setIsLoading(false);
     }
   };
 
-  const handleSquarePaymentError = (error: string) => {
-    console.error("[Prepayment] Payment error:", error);
-    toast.error(`Payment failed: ${error}`);
-  };
-
-  const handleCashAppPaymentSuccess = async (result: { paymentId: string; status: string }) => {
-    setIsConfiguring(true);
-    const loadingToast = toast.loading("Configuring your event...");
-
-    try {
-      // Step 1: Record the credit purchase transaction
-      if (!currentUser?._id) {
-        throw new Error("User not found");
-      }
-
-      await purchaseCredits({
-        userId: currentUser._id,
-        credits: estimatedTickets,
-        squarePaymentId: result.paymentId,
-        amountPaid: totalAmountCents,
-      });
-
-      // Step 2: Configure the event with PREPAY model
-      await configurePayment({
-        eventId: eventId as Id<"events">,
-        model: "PREPAY",
-        ticketPrice: pricePerTicket,
-      });
-
-      toast.dismiss(loadingToast);
-      toast.success("Payment successful! Your event is now active.");
-      onPaymentSuccess();
-    } catch (error: any) {
-      console.error("[OrganizerPrepayment] CashApp configuration error:", error);
-      toast.dismiss(loadingToast);
-      toast.error(error.message || "Failed to configure event. Please contact support.");
-    } finally {
-      setIsConfiguring(false);
-    }
-  };
-
-  const handleCashAppPaymentError = (error: string) => {
-    console.error("[Prepayment] CashApp payment error:", error);
-    toast.error(`Payment failed: ${error}`);
-  };
-
-  // Show loading while configuring
-  if (isConfiguring) {
+  // Show payment form with Stripe Elements
+  if (showPayment && clientSecret && currentUser?._id) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <Card>
-          <CardContent className="py-12">
-            <div className="flex flex-col items-center justify-center gap-4">
-              <Loader2 className="h-12 w-12 animate-spin text-primary" />
-              <h3 className="text-xl font-semibold">Activating Your Event...</h3>
-              <p className="text-muted-foreground text-center">
-                Please wait while we configure your event settings.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (showPayment && selectedMethod === "square") {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <SquareCardPayment
-          applicationId={process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID || ""}
-          locationId={process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID || ""}
-          total={totalAmount}
-          environment={
-            (process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT as "sandbox" | "production") || "sandbox"
-          }
-          onPaymentSuccess={handleSquarePaymentSuccess}
-          onPaymentError={handleSquarePaymentError}
+      <Elements
+        stripe={stripePromise}
+        options={{
+          clientSecret,
+          appearance: {
+            theme: "stripe",
+            variables: {
+              colorPrimary: "#0066cc",
+            },
+          },
+        }}
+      >
+        <PrepaymentForm
+          eventId={eventId}
+          eventName={eventName}
+          estimatedTickets={estimatedTickets}
+          pricePerTicket={pricePerTicket}
+          totalAmount={totalAmount}
+          userId={currentUser._id}
+          onPaymentSuccess={onPaymentSuccess}
           onBack={() => {
             setShowPayment(false);
-            setSelectedMethod(null);
+            setClientSecret(null);
           }}
-          userId={currentUser?._id}
-          eventId={eventId}
-          description={`PREPAY: ${estimatedTickets} tickets for "${eventName}"`}
         />
-      </div>
-    );
-  }
-
-  if (showPayment && selectedMethod === "cashapp") {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <CashAppQRPayment
-          total={totalAmount}
-          onPaymentSuccess={handleCashAppPaymentSuccess}
-          onPaymentError={handleCashAppPaymentError}
-          onBack={() => {
-            setShowPayment(false);
-            setSelectedMethod(null);
-          }}
-          userId={currentUser?._id}
-          eventId={eventId}
-          description={`PREPAY: ${estimatedTickets} tickets for "${eventName}"`}
-        />
-      </div>
+      </Elements>
     );
   }
 
@@ -208,20 +317,32 @@ export function OrganizerPrepayment({
             <p className="text-sm text-muted-foreground mb-1">Total Platform Fee</p>
             <p className="text-4xl font-bold text-foreground mb-2">${totalAmount.toFixed(2)}</p>
             <p className="text-sm text-muted-foreground">
-              {estimatedTickets} tickets × ${pricePerTicket.toFixed(2)} each
+              {estimatedTickets} tickets x ${pricePerTicket.toFixed(2)} each
             </p>
           </div>
 
-          <div className="mt-6 bg-white rounded-lg p-4 border border-border">
+          <div className="mt-6 bg-background rounded-lg p-4 border border-border">
             <div className="flex items-start gap-3">
               <DollarSign className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div className="text-sm">
                 <p className="font-semibold text-foreground mb-1">What happens after payment:</p>
                 <ul className="space-y-1 text-muted-foreground">
-                  <li>✓ Your event is activated immediately</li>
-                  <li>✓ Customers can purchase tickets</li>
-                  <li>✓ You receive 100% of ticket sales revenue</li>
-                  <li>✓ No additional fees per transaction</li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Your event is activated immediately
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Customers can purchase tickets
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    You receive 100% of ticket sales revenue
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    No additional fees per transaction
+                  </li>
                 </ul>
               </div>
             </div>
@@ -230,79 +351,49 @@ export function OrganizerPrepayment({
       </Card>
 
       {/* Payment Method Selection */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Square Payment */}
-        <button
-          type="button"
-          onClick={() => handlePaymentMethodSelect("square")}
-          className="bg-white rounded-lg border-2 border-border p-6 text-left hover:border-primary hover:shadow-lg transition-all"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center">
-              <CreditCard className="w-6 h-6 text-primary" />
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-semibold text-foreground mb-2">Pay with Card or Cash App</h3>
+            <p className="text-sm text-muted-foreground">
+              Secure payment processing by Stripe
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center gap-6 mb-6">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CreditCard className="w-5 h-5" />
+              Credit/Debit Card
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-foreground">Square</h3>
-              <p className="text-sm text-primary">Credit/Debit Card</p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Smartphone className="w-5 h-5" />
+              Cash App Pay
             </div>
           </div>
 
-          <div className="space-y-2 mb-4">
-            <div className="flex items-center gap-2 text-sm text-foreground">
-              <CheckCircle className="w-4 h-4 text-success" />
-              Instant activation
+          {error && (
+            <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm text-center">
+              {error}
             </div>
-            <div className="flex items-center gap-2 text-sm text-foreground">
-              <CheckCircle className="w-4 h-4 text-success" />
-              Secure payment processing
-            </div>
-            <div className="flex items-center gap-2 text-sm text-foreground">
-              <CheckCircle className="w-4 h-4 text-success" />
-              All major cards accepted
-            </div>
-          </div>
+          )}
 
-          <div className="bg-accent rounded-lg p-3 text-center">
-            <p className="text-sm font-semibold text-foreground">Recommended</p>
-          </div>
-        </button>
-
-        {/* CashApp Payment */}
-        <button
-          type="button"
-          onClick={() => handlePaymentMethodSelect("cashapp")}
-          className="bg-white rounded-lg border-2 border-border p-6 text-left hover:border-success hover:shadow-lg transition-all"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
-              <Smartphone className="w-6 h-6 text-success" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-foreground">CashApp</h3>
-              <p className="text-sm text-success">Mobile Payment</p>
-            </div>
-          </div>
-
-          <div className="space-y-2 mb-4">
-            <div className="flex items-center gap-2 text-sm text-foreground">
-              <CheckCircle className="w-4 h-4 text-success" />
-              Pay from your phone
-            </div>
-            <div className="flex items-center gap-2 text-sm text-foreground">
-              <CheckCircle className="w-4 h-4 text-success" />
-              No card needed
-            </div>
-            <div className="flex items-center gap-2 text-sm text-foreground">
-              <CheckCircle className="w-4 h-4 text-success" />
-              Instant confirmation
-            </div>
-          </div>
-
-          <div className="bg-success/10 rounded-lg p-3 text-center">
-            <p className="text-sm font-semibold text-success">Alternative Option</p>
-          </div>
-        </button>
-      </div>
+          <Button
+            onClick={handleProceedToPayment}
+            disabled={isLoading || !currentUser}
+            className="w-full py-6 text-lg"
+            size="lg"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                Initializing...
+              </>
+            ) : (
+              <>Proceed to Payment - ${totalAmount.toFixed(2)}</>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="text-center">
         <Button variant="ghost" onClick={onCancel} className="text-muted-foreground hover:text-foreground">

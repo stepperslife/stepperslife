@@ -51,7 +51,8 @@ setup("authenticate as admin", async ({ page }) => {
   console.log("🔐 Setting up admin authentication...");
 
   await page.goto(`${BASE_URL}/login`);
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForSelector('[data-testid="password-login-toggle"]', { timeout: 10000 });
 
   // Click password login toggle
   const passwordToggle = page.locator('[data-testid="password-login-toggle"]');
@@ -90,7 +91,8 @@ setup("authenticate as user", async ({ page }) => {
   console.log("🔐 Setting up user authentication...");
 
   await page.goto(`${BASE_URL}/login`);
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForSelector('[data-testid="password-login-toggle"]', { timeout: 10000 });
 
   // Click password login toggle
   const passwordToggle = page.locator('[data-testid="password-login-toggle"]');
@@ -127,7 +129,8 @@ setup("authenticate as organizer", async ({ page }) => {
   console.log("🔐 Setting up organizer authentication...");
 
   await page.goto(`${BASE_URL}/login`);
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForSelector('[data-testid="password-login-toggle"]', { timeout: 10000 });
 
   // Click password login toggle
   const passwordToggle = page.locator('[data-testid="password-login-toggle"]');

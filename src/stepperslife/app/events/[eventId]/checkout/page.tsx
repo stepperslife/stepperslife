@@ -354,8 +354,20 @@ export default function CheckoutPage() {
 
     try {
       // Determine payment method based on which system was used
-      const usedPaymentMethod = result.paymentIntentId ? "STRIPE" : "SQUARE";
-      const paymentId = (result.paymentIntentId || result.paymentId) as string;
+      let usedPaymentMethod: "STRIPE" | "PAYPAL" = "STRIPE";
+      let paymentId: string;
+
+      if (result.paymentIntentId) {
+        // Stripe payment (card / Cash App Pay)
+        usedPaymentMethod = "STRIPE";
+        paymentId = result.paymentIntentId as string;
+      } else if (result.paymentId) {
+        // PayPal payment
+        usedPaymentMethod = "PAYPAL";
+        paymentId = result.paymentId as string;
+      } else {
+        throw new Error("No payment ID received");
+      }
 
       // Complete the order in Convex
       if (purchaseType === "bundle") {
@@ -424,7 +436,7 @@ export default function CheckoutPage() {
 
       {/* Success State */}
       {!isLoading && eventDetails && isSuccess && (
-        <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+        <div className="min-h-screen bg-muted flex items-center justify-center p-4" data-testid="payment-success">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -659,6 +671,7 @@ export default function CheckoutPage() {
                               <button
                                 type="button"
                                 key={tier._id}
+                                data-testid={`tier-${tier.name.toLowerCase().replace(/\s+/g, "-")}`}
                                 onClick={() => {
                                   if (!isSoldOut) {
                                     setSelectedTierId(tier._id);
@@ -881,24 +894,26 @@ export default function CheckoutPage() {
 
                   {/* Payment Method Selector - CUSTOMER payment methods only (Stripe/PayPal/Cash) */}
                   {!useStripePayment && (
-                    <div className="grid grid-cols-3 gap-3 mb-6">
+                    <div className="grid grid-cols-3 gap-3 mb-6" data-testid="payment-method-selector">
                       <button
                         type="button"
                         onClick={() => setPaymentMethod("card")}
+                        data-testid="payment-method-card"
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "card"
                             ? "border-primary bg-accent text-foreground font-semibold"
                             : "border-gray-200 hover:border-gray-300"
                         }`}
                       >
-                        Credit/Debit Card
+                        Card / Cash App Pay
                       </button>
                       <button
                         type="button"
                         onClick={() => setPaymentMethod("paypal")}
+                        data-testid="payment-method-paypal"
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "paypal"
-                            ? "border-blue-600 bg-blue-50 text-blue-900 font-semibold"
+                            ? "border-[#0070BA] bg-blue-50 text-[#003087] font-semibold"
                             : "border-gray-200 hover:border-gray-300"
                         }`}
                       >
@@ -907,6 +922,7 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => setPaymentMethod("cash")}
+                        data-testid="payment-method-cash"
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "cash"
                             ? "border-green-600 bg-green-50 text-green-900 font-semibold"
@@ -958,23 +974,25 @@ export default function CheckoutPage() {
                       onBack={() => setShowPayment(false)}
                     />
                   ) : paymentMethod === "paypal" ? (
-                    // PayPal payment for customer ticket purchases
-                    <div>
+                    // PayPal payment with split payment support
+                    <div className="space-y-4">
                       <PayPalPayment
                         amount={total}
+                        platformFee={platformFee + processingFee}
                         orderId={orderId || undefined}
-                        description={`${eventDetails.name} - ${purchaseType === "bundle" ? selectedBundle?.name : selectedTier?.name} x ${quantity}`}
-                        onSuccess={async (paypalOrderId) => {
-                          await handlePaymentSuccess({ paymentId: paypalOrderId });
+                        description={`${eventDetails?.name} - ${selectedTier?.name || selectedBundle?.name} x ${quantity}`}
+                        organizerPaypalMerchantId={paymentConfig?.paypalMerchantId}
+                        onSuccess={(paypalOrderId) => {
+                          handlePaymentSuccess({ paymentId: paypalOrderId });
                         }}
                         onError={handlePaymentError}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPayment(false)}
-                        className="w-full mt-4 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="w-full px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                       >
-                        Back to Order Details
+                        Back
                       </button>
                     </div>
                   ) : paymentMethod === "cash" ? (
@@ -1102,6 +1120,7 @@ export default function CheckoutPage() {
                         value={buyerName}
                         onChange={(e) => setBuyerName(e.target.value)}
                         placeholder="John Doe"
+                        data-testid="buyer-name"
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
                         required
                       />
@@ -1115,6 +1134,7 @@ export default function CheckoutPage() {
                         value={buyerEmail}
                         onChange={(e) => setBuyerEmail(e.target.value)}
                         placeholder="john@example.com"
+                        data-testid="buyer-email"
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
                         required
                       />
@@ -1181,11 +1201,13 @@ export default function CheckoutPage() {
                             }
                           }}
                           placeholder="Have a code? Enter it here"
+                          data-testid="discount-code-input"
                           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400 uppercase"
                         />
                         <button
                           type="button"
                           onClick={handleApplyDiscount}
+                          data-testid="apply-discount-btn"
                           className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium whitespace-nowrap"
                         >
                           Apply
@@ -1285,6 +1307,7 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         id="continue-payment-btn"
+                        data-testid="continue-to-payment"
                         onClick={(e) => {
                           e.preventDefault();
                           // DEBUG: Change button text to confirm click handler runs

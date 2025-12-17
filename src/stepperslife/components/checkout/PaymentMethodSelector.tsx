@@ -1,21 +1,22 @@
 /**
  * Unified Payment Method Selector Component
  *
- * Consolidated payment method selection that respects payment hierarchy:
- * - Organizer Level: Configure merchant processor + enable/disable methods
- * - Staff Level: Toggle cash acceptance only
+ * Payment method selection:
+ * - Card / Cash App Pay (via Stripe) - online payments
+ * - PayPal (direct PayPal payments) - online payments
+ * - Cash (physical USD at door) - in-person payments
  *
  * Features:
  * - Automatically hides unavailable methods
- * - Shows appropriate payment processor logo
+ * - Shows Stripe branding for card payments
+ * - Shows PayPal branding for PayPal payments
  * - Displays cash requirements (staff approval, 30-min hold)
  * - Accessibility compliant (keyboard navigation, ARIA labels)
  */
 
-import { CreditCard, Smartphone, Banknote, AlertCircle } from "lucide-react";
+import { CreditCard, Banknote, AlertCircle, Smartphone, Wallet } from "lucide-react";
 import type {
   PaymentMethod,
-  MerchantProcessor,
   AvailablePaymentMethods,
 } from "@/lib/checkout/payment-availability";
 import {
@@ -42,7 +43,7 @@ function getPaymentMethodIcon(method: PaymentMethod) {
     case "card":
       return CreditCard;
     case "paypal":
-      return Smartphone;
+      return Wallet;
     case "cash":
       return Banknote;
     default:
@@ -53,14 +54,12 @@ function getPaymentMethodIcon(method: PaymentMethod) {
 /**
  * Get description for payment method
  */
-function getPaymentMethodDescription(method: PaymentMethod, processor?: MerchantProcessor): string {
+function getPaymentMethodDescription(method: PaymentMethod): string {
   switch (method) {
     case "card":
-      return processor
-        ? `Pay securely with ${getMerchantProcessorDisplayName(processor)}`
-        : "Pay securely with your credit or debit card";
+      return "Pay securely with card or Cash App Pay via Stripe";
     case "paypal":
-      return "Pay securely with PayPal";
+      return "Pay securely with your PayPal account";
     case "cash":
       return "Pay with cash when picking up your tickets (requires staff approval)";
     default:
@@ -107,10 +106,7 @@ export function PaymentMethodSelector({
         {methods.map((method) => {
           const Icon = getPaymentMethodIcon(method);
           const isSelected = selectedMethod === method;
-          const description = getPaymentMethodDescription(
-            method,
-            availableMethods.merchantProcessor
-          );
+          const description = getPaymentMethodDescription(method);
 
           return (
             <button
@@ -157,6 +153,23 @@ export function PaymentMethodSelector({
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">{description}</p>
+
+                  {/* Card-specific info - show Cash App Pay badge */}
+                  {method === "card" && (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                      <Smartphone className="w-4 h-4" />
+                      <span>Cash App Pay available</span>
+                    </div>
+                  )}
+
+                  {/* PayPal-specific info */}
+                  {method === "paypal" && (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="text-[#003087] font-semibold">Pay</span>
+                      <span className="text-[#0070BA] font-semibold">Pal</span>
+                      <span>checkout</span>
+                    </div>
+                  )}
 
                   {/* Cash-specific warnings */}
                   {method === "cash" && (

@@ -1,7 +1,11 @@
 {
-  "buildCommand": "npx convex deploy --cmd 'npm run build'",
+  "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "env": {
+    "CONVEX_DEPLOYMENT": "prod:expert-vulture-775",
+    "NEXT_PUBLIC_CONVEX_URL": "https://expert-vulture-775.convex.cloud"
+  }
 }

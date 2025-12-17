@@ -1,0 +1,74 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "SteppersLife" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "SteppersLife" [ref=e7]
+      - navigation [ref=e8]:
+        - link "Events" [ref=e9] [cursor=pointer]:
+          - /url: /events
+        - link "Classes" [ref=e10] [cursor=pointer]:
+          - /url: /classes
+        - link "Marketplace" [ref=e11] [cursor=pointer]:
+          - /url: /marketplace
+        - link "Restaurants" [ref=e12] [cursor=pointer]:
+          - /url: /restaurants
+      - generic [ref=e13]:
+        - button "Dark mode" [ref=e14]:
+          - img [ref=e15]
+        - link "Sign In" [ref=e17] [cursor=pointer]:
+          - /url: /login
+          - img [ref=e18]
+          - text: Sign In
+  - generic [ref=e23]:
+    - generic [ref=e24]:
+      - heading "Welcome Back" [level=1] [ref=e25]
+      - paragraph [ref=e26]: Sign in to your account
+    - generic [ref=e27]: Invalid email or password
+    - generic [ref=e28]:
+      - button "Continue with Google" [ref=e29]:
+        - img [ref=e30]
+        - text: Continue with Google
+      - generic [ref=e39]: or
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: Email Address
+          - textbox "Email Address" [ref=e43]:
+            - /placeholder: you@example.com
+            - text: e2e-test@stepperslife.com
+        - generic [ref=e44]:
+          - img [ref=e45]
+          - generic [ref=e48]: We'll send you a secure link to sign in instantly - no password needed!
+        - button "Send Magic Link" [ref=e49]
+      - generic [ref=e50]:
+        - button "Sign in with password" [ref=e51]:
+          - generic [ref=e52]: Sign in with password
+          - img [ref=e53]
+        - generic [ref=e55]:
+          - generic [ref=e56]:
+            - generic [ref=e57]: Email Address
+            - textbox "Email Address" [ref=e58]:
+              - /placeholder: you@example.com
+              - text: e2e-test@stepperslife.com
+          - generic [ref=e59]:
+            - generic [ref=e60]: Password
+            - generic [ref=e61]:
+              - textbox "Password" [ref=e62]:
+                - /placeholder: Enter your password
+                - text: TestPassword123!
+              - button "Show password" [ref=e63]:
+                - img [ref=e64]
+          - link "Forgot password?" [ref=e68] [cursor=pointer]:
+            - /url: /forgot-password
+          - button "Sign In" [ref=e69]
+    - generic [ref=e70]:
+      - generic [ref=e75]: Don't have an account?
+      - link "Create Account" [ref=e77] [cursor=pointer]:
+        - /url: /register
+  - button "Open Next.js Dev Tools" [ref=e83] [cursor=pointer]:
+    - img [ref=e84]
+  - alert [ref=e87]
+```

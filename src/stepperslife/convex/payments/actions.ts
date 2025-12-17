@@ -2,28 +2,77 @@
 
 import { v } from "convex/values";
 import { action } from "../_generated/server";
-import { SquareClient, SquareEnvironment } from "square";
-import { randomUUID } from "crypto";
-import { internal } from "../_generated/api";
+import Stripe from "stripe";
 
-// Initialize Square client
-const SQUARE_ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
-const SQUARE_ENVIRONMENT = process.env.SQUARE_ENVIRONMENT;
+// Initialize Stripe client
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
-if (!SQUARE_ACCESS_TOKEN) {
-  console.error("[Square Actions] CRITICAL: SQUARE_ACCESS_TOKEN is not set!");
+if (!STRIPE_SECRET_KEY) {
+  console.error("[Stripe Actions] CRITICAL: STRIPE_SECRET_KEY is not set!");
 }
 
-const squareEnvironment =
-  SQUARE_ENVIRONMENT === "production" ? SquareEnvironment.Production : SquareEnvironment.Sandbox;
+const stripe = STRIPE_SECRET_KEY
+  ? new Stripe(STRIPE_SECRET_KEY, {
+      apiVersion: "2025-10-29.clover",
+    })
+  : null;
 
-const client = new SquareClient({
-  token: SQUARE_ACCESS_TOKEN!,
-  environment: squareEnvironment,
+/**
+ * Process refund via Stripe API
+ */
+export const processStripeRefund = action({
+  args: {
+    paymentIntentId: v.string(),
+    amountCents: v.optional(v.number()), // If not provided, refunds full amount
+    orderId: v.id("orders"),
+    reason: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    if (!stripe) {
+      return {
+        success: false,
+        error: "Stripe is not configured",
+      };
+    }
+
+    try {
+      // Create refund via Stripe API
+      const refundParams: Stripe.RefundCreateParams = {
+        payment_intent: args.paymentIntentId,
+        reason: "requested_by_customer",
+        metadata: {
+          orderId: args.orderId,
+          reason: args.reason || "Customer refund requested",
+        },
+      };
+
+      // If amount specified, do partial refund
+      if (args.amountCents) {
+        refundParams.amount = args.amountCents;
+      }
+
+      const refund = await stripe.refunds.create(refundParams);
+
+      return {
+        success: true,
+        refundId: refund.id,
+        status: refund.status,
+        amountRefunded: refund.amount,
+      };
+    } catch (error: any) {
+      console.error("[Stripe Refund] Error:", error);
+
+      return {
+        success: false,
+        error: error?.message || "Refund processing failed",
+      };
+    }
+  },
 });
 
 /**
- * Process refund via Square API
+ * @deprecated Use processStripeRefund instead
+ * Kept for backwards compatibility during migration
  */
 export const processSquareRefund = action({
   args: {
@@ -33,35 +82,46 @@ export const processSquareRefund = action({
     reason: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    try {
+    console.warn("[DEPRECATED] processSquareRefund called - Square has been removed. Use processStripeRefund instead.");
 
-      // Call Square Refunds API
-      const refundResult = await client.refunds.refundPayment({
-        idempotencyKey: randomUUID(),
-        paymentId: args.paymentId,
-        amountMoney: {
-          amount: BigInt(args.amountCents),
-          currency: "USD",
-        },
-        reason: args.reason || "Customer refund requested",
-      });
+    // Try to process as Stripe refund if the paymentId looks like a Stripe payment intent
+    if (args.paymentId.startsWith("pi_")) {
+      if (!stripe) {
+        return {
+          success: false,
+          error: "Stripe is not configured",
+        };
+      }
 
+      try {
+        const refund = await stripe.refunds.create({
+          payment_intent: args.paymentId,
+          amount: args.amountCents,
+          reason: "requested_by_customer",
+          metadata: {
+            orderId: args.orderId,
+            reason: args.reason || "Customer refund requested",
+          },
+        });
 
-      return {
-        success: true,
-        refundId: refundResult.refund?.id,
-        status: refundResult.refund?.status,
-        amountRefunded: args.amountCents,
-      };
-    } catch (error: any) {
-      console.error("[Square Refund] Error:", error);
-      console.error("[Square Refund] Error details:", JSON.stringify(error, null, 2));
-
-      // Return error details to mutation
-      return {
-        success: false,
-        error: error?.body?.errors?.[0]?.detail || "Refund processing failed",
-      };
+        return {
+          success: true,
+          refundId: refund.id,
+          status: refund.status,
+          amountRefunded: refund.amount,
+        };
+      } catch (error: any) {
+        console.error("[Stripe Refund via deprecated Square endpoint] Error:", error);
+        return {
+          success: false,
+          error: error?.message || "Refund processing failed",
+        };
+      }
     }
+
+    return {
+      success: false,
+      error: "Square payments are no longer supported. Please contact support for refunds on legacy Square payments.",
+    };
   },
 });

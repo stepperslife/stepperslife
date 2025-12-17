@@ -3,6 +3,9 @@
  *
  * Centralized configuration for payment-related values
  * to avoid magic numbers and ensure consistency across the application
+ *
+ * Note: As of the Stripe-only migration, all payments go through Stripe
+ * (Card + Cash App Pay) or Cash (physical USD at door)
  */
 
 // Pricing Constants
@@ -11,7 +14,7 @@ export const PRICING = {
   PRICE_PER_TICKET_CENTS: 30,
 
   /** First event free ticket allocation */
-  FIRST_EVENT_FREE_TICKETS: 300,
+  FIRST_EVENT_FREE_TICKETS: 1000,
 
   /** Platform fee percentage for CREDIT_CARD model (3.7%) */
   PLATFORM_FEE_PERCENTAGE: 3.7,
@@ -54,50 +57,30 @@ export const LIMITS = {
   MIN_PAYMENT_AMOUNT_CENTS: 50,
 } as const;
 
-// Payment Provider Configurations
+// Payment Provider Configuration (Stripe-only)
 export const PAYMENT_PROVIDERS = {
-  SQUARE: {
-    name: 'Square',
-    supportedMethods: ['card', 'cashapp'],
-  },
-  PAYPAL: {
-    name: 'PayPal',
-    supportedMethods: ['paypal'],
-  },
   STRIPE: {
     name: 'Stripe',
-    supportedMethods: ['card'],
+    supportedMethods: ['card', 'cashapp'],
   },
 } as const;
 
 // API Timeouts (in milliseconds)
 export const TIMEOUTS = {
-  /** PayPal API timeout */
-  PAYPAL_API_TIMEOUT: 30000, // 30 seconds
-
-  /** Square API timeout */
-  SQUARE_API_TIMEOUT: 30000, // 30 seconds
+  /** Stripe API timeout */
+  STRIPE_API_TIMEOUT: 30000, // 30 seconds
 
   /** Webhook processing timeout */
   WEBHOOK_TIMEOUT: 10000, // 10 seconds
-
-  /** Access token cache duration */
-  TOKEN_CACHE_DURATION: 3000000, // 50 minutes (tokens valid for 1 hour)
 } as const;
 
-// Webhook Event Types
+// Webhook Event Types (Stripe)
 export const WEBHOOK_EVENTS = {
-  SQUARE: {
-    PAYMENT_CREATED: 'payment.created',
-    PAYMENT_UPDATED: 'payment.updated',
-    REFUND_CREATED: 'refund.created',
-    REFUND_UPDATED: 'refund.updated',
-  },
-  PAYPAL: {
-    PAYMENT_COMPLETED: 'PAYMENT.SALE.COMPLETED',
-    PAYMENT_DENIED: 'PAYMENT.SALE.DENIED',
-    PAYMENT_REFUNDED: 'PAYMENT.SALE.REFUNDED',
-    DISPUTE_CREATED: 'CUSTOMER.DISPUTE.CREATED',
+  STRIPE: {
+    PAYMENT_INTENT_SUCCEEDED: 'payment_intent.succeeded',
+    PAYMENT_INTENT_FAILED: 'payment_intent.payment_failed',
+    CHARGE_REFUNDED: 'charge.refunded',
+    CHARGE_DISPUTE_CREATED: 'charge.dispute.created',
   },
 } as const;
 
@@ -132,8 +115,7 @@ export const SUCCESS_MESSAGES = {
 
 // Logging Prefixes
 export const LOG_PREFIX = {
-  PAYPAL: '[PayPal]',
-  SQUARE: '[Square]',
+  STRIPE: '[Stripe]',
   WEBHOOK: '[Webhook]',
   CREDITS: '[Credits]',
   ORDERS: '[Orders]',

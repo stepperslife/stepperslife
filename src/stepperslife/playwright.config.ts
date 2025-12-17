@@ -70,6 +70,21 @@ export default defineConfig({
 
   projects: [
     // =========================================================================
+    // E2E TESTS - End-to-end ticket flow tests
+    // =========================================================================
+    {
+      name: "e2e",
+      testDir: "./tests/e2e",
+      testMatch: /.*\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--disable-dev-shm-usage"],
+        },
+      },
+    },
+
+    // =========================================================================
     // SETUP PROJECT - Runs auth setup first
     // =========================================================================
     {

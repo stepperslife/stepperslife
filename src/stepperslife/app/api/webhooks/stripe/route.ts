@@ -135,10 +135,21 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
 /**
  * Handle successful payment intent
+ * Handles both ticket orders (split payments) and platform products (100% to platform)
  */
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  const { metadata } = paymentIntent;
+  const chargeType = metadata?.chargeType;
+  const productType = metadata?.productType;
 
-  const orderId = paymentIntent.metadata?.orderId;
+  // Check if this is a platform product payment (100% to platform)
+  if (chargeType === "PLATFORM" && productType) {
+    await handlePlatformProductPayment(paymentIntent);
+    return;
+  }
+
+  // Otherwise, handle as a ticket order payment (split payment)
+  const orderId = metadata?.orderId;
   if (!orderId) {
     console.warn("[Stripe Webhook] No orderId in payment intent metadata");
     return;
@@ -153,6 +164,71 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
   } catch (error: any) {
     console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error);
+  }
+}
+
+/**
+ * Handle platform product payments (100% to platform)
+ * - Credit purchases
+ * - Subscriptions
+ * - Promotions
+ * - Premium features
+ */
+async function handlePlatformProductPayment(paymentIntent: Stripe.PaymentIntent) {
+  const { metadata } = paymentIntent;
+  const productType = metadata?.productType;
+  const userId = metadata?.userId;
+
+  if (!productType || !userId) {
+    console.warn("[Stripe Webhook] Missing productType or userId in platform payment metadata");
+    return;
+  }
+
+  try {
+    switch (productType) {
+      case "CREDITS":
+        // Confirm credit purchase - this updates the organizer's credit balance
+        const ticketQuantity = parseInt(metadata?.ticketQuantity || "0", 10);
+        const pricePerTicket = parseInt(metadata?.pricePerTicket || "0", 10);
+
+        await convex.mutation(api.credits.mutations.confirmCreditPurchase, {
+          organizerId: userId as any,
+          stripePaymentIntentId: paymentIntent.id,
+          ticketsPurchased: ticketQuantity,
+          amountPaid: paymentIntent.amount,
+          pricePerTicket: pricePerTicket,
+        });
+        console.log(`[Stripe Webhook] Credit purchase confirmed for user ${userId}: ${ticketQuantity} tickets`);
+        break;
+
+      case "SUBSCRIPTION":
+        // Handle subscription activation
+        const subscriptionPlan = metadata?.subscriptionPlan;
+        console.log(`[Stripe Webhook] Subscription payment received for user ${userId}: ${subscriptionPlan}`);
+        // TODO: Implement subscription activation mutation when subscription system is built
+        // await convex.mutation(api.subscriptions.mutations.activateSubscription, {...});
+        break;
+
+      case "PROMOTION":
+        // Handle event promotion purchase
+        const eventId = metadata?.eventId;
+        const promotionType = metadata?.promotionType;
+        console.log(`[Stripe Webhook] Promotion purchase for event ${eventId}: ${promotionType}`);
+        // TODO: Implement promotion activation mutation when promotion system is built
+        // await convex.mutation(api.promotions.mutations.activatePromotion, {...});
+        break;
+
+      case "PREMIUM_FEATURE":
+        // Handle premium feature purchase
+        console.log(`[Stripe Webhook] Premium feature purchase for user ${userId}`);
+        // TODO: Implement premium feature activation when system is built
+        break;
+
+      default:
+        console.warn(`[Stripe Webhook] Unknown platform product type: ${productType}`);
+    }
+  } catch (error: any) {
+    console.error(`[Stripe Webhook] Failed to process platform payment for ${productType}:`, error);
   }
 }
 

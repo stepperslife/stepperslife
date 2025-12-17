@@ -1,0 +1,105 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - link "Back to Events" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e7]
+          - generic [ref=e9]: Back to Events
+        - button "Share" [ref=e10]:
+          - img [ref=e11]
+          - generic [ref=e17]: Share
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e22]:
+          - img "New Year's Eve Steppers Ball" [ref=e24] [cursor=pointer]
+          - generic [ref=e25]: Ticketed Event
+        - generic [ref=e26]:
+          - heading "New Year's Eve Steppers Ball" [level=1] [ref=e27]
+          - generic [ref=e28]:
+            - generic [ref=e29]: Holiday
+            - generic [ref=e30]: Gala
+            - generic [ref=e31]: Dance
+          - generic [ref=e32]:
+            - generic [ref=e33]:
+              - img [ref=e34]
+              - generic [ref=e36]:
+                - paragraph [ref=e37]: Dec 31, 2025
+                - paragraph [ref=e38]: 3:00 PM CST - 9:00 PM CST
+            - generic [ref=e39]:
+              - img [ref=e40]
+              - generic [ref=e43]:
+                - paragraph [ref=e44]: Navy Pier Grand Ballroom
+                - paragraph [ref=e45]:
+                  - text: 600 E Grand Ave
+                  - text: Chicago, IL 60611
+                - link "View Map" [ref=e46] [cursor=pointer]:
+                  - /url: https://maps.google.com/?q=600%20E%20Grand%20Ave%2C%20Chicago%2C%20IL
+                  - text: View Map
+                  - img [ref=e47]
+          - generic [ref=e52]:
+            - generic [ref=e53]:
+              - img [ref=e54]
+              - heading "Available Tickets" [level=3] [ref=e56]
+            - generic [ref=e57]:
+              - generic [ref=e58]:
+                - generic [ref=e59]:
+                  - generic [ref=e60]:
+                    - paragraph [ref=e62]: Super Early Bird
+                    - paragraph [ref=e63]: Best price - limited quantity!
+                  - paragraph [ref=e65]: $75.00
+                - paragraph [ref=e67]: 99 tickets available
+              - generic [ref=e68]:
+                - generic [ref=e69]:
+                  - generic [ref=e70]:
+                    - paragraph [ref=e72]: General Admission
+                    - paragraph [ref=e73]: Includes champagne toast at midnight
+                  - paragraph [ref=e75]: $125.00
+                - paragraph [ref=e77]: 495 tickets available
+              - generic [ref=e78]:
+                - generic [ref=e79]:
+                  - generic [ref=e80]:
+                    - paragraph [ref=e82]: VIP Experience
+                    - paragraph [ref=e83]: Premium viewing, open bar, private lounge
+                  - paragraph [ref=e85]: $250.00
+                - paragraph [ref=e87]: 100 tickets available
+              - generic [ref=e88]:
+                - generic [ref=e89]:
+                  - generic [ref=e90]:
+                    - paragraph [ref=e92]: Platinum Table
+                    - paragraph [ref=e93]: Reserved table for 8, bottle service, meet & greet
+                  - paragraph [ref=e95]: $1500.00
+                - paragraph [ref=e97]: 12 tickets available
+          - link "Buy Tickets" [ref=e99] [cursor=pointer]:
+            - /url: /events/jh730wq1s669cemdy8b65fzxds7wqhet/checkout
+            - img [ref=e100]
+            - text: Buy Tickets
+          - generic [ref=e102]:
+            - heading "Organized By" [level=3] [ref=e103]
+            - paragraph [ref=e104]: Steppers Life
+            - link "Contact Organizer" [ref=e105] [cursor=pointer]:
+              - /url: mailto:thestepperslife@gmail.com
+          - generic [ref=e107]:
+            - generic [ref=e108]: "Share:"
+            - button "Share on Facebook" [ref=e109]:
+              - img [ref=e110]
+              - generic [ref=e112]: Facebook
+            - button "Share on X (Twitter)" [ref=e113]:
+              - img [ref=e114]
+              - generic [ref=e116]: X
+            - button "Share on Instagram" [ref=e117]:
+              - img [ref=e118]
+              - generic [ref=e121]: Instagram
+            - button "Copy link" [ref=e122]:
+              - img [ref=e123]
+              - generic [ref=e126]: Copy Link
+      - generic [ref=e128]:
+        - heading "About This Event" [level=2] [ref=e129]
+        - paragraph [ref=e131]: Ring in 2026 with the biggest stepping event of the year! Countdown, champagne toast, live band.
+  - button "Open Next.js Dev Tools" [ref=e137] [cursor=pointer]:
+    - img [ref=e138]
+  - alert [ref=e141]
+```

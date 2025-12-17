@@ -26,7 +26,7 @@ setup("authenticate as admin", async ({ page }) => {
 
   // Navigate to login page
   await page.goto(`${baseUrl}/login`);
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
 
   // Check if we're already logged in (redirected away from login)
   if (!page.url().includes("/login")) {
@@ -50,7 +50,7 @@ setup("authenticate as admin", async ({ page }) => {
 
   // Wait for navigation after login
   await page.waitForTimeout(3000);
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
 
   // Verify login was successful (should not be on login page)
   const currentUrl = page.url();

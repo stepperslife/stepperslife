@@ -2,35 +2,31 @@
  * Payment availability checker for CUSTOMER checkout flows
  *
  * Determines which payment methods are available for CUSTOMERS buying tickets
- * NOTE: This is NOT for organizer credit purchases (see organizer payment flows)
  *
  * Available for customers:
- * - Stripe (includes Cash App via Stripe integration)
- * - PayPal (with split payment support)
+ * - Stripe (includes Card + Cash App Pay via Stripe integration)
+ * - PayPal (direct PayPal payments)
  * - Cash (physical USD, staff validated, DEFAULT when no processor connected)
- *
- * NOT available for customers:
- * - Square (organizer-only, for buying credits from platform)
- * - Cash App via Square SDK (organizer-only)
  */
 
-export type MerchantProcessor = 'STRIPE' | 'PAYPAL'; // Removed SQUARE - customer payments only
-export type PaymentMethod = 'card' | 'paypal' | 'cash'; // Removed cashapp - use Stripe for Cash App
+export type MerchantProcessor = 'STRIPE' | 'PAYPAL';
+export type PaymentMethod = 'card' | 'paypal' | 'cash';
 
 export interface PaymentConfig {
   merchantProcessor?: MerchantProcessor;
+  stripeConnectAccountId?: string;
   creditCardEnabled?: boolean;
-  paypalEnabled?: boolean; // Renamed from cashAppEnabled
+  paypalEnabled?: boolean;
 }
 
 export interface AvailablePaymentMethods {
-  /** Credit/debit card payments available (via Stripe, includes Cash App via Stripe) */
+  /** Credit/debit card payments available (via Stripe, includes Cash App Pay) */
   creditCard: boolean;
-  /** PayPal payments available (with split payment support) */
+  /** PayPal payments available */
   paypal: boolean;
   /** Cash in-person available (physical USD, staff validated, DEFAULT) */
   cash: boolean;
-  /** Active merchant processor (STRIPE or PAYPAL only) */
+  /** Active merchant processor */
   merchantProcessor?: MerchantProcessor;
   /** Cash requires staff approval */
   cashRequiresStaffApproval: boolean;
@@ -40,13 +36,13 @@ export interface AvailablePaymentMethods {
  * Determine available payment methods based on payment config and staff settings
  *
  * Payment Hierarchy:
- * - Organizer Level: Choose merchant processor + enable/disable online methods
+ * - Organizer Level: Configure Stripe Connect + enable/disable PayPal
  * - Staff Level: Toggle "Accept Cash In-Person" only
  *
  * Visibility Rules:
- * - No processor configured: Only "Cash In-Person" option visible (if staff accepts)
- * - Processor configured: Show enabled online methods + cash (if staff accepts)
- * - Cash orders: Do not require merchant setup, always available when staff opts in
+ * - No Stripe Connect: Only PayPal (if enabled) and Cash (if staff accepts)
+ * - Stripe configured: Card + Cash App Pay + PayPal (if enabled) + Cash (if staff accepts)
+ * - Cash orders: Do not require Stripe setup, always available when staff opts in
  *
  * @param paymentConfig - Event payment configuration from Convex
  * @param staffAcceptsCash - Whether any staff member accepts cash for this event
@@ -58,7 +54,7 @@ export function getAvailablePaymentMethods(
 ): AvailablePaymentMethods {
   // No payment config means no online payments configured
   // DEFAULT: Cash only (physical USD, staff validated)
-  if (!paymentConfig || !paymentConfig.merchantProcessor) {
+  if (!paymentConfig) {
     return {
       creditCard: false,
       paypal: false,
@@ -68,15 +64,18 @@ export function getAvailablePaymentMethods(
     };
   }
 
-  // Payment config exists - check which methods are enabled
-  const creditCard = paymentConfig.creditCardEnabled ?? true; // Default to enabled
-  const paypal = paymentConfig.paypalEnabled ?? false; // Default to disabled
+  // Check if Stripe is configured (has connect account)
+  const hasStripe = !!paymentConfig.stripeConnectAccountId;
+  const creditCard = hasStripe && (paymentConfig.creditCardEnabled ?? true);
+
+  // PayPal is enabled separately
+  const paypal = paymentConfig.paypalEnabled ?? false;
 
   return {
     creditCard,
     paypal,
     cash: staffAcceptsCash, // Cash always available alongside online methods
-    merchantProcessor: paymentConfig.merchantProcessor,
+    merchantProcessor: hasStripe ? 'STRIPE' : (paypal ? 'PAYPAL' : undefined),
     cashRequiresStaffApproval: true,
   };
 }
@@ -138,7 +137,7 @@ export function isPaymentMethodAvailable(
 export function getPaymentMethodDisplayName(method: PaymentMethod): string {
   switch (method) {
     case 'card':
-      return 'Credit/Debit Card (Stripe)';
+      return 'Card / Cash App Pay';
     case 'paypal':
       return 'PayPal';
     case 'cash':

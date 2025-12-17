@@ -168,12 +168,13 @@ export default function RegisterPage() {
         className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
       >
         <div className="bg-card py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-border">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit} data-testid="register-form">
             {/* Error Message */}
             {error && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
+                data-testid="register-error"
                 className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-start gap-3"
               >
                 <XCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
@@ -201,6 +202,7 @@ export default function RegisterPage() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  data-testid="register-name"
                   className="block w-full pl-12 pr-4 py-3 sm:py-3.5 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder-muted-foreground text-base"
                   placeholder="John Doe"
                 />
@@ -227,6 +229,7 @@ export default function RegisterPage() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  data-testid="register-email"
                   className="block w-full pl-12 pr-4 py-3 sm:py-3.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base"
                   placeholder="john@example.com"
                 />
@@ -253,6 +256,7 @@ export default function RegisterPage() {
                   required
                   value={formData.password}
                   onChange={(e) => handlePasswordChange(e.target.value)}
+                  data-testid="register-password"
                   className="block w-full pl-12 pr-12 py-3 sm:py-3.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base"
                   placeholder="••••••••"
                 />
@@ -310,6 +314,7 @@ export default function RegisterPage() {
                   required
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  data-testid="register-confirm-password"
                   className="block w-full pl-12 pr-12 py-3 sm:py-3.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base"
                   placeholder="••••••••"
                 />
@@ -348,6 +353,7 @@ export default function RegisterPage() {
                   type="checkbox"
                   checked={formData.agreeToTerms}
                   onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
+                  data-testid="register-agree-terms"
                   className="h-5 w-5 text-primary focus:ring-primary border-gray-300 dark:border-gray-600 rounded cursor-pointer touch-manipulation"
                 />
               </div>
@@ -380,6 +386,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
+              data-testid="register-submit"
               className="w-full flex justify-center items-center gap-2 py-3.5 sm:py-4 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[48px] touch-manipulation"
             >
               {isLoading ? (
