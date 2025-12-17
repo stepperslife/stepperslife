@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Utensils, Plus, HelpCircle, Package, Heart } from "lucide-react";
+import { Utensils, Plus, HelpCircle, Package, Heart, DollarSign } from "lucide-react";
 
 export function RestaurantsSubNav() {
   const pathname = usePathname();
@@ -11,6 +11,7 @@ export function RestaurantsSubNav() {
     { href: "/restaurants", label: "Browse", icon: Utensils },
     { href: "/restaurants/favorites", label: "Favorites", icon: Heart },
     { href: "/restaurants/my-orders", label: "My Orders", icon: Package },
+    { href: "/restaurants/pricing", label: "Pricing", icon: DollarSign },
     { href: "/restaurateur/apply", label: "Add Restaurant", icon: Plus },
     { href: "/help", label: "Help", icon: HelpCircle },
   ];
