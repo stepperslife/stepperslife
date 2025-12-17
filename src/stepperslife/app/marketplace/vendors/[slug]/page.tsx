@@ -16,19 +16,66 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
+import Image from "next/image";
 
 export default function VendorStorefrontPage() {
   const params = useParams();
   const slug = params.slug as string;
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
 
   const vendor = useQuery(api.vendors.getBySlug, { slug });
   const products = useQuery(
     api.products.queries.getActiveProductsByVendor,
     vendor?._id ? { vendorId: vendor._id } : "skip"
   );
+
+  // Timeout fallback - after 10 seconds, show error state
+  const isLoading = vendor === undefined;
+
+  useEffect(() => {
+    if (!isLoading) {
+      return;
+    }
+    const timer = setTimeout(() => {
+      setLoadingTimeout(true);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
+  // Show timeout error state
+  if (loadingTimeout && isLoading) {
+    return (
+      <>
+        <PublicHeader />
+        <MarketplaceSubNav />
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto px-4 py-12">
+            <div className="text-center">
+              <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                Connection Issue
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Unable to load this store. Please check your connection and try again.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+        <PublicFooter />
+      </>
+    );
+  }
 
   if (vendor === undefined) {
     return (
@@ -56,7 +103,7 @@ export default function VendorStorefrontPage() {
               <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-foreground mb-2">Store Not Found</h1>
               <p className="text-muted-foreground mb-6">
-                The vendor store you're looking for doesn't exist or is no longer available.
+                The vendor store you&apos;re looking for doesn&apos;t exist or is no longer available.
               </p>
               <Link
                 href="/marketplace/vendors"
@@ -189,10 +236,12 @@ export default function VendorStorefrontPage() {
                     {/* Product Image */}
                     <div className="aspect-square bg-muted relative">
                       {product.primaryImage ? (
-                        <img
+                        <Image
                           src={product.primaryImage}
                           alt={product.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -259,7 +308,7 @@ export default function VendorStorefrontPage() {
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-2">No products yet</h3>
                 <p className="text-muted-foreground max-w-sm mx-auto">
-                  This vendor hasn't added any products yet. Check back soon!
+                  This vendor hasn&apos;t added any products yet. Check back soon!
                 </p>
               </div>
             )}

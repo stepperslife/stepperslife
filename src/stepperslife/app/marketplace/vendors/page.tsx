@@ -2,9 +2,9 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Store, MapPin, Package, ArrowRight, Search } from "lucide-react";
+import { Store, MapPin, Package, ArrowRight, Search, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
@@ -12,6 +12,20 @@ import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
 export default function VendorsPage() {
   const vendors = useQuery(api.vendors.getApprovedVendors, {});
   const [searchQuery, setSearchQuery] = useState("");
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+
+  // Timeout fallback - after 10 seconds, show error state
+  const isLoading = vendors === undefined;
+
+  useEffect(() => {
+    if (!isLoading) {
+      return;
+    }
+    const timer = setTimeout(() => {
+      setLoadingTimeout(true);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [isLoading]);
 
   // Filter vendors by search
   const filteredVendors = vendors?.filter((vendor) => {
@@ -24,6 +38,37 @@ export default function VendorsPage() {
       (vendor.state?.toLowerCase().includes(query) ?? false)
     );
   });
+
+  // Show timeout error state
+  if (loadingTimeout && isLoading) {
+    return (
+      <>
+        <PublicHeader />
+        <MarketplaceSubNav />
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto px-4 py-12">
+            <div className="text-center">
+              <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                Connection Issue
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Unable to load vendors. Please check your connection and try again.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+        <PublicFooter />
+      </>
+    );
+  }
 
   if (!vendors) {
     return (
