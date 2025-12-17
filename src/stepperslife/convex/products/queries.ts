@@ -55,27 +55,41 @@ export const getActiveProducts = query({
 });
 
 // Get single product by ID
+// Note: Uses v.string() instead of v.id() to allow graceful handling of invalid IDs
+// This prevents server errors when invalid product IDs are passed
 export const getProductById = query({
-  args: { productId: v.id("products") },
+  args: { productId: v.string() },
   handler: async (ctx, args) => {
-    const product = await ctx.db.get(args.productId);
-    if (!product) return null;
-
-    // Enrich with vendor info
-    if (product.vendorId) {
-      const vendor = await ctx.db.get(product.vendorId);
-      return {
-        ...product,
-        vendor: vendor ? {
-          _id: vendor._id,
-          storeName: vendor.name,
-          slug: vendor.slug,
-          logo: vendor.logoUrl,
-          description: vendor.description,
-        } : null,
-      };
+    // Validate the ID looks like a Convex ID (alphanumeric, 20+ chars)
+    const idPattern = /^[a-z0-9]{20,}$/i;
+    if (!idPattern.test(args.productId)) {
+      return null; // Invalid ID format
     }
-    return { ...product, vendor: null };
+
+    try {
+      // Try to normalize the string to a valid Convex ID
+      const product = await ctx.db.get(args.productId as any);
+      if (!product) return null;
+
+      // Enrich with vendor info
+      if (product.vendorId) {
+        const vendor = await ctx.db.get(product.vendorId);
+        return {
+          ...product,
+          vendor: vendor ? {
+            _id: vendor._id,
+            storeName: vendor.name,
+            slug: vendor.slug,
+            logo: vendor.logoUrl,
+            description: vendor.description,
+          } : null,
+        };
+      }
+      return { ...product, vendor: null };
+    } catch {
+      // If anything goes wrong (invalid ID, etc.), return null
+      return null;
+    }
   },
 });
 
