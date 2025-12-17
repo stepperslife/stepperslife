@@ -1,5 +1,29 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
+
+// Helper to verify restaurant ownership
+async function verifyRestaurantOwnership(
+  ctx: { db: any; auth: any },
+  restaurantId: Id<"restaurants">
+): Promise<boolean> {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) return false;
+
+  // Get user by email from identity
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_email", (q: any) => q.eq("email", identity.email))
+    .first();
+
+  if (!user) return false;
+
+  // Get restaurant and check ownership
+  const restaurant = await ctx.db.get(restaurantId);
+  if (!restaurant) return false;
+
+  return restaurant.ownerId === user._id;
+}
 
 // Get menu categories for restaurant
 export const getCategories = query({
@@ -43,6 +67,12 @@ export const createCategory = mutation({
     sortOrder: v.number(),
   },
   handler: async (ctx, args) => {
+    // Verify ownership
+    const isOwner = await verifyRestaurantOwnership(ctx, args.restaurantId);
+    if (!isOwner) {
+      throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
     const now = Date.now();
     return await ctx.db.insert("menuCategories", {
       ...args,
@@ -65,6 +95,12 @@ export const create = mutation({
     sortOrder: v.number(),
   },
   handler: async (ctx, args) => {
+    // Verify ownership
+    const isOwner = await verifyRestaurantOwnership(ctx, args.restaurantId);
+    if (!isOwner) {
+      throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
     const now = Date.now();
     return await ctx.db.insert("menuItems", {
       ...args,
@@ -88,6 +124,18 @@ export const update = mutation({
     sortOrder: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Get the menu item to check restaurant ownership
+    const menuItem = await ctx.db.get(args.id);
+    if (!menuItem) {
+      throw new Error("Menu item not found");
+    }
+
+    // Verify ownership
+    const isOwner = await verifyRestaurantOwnership(ctx, menuItem.restaurantId);
+    if (!isOwner) {
+      throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
     const { id, ...updates } = args;
     return await ctx.db.patch(id, {
       ...updates,
@@ -102,7 +150,13 @@ export const toggleAvailability = mutation({
   handler: async (ctx, args) => {
     const item = await ctx.db.get(args.id);
     if (!item) throw new Error("Menu item not found");
-    
+
+    // Verify ownership
+    const isOwner = await verifyRestaurantOwnership(ctx, item.restaurantId);
+    if (!isOwner) {
+      throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
     return await ctx.db.patch(args.id, {
       isAvailable: !item.isAvailable,
       updatedAt: Date.now(),
@@ -114,6 +168,15 @@ export const toggleAvailability = mutation({
 export const remove = mutation({
   args: { id: v.id("menuItems") },
   handler: async (ctx, args) => {
+    const item = await ctx.db.get(args.id);
+    if (!item) throw new Error("Menu item not found");
+
+    // Verify ownership
+    const isOwner = await verifyRestaurantOwnership(ctx, item.restaurantId);
+    if (!isOwner) {
+      throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
     return await ctx.db.delete(args.id);
   },
 });
@@ -128,6 +191,18 @@ export const updateCategory = mutation({
     sortOrder: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Get the category to check restaurant ownership
+    const category = await ctx.db.get(args.id);
+    if (!category) {
+      throw new Error("Category not found");
+    }
+
+    // Verify ownership
+    const isOwner = await verifyRestaurantOwnership(ctx, category.restaurantId);
+    if (!isOwner) {
+      throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
     const { id, ...updates } = args;
     return await ctx.db.patch(id, {
       ...updates,
@@ -140,7 +215,19 @@ export const updateCategory = mutation({
 export const removeCategory = mutation({
   args: { id: v.id("menuCategories") },
   handler: async (ctx, args) => {
-    // First check if there are any items in this category
+    // Get the category to check restaurant ownership
+    const category = await ctx.db.get(args.id);
+    if (!category) {
+      throw new Error("Category not found");
+    }
+
+    // Verify ownership
+    const isOwner = await verifyRestaurantOwnership(ctx, category.restaurantId);
+    if (!isOwner) {
+      throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
+    // Check if there are any items in this category
     const itemsInCategory = await ctx.db
       .query("menuItems")
       .withIndex("by_category", (q) => q.eq("categoryId", args.id))

@@ -3,9 +3,100 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 
 const PAYPAL_WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
+const PAYPAL_API_BASE = process.env.NODE_ENV === "production"
+  ? "https://api-m.paypal.com"
+  : "https://api-m.sandbox.paypal.com";
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL!;
 
 const convex = new ConvexHttpClient(CONVEX_URL);
+
+/**
+ * Verify PayPal webhook signature
+ * https://developer.paypal.com/docs/api-basics/notifications/webhooks/notification-messages/
+ */
+async function verifyWebhookSignature(
+  request: NextRequest,
+  body: string
+): Promise<boolean> {
+  // If no webhook ID configured, reject in production
+  if (!PAYPAL_WEBHOOK_ID) {
+    console.error("[PayPal Webhook] PAYPAL_WEBHOOK_ID not configured");
+    if (process.env.NODE_ENV === "production") {
+      return false;
+    }
+    // Allow unverified in development with warning
+    console.warn("[PayPal Webhook] WARNING: Processing unverified webhook in development mode");
+    return true;
+  }
+
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+    console.error("[PayPal Webhook] PayPal credentials not configured");
+    return false;
+  }
+
+  try {
+    // Get headers required for verification
+    const transmissionId = request.headers.get("paypal-transmission-id");
+    const transmissionTime = request.headers.get("paypal-transmission-time");
+    const certUrl = request.headers.get("paypal-cert-url");
+    const authAlgo = request.headers.get("paypal-auth-algo");
+    const transmissionSig = request.headers.get("paypal-transmission-sig");
+
+    if (!transmissionId || !transmissionTime || !certUrl || !authAlgo || !transmissionSig) {
+      console.error("[PayPal Webhook] Missing required headers for verification");
+      return false;
+    }
+
+    // Get access token
+    const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString("base64");
+    const tokenResponse = await fetch(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: "grant_type=client_credentials",
+    });
+
+    if (!tokenResponse.ok) {
+      console.error("[PayPal Webhook] Failed to get access token");
+      return false;
+    }
+
+    const { access_token } = await tokenResponse.json();
+
+    // Verify the webhook signature
+    const verifyResponse = await fetch(`${PAYPAL_API_BASE}/v1/notifications/verify-webhook-signature`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        auth_algo: authAlgo,
+        cert_url: certUrl,
+        transmission_id: transmissionId,
+        transmission_sig: transmissionSig,
+        transmission_time: transmissionTime,
+        webhook_id: PAYPAL_WEBHOOK_ID,
+        webhook_event: JSON.parse(body),
+      }),
+    });
+
+    if (!verifyResponse.ok) {
+      console.error("[PayPal Webhook] Verification request failed");
+      return false;
+    }
+
+    const verification = await verifyResponse.json();
+    return verification.verification_status === "SUCCESS";
+  } catch (error) {
+    console.error("[PayPal Webhook] Verification error:", error);
+    return false;
+  }
+}
 
 /**
  * PayPal Webhook Handler
@@ -14,6 +105,17 @@ const convex = new ConvexHttpClient(CONVEX_URL);
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text();
+
+    // Verify webhook signature before processing
+    const isValid = await verifyWebhookSignature(request, body);
+    if (!isValid) {
+      console.error("[PayPal Webhook] Invalid webhook signature - rejecting request");
+      return NextResponse.json(
+        { error: "Invalid webhook signature" },
+        { status: 401 }
+      );
+    }
+
     const event = JSON.parse(body);
 
     // Log webhook event for debugging

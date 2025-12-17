@@ -234,6 +234,33 @@ export const updateStatusWithNotification = action({
   },
 });
 
+// Helper to verify restaurant ownership for orders
+async function verifyOrderRestaurantOwnership(
+  ctx: { db: any; auth: any },
+  orderId: Id<"foodOrders">
+): Promise<boolean> {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) return false;
+
+  // Get user by email from identity
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_email", (q: any) => q.eq("email", identity.email))
+    .first();
+
+  if (!user) return false;
+
+  // Get the order
+  const order = await ctx.db.get(orderId);
+  if (!order) return false;
+
+  // Get restaurant and check ownership
+  const restaurant = await ctx.db.get(order.restaurantId);
+  if (!restaurant) return false;
+
+  return restaurant.ownerId === user._id;
+}
+
 // Update payment status
 export const updatePaymentStatus = mutation({
   args: {
@@ -242,6 +269,12 @@ export const updatePaymentStatus = mutation({
     paymentMethod: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Verify the user owns the restaurant for this order
+    const isOwner = await verifyOrderRestaurantOwnership(ctx, args.id);
+    if (!isOwner) {
+      throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
     return await ctx.db.patch(args.id, {
       paymentStatus: args.paymentStatus,
       paymentMethod: args.paymentMethod,
