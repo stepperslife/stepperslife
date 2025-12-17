@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function ShoppingCart() {
-  const { items, removeFromCart, updateQuantity, getSubtotal, isCartOpen, setIsCartOpen } =
+  const { items, removeItemByIndex, updateQuantityByIndex, getSubtotal, isCartOpen, setIsCartOpen } =
     useCart();
 
   const router = useRouter();
@@ -75,9 +75,9 @@ export function ShoppingCart() {
             </div>
           ) : (
             <div className="space-y-4">
-              {items.map((item) => (
+              {items.map((item, index) => (
                 <div
-                  key={item.productId}
+                  key={`${item.productId}-${item.variantId || 'default'}-${index}`}
                   className="flex gap-4 p-4 bg-muted rounded-lg"
                 >
                   {/* Product Image */}
@@ -115,7 +115,7 @@ export function ShoppingCart() {
                       <div className="flex items-center border border-input rounded-lg">
                         <button
                           type="button"
-                          onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                          onClick={() => updateQuantityByIndex(index, item.quantity - 1)}
                           className="p-1 hover:bg-muted rounded-l-lg"
                           aria-label="Decrease quantity"
                         >
@@ -126,7 +126,7 @@ export function ShoppingCart() {
                         </span>
                         <button
                           type="button"
-                          onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                          onClick={() => updateQuantityByIndex(index, item.quantity + 1)}
                           className="p-1 hover:bg-muted rounded-r-lg"
                           aria-label="Increase quantity"
                         >
@@ -136,7 +136,7 @@ export function ShoppingCart() {
 
                       <button
                         type="button"
-                        onClick={() => removeFromCart(item.productId)}
+                        onClick={() => removeItemByIndex(index)}
                         className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                         aria-label="Remove from cart"
                       >
