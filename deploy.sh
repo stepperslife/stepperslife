@@ -1,488 +1,208 @@
 #!/bin/bash
 
-# SteppersLife Blue/Green Deployment Script
-# Automatically handles git commit, build, transfer, and zero-downtime deployment
+###############################################################################
+# SteppersLife Events - Automated Deployment Script
+#
+# This script automates the deployment process from GitHub to your VPS.
+#
+# Usage:
+#   1. Make executable: chmod +x deploy.sh
+#   2. Run on VPS: ./deploy.sh
+#   3. Or run locally to deploy to VPS: ./deploy.sh remote YOUR_IP
+#
+# What it does:
+#   - Pulls latest code from GitHub
+#   - Installs dependencies
+#   - Builds Next.js app
+#   - Restarts PM2 process
+#   - Shows deployment status
+###############################################################################
 
-set -e  # Exit on error
+set -e  # Exit on any error
 
-# ============================================================================
-# CONFIGURATION - Update these variables or load from .env
-# ============================================================================
-
-# Load from .env if exists
-if [ -f .env.deployment ]; then
-    source .env.deployment
-fi
-
-# VPS Configuration
-VPS_USER="${VPS_USER:-root}"
-VPS_HOST="${VPS_HOST:-your-vps-ip}"
-VPS_DIR="${VPS_DIR:-/var/www/stepperlife}"
-VPS_PORT="${VPS_PORT:-22}"
-
-# Application Configuration
-APP_NAME="stepperlife"
-GIT_REMOTE="${GIT_REMOTE:-origin}"
-GIT_BRANCH="${GIT_BRANCH:-main}"
-
-# Docker Configuration
-DOCKER_NETWORK="app-network"
-BLUE_PORT=3001
-GREEN_PORT=3002
-CONTAINER_PORT=3000
-
-# Health Check Configuration
-HEALTH_ENDPOINT="/health"
-HEALTH_TIMEOUT=30
-HEALTH_RETRY_INTERVAL=2
-
-# Deployment Configuration
-GRACEFUL_SHUTDOWN_DELAY=30
-
-# ============================================================================
-# COLOR OUTPUT
-# ============================================================================
-
+# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# ============================================================================
-# HELPER FUNCTIONS
-# ============================================================================
+# Configuration
+APP_DIR="/root/websites/events-stepperslife"
+APP_NAME="events-stepperslife"
+BRANCH="main"
 
-log_info() {
-    echo -e "${CYAN}[INFO]${NC} $1"
+# Functions
+print_header() {
+    echo -e "\n${BLUE}========================================${NC}"
+    echo -e "${BLUE}$1${NC}"
+    echo -e "${BLUE}========================================${NC}\n"
 }
 
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+print_success() {
+    echo -e "${GREEN}✓ $1${NC}"
 }
 
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+print_error() {
+    echo -e "${RED}✗ $1${NC}"
 }
 
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+print_info() {
+    echo -e "${YELLOW}→ $1${NC}"
 }
 
-log_step() {
-    echo -e "\n${BLUE}==>${NC} ${CYAN}$1${NC}\n"
-}
-
-show_progress() {
-    local pid=$1
-    local message=$2
-    local spin='-\|/'
-    local i=0
-
-    while kill -0 $pid 2>/dev/null; do
-        i=$(( (i+1) %4 ))
-        printf "\r${CYAN}[${spin:$i:1}]${NC} $message"
-        sleep 0.1
-    done
-    printf "\r${GREEN}[✓]${NC} $message\n"
-}
-
-check_prerequisites() {
-    log_step "Checking prerequisites"
-
-    local missing_tools=()
-
-    if ! command -v docker &> /dev/null; then
-        missing_tools+=("docker")
-    fi
-
-    if ! command -v git &> /dev/null; then
-        missing_tools+=("git")
-    fi
-
-    if ! command -v ssh &> /dev/null; then
-        missing_tools+=("ssh")
-    fi
-
-    if ! command -v curl &> /dev/null; then
-        missing_tools+=("curl")
-    fi
-
-    if [ ${#missing_tools[@]} -gt 0 ]; then
-        log_error "Missing required tools: ${missing_tools[*]}"
+check_command() {
+    if ! command -v $1 &> /dev/null; then
+        print_error "$1 is not installed"
         exit 1
     fi
-
-    log_success "All prerequisites satisfied"
 }
 
-validate_config() {
-    log_step "Validating configuration"
+# Remote deployment function
+deploy_remote() {
+    local SERVER_IP=$1
+    print_header "Deploying to Remote Server: $SERVER_IP"
 
-    if [ "$VPS_HOST" = "your-vps-ip" ]; then
-        log_error "VPS_HOST not configured. Please set it in .env.deployment"
-        exit 1
-    fi
+    print_info "Connecting to server and running deployment..."
+    ssh root@$SERVER_IP "cd $APP_DIR && ./deploy.sh"
 
-    if [ ! -f "Dockerfile" ]; then
-        log_error "Dockerfile not found in current directory"
-        exit 1
-    fi
-
-    log_success "Configuration validated"
+    print_success "Remote deployment completed!"
+    exit 0
 }
 
-get_current_active_env() {
-    log_info "Detecting current active environment..."
-
-    local active_env=$(ssh -p $VPS_PORT $VPS_USER@$VPS_HOST "cat $VPS_DIR/current-env 2>/dev/null || echo 'green'")
-    echo "$active_env"
-}
-
-get_next_env() {
-    local current=$1
-    if [ "$current" = "blue" ]; then
-        echo "green"
-    else
-        echo "blue"
-    fi
-}
-
-# ============================================================================
-# GIT OPERATIONS
-# ============================================================================
-
-git_commit_and_push() {
-    log_step "Committing and pushing changes to Git"
-
-    # Check if there are changes to commit
-    if [ -z "$(git status --porcelain)" ]; then
-        log_info "No changes to commit"
-    else
-        local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-        local commit_message="Deploy: $timestamp"
-
-        log_info "Staging all changes..."
-        git add -A
-
-        log_info "Creating commit..."
-        git commit -m "$commit_message"
-
-        log_success "Changes committed"
-    fi
-
-    log_info "Pushing to $GIT_REMOTE/$GIT_BRANCH..."
-    git push $GIT_REMOTE $GIT_BRANCH
-
-    log_success "Changes pushed to remote"
-}
-
-# ============================================================================
-# DOCKER OPERATIONS
-# ============================================================================
-
-build_docker_image() {
-    local env=$1
-    local image_tag="${APP_NAME}:${env}"
-
-    log_step "Building Docker image: $image_tag"
-
-    log_info "Building for linux/amd64 platform (VPS compatibility)..."
-    docker build --platform linux/amd64 -t $image_tag . 2>&1 | while read line; do
-        echo "  $line"
-    done
-
-    if [ ${PIPESTATUS[0]} -ne 0 ]; then
-        log_error "Docker build failed"
-        exit 1
-    fi
-
-    log_success "Docker image built: $image_tag"
-}
-
-save_and_transfer_image() {
-    local env=$1
-    local image_tag="${APP_NAME}:${env}"
-    local image_file="${APP_NAME}-${env}.tar"
-
-    log_step "Transferring Docker image to VPS"
-
-    log_info "Saving Docker image to file..."
-    docker save $image_tag -o $image_file
-
-    log_success "Image saved: $image_file"
-
-    log_info "Transferring to VPS..."
-    scp -P $VPS_PORT $image_file $VPS_USER@$VPS_HOST:$VPS_DIR/
-
-    log_success "Image transferred"
-
-    log_info "Cleaning up local image file..."
-    rm $image_file
-
-    log_success "Local cleanup complete"
-}
-
-load_image_on_vps() {
-    local env=$1
-    local image_file="${APP_NAME}-${env}.tar"
-
-    log_step "Loading Docker image on VPS"
-
-    ssh -p $VPS_PORT $VPS_USER@$VPS_HOST "cd $VPS_DIR && docker load -i $image_file && rm $image_file"
-
-    log_success "Image loaded on VPS"
-}
-
-# ============================================================================
-# DEPLOYMENT OPERATIONS
-# ============================================================================
-
-deploy_container() {
-    local env=$1
-    local port=$2
-    local image_tag="${APP_NAME}:${env}"
-    local container_name="${APP_NAME}-${env}"
-
-    log_step "Deploying container: $container_name"
-
-    # Stop and remove existing container if exists
-    ssh -p $VPS_PORT $VPS_USER@$VPS_HOST << EOF
-        if docker ps -a --format '{{.Names}}' | grep -q "^${container_name}$"; then
-            echo "Stopping existing container..."
-            docker stop $container_name 2>/dev/null || true
-            docker rm $container_name 2>/dev/null || true
-        fi
-
-        # Ensure network exists
-        if ! docker network ls --format '{{.Name}}' | grep -q "^${DOCKER_NETWORK}$"; then
-            echo "Creating Docker network: ${DOCKER_NETWORK}"
-            docker network create ${DOCKER_NETWORK}
-        fi
-
-        # Start new container
-        echo "Starting new container..."
-        docker run -d \
-            --name $container_name \
-            --network $DOCKER_NETWORK \
-            -p 127.0.0.1:${port}:${CONTAINER_PORT} \
-            --restart unless-stopped \
-            --env-file $VPS_DIR/.env \
-            $image_tag
-EOF
-
-    if [ $? -ne 0 ]; then
-        log_error "Failed to deploy container"
-        return 1
-    fi
-
-    log_success "Container deployed: $container_name"
-}
-
-health_check() {
-    local port=$1
-    local env=$2
-
-    log_step "Running health check for $env environment"
-
-    log_info "Waiting for application to start..."
-    sleep 5
-
-    local elapsed=0
-    local max_wait=$HEALTH_TIMEOUT
-
-    while [ $elapsed -lt $max_wait ]; do
-        log_info "Health check attempt $(($elapsed / $HEALTH_RETRY_INTERVAL + 1))..."
-
-        local response=$(ssh -p $VPS_PORT $VPS_USER@$VPS_HOST "curl -sf http://localhost:${port}${HEALTH_ENDPOINT}" 2>/dev/null)
-
-        if [ $? -eq 0 ]; then
-            log_success "Health check passed! Application is healthy"
-            return 0
-        fi
-
-        sleep $HEALTH_RETRY_INTERVAL
-        elapsed=$((elapsed + HEALTH_RETRY_INTERVAL))
-    done
-
-    log_error "Health check failed after ${HEALTH_TIMEOUT}s"
-    return 1
-}
-
-switch_nginx_traffic() {
-    local new_env=$1
-
-    log_step "Switching nginx traffic to $new_env"
-
-    ssh -p $VPS_PORT $VPS_USER@$VPS_HOST << EOF
-        # Update upstream configuration
-        echo "set \\\$active_env $new_env;" > /etc/nginx/conf.d/active-env.conf
-
-        # Update current environment marker
-        echo "$new_env" > $VPS_DIR/current-env
-
-        # Test nginx configuration
-        nginx -t
-
-        if [ \$? -ne 0 ]; then
-            echo "Nginx configuration test failed"
-            exit 1
-        fi
-
-        # Reload nginx
-        nginx -s reload
-EOF
-
-    if [ $? -ne 0 ]; then
-        log_error "Failed to switch nginx traffic"
-        return 1
-    fi
-
-    log_success "Traffic switched to $new_env environment"
-}
-
-stop_old_container() {
-    local old_env=$1
-    local container_name="${APP_NAME}-${old_env}"
-
-    log_step "Gracefully stopping old container"
-
-    log_info "Waiting ${GRACEFUL_SHUTDOWN_DELAY}s for connections to drain..."
-    sleep $GRACEFUL_SHUTDOWN_DELAY
-
-    ssh -p $VPS_PORT $VPS_USER@$VPS_HOST "docker stop $container_name 2>/dev/null || true"
-
-    log_success "Old container stopped: $container_name"
-}
-
-# ============================================================================
-# ROLLBACK OPERATIONS
-# ============================================================================
-
-rollback_deployment() {
-    local old_env=$1
-    local new_env=$2
-
-    log_error "Deployment failed! Initiating rollback..."
-
-    # Stop the failed container
-    ssh -p $VPS_PORT $VPS_USER@$VPS_HOST "docker stop ${APP_NAME}-${new_env} 2>/dev/null || true"
-
-    # Check if old container is still running
-    local old_running=$(ssh -p $VPS_PORT $VPS_USER@$VPS_HOST "docker ps --filter name=${APP_NAME}-${old_env} --format '{{.Names}}'")
-
-    if [ -z "$old_running" ]; then
-        log_info "Restarting old container..."
-        ssh -p $VPS_PORT $VPS_USER@$VPS_HOST "docker start ${APP_NAME}-${old_env}"
-    fi
-
-    # Switch nginx back
-    ssh -p $VPS_PORT $VPS_USER@$VPS_HOST << EOF
-        echo "set \\\$active_env $old_env;" > /etc/nginx/conf.d/active-env.conf
-        echo "$old_env" > $VPS_DIR/current-env
-        nginx -s reload
-EOF
-
-    log_warning "Rollback complete. System restored to $old_env environment"
-}
-
-# ============================================================================
-# MAIN DEPLOYMENT FLOW
-# ============================================================================
-
-main() {
-    local start_time=$(date +%s)
-
-    echo -e "${CYAN}"
-    echo "╔════════════════════════════════════════════════════════╗"
-    echo "║                                                        ║"
-    echo "║      SteppersLife Blue/Green Deployment Script         ║"
-    echo "║                                                        ║"
-    echo "╚════════════════════════════════════════════════════════╝"
-    echo -e "${NC}\n"
-
-    # Pre-flight checks
-    check_prerequisites
-    validate_config
-
-    # Determine environments
-    local current_env=$(get_current_active_env)
-    local new_env=$(get_next_env $current_env)
-
-    log_info "Current active environment: ${BLUE}$current_env${NC}"
-    log_info "Deploying to environment: ${GREEN}$new_env${NC}"
-
-    # Get port for new environment
-    local new_port
-    if [ "$new_env" = "blue" ]; then
-        new_port=$BLUE_PORT
-    else
-        new_port=$GREEN_PORT
-    fi
-
-    echo ""
-    read -p "$(echo -e ${YELLOW}Continue with deployment? [y/N]:${NC} )" -n 1 -r
-    echo ""
-
+###############################################################################
+# Main Deployment Process
+###############################################################################
+
+# Check if running in remote mode
+if [ "$1" == "remote" ] && [ -n "$2" ]; then
+    deploy_remote $2
+fi
+
+print_header "SteppersLife Events - Deployment Script"
+
+# Check if running on server
+if [ ! -d "$APP_DIR" ]; then
+    print_error "Application directory not found: $APP_DIR"
+    print_info "Please run this script on your VPS or create the application directory"
+    exit 1
+fi
+
+# Navigate to app directory
+cd $APP_DIR
+
+# 1. Check dependencies
+print_header "Step 1: Checking Dependencies"
+check_command git
+check_command node
+check_command npm
+check_command pm2
+print_success "All dependencies are installed"
+
+# 2. Check for uncommitted changes
+print_header "Step 2: Checking Git Status"
+if [[ -n $(git status -s) ]]; then
+    print_info "You have uncommitted changes:"
+    git status -s
+    read -p "Continue with deployment? (y/n) " -n 1 -r
+    echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        log_warning "Deployment cancelled"
-        exit 0
-    fi
-
-    # Execute deployment steps
-    git_commit_and_push
-    build_docker_image $new_env
-    save_and_transfer_image $new_env
-    load_image_on_vps $new_env
-    deploy_container $new_env $new_port
-
-    # Health check and traffic switch
-    if health_check $new_port $new_env; then
-        switch_nginx_traffic $new_env
-
-        if [ $? -eq 0 ]; then
-            stop_old_container $current_env
-
-            local end_time=$(date +%s)
-            local duration=$((end_time - start_time))
-
-            echo ""
-            echo -e "${GREEN}╔════════════════════════════════════════════════════════╗${NC}"
-            echo -e "${GREEN}║                                                        ║${NC}"
-            echo -e "${GREEN}║            🎉  DEPLOYMENT SUCCESSFUL! 🎉               ║${NC}"
-            echo -e "${GREEN}║                                                        ║${NC}"
-            echo -e "${GREEN}╚════════════════════════════════════════════════════════╝${NC}"
-            echo ""
-            echo -e "${CYAN}Deployment Summary:${NC}"
-            echo -e "  • Environment: ${GREEN}$new_env${NC}"
-            echo -e "  • Container: ${GREEN}${APP_NAME}-${new_env}${NC}"
-            echo -e "  • Port: ${GREEN}$new_port${NC}"
-            echo -e "  • Duration: ${GREEN}${duration}s${NC}"
-            echo -e "  • Status: ${GREEN}ACTIVE${NC}"
-            echo ""
-            echo -e "${CYAN}Access your application:${NC}"
-            echo -e "  • https://stepperslife.com"
-            echo ""
-            echo -e "${YELLOW}Note:${NC} Old container (${current_env}) has been stopped"
-            echo -e "${YELLOW}Tip:${NC} If issues occur, run ${CYAN}./rollback.sh${NC} to revert"
-            echo ""
-        else
-            rollback_deployment $current_env $new_env
-            exit 1
-        fi
-    else
-        rollback_deployment $current_env $new_env
+        print_error "Deployment cancelled"
         exit 1
     fi
-}
+fi
+print_success "Git status OK"
 
-# ============================================================================
-# SCRIPT ENTRY POINT
-# ============================================================================
+# 3. Fetch latest code
+print_header "Step 3: Fetching Latest Code"
+print_info "Fetching from origin..."
+git fetch origin
 
-# Handle script interruption
-trap 'echo -e "\n${RED}Deployment interrupted!${NC}"; exit 1' INT TERM
+print_info "Current branch: $(git branch --show-current)"
+print_info "Pulling latest changes from $BRANCH..."
+git pull origin $BRANCH
 
-# Run main deployment
-main "$@"
+print_success "Code updated successfully"
+
+# 4. Install dependencies
+print_header "Step 4: Installing Dependencies"
+print_info "Running npm install..."
+npm install --production=false
+
+print_success "Dependencies installed"
+
+# 5. Build application
+print_header "Step 5: Building Application"
+print_info "Running npm run build..."
+npm run build
+
+print_success "Build completed successfully"
+
+# 6. Create logs directory if it doesn't exist
+print_header "Step 6: Setting up Logging"
+mkdir -p $APP_DIR/logs
+print_success "Logs directory ready"
+
+# 7. Restart PM2 process
+print_header "Step 7: Restarting Application"
+if pm2 list | grep -q $APP_NAME; then
+    print_info "Restarting existing PM2 process..."
+    pm2 restart $APP_NAME
+else
+    print_info "Starting new PM2 process..."
+    pm2 start ecosystem.config.js --env production
+fi
+
+# Save PM2 process list
+pm2 save
+
+print_success "Application restarted successfully"
+
+# 8. Show deployment info
+print_header "Step 8: Deployment Status"
+
+echo -e "\n${GREEN}Deployment Information:${NC}"
+echo "─────────────────────────────────────────"
+echo "App Name:       $APP_NAME"
+echo "Directory:      $APP_DIR"
+echo "Branch:         $BRANCH"
+echo "Node Version:   $(node --version)"
+echo "NPM Version:    $(npm --version)"
+echo "Git Commit:     $(git rev-parse --short HEAD)"
+echo "Deployed At:    $(date '+%Y-%m-%d %H:%M:%S')"
+echo "─────────────────────────────────────────"
+
+# 9. Show PM2 status
+print_header "PM2 Process Status"
+pm2 list
+
+print_info "\nUseful PM2 commands:"
+echo "  pm2 logs $APP_NAME          # View logs"
+echo "  pm2 monit                   # Monitor resources"
+echo "  pm2 restart $APP_NAME       # Restart app"
+echo "  pm2 stop $APP_NAME          # Stop app"
+echo "  pm2 delete $APP_NAME        # Remove from PM2"
+
+# 10. Test application
+print_header "Testing Application"
+print_info "Waiting for app to start..."
+sleep 3
+
+if curl -f http://localhost:3004 > /dev/null 2>&1; then
+    print_success "Application is responding on port 3004"
+else
+    print_error "Application is not responding on port 3004"
+    print_info "Check PM2 logs: pm2 logs $APP_NAME"
+fi
+
+# 11. Final success message
+print_header "Deployment Complete! 🚀"
+echo -e "${GREEN}Your application is now live at:${NC}"
+echo -e "${BLUE}  → http://event.stepperslife.com${NC}"
+echo -e "${BLUE}  → https://event.stepperslife.com${NC} (if SSL is configured)"
+echo ""
+echo -e "${YELLOW}Next steps:${NC}"
+echo "  1. Test the live site in your browser"
+echo "  2. Check PM2 logs: pm2 logs $APP_NAME"
+echo "  3. Monitor with: pm2 monit"
+echo ""

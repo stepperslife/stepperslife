@@ -1,0 +1,432 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "SteppersLife" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "SteppersLife" [ref=e7]
+      - navigation [ref=e8]:
+        - link "Events" [ref=e9] [cursor=pointer]:
+          - /url: /events
+        - link "Classes" [ref=e10] [cursor=pointer]:
+          - /url: /classes
+        - link "Marketplace" [ref=e11] [cursor=pointer]:
+          - /url: /marketplace
+        - link "Restaurants" [ref=e12] [cursor=pointer]:
+          - /url: /restaurants
+      - generic [ref=e13]:
+        - button "Dark mode" [ref=e14]:
+          - img [ref=e15]
+        - link "Sign In" [ref=e17] [cursor=pointer]:
+          - /url: /login
+          - img [ref=e18]
+          - text: Sign In
+  - main [ref=e21]:
+    - generic [ref=e22]:
+      - img "Chicago Steppin" [ref=e24]
+      - generic [ref=e26]:
+        - heading "Welcome to SteppersLife" [level=1] [ref=e27]
+        - paragraph [ref=e28]: Your complete platform for Chicago Steppin - restaurants, events, classes, and more
+        - generic [ref=e29]:
+          - link "Explore Events" [ref=e30] [cursor=pointer]:
+            - /url: /events
+          - link "Browse Marketplace" [ref=e31] [cursor=pointer]:
+            - /url: /marketplace
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "Upcoming Events" [level=2] [ref=e37]
+          - paragraph [ref=e38]: Don't miss out on the hottest steppin events
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - button "Scroll left" [ref=e41]:
+              - img [ref=e42]
+            - button "Scroll right" [ref=e44]:
+              - img [ref=e45]
+          - link "View All Events" [ref=e47] [cursor=pointer]:
+            - /url: /events
+      - generic [ref=e48]:
+        - link [ref=e49] [cursor=pointer]:
+          - /url: /events/jh730wq1s669cemdy8b65fzxds7wqhet
+          - article [ref=e50]:
+            - generic [ref=e51]:
+              - img "New Year's Eve Steppers Ball" [ref=e52]
+              - generic [ref=e53]: Tickets Available
+            - generic [ref=e54]:
+              - heading "New Year's Eve Steppers Ball" [level=3] [ref=e55]
+              - paragraph [ref=e56]: Ring in 2026 with the biggest stepping event of the year! Countdown, champagne toast, live band.
+              - generic [ref=e57]:
+                - generic [ref=e58]:
+                  - img [ref=e59]
+                  - generic [ref=e61]: Wednesday, December 31, 2025
+                - generic [ref=e63]: 9:00 PM - 3:00 AM
+                - generic [ref=e64]:
+                  - img [ref=e65]
+                  - generic [ref=e68]: Navy Pier Grand Ballroom
+                - generic [ref=e69]:
+                  - img [ref=e70]
+                  - generic [ref=e73]: Holiday
+              - button "View Details" [ref=e74]
+        - link [ref=e75] [cursor=pointer]:
+          - /url: /events/jh7047fjt0e1dy1afwrk82p4d17x2m8h
+          - article [ref=e76]:
+            - generic [ref=e77]:
+              - img "If it's too easy, I'll step in." [ref=e78]
+              - generic [ref=e79]: Tickets Available
+            - generic [ref=e80]:
+              - heading "If it's too easy, I'll step in." [level=3] [ref=e81]
+              - paragraph [ref=e82]: "AFTERWORK SET OPEN DANCE FLOOR ALL NIGHT ATD $4 - 7PM-11PM - CLASS FREE LINE DANCING: 5pm-7pm THE LASTEST LINE DANCES Lo..."
+              - generic [ref=e83]:
+                - generic [ref=e84]:
+                  - img [ref=e85]
+                  - generic [ref=e87]: February 2, 2026
+                - generic [ref=e89]: 7:00 PM
+                - generic [ref=e90]:
+                  - img [ref=e91]
+                  - generic [ref=e94]: GRAND BALLROOM
+              - button "View Details" [ref=e95]
+        - link [ref=e96] [cursor=pointer]:
+          - /url: /events/jh73z923nmn8shsdd90cj1316n7x332r
+          - article [ref=e97]:
+            - generic [ref=e98]:
+              - img "DeJa Vu" [ref=e99]
+              - generic [ref=e100]: Tickets Available
+            - generic [ref=e101]:
+              - heading "DeJa Vu" [level=3] [ref=e102]
+              - paragraph [ref=e103]: AQUARIUS & PISCES Birthday Bash Our Very Own Suave' Larry, Kenny T.& Darnell B
+              - generic [ref=e104]:
+                - generic [ref=e105]:
+                  - img [ref=e106]
+                  - generic [ref=e108]: February 7, 2026
+                - generic [ref=e110]: 7:00 PM
+                - generic [ref=e111]:
+                  - img [ref=e112]
+                  - generic [ref=e115]: GEORGIOS BANQUETS QUALITY INN & SUITES ONFERENCE CENTRE
+                - generic [ref=e116]:
+                  - img [ref=e117]
+                  - generic [ref=e120]: Set
+              - button "View Details" [ref=e121]
+    - generic [ref=e123]:
+      - generic [ref=e124]:
+        - generic [ref=e125]:
+          - heading "Learn to Step" [level=2] [ref=e126]
+          - paragraph [ref=e127]: Master Chicago Steppin with expert-led online classes
+        - link "Browse All Classes" [ref=e128] [cursor=pointer]:
+          - /url: /classes
+      - generic [ref=e129]:
+        - link [ref=e130] [cursor=pointer]:
+          - /url: /classes/chicago-steppin-basics
+          - article [ref=e131]:
+            - generic [ref=e132]:
+              - img "Chicago Steppin Basics" [ref=e133]
+              - generic [ref=e134]: BEGINNER
+            - generic [ref=e135]:
+              - generic [ref=e136]:
+                - img "Marcus Johnson" [ref=e138]
+                - generic [ref=e139]: Marcus Johnson
+              - heading "Chicago Steppin Basics" [level=3] [ref=e140]
+              - paragraph [ref=e141]: Learn the foundational steps of Chicago Steppin with our comprehensive beginner course
+              - generic [ref=e142]:
+                - generic [ref=e143]:
+                  - generic [ref=e144]:
+                    - img [ref=e145]
+                    - generic [ref=e147]: 12 lessons
+                  - generic [ref=e148]:
+                    - img [ref=e149]
+                    - generic [ref=e151]: "4.9"
+                - generic [ref=e152]:
+                  - img [ref=e153]
+                  - generic [ref=e158]: 456 students enrolled
+              - generic [ref=e159]:
+                - generic [ref=e160]: $49.99
+                - button "Enroll Now" [ref=e161]
+        - link [ref=e162] [cursor=pointer]:
+          - /url: /classes/advanced-steppin-techniques
+          - article [ref=e163]:
+            - generic [ref=e164]:
+              - img "Advanced Steppin Techniques" [ref=e165]
+              - generic [ref=e166]: ADVANCED
+            - generic [ref=e167]:
+              - generic [ref=e168]:
+                - img "Tasha Williams" [ref=e170]
+                - generic [ref=e171]: Tasha Williams
+              - heading "Advanced Steppin Techniques" [level=3] [ref=e172]
+              - paragraph [ref=e173]: Master complex patterns, turns, and styling to elevate your steppin game
+              - generic [ref=e174]:
+                - generic [ref=e175]:
+                  - generic [ref=e176]:
+                    - img [ref=e177]
+                    - generic [ref=e179]: 18 lessons
+                  - generic [ref=e180]:
+                    - img [ref=e181]
+                    - generic [ref=e183]: "4.8"
+                - generic [ref=e184]:
+                  - img [ref=e185]
+                  - generic [ref=e190]: 189 students enrolled
+              - generic [ref=e191]:
+                - generic [ref=e192]: $79.99
+                - button "Enroll Now" [ref=e193]
+        - link [ref=e194] [cursor=pointer]:
+          - /url: /classes/ladies-styling-class
+          - article [ref=e195]:
+            - generic [ref=e196]:
+              - img "Ladies Styling & Technique" [ref=e197]
+              - generic [ref=e198]: INTERMEDIATE
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - img "Michelle Davis" [ref=e202]
+                - generic [ref=e203]: Michelle Davis
+              - heading "Ladies Styling & Technique" [level=3] [ref=e204]
+              - paragraph [ref=e205]: Enhance your feminine style and grace on the dance floor
+              - generic [ref=e206]:
+                - generic [ref=e207]:
+                  - generic [ref=e208]:
+                    - img [ref=e209]
+                    - generic [ref=e211]: 10 lessons
+                  - generic [ref=e212]:
+                    - img [ref=e213]
+                    - generic [ref=e215]: "4.8"
+                - generic [ref=e216]:
+                  - img [ref=e217]
+                  - generic [ref=e222]: 312 students enrolled
+              - generic [ref=e223]:
+                - generic [ref=e224]: $59.99
+                - button "Enroll Now" [ref=e225]
+    - generic [ref=e226]:
+      - generic [ref=e227]:
+        - generic [ref=e228]:
+          - heading "Marketplace" [level=2] [ref=e229]:
+            - img [ref=e230]
+            - text: Marketplace
+          - paragraph [ref=e233]: Browse our exclusive stepping merchandise and products
+        - link "Visit Marketplace →" [ref=e234] [cursor=pointer]:
+          - /url: /marketplace
+      - generic [ref=e235]:
+        - link "Stepping Music Playlist - USB Drive Stepping Music Playlist - USB Drive Curated collection of 100+ classic stepping songs on branded USB drive. R&B, soul, and contemporary tracks. $29.99 50 in stock" [ref=e237] [cursor=pointer]:
+          - /url: /marketplace/nn7bttsw661mtn6qvptbepdf6d7xed11
+          - img "Stepping Music Playlist - USB Drive" [ref=e239]
+          - generic [ref=e240]:
+            - heading "Stepping Music Playlist - USB Drive" [level=3] [ref=e241]
+            - paragraph [ref=e242]: Curated collection of 100+ classic stepping songs on branded USB drive. R&B, soul, and contemporary tracks.
+            - generic [ref=e243]:
+              - generic [ref=e245]: $29.99
+              - generic [ref=e246]: 50 in stock
+        - link "Chicago Stepping Basics - Video Course Chicago Stepping Basics - Video Course 8-hour video course with 25 lessons covering basic steps, timing, turns, and partner work. Lifetime access. $79.99" [ref=e248] [cursor=pointer]:
+          - /url: /marketplace/nn7cpszy3nb4h7w4dyjp3hzpss7xebt3
+          - img "Chicago Stepping Basics - Video Course" [ref=e250]
+          - generic [ref=e251]:
+            - heading "Chicago Stepping Basics - Video Course" [level=3] [ref=e252]
+            - paragraph [ref=e253]: 8-hour video course with 25 lessons covering basic steps, timing, turns, and partner work. Lifetime access.
+            - generic [ref=e256]: $79.99
+        - link "SteppersLife Annual Membership SteppersLife Annual Membership Exclusive member-only events, early ticket access, 10% discount, and online tutorial library access. $49.99" [ref=e258] [cursor=pointer]:
+          - /url: /marketplace/nn7d9ff7yfcf4s4a070152d0dn7xfbc9
+          - img "SteppersLife Annual Membership" [ref=e260]
+          - generic [ref=e261]:
+            - heading "SteppersLife Annual Membership" [level=3] [ref=e262]
+            - paragraph [ref=e263]: Exclusive member-only events, early ticket access, 10% discount, and online tutorial library access.
+            - generic [ref=e266]: $49.99
+        - link "Stepping Legacy Photo Book Stepping Legacy Photo Book Beautiful hardcover coffee table book featuring 150+ pages of stepping photography and history. $49.99 30 in stock" [ref=e268] [cursor=pointer]:
+          - /url: /marketplace/nn7a36gyxmzdfr8jjgmkaadqen7xfdh6
+          - img "Stepping Legacy Photo Book" [ref=e270]
+          - generic [ref=e271]:
+            - heading "Stepping Legacy Photo Book" [level=3] [ref=e272]
+            - paragraph [ref=e273]: Beautiful hardcover coffee table book featuring 150+ pages of stepping photography and history.
+            - generic [ref=e274]:
+              - generic [ref=e276]: $49.99
+              - generic [ref=e277]: 30 in stock
+        - link "Dancing Couple Silhouette - Framed Print Dancing Couple Silhouette - Framed Print Elegant black and white silhouette art in wooden frame. 16x20 inches, ready to hang. $79.99 22 in stock" [ref=e279] [cursor=pointer]:
+          - /url: /marketplace/nn77p7vd54vygmtse4snhnbx917xfchp
+          - img "Dancing Couple Silhouette - Framed Print" [ref=e281]
+          - generic [ref=e282]:
+            - heading "Dancing Couple Silhouette - Framed Print" [level=3] [ref=e283]
+            - paragraph [ref=e284]: Elegant black and white silhouette art in wooden frame. 16x20 inches, ready to hang.
+            - generic [ref=e285]:
+              - generic [ref=e287]: $79.99
+              - generic [ref=e288]: 22 in stock
+        - link "Chicago Stepping - Canvas Art Print 24x36 Chicago Stepping - Canvas Art Print 24x36 Stunning gallery-quality canvas print celebrating Chicago stepping culture. Ready to hang. $129.99 15 in stock" [ref=e290] [cursor=pointer]:
+          - /url: /marketplace/nn70ygh7gdy4sxm099wj1f245d7xet1g
+          - img "Chicago Stepping - Canvas Art Print 24x36" [ref=e292]
+          - generic [ref=e293]:
+            - heading "Chicago Stepping - Canvas Art Print 24x36" [level=3] [ref=e294]
+            - paragraph [ref=e295]: Stunning gallery-quality canvas print celebrating Chicago stepping culture. Ready to hang.
+            - generic [ref=e296]:
+              - generic [ref=e298]: $129.99
+              - generic [ref=e299]: 15 in stock
+        - link "Suede Sole Brush Kit Suede Sole Brush Kit Professional brush kit for maintaining dance shoes. Includes wire brush, soft brush, and carrying pouch. $19.99 75 in stock" [ref=e301] [cursor=pointer]:
+          - /url: /marketplace/nn7ep13watfeh1r3shfjejd4nn7xfqm7
+          - img "Suede Sole Brush Kit" [ref=e303]
+          - generic [ref=e304]:
+            - heading "Suede Sole Brush Kit" [level=3] [ref=e305]
+            - paragraph [ref=e306]: Professional brush kit for maintaining dance shoes. Includes wire brush, soft brush, and carrying pouch.
+            - generic [ref=e307]:
+              - generic [ref=e309]: $19.99
+              - generic [ref=e310]: 75 in stock
+        - link "Premium Dance Bag - Large Premium Dance Bag - Large Spacious dance bag with ventilated shoe compartment and multiple pockets. Durable nylon construction. $69.99 45 in stock" [ref=e312] [cursor=pointer]:
+          - /url: /marketplace/nn718txw7trmrc7yyy5923qv7h7xe778
+          - img "Premium Dance Bag - Large" [ref=e314]
+          - generic [ref=e315]:
+            - heading "Premium Dance Bag - Large" [level=3] [ref=e316]
+            - paragraph [ref=e317]: Spacious dance bag with ventilated shoe compartment and multiple pockets. Durable nylon construction.
+            - generic [ref=e318]:
+              - generic [ref=e320]: $69.99
+              - generic [ref=e321]: 45 in stock
+    - generic [ref=e323]:
+      - generic [ref=e324]:
+        - generic [ref=e325]:
+          - heading "Order from Local Restaurants" [level=2] [ref=e326]
+          - paragraph [ref=e327]: Support Chicago's best restaurants - pickup available now
+        - link "View All Restaurants" [ref=e328] [cursor=pointer]:
+          - /url: /restaurants
+      - generic [ref=e329]:
+        - link [ref=e330] [cursor=pointer]:
+          - /url: /restaurants/soul-food-spot
+          - article [ref=e331]:
+            - img "Soul Food Spot" [ref=e333]
+            - generic [ref=e334]:
+              - heading "Soul Food Spot" [level=3] [ref=e335]
+              - paragraph [ref=e336]: Authentic soul food in the heart of Chicago. Famous for our fried chicken and mac & cheese.
+              - generic [ref=e337]:
+                - generic [ref=e338]: Soul Food
+                - generic [ref=e339]: American
+              - generic [ref=e340]:
+                - generic [ref=e341]:
+                  - img [ref=e342]
+                  - generic [ref=e344]: "4.8"
+                  - generic [ref=e345]: (156 reviews)
+                - generic [ref=e346]:
+                  - img [ref=e347]
+                  - generic [ref=e350]: 30 min pickup
+              - button "Order Now" [ref=e351]:
+                - img [ref=e352]
+                - text: Order Now
+        - link [ref=e357] [cursor=pointer]:
+          - /url: /restaurants/chicago-deep-dish-kitchen
+          - article [ref=e358]:
+            - img "Chicago Deep Dish Kitchen" [ref=e360]
+            - generic [ref=e361]:
+              - heading "Chicago Deep Dish Kitchen" [level=3] [ref=e362]
+              - paragraph [ref=e363]: The best deep dish pizza in Chicago! Made fresh daily with family recipes.
+              - generic [ref=e364]:
+                - generic [ref=e365]: Pizza
+                - generic [ref=e366]: Italian
+              - generic [ref=e367]:
+                - generic [ref=e368]:
+                  - img [ref=e369]
+                  - generic [ref=e371]: "4.9"
+                  - generic [ref=e372]: (203 reviews)
+                - generic [ref=e373]:
+                  - img [ref=e374]
+                  - generic [ref=e377]: 45 min pickup
+              - button "Order Now" [ref=e378]:
+                - img [ref=e379]
+                - text: Order Now
+        - link [ref=e384] [cursor=pointer]:
+          - /url: /restaurants/harolds-chicken-shack
+          - article [ref=e385]:
+            - img "Harold's Chicken Shack" [ref=e387]
+            - generic [ref=e388]:
+              - heading "Harold's Chicken Shack" [level=3] [ref=e389]
+              - paragraph [ref=e390]: Chicago's legendary chicken spot. Crispy, juicy, and perfectly seasoned every time.
+              - generic [ref=e391]:
+                - generic [ref=e392]: Chicken
+                - generic [ref=e393]: American
+              - generic [ref=e394]:
+                - generic [ref=e395]:
+                  - img [ref=e396]
+                  - generic [ref=e398]: "4.7"
+                  - generic [ref=e399]: (445 reviews)
+                - generic [ref=e400]:
+                  - img [ref=e401]
+                  - generic [ref=e404]: 20 min pickup
+              - button "Order Now" [ref=e405]:
+                - img [ref=e406]
+                - text: Order Now
+        - link [ref=e411] [cursor=pointer]:
+          - /url: /restaurants/taste-of-home-cafe
+          - article [ref=e412]:
+            - img "Taste of Home Café" [ref=e414]
+            - generic [ref=e415]:
+              - heading "Taste of Home Café" [level=3] [ref=e416]
+              - paragraph [ref=e417]: Homestyle cooking that reminds you of Sunday dinner at grandma's house.
+              - generic [ref=e418]:
+                - generic [ref=e419]: American
+                - generic [ref=e420]: Comfort Food
+              - generic [ref=e421]:
+                - generic [ref=e422]:
+                  - img [ref=e423]
+                  - generic [ref=e425]: "4.6"
+                  - generic [ref=e426]: (89 reviews)
+                - generic [ref=e427]:
+                  - img [ref=e428]
+                  - generic [ref=e431]: 35 min pickup
+              - button "Order Now" [ref=e432]:
+                - img [ref=e433]
+                - text: Order Now
+        - link [ref=e438] [cursor=pointer]:
+          - /url: /restaurants/wing-stop-express
+          - article [ref=e439]:
+            - generic [ref=e440]:
+              - img "Wing Stop Express" [ref=e441]
+              - generic [ref=e443]: Currently Closed
+            - generic [ref=e444]:
+              - heading "Wing Stop Express" [level=3] [ref=e445]
+              - paragraph [ref=e446]: Fresh wings tossed in your choice of 12 signature sauces. Perfect game day food!
+              - generic [ref=e447]:
+                - generic [ref=e448]: Wings
+                - generic [ref=e449]: American
+              - generic [ref=e451]:
+                - img [ref=e452]
+                - generic [ref=e454]: "4.5"
+                - generic [ref=e455]: (312 reviews)
+  - contentinfo [ref=e456]:
+    - generic [ref=e457]:
+      - generic [ref=e458]:
+        - generic [ref=e459]:
+          - heading "About" [level=3] [ref=e460]
+          - paragraph [ref=e461]: SteppersLife Events is your premier platform for discovering and attending stepping events.
+        - generic [ref=e462]:
+          - heading "For Organizers" [level=3] [ref=e463]
+          - list [ref=e464]:
+            - listitem [ref=e465]:
+              - link "Create Event" [ref=e466] [cursor=pointer]:
+                - /url: /organizer/events/create
+            - listitem [ref=e467]:
+              - link "Pricing" [ref=e468] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e469]:
+              - link "Help Center" [ref=e470] [cursor=pointer]:
+                - /url: /help
+        - generic [ref=e471]:
+          - heading "Resources" [level=3] [ref=e472]
+          - list [ref=e473]:
+            - listitem [ref=e474]:
+              - link "Browse Events" [ref=e475] [cursor=pointer]:
+                - /url: /events
+            - listitem [ref=e476]:
+              - link "Marketplace" [ref=e477] [cursor=pointer]:
+                - /url: /marketplace
+            - listitem [ref=e478]:
+              - link "Restaurants" [ref=e479] [cursor=pointer]:
+                - /url: /restaurants
+            - listitem [ref=e480]:
+              - link "My Tickets" [ref=e481] [cursor=pointer]:
+                - /url: /my-tickets
+        - generic [ref=e482]:
+          - heading "Legal" [level=3] [ref=e483]
+          - list [ref=e484]:
+            - listitem [ref=e485]:
+              - link "Privacy Policy" [ref=e486] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e487]:
+              - link "Terms of Service" [ref=e488] [cursor=pointer]:
+                - /url: /terms
+      - generic [ref=e490]:
+        - paragraph [ref=e491]: © 2025 SteppersLife Events. All rights reserved.
+        - paragraph [ref=e492]:
+          - text: Made with
+          - img [ref=e493]
+          - text: for the stepping community
+  - alert [ref=e495]
+```
