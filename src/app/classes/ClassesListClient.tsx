@@ -7,6 +7,7 @@ import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen } from "lu
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { PageHero } from "@/components/ui/PageHero";
 
 export default function ClassesListClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -97,15 +98,13 @@ export default function ClassesListClient() {
     <>
       <PublicHeader />
       <div data-testid="classes-page" className="min-h-screen bg-background">
-        {/* Page Title */}
-        <div className="bg-card shadow-sm border-b border-border">
-          <div className="container mx-auto px-4 py-8">
-            <h1 data-testid="classes-page-title" className="text-4xl font-bold text-foreground mb-2">Classes</h1>
-            <p className="text-lg text-muted-foreground">
-              Discover stepping classes, workshops, and lessons near you
-            </p>
-          </div>
-        </div>
+        {/* Hero Section */}
+        <PageHero
+          title="Classes"
+          subtitle="Discover stepping classes, workshops, and lessons near you"
+          imageUrl="https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=1200&q=80"
+          imageAlt="Dance class instruction"
+        />
 
         {/* Filters */}
         <div className="bg-card border-b border-border sticky top-0 z-10">
