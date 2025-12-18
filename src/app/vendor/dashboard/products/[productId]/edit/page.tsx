@@ -16,10 +16,10 @@ import {
   Save,
   Loader2,
   ImagePlus,
-  X,
   Trash2,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { ProductImageUpload } from "@/components/marketplace/ProductImageUpload";
 
 const PRODUCT_CATEGORIES = [
   "Apparel & Fashion",
@@ -94,8 +94,6 @@ export default function EditProductPage() {
     primaryImage: "",
   });
 
-  const [imageUrl, setImageUrl] = useState("");
-
   // Populate form when product loads
   useEffect(() => {
     if (product) {
@@ -133,29 +131,12 @@ export default function EditProductPage() {
     }));
   };
 
-  const addImage = () => {
-    if (imageUrl && !formData.images.includes(imageUrl)) {
-      const newImages = [...formData.images, imageUrl];
-      setFormData((prev) => ({
-        ...prev,
-        images: newImages,
-        primaryImage: prev.primaryImage || imageUrl,
-      }));
-      setImageUrl("");
-    }
-  };
-
-  const removeImage = (url: string) => {
-    const newImages = formData.images.filter((img) => img !== url);
+  const handleImagesChange = (images: string[], primaryImage: string) => {
     setFormData((prev) => ({
       ...prev,
-      images: newImages,
-      primaryImage: prev.primaryImage === url ? newImages[0] || "" : prev.primaryImage,
+      images,
+      primaryImage,
     }));
-  };
-
-  const setPrimaryImage = (url: string) => {
-    setFormData((prev) => ({ ...prev, primaryImage: url }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -381,66 +362,18 @@ export default function EditProductPage() {
             <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
               <ImagePlus className="w-5 h-5 text-purple-600" />
             </div>
-            <h2 className="text-lg font-bold text-foreground">Product Images</h2>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="flex-1 px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Enter image URL"
-              />
-              <button
-                type="button"
-                onClick={addImage}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Add
-              </button>
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Product Images</h2>
+              <p className="text-sm text-muted-foreground">Upload up to 8 images. First image will be the primary.</p>
             </div>
-
-            {formData.images.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {formData.images.map((img) => (
-                  <div key={img} className="relative group">
-                    <img
-                      src={img}
-                      alt="Product"
-                      className={`w-full h-24 object-cover rounded-lg border-2 ${
-                        formData.primaryImage === img
-                          ? "border-purple-600"
-                          : "border-border"
-                      }`}
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setPrimaryImage(img)}
-                        className="p-1 bg-white/80 rounded text-xs font-medium"
-                      >
-                        Primary
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeImage(img)}
-                        className="p-1 bg-red-500 text-white rounded"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                    {formData.primaryImage === img && (
-                      <span className="absolute top-1 left-1 px-1.5 py-0.5 bg-purple-600 text-white text-xs rounded">
-                        Primary
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
+
+          <ProductImageUpload
+            images={formData.images}
+            primaryImage={formData.primaryImage}
+            onImagesChange={handleImagesChange}
+            maxImages={8}
+          />
         </div>
 
         {/* Pricing */}

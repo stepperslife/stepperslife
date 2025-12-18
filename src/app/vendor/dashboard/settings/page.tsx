@@ -15,8 +15,10 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle,
+  ImageIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { VendorBrandingUpload } from "@/components/marketplace/VendorBrandingUpload";
 
 const STORE_CATEGORIES = [
   "Apparel & Fashion",
@@ -45,6 +47,8 @@ interface FormData {
   country: string;
   categories: string[];
   businessType: string;
+  logoUrl: string | null;
+  bannerUrl: string | null;
 }
 
 export default function VendorSettingsPage() {
@@ -73,6 +77,8 @@ export default function VendorSettingsPage() {
     country: "USA",
     categories: [],
     businessType: "",
+    logoUrl: null,
+    bannerUrl: null,
   });
 
   // Populate form when vendor loads
@@ -91,6 +97,8 @@ export default function VendorSettingsPage() {
         country: (vendor as { country?: string }).country || "USA",
         categories: (vendor as { categories?: string[] }).categories || [],
         businessType: (vendor as { businessType?: string }).businessType || "",
+        logoUrl: (vendor as { logoUrl?: string }).logoUrl || null,
+        bannerUrl: (vendor as { bannerUrl?: string }).bannerUrl || null,
       });
     }
   }, [vendor]);
@@ -110,6 +118,16 @@ export default function VendorSettingsPage() {
         ? prev.categories.filter((c) => c !== category)
         : [...prev.categories, category],
     }));
+    setHasChanges(true);
+  };
+
+  const handleLogoChange = (logoUrl: string | null) => {
+    setFormData((prev) => ({ ...prev, logoUrl }));
+    setHasChanges(true);
+  };
+
+  const handleBannerChange = (bannerUrl: string | null) => {
+    setFormData((prev) => ({ ...prev, bannerUrl }));
     setHasChanges(true);
   };
 
@@ -149,6 +167,8 @@ export default function VendorSettingsPage() {
         country: formData.country || undefined,
         categories: formData.categories.length > 0 ? formData.categories : undefined,
         businessType: formData.businessType || undefined,
+        logoUrl: formData.logoUrl || undefined,
+        bannerUrl: formData.bannerUrl || undefined,
       } as {
         vendorId: Id<"vendors">;
         name: string;
@@ -163,6 +183,8 @@ export default function VendorSettingsPage() {
         country?: string;
         categories?: string[];
         businessType?: string;
+        logoUrl?: string;
+        bannerUrl?: string;
       });
 
       toast.success("Settings saved successfully!");
@@ -329,6 +351,37 @@ export default function VendorSettingsPage() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Store Branding */}
+        <div className="bg-card rounded-xl border border-border p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+              <ImageIcon className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Store Branding</h2>
+              <p className="text-sm text-muted-foreground">Upload your logo and banner to personalize your store</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <VendorBrandingUpload
+              label="Store Logo"
+              description="Square image, recommended 400x400px"
+              currentImage={formData.logoUrl}
+              onImageChange={handleLogoChange}
+              aspectRatio="square"
+            />
+
+            <VendorBrandingUpload
+              label="Store Banner"
+              description="Wide image, recommended 1200x300px"
+              currentImage={formData.bannerUrl}
+              onImageChange={handleBannerChange}
+              aspectRatio="banner"
+            />
           </div>
         </div>
 
