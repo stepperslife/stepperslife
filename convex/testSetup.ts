@@ -85,6 +85,63 @@ export const completeSetup = action({
   },
 });
 
+/**
+ * Add Unsplash images to all menu items
+ * Run via: npx convex run testSetup:addMenuImages
+ */
+export const addMenuImages = action({
+  args: {},
+  handler: async (ctx) => {
+    const steps: string[] = [];
+
+    // Get the restaurant
+    const restaurant = await ctx.runQuery(api.restaurants.getBySlug, {
+      slug: "dk-soul-food",
+    });
+
+    if (!restaurant) {
+      return { success: false, error: "Restaurant not found", steps };
+    }
+
+    // Get all menu items
+    const menuItems = await ctx.runQuery(api.menuItems.getByRestaurant, {
+      restaurantId: restaurant._id,
+    });
+
+    // Unsplash images for each menu item type
+    const imageMap: Record<string, string> = {
+      "Fried Chicken": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=800&q=80",
+      "Smothered Pork Chops": "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=800&q=80",
+      "Mac & Cheese": "https://images.unsplash.com/photo-1543339494-b4cd4f7ba686?w=800&q=80",
+      "Collard Greens": "https://images.unsplash.com/photo-1574484284002-952d92456975?w=800&q=80",
+      "Cornbread": "https://images.unsplash.com/photo-1586444248879-bc604bc77f76?w=800&q=80",
+      "Sweet Potato Pie": "https://images.unsplash.com/photo-1509461399763-ae67a981b254?w=800&q=80",
+      "Sweet Tea": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=800&q=80",
+      "Lemonade": "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=800&q=80",
+    };
+
+    // Update each menu item with its image
+    for (const item of menuItems) {
+      const imageUrl = imageMap[item.name];
+      if (imageUrl) {
+        await ctx.runMutation(internal.menuItems.updateInternal, {
+          id: item._id,
+          imageUrl,
+        });
+        steps.push(`✓ Added image to ${item.name}`);
+      } else {
+        steps.push(`⚠ No image found for ${item.name}`);
+      }
+    }
+
+    return {
+      success: true,
+      itemsUpdated: steps.filter(s => s.startsWith("✓")).length,
+      steps,
+    };
+  },
+});
+
 // =====================================================
 // CONFIGURATION
 // =====================================================

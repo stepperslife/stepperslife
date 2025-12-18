@@ -342,3 +342,24 @@ export const createInternal = internalMutation({
     });
   },
 });
+
+// Internal mutation to update menu item without auth (for setup scripts)
+export const updateInternal = internalMutation({
+  args: {
+    id: v.id("menuItems"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+    price: v.optional(v.number()),
+    imageUrl: v.optional(v.string()),
+    categoryId: v.optional(v.id("menuCategories")),
+    isAvailable: v.optional(v.boolean()),
+    sortOrder: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+    return await ctx.db.patch(id, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+  },
+});
