@@ -11,6 +11,7 @@ import { EventsSubNav } from "@/components/layout/EventsSubNav";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
+import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
 
 export default function EventsListClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -484,38 +485,20 @@ export default function EventsListClient() {
                 </p>
               </motion.div>
 
-              <motion.div
-                data-testid="events-grid"
-                className={getViewClasses(viewMode, "events")}
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.1,
-                    },
-                  },
-                }}
-              >
-                {events.map((event) => {
-                  const isPast = event.endDate && event.endDate < Date.now();
-
-                  return (
-                    <motion.div
-                      key={event._id}
-                      variants={{
-                        hidden: { opacity: 0, y: 30 },
-                        visible: { opacity: 1, y: 0 },
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
+              {viewMode === "masonry" ? (
+                <PortfolioGrid
+                  items={events}
+                  getKey={(event) => event._id}
+                  renderItem={(event) => {
+                    const isPast = event.endDate && event.endDate < Date.now();
+                    return (
                       <Link
                         href={`/events/${event._id}`}
                         data-testid={`event-card-${event._id}`}
-                        className="group block h-full"
+                        className="group block"
                       >
                         <motion.div
-                          className="bg-card rounded-lg shadow-md overflow-hidden h-full"
+                          className="bg-card rounded-lg shadow-md overflow-hidden"
                           whileHover={{
                             y: -8,
                             boxShadow: "0 20px 40px -10px rgba(0,0,0,0.2)",
@@ -523,106 +506,189 @@ export default function EventsListClient() {
                           transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         >
                           {/* Event Image */}
-                          <div className="relative h-48 bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
+                          <div className="relative aspect-[4/3] bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
                             <img
                               src={event.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
                               alt={event.name}
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                             />
                             {isPast && (
-                              <motion.div
-                                className="absolute top-2 right-2 bg-foreground/75 text-background px-3 py-1 rounded-full text-sm font-medium"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: "spring", delay: 0.2 }}
-                              >
+                              <div className="absolute top-2 right-2 bg-foreground/75 text-background px-3 py-1 rounded-full text-sm font-medium">
                                 Past Event
-                              </motion.div>
+                              </div>
                             )}
-                            {/* Gradient overlay on hover */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
 
                           {/* Event Details */}
-                          <div className="p-5">
-                            <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                          <div className="p-4">
+                            <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
                               {event.name}
                             </h3>
 
-                            <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                              {event.description}
-                            </p>
-
-                            {/* Date & Time */}
-                            <div className="flex items-start gap-2 mb-2 text-sm text-foreground">
-                              <Calendar className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-                              <div>
-                                <div className="font-medium">
-                                  {event.startDate && formatEventDate(event.startDate, event.timezone)}
-                                </div>
-                                {event.eventTimeLiteral && (
-                                  <div className="text-muted-foreground">
-                                    {event.eventTimeLiteral}
-                                  </div>
-                                )}
-                              </div>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Calendar className="w-4 h-4 text-primary" />
+                              <span>{event.startDate && formatEventDate(event.startDate, event.timezone)}</span>
                             </div>
 
-                            {/* Location */}
                             {event.location && (
-                              <div className="flex items-center gap-2 mb-3 text-sm text-foreground">
-                                <MapPin className="w-4 h-4 shrink-0 text-primary" />
-                                <span>
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                                <MapPin className="w-4 h-4 text-primary" />
+                                <span className="truncate">
                                   {typeof event.location === 'string'
                                     ? event.location
-                                    : `${event.location.venueName ? `${event.location.venueName}, ` : ''}${event.location.city}, ${event.location.state}`
+                                    : `${event.location.city}, ${event.location.state}`
                                   }
                                 </span>
                               </div>
                             )}
-
-                            {/* Categories */}
-                            {event.categories && event.categories.length > 0 && (
-                              <div className="flex flex-wrap gap-2">
-                                {event.categories.slice(0, 3).map((category, idx) => (
-                                  <motion.span
-                                    key={idx}
-                                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-accent text-accent-foreground"
-                                    whileHover={{ scale: 1.05 }}
-                                  >
-                                    <Tag className="w-3 h-3" />
-                                    {category}
-                                  </motion.span>
-                                ))}
-                                {event.categories.length > 3 && (
-                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                                    +{event.categories.length - 3} more
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Footer */}
-                          <div className="px-5 py-3 bg-muted/50 border-t border-border">
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-muted-foreground">
-                                by {event.organizerName || "SteppersLife"}
-                              </span>
-                              <motion.span
-                                className="text-primary font-medium"
-                                whileHover={{ x: 5 }}
-                              >
-                                View Details →
-                              </motion.span>
-                            </div>
                           </div>
                         </motion.div>
                       </Link>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
+                    );
+                  }}
+                />
+              ) : (
+                <motion.div
+                  data-testid="events-grid"
+                  className={getViewClasses(viewMode, "events")}
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.1,
+                      },
+                    },
+                  }}
+                >
+                  {events.map((event) => {
+                    const isPast = event.endDate && event.endDate < Date.now();
+
+                    return (
+                      <motion.div
+                        key={event._id}
+                        variants={{
+                          hidden: { opacity: 0, y: 30 },
+                          visible: { opacity: 1, y: 0 },
+                        }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Link
+                          href={`/events/${event._id}`}
+                          data-testid={`event-card-${event._id}`}
+                          className="group block h-full"
+                        >
+                          <motion.div
+                            className="bg-card rounded-lg shadow-md overflow-hidden h-full"
+                            whileHover={{
+                              y: -8,
+                              boxShadow: "0 20px 40px -10px rgba(0,0,0,0.2)",
+                            }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                          >
+                            {/* Event Image */}
+                            <div className="relative h-48 bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
+                              <img
+                                src={event.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
+                                alt={event.name}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              />
+                              {isPast && (
+                                <motion.div
+                                  className="absolute top-2 right-2 bg-foreground/75 text-background px-3 py-1 rounded-full text-sm font-medium"
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ type: "spring", delay: 0.2 }}
+                                >
+                                  Past Event
+                                </motion.div>
+                              )}
+                              {/* Gradient overlay on hover */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            </div>
+
+                            {/* Event Details */}
+                            <div className="p-5">
+                              <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                                {event.name}
+                              </h3>
+
+                              <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                                {event.description}
+                              </p>
+
+                              {/* Date & Time */}
+                              <div className="flex items-start gap-2 mb-2 text-sm text-foreground">
+                                <Calendar className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                                <div>
+                                  <div className="font-medium">
+                                    {event.startDate && formatEventDate(event.startDate, event.timezone)}
+                                  </div>
+                                  {event.eventTimeLiteral && (
+                                    <div className="text-muted-foreground">
+                                      {event.eventTimeLiteral}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Location */}
+                              {event.location && (
+                                <div className="flex items-center gap-2 mb-3 text-sm text-foreground">
+                                  <MapPin className="w-4 h-4 shrink-0 text-primary" />
+                                  <span>
+                                    {typeof event.location === 'string'
+                                      ? event.location
+                                      : `${event.location.venueName ? `${event.location.venueName}, ` : ''}${event.location.city}, ${event.location.state}`
+                                    }
+                                  </span>
+                                </div>
+                              )}
+
+                              {/* Categories */}
+                              {event.categories && event.categories.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                  {event.categories.slice(0, 3).map((category, idx) => (
+                                    <motion.span
+                                      key={idx}
+                                      className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-accent text-accent-foreground"
+                                      whileHover={{ scale: 1.05 }}
+                                    >
+                                      <Tag className="w-3 h-3" />
+                                      {category}
+                                    </motion.span>
+                                  ))}
+                                  {event.categories.length > 3 && (
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+                                      +{event.categories.length - 3} more
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Footer */}
+                            <div className="px-5 py-3 bg-muted/50 border-t border-border">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">
+                                  by {event.organizerName || "SteppersLife"}
+                                </span>
+                                <motion.span
+                                  className="text-primary font-medium"
+                                  whileHover={{ x: 5 }}
+                                >
+                                  View Details →
+                                </motion.span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              )}
             </>
           )}
         </div>

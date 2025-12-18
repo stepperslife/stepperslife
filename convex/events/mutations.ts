@@ -395,6 +395,18 @@ export const publishEvent = mutation({
     const event = await ctx.db.get(args.eventId);
     if (!event) throw new Error("Event not found");
 
+    // Check for ticket tiers - at least one is required to publish
+    const ticketTiers = await ctx.db
+      .query("ticketTiers")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+      .collect();
+
+    if (ticketTiers.length === 0) {
+      throw new Error(
+        "Cannot publish without ticket/enrollment tiers. Please add at least one pricing tier before publishing."
+      );
+    }
+
     await ctx.db.patch(args.eventId, {
       status: "PUBLISHED",
       ticketsVisible: true, // Make tickets visible when publishing
@@ -950,6 +962,22 @@ export const deleteEvent = mutation({
 
     if (tickets.length > 0) {
       throw new Error("Cannot delete an event with sold tickets. Please cancel the event instead.");
+    }
+
+    // Check if there are any active orders (enrollments)
+    const orders = await ctx.db
+      .query("orders")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+      .collect();
+
+    const activeOrders = orders.filter(
+      (order) => !["CANCELLED", "FAILED", "REFUNDED"].includes(order.status)
+    );
+
+    if (activeOrders.length > 0) {
+      throw new Error(
+        `Cannot delete an event with ${activeOrders.length} active enrollment(s). Please cancel or refund all orders first.`
+      );
     }
 
     // Delete related ticket tiers

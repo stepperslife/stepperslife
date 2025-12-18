@@ -17,10 +17,14 @@ import {
   MoreVertical,
   Package,
   DollarSign,
+  Crown,
+  BadgeCheck,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { VendorTierBadge, getTierDisplayName, getTierCommission } from "@/components/marketplace/VendorTierBadge";
 
 type VendorStatus = "PENDING" | "APPROVED" | "SUSPENDED" | "REJECTED";
+type VendorTier = "BASIC" | "VERIFIED" | "PREMIUM";
 
 const STATUS_CONFIG: Record<VendorStatus, { label: string; color: string; icon: typeof Clock }> = {
   PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
@@ -34,11 +38,13 @@ export default function AdminVendorsPage() {
   const [statusFilter, setStatusFilter] = useState<VendorStatus | "">("");
   const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
   const [actionModal, setActionModal] = useState<{
-    type: "approve" | "reject" | "suspend" | "reactivate";
+    type: "approve" | "reject" | "suspend" | "reactivate" | "changeTier";
     vendorId: string;
     vendorName: string;
+    currentTier?: VendorTier;
   } | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [selectedTier, setSelectedTier] = useState<VendorTier>("BASIC");
 
   // Get all vendors
   const vendors = useQuery(api.vendors.getAllAdmin, {
@@ -53,6 +59,7 @@ export default function AdminVendorsPage() {
   const rejectVendor = useMutation(api.vendors.reject);
   const suspendVendor = useMutation(api.vendors.suspend);
   const reactivateVendor = useMutation(api.vendors.reactivate);
+  const updateTier = useMutation(api.vendors.updateTier);
 
   // Filter vendors by search
   const filteredVendors = vendors?.filter((vendor) => {
@@ -121,9 +128,17 @@ export default function AdminVendorsPage() {
           await reactivateVendor({ vendorId: actionModal.vendorId as Id<"vendors"> });
           toast.success(`${actionModal.vendorName} has been reactivated`);
           break;
+        case "changeTier":
+          await updateTier({
+            vendorId: actionModal.vendorId as Id<"vendors">,
+            tier: selectedTier,
+          });
+          toast.success(`${actionModal.vendorName} tier updated to ${getTierDisplayName(selectedTier)}`);
+          break;
       }
       setActionModal(null);
       setRejectionReason("");
+      setSelectedTier("BASIC");
     } catch (error) {
       console.error("Action error:", error);
       toast.error("Failed to perform action");
@@ -243,6 +258,7 @@ export default function AdminVendorsPage() {
                 <tr className="border-b border-border">
                   <th className="text-left p-4 text-sm font-medium text-muted-foreground">Vendor</th>
                   <th className="text-left p-4 text-sm font-medium text-muted-foreground">Contact</th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Tier</th>
                   <th className="text-left p-4 text-sm font-medium text-muted-foreground">Products</th>
                   <th className="text-left p-4 text-sm font-medium text-muted-foreground">Sales</th>
                   <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
@@ -273,6 +289,14 @@ export default function AdminVendorsPage() {
                         {vendor.contactPhone && (
                           <p className="text-sm text-muted-foreground">{vendor.contactPhone}</p>
                         )}
+                      </td>
+                      <td className="p-4">
+                        <div className="flex flex-col gap-1">
+                          <VendorTierBadge tier={(vendor.tier as VendorTier) || "BASIC"} size="sm" showLabel />
+                          <span className="text-xs text-muted-foreground">
+                            {vendor.commissionPercent || getTierCommission(vendor.tier || "BASIC")}% fee
+                          </span>
+                        </div>
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
@@ -352,20 +376,39 @@ export default function AdminVendorsPage() {
                                   </>
                                 )}
                                 {vendor.status === "APPROVED" && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setActionModal({
-                                        type: "suspend",
-                                        vendorId: vendor._id,
-                                        vendorName: vendor.name,
-                                      });
-                                      setSelectedVendor(null);
-                                    }}
-                                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-muted transition-colors"
-                                  >
-                                    Suspend
-                                  </button>
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedTier((vendor.tier as VendorTier) || "BASIC");
+                                        setActionModal({
+                                          type: "changeTier",
+                                          vendorId: vendor._id,
+                                          vendorName: vendor.name,
+                                          currentTier: (vendor.tier as VendorTier) || "BASIC",
+                                        });
+                                        setSelectedVendor(null);
+                                      }}
+                                      className="w-full px-4 py-2 text-left text-sm text-purple-600 hover:bg-muted transition-colors flex items-center gap-2"
+                                    >
+                                      <Crown className="w-4 h-4" />
+                                      Change Tier
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setActionModal({
+                                          type: "suspend",
+                                          vendorId: vendor._id,
+                                          vendorName: vendor.name,
+                                        });
+                                        setSelectedVendor(null);
+                                      }}
+                                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-muted transition-colors"
+                                    >
+                                      Suspend
+                                    </button>
+                                  </>
                                 )}
                                 {(vendor.status === "SUSPENDED" || vendor.status === "REJECTED") && (
                                   <button
@@ -418,6 +461,7 @@ export default function AdminVendorsPage() {
               {actionModal.type === "reject" && "Reject Vendor"}
               {actionModal.type === "suspend" && "Suspend Vendor"}
               {actionModal.type === "reactivate" && "Reactivate Vendor"}
+              {actionModal.type === "changeTier" && "Change Vendor Tier"}
             </h3>
             <p className="text-muted-foreground mb-4">
               {actionModal.type === "approve" &&
@@ -428,6 +472,8 @@ export default function AdminVendorsPage() {
                 `Please provide a reason for suspending "${actionModal.vendorName}". Their products will be hidden from the marketplace.`}
               {actionModal.type === "reactivate" &&
                 `Are you sure you want to reactivate "${actionModal.vendorName}"?`}
+              {actionModal.type === "changeTier" &&
+                `Select a new tier for "${actionModal.vendorName}". Commission rate will be updated automatically.`}
             </p>
 
             {(actionModal.type === "reject" || actionModal.type === "suspend") && (
@@ -445,12 +491,47 @@ export default function AdminVendorsPage() {
               </div>
             )}
 
+            {actionModal.type === "changeTier" && (
+              <div className="mb-6 space-y-3">
+                {(["BASIC", "VERIFIED", "PREMIUM"] as VendorTier[]).map((tier) => (
+                  <label
+                    key={tier}
+                    className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                      selectedTier === tier
+                        ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                        : "border-border hover:bg-muted"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="tier"
+                      value={tier}
+                      checked={selectedTier === tier}
+                      onChange={() => setSelectedTier(tier)}
+                      className="w-4 h-4 text-purple-600"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-foreground">{getTierDisplayName(tier)}</span>
+                        {tier !== "BASIC" && <VendorTierBadge tier={tier} size="sm" />}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{getTierCommission(tier)}% platform fee</p>
+                    </div>
+                    {actionModal.currentTier === tier && (
+                      <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">Current</span>
+                    )}
+                  </label>
+                ))}
+              </div>
+            )}
+
             <div className="flex gap-3 justify-end">
               <button
                 type="button"
                 onClick={() => {
                   setActionModal(null);
                   setRejectionReason("");
+                  setSelectedTier("BASIC");
                 }}
                 className="px-4 py-2 border border-border rounded-lg font-medium hover:bg-muted transition-colors"
               >
@@ -459,9 +540,10 @@ export default function AdminVendorsPage() {
               <button
                 type="button"
                 onClick={handleAction}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  actionModal.type === "approve" || actionModal.type === "reactivate"
-                    ? "bg-green-600 text-white hover:bg-green-700"
+                disabled={actionModal.type === "changeTier" && selectedTier === actionModal.currentTier}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  actionModal.type === "approve" || actionModal.type === "reactivate" || actionModal.type === "changeTier"
+                    ? "bg-purple-600 text-white hover:bg-purple-700"
                     : "bg-red-600 text-white hover:bg-red-700"
                 }`}
               >
@@ -469,6 +551,7 @@ export default function AdminVendorsPage() {
                 {actionModal.type === "reject" && "Reject"}
                 {actionModal.type === "suspend" && "Suspend"}
                 {actionModal.type === "reactivate" && "Reactivate"}
+                {actionModal.type === "changeTier" && "Update Tier"}
               </button>
             </div>
           </div>

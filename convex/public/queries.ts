@@ -662,6 +662,29 @@ export const getPublicClassDetails = query({
       imageUrl = url ?? undefined;
     }
 
+    // Get ticket tiers for enrollment options
+    const ticketTiers = await ctx.db
+      .query("ticketTiers")
+      .withIndex("by_event", (q) => q.eq("eventId", args.classId))
+      .collect();
+
+    // Map tiers with availability info (convert price to cents for consistency)
+    const enrollmentTiers = ticketTiers.map((tier) => ({
+      _id: tier._id,
+      name: tier.name,
+      description: tier.description,
+      priceCents: Math.round(tier.price * 100), // Convert dollars to cents
+      quantity: tier.quantity,
+      sold: tier.sold,
+      available: tier.quantity - tier.sold,
+      isAvailable: tier.quantity - tier.sold > 0,
+    }));
+
+    // Calculate lowest price for display (in cents)
+    const lowestPriceCents = enrollmentTiers.length > 0
+      ? Math.min(...enrollmentTiers.map((t) => t.priceCents))
+      : null;
+
     return {
       ...classItem,
       imageUrl,
@@ -669,6 +692,9 @@ export const getPublicClassDetails = query({
         name: organizer?.name,
         email: organizer?.email,
       },
+      enrollmentTiers,
+      lowestPriceCents,
+      hasAvailableSpots: enrollmentTiers.some((t) => t.isAvailable),
     };
   },
 });

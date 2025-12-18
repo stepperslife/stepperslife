@@ -28,6 +28,7 @@ import ProductOptionInput, {
   type ProductOption,
   type SelectedOption,
 } from "@/components/marketplace/ProductOptionInput";
+import { VendorTierBadge } from "@/components/marketplace/VendorTierBadge";
 
 // Type definitions
 interface ProductVariant {
@@ -361,6 +362,7 @@ export default function ProductDetailPage() {
                       <Store className="w-4 h-4" />
                     )}
                     <span className="text-sm font-medium">Sold by {product.vendor.storeName}</span>
+                    <VendorTierBadge tier={product.vendor.tier || "BASIC"} size="sm" />
                   </Link>
                 ) : (
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-lg text-primary mb-3">

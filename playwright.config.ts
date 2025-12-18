@@ -176,6 +176,96 @@ export default defineConfig({
         ...devices["iPad (gen 7)"],
       },
     },
+
+    // =========================================================================
+    // PAYMENT AUDIT PROJECT - Production payment testing
+    // =========================================================================
+    {
+      name: "payment-audit",
+      testDir: "./tests/payment",
+      testMatch: /.*\.spec\.ts/,
+      use: {
+        baseURL: "https://stepperslife.com",
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--disable-dev-shm-usage"],
+        },
+      },
+      retries: 2, // Retry failed payment tests
+      timeout: 120000, // 2 minute timeout for payment flows
+    },
+
+    // =========================================================================
+    // MARKETPLACE E2E - Local marketplace testing (vendor & customer flows)
+    // =========================================================================
+    {
+      name: "marketplace-e2e",
+      testDir: "./tests/marketplace",
+      testMatch: /.*\.spec\.ts/,
+      use: {
+        baseURL: "http://localhost:3004",
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--disable-dev-shm-usage"],
+        },
+      },
+      retries: 1,
+      timeout: 120000, // 2 minute timeout for checkout flows
+    },
+
+    // =========================================================================
+    // MARKETPLACE E2E PRODUCTION - Production marketplace testing
+    // =========================================================================
+    {
+      name: "marketplace-e2e-production",
+      testDir: "./tests/marketplace",
+      testMatch: /.*\.spec\.ts/,
+      use: {
+        baseURL: "https://stepperslife.com",
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--disable-dev-shm-usage"],
+        },
+      },
+      retries: 2, // More retries for production
+      timeout: 180000, // 3 minute timeout for production
+    },
+
+    // =========================================================================
+    // CLASSES E2E - Classes feature testing (instructor & student flows)
+    // =========================================================================
+    {
+      name: "classes-e2e",
+      testDir: "./tests/classes",
+      testMatch: /.*\.spec\.ts/,
+      use: {
+        baseURL: "http://localhost:3004",
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--disable-dev-shm-usage"],
+        },
+      },
+      retries: 1,
+      timeout: 120000, // 2 minute timeout for enrollment flows
+    },
+
+    // =========================================================================
+    // CLASSES E2E PRODUCTION - Production classes testing
+    // =========================================================================
+    {
+      name: "classes-e2e-production",
+      testDir: "./tests/classes",
+      testMatch: /.*\.spec\.ts/,
+      use: {
+        baseURL: "https://stepperslife.com",
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--disable-dev-shm-usage"],
+        },
+      },
+      retries: 2,
+      timeout: 180000, // 3 minute timeout for production
+    },
   ],
 
   // We're testing the live development site

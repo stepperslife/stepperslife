@@ -4,8 +4,9 @@ import { Id } from "@/convex/_generated/dataModel";
 /**
  * User role types matching the database schema and staff roles
  */
-export type UserRole = "admin" | "organizer" | "user";
+export type UserRole = "admin" | "organizer" | "restaurateur" | "user";
 export type StaffRole = "STAFF" | "TEAM_MEMBERS" | "ASSOCIATES";
+export type RestaurantStaffRole = "RESTAURANT_MANAGER" | "RESTAURANT_STAFF";
 export type AllRoles = UserRole | StaffRole;
 
 /**

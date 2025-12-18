@@ -246,29 +246,36 @@ export default function VendorApplyClient() {
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
-                Application Submitted!
+                Your Store is Ready!
               </h1>
               <p className="text-muted-foreground mb-6">
-                Thank you for applying to become a vendor on SteppersLife. We'll review
-                your application and get back to you within 48 hours.
+                Welcome to SteppersLife! Your vendor account is all set up. You can
+                start adding products to your store right away.
               </p>
               <div className="bg-muted/50 rounded-lg p-4 mb-6">
                 <p className="text-sm text-foreground">
                   <strong>What's Next?</strong>
                 </p>
                 <ul className="text-sm text-muted-foreground mt-2 space-y-1 text-left">
-                  <li>We'll review your application</li>
-                  <li>A team member may reach out for more info</li>
-                  <li>Once approved, you can add products</li>
+                  <li>Go to your Vendor Dashboard</li>
+                  <li>Add your first products</li>
+                  <li>Set up your store profile</li>
                   <li>Start selling to our community!</li>
                 </ul>
               </div>
+              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 mb-6 border border-purple-200 dark:border-purple-800">
+                <p className="text-sm text-purple-900 dark:text-purple-100">
+                  <strong>Your Tier:</strong> Basic Vendor (15% commission). Higher tiers
+                  with lower fees are available - contact us to learn more about becoming
+                  a Verified (10%) or Premium (5%) vendor.
+                </p>
+              </div>
               <button
                 type="button"
-                onClick={() => router.push("/marketplace")}
+                onClick={() => router.push("/vendor/dashboard")}
                 className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
               >
-                Browse Marketplace
+                Go to Vendor Dashboard
               </button>
             </div>
           </div>

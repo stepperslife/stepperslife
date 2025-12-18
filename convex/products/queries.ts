@@ -43,6 +43,7 @@ export const getActiveProducts = query({
               storeName: vendor.name,
               slug: vendor.slug,
               logo: vendor.logoUrl,
+              tier: vendor.tier || "BASIC",
             } : null,
           };
         }
@@ -82,6 +83,7 @@ export const getProductById = query({
             slug: vendor.slug,
             logo: vendor.logoUrl,
             description: vendor.description,
+            tier: vendor.tier || "BASIC",
           } : null,
         };
       }

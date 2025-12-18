@@ -12,6 +12,7 @@ import { useState, useMemo } from "react";
 import { RestaurantCard } from "@/components/restaurants/RestaurantCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
+import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
 
 // All available cuisine types
 const ALL_CUISINES = [
@@ -572,36 +573,51 @@ export default function RestaurantsListClient() {
           )}
 
           {filteredRestaurants.length > 0 ? (
-            <motion.div
-              className={getViewClasses(viewMode, "restaurants")}
-              initial="hidden"
-              animate="visible"
-              variants={{
-                visible: {
-                  transition: {
-                    staggerChildren: 0.1,
-                  },
-                },
-              }}
-            >
-              {filteredRestaurants.map((restaurant) => (
-                <motion.div
-                  key={restaurant._id}
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.5 }}
-                >
+            viewMode === "masonry" ? (
+              <PortfolioGrid
+                items={filteredRestaurants}
+                getKey={(restaurant) => restaurant._id}
+                renderItem={(restaurant) => (
                   <motion.div
                     whileHover={{ y: -8 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
                     <RestaurantCard restaurant={restaurant} />
                   </motion.div>
-                </motion.div>
-              ))}
-            </motion.div>
+                )}
+              />
+            ) : (
+              <motion.div
+                className={getViewClasses(viewMode, "restaurants")}
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.1,
+                    },
+                  },
+                }}
+              >
+                {filteredRestaurants.map((restaurant) => (
+                  <motion.div
+                    key={restaurant._id}
+                    variants={{
+                      hidden: { opacity: 0, y: 30 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <motion.div
+                      whileHover={{ y: -8 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    >
+                      <RestaurantCard restaurant={restaurant} />
+                    </motion.div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )
           ) : (
             <motion.div
               className="text-center py-16"

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { MasonryGrid } from "@/components/events/MasonryGrid";
 import { GridView } from "@/components/events/GridView";
 import { ListView } from "@/components/events/ListView";
 import { SearchFilters } from "@/components/events/SearchFilters";
 import { ViewToggle } from "@/components/events/ViewToggle";
+import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
+import { MasonryEventCard } from "@/components/events/MasonryEventCard";
 
 interface Event {
   _id: string;
@@ -78,7 +79,21 @@ export function HomePageContent({ initialEvents }: HomePageContentProps) {
       </div>
 
       {/* Event Views */}
-      {viewMode === "masonry" && <MasonryGrid events={filteredEvents} />}
+      {viewMode === "masonry" && (
+        <PortfolioGrid
+          items={filteredEvents}
+          getKey={(event) => event._id}
+          renderItem={(event) => (
+            <MasonryEventCard event={event as any} />
+          )}
+          emptyState={
+            <div className="text-center py-16">
+              <p className="text-gray-500 text-lg">No events found</p>
+              <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filters</p>
+            </div>
+          }
+        />
+      )}
       {viewMode === "grid" && <GridView events={filteredEvents} />}
       {viewMode === "list" && <ListView events={filteredEvents} />}
     </main>

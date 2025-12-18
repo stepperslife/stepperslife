@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Store, MapPin, Package, ArrowRight, Search, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { VendorTierBadge } from "@/components/marketplace/VendorTierBadge";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -138,9 +139,12 @@ export default function VendorsPage() {
 
                   {/* Vendor Info */}
                   <div className="pt-14 p-4">
-                    <h3 className="font-bold text-lg text-foreground group-hover:text-purple-600 transition-colors">
-                      {vendor.storeName}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-lg text-foreground group-hover:text-purple-600 transition-colors">
+                        {vendor.storeName}
+                      </h3>
+                      <VendorTierBadge tier={vendor.tier || "BASIC"} size="sm" />
+                    </div>
 
                     {(vendor.city || vendor.state) && (
                       <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-1">

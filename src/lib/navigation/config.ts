@@ -29,6 +29,10 @@ import {
   Percent,
   Wallet,
   Share2,
+  UtensilsCrossed,
+  Clock,
+  ClipboardList,
+  Store,
 } from "lucide-react";
 import { RoleNavigation } from "./types";
 
@@ -730,6 +734,131 @@ export const associateNavigation: RoleNavigation = {
 };
 
 // ============================================================================
+// RESTAURATEUR NAVIGATION
+// ============================================================================
+export const restaurateurNavigation: RoleNavigation = {
+  role: "restaurateur",
+  dashboardTitle: "SteppersLife",
+  roleDescription: "Restaurant Partner",
+  sections: [
+    {
+      items: [
+        {
+          label: "Dashboard",
+          href: "/restaurateur/dashboard",
+          icon: LayoutDashboard,
+          description: "Overview of orders, sales, and restaurant performance",
+        },
+        {
+          label: "Orders",
+          href: "/restaurateur/dashboard/orders",
+          icon: ClipboardList,
+          description: "View and manage incoming food orders",
+          highlight: true,
+          submenu: [
+            { label: "Active Orders", href: "/restaurateur/dashboard/orders?status=active" },
+            { label: "Completed", href: "/restaurateur/dashboard/orders?status=completed" },
+            { label: "Cancelled", href: "/restaurateur/dashboard/orders?status=cancelled" },
+          ],
+        },
+        {
+          label: "Menu",
+          href: "/restaurateur/dashboard/menu",
+          icon: UtensilsCrossed,
+          description: "Manage menu items and categories",
+          submenu: [
+            { label: "All Items", href: "/restaurateur/dashboard/menu" },
+            { label: "Categories", href: "/restaurateur/dashboard/menu?tab=categories" },
+            { label: "Add Item", href: "/restaurateur/dashboard/menu?action=add" },
+          ],
+        },
+        {
+          label: "Hours",
+          href: "/restaurateur/dashboard/hours",
+          icon: Clock,
+          description: "Set operating hours and availability",
+        },
+        {
+          label: "Staff",
+          href: "/restaurateur/dashboard/staff",
+          icon: Users,
+          description: "Manage restaurant staff and permissions",
+          submenu: [
+            { label: "Team Members", href: "/restaurateur/dashboard/staff" },
+            { label: "Invite Staff", href: "/restaurateur/dashboard/staff?action=invite" },
+            { label: "Pending Invites", href: "/restaurateur/dashboard/staff?tab=pending" },
+          ],
+        },
+        {
+          label: "Analytics",
+          href: "/restaurateur/dashboard/analytics",
+          icon: BarChart3,
+          description: "Sales reports and performance metrics",
+          submenu: [
+            { label: "Overview", href: "/restaurateur/dashboard/analytics" },
+            { label: "Sales Report", href: "/restaurateur/dashboard/analytics?tab=sales" },
+            { label: "Popular Items", href: "/restaurateur/dashboard/analytics?tab=items" },
+          ],
+        },
+        {
+          label: "Reviews",
+          href: "/restaurateur/dashboard/reviews",
+          icon: MessageSquare,
+          description: "View and respond to customer reviews",
+        },
+        {
+          label: "Earnings",
+          href: "/restaurateur/dashboard/earnings",
+          icon: DollarSign,
+          description: "Track revenue and request payouts",
+          submenu: [
+            { label: "Overview", href: "/restaurateur/dashboard/earnings" },
+            { label: "Payout History", href: "/restaurateur/dashboard/earnings/payouts" },
+            { label: "Transactions", href: "/restaurateur/dashboard/earnings/transactions" },
+          ],
+        },
+        {
+          label: "Settings",
+          href: "/restaurateur/dashboard/settings",
+          icon: Settings,
+          description: "Restaurant profile and preferences",
+          submenu: [
+            { label: "Restaurant Info", href: "/restaurateur/dashboard/settings" },
+            { label: "Notifications", href: "/restaurateur/dashboard/settings?tab=notifications" },
+            { label: "Payment Methods", href: "/restaurateur/dashboard/settings?tab=payments" },
+          ],
+        },
+        {
+          label: "Notifications",
+          href: "/restaurateur/dashboard/notifications",
+          icon: Bell,
+          description: "Order alerts and updates",
+        },
+        {
+          label: "Support",
+          href: "/restaurateur/dashboard/support",
+          icon: MessageSquare,
+          description: "Get help from platform support",
+        },
+      ],
+    },
+  ],
+  footerItems: [
+    {
+      label: "View Restaurant",
+      href: "/restaurants",
+      icon: Store,
+      external: true,
+    },
+    {
+      label: "Logout",
+      href: "/logout",
+      icon: LogOut,
+    },
+  ],
+};
+
+// ============================================================================
 // NAVIGATION CONFIG REGISTRY
 // ============================================================================
 
@@ -742,6 +871,8 @@ export function getNavigationForRole(role: string): RoleNavigation | null {
       return adminNavigation;
     case "organizer":
       return organizerNavigation;
+    case "restaurateur":
+      return restaurateurNavigation;
     case "user":
       return userNavigation;
     case "STAFF":
@@ -761,6 +892,7 @@ export function getNavigationForRole(role: string): RoleNavigation | null {
 export const allNavigationConfigs = {
   admin: adminNavigation,
   organizer: organizerNavigation,
+  restaurateur: restaurateurNavigation,
   user: userNavigation,
   staff: staffNavigation,
   team_member: teamMemberNavigation,

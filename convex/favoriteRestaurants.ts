@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { getCurrentUser } from "./lib/auth";
 
 // Get user's favorite restaurants
 export const getByUser = query({
@@ -44,18 +45,21 @@ export const isFavorited = query({
   },
 });
 
-// Toggle favorite status
+// Toggle favorite status (userId from auth, not client)
 export const toggle = mutation({
   args: {
-    userId: v.id("users"),
     restaurantId: v.id("restaurants"),
+    // NOTE: userId is NOT accepted from client - obtained from auth context
   },
   handler: async (ctx, args) => {
+    // Get authenticated user
+    const user = await getCurrentUser(ctx);
+
     // Check if already favorited
     const existing = await ctx.db
       .query("favoriteRestaurants")
       .withIndex("by_user_restaurant", (q) =>
-        q.eq("userId", args.userId).eq("restaurantId", args.restaurantId)
+        q.eq("userId", user._id).eq("restaurantId", args.restaurantId)
       )
       .first();
 
@@ -66,7 +70,7 @@ export const toggle = mutation({
     } else {
       // Add to favorites
       await ctx.db.insert("favoriteRestaurants", {
-        userId: args.userId,
+        userId: user._id,
         restaurantId: args.restaurantId,
         createdAt: Date.now(),
       });
@@ -75,18 +79,21 @@ export const toggle = mutation({
   },
 });
 
-// Add to favorites
+// Add to favorites (userId from auth, not client)
 export const add = mutation({
   args: {
-    userId: v.id("users"),
     restaurantId: v.id("restaurants"),
+    // NOTE: userId is NOT accepted from client - obtained from auth context
   },
   handler: async (ctx, args) => {
+    // Get authenticated user
+    const user = await getCurrentUser(ctx);
+
     // Check if already favorited
     const existing = await ctx.db
       .query("favoriteRestaurants")
       .withIndex("by_user_restaurant", (q) =>
-        q.eq("userId", args.userId).eq("restaurantId", args.restaurantId)
+        q.eq("userId", user._id).eq("restaurantId", args.restaurantId)
       )
       .first();
 
@@ -95,24 +102,27 @@ export const add = mutation({
     }
 
     return await ctx.db.insert("favoriteRestaurants", {
-      userId: args.userId,
+      userId: user._id,
       restaurantId: args.restaurantId,
       createdAt: Date.now(),
     });
   },
 });
 
-// Remove from favorites
+// Remove from favorites (userId from auth, not client)
 export const remove = mutation({
   args: {
-    userId: v.id("users"),
     restaurantId: v.id("restaurants"),
+    // NOTE: userId is NOT accepted from client - obtained from auth context
   },
   handler: async (ctx, args) => {
+    // Get authenticated user
+    const user = await getCurrentUser(ctx);
+
     const existing = await ctx.db
       .query("favoriteRestaurants")
       .withIndex("by_user_restaurant", (q) =>
-        q.eq("userId", args.userId).eq("restaurantId", args.restaurantId)
+        q.eq("userId", user._id).eq("restaurantId", args.restaurantId)
       )
       .first();
 

@@ -118,6 +118,48 @@ export default function CheckoutPage() {
         pickupLocation: shippingMethod === "PICKUP" ? pickupLocation : undefined,
       });
 
+      // Send order confirmation emails (don't block on this)
+      try {
+        const emailItems = items.map((item) => ({
+          productId: item.productId,
+          productName: item.productName,
+          productImage: item.productImage,
+          quantity: item.quantity,
+          price: item.productPrice,
+          variantName: item.variantName,
+        }));
+
+        await fetch("/api/send-product-order-confirmation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerEmail: customerEmail.trim(),
+            customerName: customerName.trim(),
+            customerPhone: customerPhone.trim() || undefined,
+            orderNumber: result.orderNumber,
+            items: emailItems,
+            subtotal,
+            shippingCost: estimatedShipping,
+            taxAmount: tax,
+            totalAmount: total,
+            shippingAddress: shippingMethod === "DELIVERY" ? {
+              name: customerName.trim(),
+              address1: address1.trim(),
+              address2: address2.trim() || undefined,
+              city: city.trim(),
+              state: state.trim(),
+              zipCode: zipCode.trim(),
+              country: country.trim(),
+            } : undefined,
+            shippingMethod,
+            pickupNotes: shippingMethod === "PICKUP" ? pickupLocation : undefined,
+          }),
+        });
+      } catch (emailError) {
+        // Log but don't block order completion
+        console.error("Failed to send confirmation email:", emailError);
+      }
+
       // Clear cart and redirect to confirmation
       clearCart();
       router.push(`/marketplace/order-confirmation?orderNumber=${result.orderNumber}`);

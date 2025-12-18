@@ -61,6 +61,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
   const [uploadedImageId, setUploadedImageId] = useState<Id<"_storage"> | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const createEvent = useMutation(api.events.mutations.createEvent);
   const updateEvent = useMutation(api.events.mutations.updateEvent);
@@ -120,6 +121,22 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
     }
   };
 
+  // Inline validation for end date
+  const handleEndDateChange = (value: string) => {
+    setEndDate(value);
+    if (value && startDate) {
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(value);
+      if (endDateObj < startDateObj) {
+        setDateError("End date must be after start date");
+      } else {
+        setDateError(null);
+      }
+    } else {
+      setDateError(null);
+    }
+  };
+
   const handleSubmit = async () => {
     // Validation
     const missingFields: string[] = [];
@@ -136,6 +153,17 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
       );
       return;
     }
+
+    // Validate end date is after start date
+    if (endDate && startDate) {
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(endDate);
+      if (endDateObj < startDateObj) {
+        setDateError("End date must be after start date");
+        return;
+      }
+    }
+    setDateError(null);
 
     setIsSubmitting(true);
 
@@ -223,7 +251,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
   }
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="min-h-screen bg-muted" data-testid="class-form">
       {/* Header */}
       <header className="bg-card shadow-sm border-b sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
@@ -269,6 +297,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                   onChange={(e) => setClassName(e.target.value)}
                   placeholder="e.g., Beginner Stepping Workshop"
                   className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  data-testid="class-name-input"
                 />
               </div>
 
@@ -282,6 +311,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                   placeholder="Describe your class, what students will learn, what to bring..."
                   rows={4}
                   className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  data-testid="class-description-input"
                 />
               </div>
 
@@ -300,6 +330,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                           ? "bg-primary text-white"
                           : "bg-muted text-foreground hover:bg-accent"
                       }`}
+                      data-testid={`class-category-${category.toLowerCase().replace(/\s+/g, "-")}`}
                     >
                       {category}
                     </button>
@@ -326,6 +357,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  data-testid="class-start-date"
                 />
               </div>
 
@@ -336,9 +368,18 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                 <input
                   type="datetime-local"
                   value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  onChange={(e) => handleEndDateChange(e.target.value)}
+                  min={startDate}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground ${
+                    dateError ? "border-destructive" : "border-input"
+                  }`}
+                  data-testid="class-end-date"
                 />
+                {dateError && (
+                  <p className="mt-1 text-sm text-destructive" data-testid="date-error">
+                    {dateError}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -367,6 +408,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                   onChange={(e) => setVenueName(e.target.value)}
                   placeholder="e.g., Community Dance Studio"
                   className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  data-testid="class-venue-input"
                 />
               </div>
 
@@ -380,6 +422,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="123 Main St"
                   className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  data-testid="class-address-input"
                 />
               </div>
 
@@ -394,6 +437,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="Chicago"
                     className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                    data-testid="class-city-input"
                   />
                 </div>
 
@@ -407,6 +451,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                     onChange={(e) => setState(e.target.value)}
                     placeholder="IL"
                     className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                    data-testid="class-state-input"
                   />
                 </div>
 
@@ -420,6 +465,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                     onChange={(e) => setZipCode(e.target.value)}
                     placeholder="60601"
                     className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                    data-testid="class-zip-input"
                   />
                 </div>
               </div>
@@ -433,11 +479,13 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
               <h2 className="text-lg font-semibold text-foreground">Class Image</h2>
             </div>
 
-            <ImageUpload
-              currentImageId={uploadedImageId ?? undefined}
-              onImageUploaded={(id) => setUploadedImageId(id)}
-              onImageRemoved={() => setUploadedImageId(null)}
-            />
+            <div data-testid="class-image-upload">
+              <ImageUpload
+                currentImageId={uploadedImageId ?? undefined}
+                onImageUploaded={(id) => setUploadedImageId(id)}
+                onImageRemoved={() => setUploadedImageId(null)}
+              />
+            </div>
             <p className="mt-2 text-sm text-muted-foreground">
               Upload a flyer or image for your class (optional)
             </p>
@@ -448,6 +496,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
             <Link
               href="/organizer/classes"
               className="px-6 py-3 border border-border text-foreground rounded-lg hover:bg-muted transition-colors"
+              data-testid="class-cancel-btn"
             >
               Cancel
             </Link>
@@ -456,6 +505,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
               onClick={handleSubmit}
               disabled={isSubmitting}
               className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              data-testid="class-submit-btn"
             >
               {isSubmitting ? (
                 <>

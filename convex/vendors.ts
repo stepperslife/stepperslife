@@ -1,8 +1,12 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-
-// Default platform commission rate (15%)
-const DEFAULT_COMMISSION_PERCENT = 15;
+import {
+  DEFAULT_COMMISSION_PERCENT,
+  DEFAULT_VENDOR_TIER,
+  TIER_COMMISSION_RATES,
+  TIER_SORT_ORDER,
+  type VendorTier,
+} from "./lib/vendorTiers";
 
 // Get all active/approved vendors (for marketplace display)
 export const getAll = query({
@@ -27,6 +31,7 @@ export const getApproved = query({
 });
 
 // Get approved vendors with product counts (for marketplace display)
+// Sorted by tier: PREMIUM first, then VERIFIED, then BASIC
 export const getApprovedVendors = query({
   args: {},
   handler: async (ctx) => {
@@ -35,7 +40,7 @@ export const getApprovedVendors = query({
       .withIndex("by_active", (q) => q.eq("isActive", true))
       .collect();
 
-    // Enrich with product counts
+    // Enrich with product counts and tier info
     const enrichedVendors = await Promise.all(
       vendors.map(async (vendor) => {
         const products = await ctx.db
@@ -43,6 +48,8 @@ export const getApprovedVendors = query({
           .withIndex("by_vendor", (q) => q.eq("vendorId", vendor._id))
           .filter((q) => q.eq(q.field("status"), "ACTIVE"))
           .collect();
+
+        const tier = (vendor.tier || "BASIC") as VendorTier;
 
         return {
           _id: vendor._id,
@@ -55,11 +62,17 @@ export const getApprovedVendors = query({
           state: vendor.state,
           categories: vendor.categories,
           productCount: products.length,
+          tier, // Include tier for badge display
         };
       })
     );
 
-    return enrichedVendors;
+    // Sort by tier: PREMIUM (0) first, then VERIFIED (1), then BASIC (2)
+    return enrichedVendors.sort((a, b) => {
+      const orderA = TIER_SORT_ORDER[a.tier] ?? 2;
+      const orderB = TIER_SORT_ORDER[b.tier] ?? 2;
+      return orderA - orderB;
+    });
   },
 });
 
@@ -192,10 +205,12 @@ export const apply = mutation({
       zipCode: args.zipCode,
       categories: args.categories,
       commissionPercent: DEFAULT_COMMISSION_PERCENT,
+      tier: DEFAULT_VENDOR_TIER,
       website: args.website,
       additionalNotes: args.additionalNotes,
-      status: "PENDING",
-      isActive: false,
+      status: "APPROVED", // Auto-approve vendors immediately
+      isActive: true,
+      reviewedAt: now, // Mark as reviewed immediately
       totalProducts: 0,
       totalSales: 0,
       totalEarnings: 0,
@@ -207,6 +222,7 @@ export const apply = mutation({
 });
 
 // Approve vendor application (admin only)
+// Note: New vendors are auto-approved, but this is kept for existing PENDING vendors
 export const approve = mutation({
   args: {
     vendorId: v.id("vendors"),
@@ -223,6 +239,7 @@ export const approve = mutation({
     return await ctx.db.patch(args.vendorId, {
       status: "APPROVED",
       isActive: true,
+      tier: vendor.tier ?? DEFAULT_VENDOR_TIER, // Set tier if not already set
       reviewedAt: now,
       commissionPercent: vendor.commissionPercent ?? DEFAULT_COMMISSION_PERCENT,
       updatedAt: now,
@@ -296,6 +313,7 @@ export const reactivate = mutation({
     return await ctx.db.patch(args.vendorId, {
       status: "APPROVED",
       isActive: true,
+      tier: vendor.tier ?? DEFAULT_VENDOR_TIER, // Set tier if not already set
       reviewedAt: now,
       rejectionReason: undefined,
       updatedAt: now,
@@ -374,6 +392,33 @@ export const updateCommission = mutation({
 
     return await ctx.db.patch(args.vendorId, {
       commissionPercent: args.commissionPercent,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Update vendor tier (admin only)
+// Automatically updates commission rate based on tier
+export const updateTier = mutation({
+  args: {
+    vendorId: v.id("vendors"),
+    tier: v.union(v.literal("BASIC"), v.literal("VERIFIED"), v.literal("PREMIUM")),
+  },
+  handler: async (ctx, args) => {
+    const vendor = await ctx.db.get(args.vendorId);
+    if (!vendor) throw new Error("Vendor not found");
+
+    // Only allow tier changes for approved vendors
+    if (vendor.status !== "APPROVED") {
+      throw new Error("Can only change tier for approved vendors");
+    }
+
+    // Get commission rate for the new tier
+    const newCommissionRate = TIER_COMMISSION_RATES[args.tier as VendorTier];
+
+    return await ctx.db.patch(args.vendorId, {
+      tier: args.tier,
+      commissionPercent: newCommissionRate,
       updatedAt: Date.now(),
     });
   },

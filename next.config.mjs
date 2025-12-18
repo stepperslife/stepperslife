@@ -51,7 +51,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdn.jsdelivr.net https://web.squarecdn.com https://sandbox.web.squarecdn.com https://js.sentry-cdn.com https://browser.sentry-cdn.com https://www.paypal.com https://www.paypalobjects.com https://js.stripe.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdn.jsdelivr.net https://web.squarecdn.com https://sandbox.web.squarecdn.com https://js.sentry-cdn.com https://browser.sentry-cdn.com https://www.paypal.com https://www.paypalobjects.com https://js.stripe.com https://vercel.live",
               "worker-src 'self' blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' data: https://fonts.gstatic.com",

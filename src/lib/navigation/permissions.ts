@@ -19,6 +19,13 @@ export function canAccessOrganizer(user: NavUser | null): boolean {
 }
 
 /**
+ * Check if user can access restaurateur features
+ */
+export function canAccessRestaurateur(user: NavUser | null): boolean {
+  return user?.role === "restaurateur" || user?.role === "admin";
+}
+
+/**
  * Check if user can access staff features
  */
 export function canAccessStaff(user: NavUser | null): boolean {
@@ -216,6 +223,7 @@ export function getAccessibleRoles(user: NavUser | null): AllRoles[] {
     return [
       "admin",
       "organizer",
+      "restaurateur",
       "user",
       "STAFF",
       "TEAM_MEMBERS",
@@ -246,12 +254,18 @@ export function isProtectedRoute(path: string): boolean {
   const protectedPatterns = [
     "/admin",
     "/organizer",
+    "/restaurateur",
     "/user",
     "/staff",
     "/team",
     "/associate",
     "/my-tickets",
   ];
+
+  // Exception: /restaurateur/apply is public
+  if (path.startsWith("/restaurateur/apply")) {
+    return false;
+  }
 
   return protectedPatterns.some((pattern) => path.startsWith(pattern));
 }
@@ -262,6 +276,8 @@ export function isProtectedRoute(path: string): boolean {
 export function getRequiredRoleForRoute(path: string): AllRoles | null {
   if (path.startsWith("/admin")) return "admin";
   if (path.startsWith("/organizer")) return "organizer";
+  if (path.startsWith("/restaurateur/apply")) return null; // Public
+  if (path.startsWith("/restaurateur")) return "restaurateur";
   if (path.startsWith("/staff")) return "STAFF";
   if (path.startsWith("/team")) return "TEAM_MEMBERS";
   if (path.startsWith("/associate")) return "ASSOCIATES";
@@ -306,6 +322,7 @@ export function getUnauthorizedRedirect(
   // Logged in but wrong role - redirect to their default dashboard
   if (user.role === "admin") return "/admin";
   if (user.role === "organizer") return "/organizer/dashboard";
+  if (user.role === "restaurateur") return "/restaurateur/dashboard";
 
   // Check staff roles
   if (user.staffRoles?.includes("TEAM_MEMBERS")) return "/team/dashboard";
@@ -322,6 +339,7 @@ export function getUnauthorizedRedirect(
 export interface PermissionContext {
   canAccessAdmin: boolean;
   canAccessOrganizer: boolean;
+  canAccessRestaurateur: boolean;
   canAccessStaff: boolean;
   canAccessTeamMember: boolean;
   canAccessAssociate: boolean;
@@ -343,6 +361,7 @@ export function generatePermissionContext(
   return {
     canAccessAdmin: canAccessAdmin(user),
     canAccessOrganizer: canAccessOrganizer(user),
+    canAccessRestaurateur: canAccessRestaurateur(user),
     canAccessStaff: canAccessStaff(user),
     canAccessTeamMember: canAccessTeamMember(user),
     canAccessAssociate: canAccessAssociate(user),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
@@ -26,14 +26,13 @@ export function ImageUpload({
   const [isUploading, setIsUploading] = useState(false);
   const [compressionProgress, setCompressionProgress] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const generateUploadUrl = useMutation(api.files.mutations.generateUploadUrl);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  // Handle file upload (shared between click and drag/drop)
+  const processFile = useCallback(async (file: File) => {
     // Validate file type
     if (!file.type.startsWith("image/")) {
       alert("Please select an image file");
@@ -50,14 +49,13 @@ export function ImageUpload({
     setCompressionProgress(0);
 
     try {
-
       // Compress image
       const compressionOptions = {
-        maxSizeMB: 2, // Target max size of 2MB
-        maxWidthOrHeight: 1920, // Max dimension
+        maxSizeMB: 2,
+        maxWidthOrHeight: 1920,
         useWebWorker: true,
         fileType: file.type,
-        initialQuality: 0.85, // 85% quality
+        initialQuality: 0.85,
         onProgress: (progress: number) => {
           setCompressionProgress(progress);
         },
@@ -93,7 +91,42 @@ export function ImageUpload({
       setIsUploading(false);
       setCompressionProgress(0);
     }
+  }, [generateUploadUrl, onImageUploaded]);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processFile(file);
   };
+
+  // Drag and drop handlers
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      await processFile(files[0]);
+    }
+  }, [processFile]);
 
   const handleRemove = () => {
     setPreviewUrl(null);
@@ -128,8 +161,16 @@ export function ImageUpload({
       ) : (
         <label
           htmlFor="image-upload"
-          className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer bg-muted hover:bg-muted/80 ${
-            required ? "border-destructive" : "border-border"
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg transition-all duration-200 cursor-pointer ${
+            isDragging
+              ? "border-primary bg-primary/10 scale-[1.02]"
+              : required
+                ? "border-destructive bg-muted hover:bg-muted/80 hover:border-primary"
+                : "border-border bg-muted hover:bg-muted/80 hover:border-primary"
           }`}
         >
           <div className="flex flex-col items-center justify-center py-8">
@@ -151,13 +192,18 @@ export function ImageUpload({
                   <p className="text-sm text-muted-foreground">Uploading...</p>
                 )}
               </>
+            ) : isDragging ? (
+              <>
+                <Upload className="w-12 h-12 mb-4 text-primary animate-bounce" />
+                <p className="text-sm font-medium text-primary">Drop image here</p>
+              </>
             ) : (
               <>
                 <ImageIcon className={`w-12 h-12 mb-4 ${required ? "text-destructive" : "text-muted-foreground"}`} />
                 <div className="flex items-center gap-2 mb-2">
                   <Upload className="w-5 h-5 text-primary" />
                   <p className="text-sm font-medium text-foreground">
-                    Click to upload event image{required && " *"}
+                    Drag & drop or click to upload{required && " *"}
                   </p>
                 </div>
                 <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB (auto-optimized)</p>

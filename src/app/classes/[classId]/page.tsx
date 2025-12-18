@@ -2,13 +2,42 @@ import { Metadata } from "next";
 import { Id } from "@/convex/_generated/dataModel";
 import { notFound } from "next/navigation";
 import ClassDetailClient from "./ClassDetailClient";
+import { mockCourses } from "@/lib/mock-data/classes";
 
 interface PageProps {
   params: Promise<{ classId: string }>;
 }
 
+// Get class from mock data by slug
+function getMockClassBySlug(slug: string) {
+  const course = mockCourses.find((c) => c.slug === slug);
+  if (!course) return null;
+
+  // Transform mock course to match expected class detail format
+  return {
+    _id: course.id,
+    name: course.title,
+    description: course.shortDescription,
+    imageUrl: course.thumbnailUrl,
+    organizerName: course.instructorName,
+    categories: [course.level],
+    price: course.price,
+    totalLessons: course.totalLessons,
+    enrollmentCount: course.enrollmentCount,
+    averageRating: course.averageRating,
+    instructorPhoto: course.instructorPhoto,
+    isMockData: true,
+  };
+}
+
 // Fetch class data directly from Convex HTTP API for metadata
 async function getClassData(classId: string) {
+  // First check if it's a mock class slug
+  const mockClass = getMockClassBySlug(classId);
+  if (mockClass) {
+    return mockClass;
+  }
+
   try {
     const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
     if (!convexUrl) {
@@ -128,6 +157,11 @@ export default async function ClassDetailPage({ params }: PageProps) {
   const classDetails = await getClassData(classId);
   if (!classDetails) {
     notFound();
+  }
+
+  // If it's mock data, pass it directly to the client
+  if (classDetails.isMockData) {
+    return <ClassDetailClient classId={classId} mockData={classDetails} />;
   }
 
   const typedClassId = classId as Id<"events">;

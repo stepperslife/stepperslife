@@ -4,6 +4,8 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Calendar,
   MapPin,
@@ -13,20 +15,96 @@ import {
   ExternalLink,
   BookOpen,
   Tag,
+  Star,
+  Users,
+  Ticket,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate, formatEventTime } from "@/lib/date-format";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { Button } from "@/components/ui/button";
 
-interface ClassDetailClientProps {
-  classId: Id<"events">;
+interface EnrollmentTier {
+  _id: string;
+  name: string;
+  description?: string;
+  priceCents: number;
+  quantity: number;
+  sold: number;
+  available: number;
+  isAvailable: boolean;
 }
 
-export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
-  const classDetails = useQuery(api.public.queries.getPublicClassDetails, {
-    classId,
-  });
+interface MockClassData {
+  _id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  organizerName: string;
+  categories: string[];
+  price: number;
+  totalLessons: number;
+  enrollmentCount: number;
+  averageRating: number;
+  instructorPhoto: string;
+  isMockData: boolean;
+  // Properties from Convex data (optional for mock)
+  startDate?: number;
+  endDate?: number;
+  timezone?: string;
+  eventTimeLiteral?: string;
+  location?: {
+    venueName?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+  };
+  organizer?: {
+    name?: string;
+    email?: string;
+  };
+  enrollmentTiers?: EnrollmentTier[];
+  lowestPriceCents?: number | null;
+  hasAvailableSpots?: boolean;
+}
+
+interface ClassDetailClientProps {
+  classId: string | Id<"events">;
+  mockData?: MockClassData;
+}
+
+export default function ClassDetailClient({ classId, mockData }: ClassDetailClientProps) {
+  const router = useRouter();
+
+  // Only query Convex if we don't have mock data
+  const convexClassDetails = useQuery(
+    api.public.queries.getPublicClassDetails,
+    mockData ? "skip" : { classId: classId as Id<"events"> }
+  );
+
+  // Use mock data if available, otherwise use Convex data
+  const classDetails = mockData || convexClassDetails;
+
+  // Format price for display
+  const formatPrice = (cents: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(cents / 100);
+  };
+
+  // Handle enroll button click
+  const handleEnroll = () => {
+    if (mockData) {
+      // For mock data, just show a message
+      alert("This is a demo class. Sign up functionality coming soon!");
+      return;
+    }
+    // Navigate to checkout page for this class
+    router.push(`/checkout/class/${classId}`);
+  };
 
   if (classDetails === undefined) {
     return (
@@ -104,6 +182,7 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
               <Link
                 href="/classes"
                 className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors"
+                data-testid="back-to-classes"
               >
                 <ArrowLeft className="w-5 h-5" />
                 <span className="font-medium">Back to Classes</span>
@@ -113,6 +192,7 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
                 type="button"
                 onClick={handleShare}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
+                data-testid="share-btn"
               >
                 <Share2 className="w-4 h-4" />
                 <span className="hidden sm:inline">Share</span>
@@ -172,13 +252,13 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
                 className="md:col-span-3"
               >
                 {/* Class Title */}
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4" data-testid="class-title">
                   {classDetails.name}
                 </h1>
 
                 {/* Categories */}
                 {classDetails.categories && classDetails.categories.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-6">
+                  <div className="flex flex-wrap gap-2 mb-6" data-testid="class-categories">
                     {classDetails.categories.map((category) => (
                       <span
                         key={category}
@@ -193,9 +273,124 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
 
                 {/* Class Details Card */}
                 <div className="bg-card rounded-lg border border-border p-6 mb-6">
+                  {/* Enrollment Section - Real Data */}
+                  {!mockData && classDetails.enrollmentTiers && classDetails.enrollmentTiers.length > 0 && (
+                    <>
+                      <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
+                        <div>
+                          {classDetails.lowestPriceCents != null && (
+                            <>
+                              <p className="text-3xl font-bold text-primary">
+                                {classDetails.lowestPriceCents === 0
+                                  ? "Free"
+                                  : `From ${formatPrice(classDetails.lowestPriceCents)}`}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {classDetails.enrollmentTiers.length === 1
+                                  ? "Single enrollment option"
+                                  : `${classDetails.enrollmentTiers.length} enrollment options`}
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        {!isPast && classDetails.hasAvailableSpots ? (
+                          <Button
+                            size="lg"
+                            className="px-8"
+                            onClick={handleEnroll}
+                            data-testid="enroll-now-btn"
+                          >
+                            <Ticket className="w-5 h-5 mr-2" />
+                            Enroll Now
+                          </Button>
+                        ) : isPast ? (
+                          <Button size="lg" className="px-8" disabled>
+                            Class Ended
+                          </Button>
+                        ) : (
+                          <Button size="lg" className="px-8" disabled>
+                            Sold Out
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Enrollment Tiers Preview */}
+                      {classDetails.enrollmentTiers.length > 1 && (
+                        <div className="mb-4 pb-4 border-b border-border">
+                          <p className="text-sm font-medium text-foreground mb-2">Enrollment Options:</p>
+                          <div className="space-y-2">
+                            {classDetails.enrollmentTiers.slice(0, 3).map((tier) => (
+                              <div
+                                key={tier._id}
+                                className="flex items-center justify-between text-sm"
+                              >
+                                <span className="text-muted-foreground">{tier.name}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-foreground">
+                                    {tier.priceCents === 0 ? "Free" : formatPrice(tier.priceCents)}
+                                  </span>
+                                  {!tier.isAvailable && (
+                                    <span className="text-xs text-destructive">(Sold Out)</span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* No Enrollment Available */}
+                  {!mockData && (!classDetails.enrollmentTiers || classDetails.enrollmentTiers.length === 0) && !isPast && (
+                    <div className="mb-4 pb-4 border-b border-border">
+                      <p className="text-sm text-muted-foreground">
+                        Enrollment options coming soon. Check back later!
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Mock Course Info - Price, Lessons, Rating */}
+                  {mockData && (
+                    <>
+                      <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
+                        <div>
+                          <p className="text-3xl font-bold text-primary">${mockData.price.toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground">One-time purchase</p>
+                        </div>
+                        <Button size="lg" className="px-8" onClick={handleEnroll} data-testid="enroll-now-btn">
+                          Enroll Now
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-border">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-1 text-warning mb-1">
+                            <Star className="w-5 h-5 fill-current" />
+                            <span className="text-lg font-bold text-foreground">{mockData.averageRating}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">Rating</p>
+                        </div>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <BookOpen className="w-5 h-5 text-primary" />
+                            <span className="text-lg font-bold text-foreground">{mockData.totalLessons}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">Lessons</p>
+                        </div>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Users className="w-5 h-5 text-primary" />
+                            <span className="text-lg font-bold text-foreground">{mockData.enrollmentCount}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">Students</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                   {/* Date & Time */}
                   {classDetails.startDate && (
-                    <div className="flex items-start gap-3 mb-4 pb-4 border-b border-border">
+                    <div className="flex items-start gap-3 mb-4 pb-4 border-b border-border" data-testid="class-date">
                       <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="font-semibold text-foreground">
@@ -217,7 +412,7 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
 
                   {/* Location */}
                   {classDetails.location && typeof classDetails.location === "object" && (
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3" data-testid="class-location">
                       <MapPin className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                       <div>
                         {classDetails.location.venueName && (
@@ -250,25 +445,52 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
                       </div>
                     </div>
                   )}
+
+                  {/* Online Class Notice for Mock Data */}
+                  {mockData && !classDetails.location && (
+                    <div className="flex items-start gap-3">
+                      <BookOpen className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-semibold text-foreground">Online Course</p>
+                        <p className="text-sm text-muted-foreground">
+                          Access this course anytime, anywhere with lifetime access
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Organizer / Instructor */}
                 {(classDetails.organizer || classDetails.organizerName) && (
-                  <div className="bg-card rounded-lg border border-border p-6">
+                  <div className="bg-card rounded-lg border border-border p-6" data-testid="class-instructor">
                     <h3 className="text-lg font-semibold text-foreground mb-3">Instructor</h3>
-                    <p className="text-foreground font-medium text-xl">
-                      {classDetails.organizer?.name ||
-                        classDetails.organizerName ||
-                        "Class Instructor"}
-                    </p>
-                    {classDetails.organizer?.email && (
-                      <a
-                        href={`mailto:${classDetails.organizer.email}`}
-                        className="text-primary hover:underline text-sm mt-2 inline-block"
-                      >
-                        Contact Instructor
-                      </a>
-                    )}
+                    <div className="flex items-center gap-4">
+                      {mockData?.instructorPhoto && (
+                        <div className="relative w-16 h-16 rounded-full overflow-hidden ring-2 ring-primary/20 flex-shrink-0">
+                          <Image
+                            src={mockData.instructorPhoto}
+                            alt={classDetails.organizerName || "Instructor"}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-foreground font-medium text-xl">
+                          {classDetails.organizer?.name ||
+                            classDetails.organizerName ||
+                            "Class Instructor"}
+                        </p>
+                        {classDetails.organizer?.email && (
+                          <a
+                            href={`mailto:${classDetails.organizer.email}`}
+                            className="text-primary hover:underline text-sm mt-2 inline-block"
+                          >
+                            Contact Instructor
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
               </motion.div>
@@ -281,6 +503,7 @@ export default function ClassDetailClient({ classId }: ClassDetailClientProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
                 className="mt-8"
+                data-testid="class-description"
               >
                 <div className="bg-card rounded-lg border border-border p-6 md:p-8">
                   <h2 className="text-2xl font-bold text-foreground mb-4">About This Class</h2>

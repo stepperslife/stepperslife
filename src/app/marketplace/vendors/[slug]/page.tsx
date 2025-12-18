@@ -20,6 +20,7 @@ import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
+import { VendorTierBadge } from "@/components/marketplace/VendorTierBadge";
 import Image from "next/image";
 
 export default function VendorStorefrontPage() {
@@ -158,7 +159,10 @@ export default function VendorStorefrontPage() {
 
               {/* Info */}
               <div className="flex-1">
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground">{vendor.name}</h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl md:text-3xl font-bold text-foreground">{vendor.name}</h1>
+                  <VendorTierBadge tier={vendor.tier || "BASIC"} size="md" showLabel />
+                </div>
 
                 <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
                   {(vendor.city || vendor.state) && (

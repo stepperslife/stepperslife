@@ -75,7 +75,7 @@ export default function OrganizerClassesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="min-h-screen bg-muted" data-testid="organizer-classes-page">
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
@@ -94,6 +94,7 @@ export default function OrganizerClassesPage() {
             <Link
               href="/organizer/classes/create"
               className="flex items-center justify-center gap-2 px-4 py-2.5 md:px-6 md:py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg w-full sm:w-auto"
+              data-testid="create-class-btn"
             >
               <Plus className="w-5 h-5" />
               Create Class
@@ -111,14 +112,14 @@ export default function OrganizerClassesPage() {
           transition={{ duration: 0.5 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6"
         >
-          <div className="bg-white rounded-lg shadow-sm border p-4">
+          <div className="bg-white rounded-lg shadow-sm border p-4" data-testid="class-stats-total">
             <div className="flex items-center gap-2 mb-2">
               <BookOpen className="w-5 h-5 text-primary" />
               <span className="text-sm text-muted-foreground">Total Classes</span>
             </div>
             <p className="text-2xl font-bold text-foreground">{classes?.length || 0}</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4">
+          <div className="bg-white rounded-lg shadow-sm border p-4" data-testid="class-stats-published">
             <div className="flex items-center gap-2 mb-2">
               <Eye className="w-5 h-5 text-success" />
               <span className="text-sm text-muted-foreground">Published</span>
@@ -127,7 +128,7 @@ export default function OrganizerClassesPage() {
               {classes?.filter((c) => c.status === "PUBLISHED").length || 0}
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4">
+          <div className="bg-white rounded-lg shadow-sm border p-4" data-testid="class-stats-drafts">
             <div className="flex items-center gap-2 mb-2">
               <EyeOff className="w-5 h-5 text-warning" />
               <span className="text-sm text-muted-foreground">Drafts</span>
@@ -136,7 +137,7 @@ export default function OrganizerClassesPage() {
               {classes?.filter((c) => c.status === "DRAFT").length || 0}
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4">
+          <div className="bg-white rounded-lg shadow-sm border p-4" data-testid="class-stats-upcoming">
             <div className="flex items-center gap-2 mb-2">
               <Calendar className="w-5 h-5 text-blue-500" />
               <span className="text-sm text-muted-foreground">Upcoming</span>
@@ -154,6 +155,7 @@ export default function OrganizerClassesPage() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="bg-white rounded-lg shadow-md p-12 text-center"
+            data-testid="empty-state"
           >
             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
               <BookOpen className="w-8 h-8 text-primary" />
@@ -181,6 +183,7 @@ export default function OrganizerClassesPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 * index }}
                   className="bg-white rounded-lg shadow-md border border-border overflow-hidden hover:shadow-lg transition-shadow"
+                  data-testid={`class-row-${classItem._id}`}
                 >
                   <div className="flex flex-col sm:flex-row">
                     {/* Class Image */}
@@ -247,6 +250,7 @@ export default function OrganizerClassesPage() {
                         <Link
                           href={`/organizer/classes/${classItem._id}/edit`}
                           className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                          data-testid={`class-edit-btn-${classItem._id}`}
                         >
                           <Edit className="w-4 h-4" />
                           Edit
@@ -260,6 +264,7 @@ export default function OrganizerClassesPage() {
                               ? "bg-success hover:bg-success/90 text-white"
                               : "bg-warning hover:bg-warning/90 text-white"
                           }`}
+                          data-testid={`class-publish-btn-${classItem._id}`}
                         >
                           {classItem.status === "PUBLISHED" ? (
                             <>
@@ -277,6 +282,7 @@ export default function OrganizerClassesPage() {
                         <Link
                           href={`/classes/${classItem._id}`}
                           className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-border rounded-lg hover:bg-muted transition-colors"
+                          data-testid={`class-view-btn-${classItem._id}`}
                         >
                           <Eye className="w-4 h-4" />
                           View
@@ -286,6 +292,7 @@ export default function OrganizerClassesPage() {
                           type="button"
                           onClick={() => setShowDeleteConfirm(classItem._id)}
                           className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-destructive text-destructive rounded-lg hover:bg-destructive/10 transition-colors"
+                          data-testid={`class-delete-btn-${classItem._id}`}
                         >
                           <Trash2 className="w-4 h-4" />
                           Delete
@@ -325,6 +332,7 @@ export default function OrganizerClassesPage() {
                   onClick={() => setShowDeleteConfirm(null)}
                   disabled={deletingId !== null}
                   className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                  data-testid="cancel-delete-btn"
                 >
                   Cancel
                 </button>
@@ -333,6 +341,7 @@ export default function OrganizerClassesPage() {
                   onClick={() => handleDelete(showDeleteConfirm)}
                   disabled={deletingId !== null}
                   className="px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  data-testid="confirm-delete-btn"
                 >
                   {deletingId === showDeleteConfirm ? (
                     <>

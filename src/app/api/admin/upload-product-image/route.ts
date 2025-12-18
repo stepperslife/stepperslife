@@ -22,8 +22,9 @@ async function verifyAuth(request: NextRequest): Promise<{ userId: string; role:
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
     const role = payload.role as string;
-    // Allow admin, organizer, and vendor roles to upload product images
-    if (role !== "admin" && role !== "organizer" && role !== "vendor") return null;
+    // Allow admin and vendor roles to upload product images
+    // Organizers should NOT have marketplace vendor capabilities
+    if (role !== "admin" && role !== "vendor") return null;
     return { userId: payload.userId as string, role };
   } catch {
     return null;

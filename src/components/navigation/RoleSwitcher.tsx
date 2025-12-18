@@ -20,7 +20,7 @@ import { getAccessibleRoles } from "@/lib/navigation/permissions";
  * Role display configuration
  */
 const ROLE_CONFIG: Record<
-  AllRoles,
+  AllRoles | "restaurateur",
   {
     label: string;
     description: string;
@@ -36,6 +36,11 @@ const ROLE_CONFIG: Record<
     label: "Event Organizer",
     description: "Create and manage events",
     dashboardPath: "/organizer/dashboard",
+  },
+  restaurateur: {
+    label: "Restaurant Partner",
+    description: "Manage your restaurant",
+    dashboardPath: "/restaurateur/dashboard",
   },
   user: {
     label: "Customer",
