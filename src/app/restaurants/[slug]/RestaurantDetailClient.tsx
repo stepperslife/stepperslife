@@ -13,17 +13,11 @@ import { RestaurantReviews } from "@/components/restaurants/RestaurantReviews";
 import { StarRating } from "@/components/restaurants/StarRating";
 import { FavoriteButton } from "@/components/restaurants/FavoriteButton";
 import { ShareButton } from "@/components/restaurants/ShareButton";
-
-interface CartItem {
-  menuItemId: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
+import { useFoodCart } from "@/contexts/FoodCartContext";
 
 export default function RestaurantDetailClient({ slug }: { slug: string }) {
   const router = useRouter();
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const { cart, addToCart: addToFoodCart, removeFromCart, getItemCount, getSubtotal, isCartOpen, setIsCartOpen } = useFoodCart();
   const [showCart, setShowCart] = useState(false);
 
   // Fetch restaurant data
@@ -81,37 +75,25 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
     );
   }
 
-  // Cart functions
+  // Cart helper functions using FoodCartContext
   const addToCart = (item: { _id: string; name: string; price: number }) => {
-    setCart((prev) => {
-      const existing = prev.find((i) => i.menuItemId === item._id);
-      if (existing) {
-        return prev.map((i) =>
-          i.menuItemId === item._id ? { ...i, quantity: i.quantity + 1 } : i
-        );
-      }
-      return [...prev, { menuItemId: item._id, name: item.name, price: item.price, quantity: 1 }];
+    if (!restaurant) return;
+    addToFoodCart(restaurant._id, slug, restaurant.name, {
+      menuItemId: item._id,
+      name: item.name,
+      price: item.price,
     });
   };
 
-  const removeFromCart = (menuItemId: string) => {
-    setCart((prev) => {
-      const existing = prev.find((i) => i.menuItemId === menuItemId);
-      if (existing && existing.quantity > 1) {
-        return prev.map((i) =>
-          i.menuItemId === menuItemId ? { ...i, quantity: i.quantity - 1 } : i
-        );
-      }
-      return prev.filter((i) => i.menuItemId !== menuItemId);
-    });
-  };
-
-  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  // Use cart from context, but only show items for this restaurant
+  const isThisRestaurant = cart.restaurantId === restaurant?._id;
+  const cartItems = isThisRestaurant ? cart.items : [];
+  const cartTotal = isThisRestaurant ? getSubtotal() : 0;
+  const cartCount = isThisRestaurant ? getItemCount() : 0;
 
   const handleCheckout = () => {
-    const cartParam = encodeURIComponent(JSON.stringify(cart));
-    router.push(`/restaurants/${slug}/checkout?cart=${cartParam}`);
+    // Cart is now stored in context/sessionStorage, no need for URL params
+    router.push(`/restaurants/${slug}/checkout`);
   };
 
   // Group menu items by category
@@ -270,7 +252,8 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             <button
                               type="button"
                               onClick={() => addToCart(item)}
-                              className="ml-4 p-2 bg-orange-600 text-white rounded-full hover:bg-orange-700"
+                              className="ml-4 p-3 min-w-[44px] min-h-[44px] bg-orange-600 text-white rounded-full hover:bg-orange-700 flex items-center justify-center"
+                              aria-label={`Add ${item.name} to cart`}
                             >
                               <Plus className="h-5 w-5" />
                             </button>
@@ -306,7 +289,8 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             <button
                               type="button"
                               onClick={() => addToCart(item)}
-                              className="ml-4 p-2 bg-orange-600 text-white rounded-full hover:bg-orange-700"
+                              className="ml-4 p-3 min-w-[44px] min-h-[44px] bg-orange-600 text-white rounded-full hover:bg-orange-700 flex items-center justify-center"
+                              aria-label={`Add ${item.name} to cart`}
                             >
                               <Plus className="h-5 w-5" />
                             </button>
@@ -345,23 +329,40 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
 
         {/* Cart Sidebar */}
         {showCart && (
-          <div className="fixed inset-0 z-50 flex justify-end">
-            <div className="absolute inset-0 bg-black/50" onClick={() => setShowCart(false)} />
+          <div
+            className="fixed inset-0 z-50 flex justify-end"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cart-title"
+          >
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setShowCart(false)}
+              aria-label="Close cart"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && setShowCart(false)}
+            />
             <div className="relative w-full max-w-md bg-white dark:bg-gray-900 h-full overflow-y-auto">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold">Your Order</h2>
-                  <button type="button" onClick={() => setShowCart(false)} className="text-gray-500 hover:text-gray-700">
-                    ✕
+                  <h2 id="cart-title" className="text-xl font-bold">Your Order</h2>
+                  <button
+                    type="button"
+                    onClick={() => setShowCart(false)}
+                    className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                    aria-label="Close cart"
+                  >
+                    <span className="text-xl">✕</span>
                   </button>
                 </div>
 
-                {cart.length === 0 ? (
+                {cartItems.length === 0 ? (
                   <p className="text-gray-500">Your cart is empty</p>
                 ) : (
                   <>
                     <div className="space-y-4">
-                      {cart.map((item) => (
+                      {cartItems.map((item) => (
                         <div key={item.menuItemId} className="flex items-center justify-between">
                           <div>
                             <p className="font-medium">{item.name}</p>
@@ -373,17 +374,19 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             <button
                               type="button"
                               onClick={() => removeFromCart(item.menuItemId)}
-                              className="p-1 bg-gray-100 dark:bg-gray-700 rounded"
+                              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+                              aria-label={`Remove one ${item.name} from cart`}
                             >
-                              <Minus className="h-4 w-4" />
+                              <Minus className="h-5 w-5" />
                             </button>
-                            <span className="w-8 text-center">{item.quantity}</span>
+                            <span className="w-8 text-center" aria-label={`${item.quantity} ${item.name} in cart`}>{item.quantity}</span>
                             <button
                               type="button"
                               onClick={() => addToCart({ _id: item.menuItemId, name: item.name, price: item.price })}
-                              className="p-1 bg-gray-100 dark:bg-gray-700 rounded"
+                              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+                              aria-label={`Add one more ${item.name} to cart`}
                             >
-                              <Plus className="h-4 w-4" />
+                              <Plus className="h-5 w-5" />
                             </button>
                           </div>
                         </div>
@@ -398,7 +401,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                       <button
                         type="button"
                         onClick={handleCheckout}
-                        className="w-full mt-4 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700"
+                        className="w-full mt-4 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 min-h-[44px]"
                       >
                         Proceed to Checkout
                       </button>

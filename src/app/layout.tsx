@@ -6,6 +6,7 @@ import { ConvexClientProvider } from "@/components/convex-client-provider";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CartProvider } from "@/contexts/CartContext";
+import { FoodCartProvider } from "@/contexts/FoodCartContext";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { validateEnv } from "@/lib/env-validator";
@@ -91,9 +92,11 @@ export default function RootLayout({
           {/* ServiceWorkerRegister disabled during testing */}
           <ConvexClientProvider>
             <CartProvider>
-              {children}
-              <ShoppingCart />
-              <MobileBottomNav />
+              <FoodCartProvider>
+                {children}
+                <ShoppingCart />
+                <MobileBottomNav />
+              </FoodCartProvider>
             </CartProvider>
           </ConvexClientProvider>
         </ThemeProvider>

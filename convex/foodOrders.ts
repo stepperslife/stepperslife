@@ -4,6 +4,23 @@ import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { getCurrentUser } from "./lib/auth";
 import { requireRestaurantRole, canTransitionOrderStatus, getRestaurantAccess } from "./lib/restaurantAuth";
+import { validatePaymentStatus, VALID_PAYMENT_STATUSES } from "./lib/validation";
+
+// Valid order statuses - used for validation
+const VALID_ORDER_STATUSES = [
+  "PENDING",
+  "CONFIRMED",
+  "PREPARING",
+  "READY_FOR_PICKUP",
+  "COMPLETED",
+  "CANCELLED",
+] as const;
+
+type OrderStatus = typeof VALID_ORDER_STATUSES[number];
+
+function isValidOrderStatus(status: string): status is OrderStatus {
+  return VALID_ORDER_STATUSES.includes(status as OrderStatus);
+}
 
 // Generate order number
 function generateOrderNumber(): string {
@@ -27,14 +44,18 @@ export const getByRestaurant = query({
   },
 });
 
-// Get orders by customer
-// Note: Frontend already verifies user identity via JWT session before calling this
-// The customerId is validated by the frontend auth system (/api/auth/me)
+// Get orders by customer (requires authentication)
 export const getByCustomer = query({
   args: { customerId: v.id("users") },
   handler: async (ctx, args) => {
-    // Query orders for the given customer
-    // Frontend is responsible for only passing the authenticated user's ID
+    // Verify the authenticated user matches the requested customerId
+    const user = await getCurrentUser(ctx);
+
+    // Only allow users to view their own orders (or admin to view any)
+    if (user._id !== args.customerId && user.role !== "admin") {
+      throw new Error("Not authorized to view these orders");
+    }
+
     return await ctx.db
       .query("foodOrders")
       .withIndex("by_customer", (q) => q.eq("customerId", args.customerId))
@@ -43,22 +64,113 @@ export const getByCustomer = query({
   },
 });
 
-// Get order by number
+// Get order by number (public for order tracking, but limits exposed data for unauthenticated users)
 export const getByOrderNumber = query({
   args: { orderNumber: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const order = await ctx.db
       .query("foodOrders")
       .withIndex("by_order_number", (q) => q.eq("orderNumber", args.orderNumber))
       .first();
+
+    if (!order) return null;
+
+    // Check if user is authenticated
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      // For unauthenticated users: return limited data for order tracking only
+      // This allows guests to track their orders without exposing full PII
+      return {
+        _id: order._id,
+        orderNumber: order.orderNumber,
+        status: order.status,
+        pickupTime: order.pickupTime,
+        items: order.items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        subtotal: order.subtotal,
+        tax: order.tax,
+        total: order.total,
+        placedAt: order.placedAt,
+        readyAt: order.readyAt,
+        completedAt: order.completedAt,
+        restaurantId: order.restaurantId,
+        // Explicitly NOT returning: customerEmail, customerPhone (PII protection)
+      };
+    }
+
+    // For authenticated users: verify they own this order or have restaurant access
+    const email = identity.email || identity.tokenIdentifier?.split("|")[1];
+    const user = email ? await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", email as string))
+      .first() : null;
+
+    // If user is the customer, admin, or has restaurant access, return full order
+    if (user) {
+      if (user._id === order.customerId || user.role === "admin") {
+        return order;
+      }
+
+      // Check for restaurant staff access
+      const restaurantAccess = await getRestaurantAccess(ctx, order.restaurantId);
+      if (restaurantAccess) {
+        return order;
+      }
+    }
+
+    // Fallback: return limited data even for authenticated users who don't own the order
+    return {
+      _id: order._id,
+      orderNumber: order.orderNumber,
+      status: order.status,
+      pickupTime: order.pickupTime,
+      items: order.items.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      subtotal: order.subtotal,
+      tax: order.tax,
+      total: order.total,
+      placedAt: order.placedAt,
+      readyAt: order.readyAt,
+      completedAt: order.completedAt,
+      restaurantId: order.restaurantId,
+    };
   },
 });
 
-// Get order by ID
+// Get order by ID (requires authentication and authorization)
 export const getById = query({
   args: { id: v.id("foodOrders") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+    const order = await ctx.db.get(args.id);
+    if (!order) return null;
+
+    // Require authentication
+    const user = await getCurrentUser(ctx);
+
+    // Allow if user is the customer
+    if (order.customerId === user._id) {
+      return order;
+    }
+
+    // Allow if user is admin
+    if (user.role === "admin") {
+      return order;
+    }
+
+    // Allow if user has restaurant access
+    const restaurantAccess = await getRestaurantAccess(ctx, order.restaurantId);
+    if (restaurantAccess) {
+      return order;
+    }
+
+    throw new Error("Not authorized to view this order");
   },
 });
 
@@ -100,6 +212,65 @@ export const create = internalMutation({
     total: number;
     itemCount: number;
   }> => {
+    // Validate restaurant exists and is accepting orders
+    const restaurant = await ctx.db.get(args.restaurantId);
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
+    if (!restaurant.acceptingOrders) {
+      throw new Error("Restaurant is not currently accepting orders");
+    }
+
+    // Validate each item: check price, availability, and quantity
+    let calculatedSubtotal = 0;
+    for (const item of args.items) {
+      // Validate quantity
+      if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 99) {
+        throw new Error(`Invalid quantity for ${item.name}: must be between 1 and 99`);
+      }
+
+      // Fetch the menu item to verify price and availability
+      const menuItem = await ctx.db.get(item.menuItemId);
+      if (!menuItem) {
+        throw new Error(`Menu item not found: ${item.name}`);
+      }
+
+      // Verify the item belongs to this restaurant
+      if (menuItem.restaurantId !== args.restaurantId) {
+        throw new Error(`Menu item ${item.name} does not belong to this restaurant`);
+      }
+
+      // Verify item is available
+      if (!menuItem.isAvailable) {
+        throw new Error(`${item.name} is no longer available`);
+      }
+
+      // Verify price matches (allow 1 cent tolerance for rounding)
+      if (Math.abs(menuItem.price - item.price) > 1) {
+        throw new Error(`Price mismatch for ${item.name}: expected ${menuItem.price}, got ${item.price}`);
+      }
+
+      // Use the verified price from database
+      calculatedSubtotal += menuItem.price * item.quantity;
+    }
+
+    // Validate totals (allow small tolerance for rounding)
+    if (Math.abs(calculatedSubtotal - args.subtotal) > args.items.length) {
+      throw new Error(`Subtotal mismatch: calculated ${calculatedSubtotal}, received ${args.subtotal}`);
+    }
+
+    // Validate tax is reasonable (0-20% of subtotal)
+    const maxTax = calculatedSubtotal * 0.20;
+    if (args.tax < 0 || args.tax > maxTax) {
+      throw new Error(`Invalid tax amount: ${args.tax}`);
+    }
+
+    // Validate total = subtotal + tax (with tolerance)
+    const expectedTotal = args.subtotal + args.tax;
+    if (Math.abs(args.total - expectedTotal) > 1) {
+      throw new Error(`Total mismatch: expected ${expectedTotal}, received ${args.total}`);
+    }
+
     const orderNumber = generateOrderNumber();
     const now = Date.now();
 
@@ -218,6 +389,13 @@ export const updateStatus = internalMutation({
     customerId: Id<"users"> | undefined;
     status: string;
   }> => {
+    // Validate status
+    if (!isValidOrderStatus(args.status)) {
+      throw new Error(
+        `Invalid order status: "${args.status}". Valid statuses are: ${VALID_ORDER_STATUSES.join(", ")}`
+      );
+    }
+
     const updates: Record<string, unknown> = { status: args.status };
 
     if (args.status === "READY_FOR_PICKUP") {
@@ -251,6 +429,13 @@ export const updateStatusSecure = mutation({
     customerId: Id<"users"> | undefined;
     status: string;
   }> => {
+    // Validate status
+    if (!isValidOrderStatus(args.status)) {
+      throw new Error(
+        `Invalid order status: "${args.status}". Valid statuses are: ${VALID_ORDER_STATUSES.join(", ")}`
+      );
+    }
+
     // Get the order
     const order = await ctx.db.get(args.id);
     if (!order) {
@@ -404,6 +589,9 @@ export const updatePaymentStatus = mutation({
     paymentMethod: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Validate payment status
+    validatePaymentStatus(args.paymentStatus);
+
     // Get the order
     const order = await ctx.db.get(args.id);
     if (!order) {

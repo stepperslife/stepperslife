@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Star, Camera, X, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
 interface ReviewFormProps {
   restaurantId: Id<"restaurants">;
@@ -58,9 +59,12 @@ export function ReviewForm({ restaurantId, userId, onSuccess, onCancel }: Review
       setTitle("");
       setReviewText("");
 
+      toast.success("Thank you for your review!");
       onSuccess?.();
     } catch (err: any) {
-      setError(err.message || "Failed to submit review");
+      const errorMessage = err.message || "Failed to submit review";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

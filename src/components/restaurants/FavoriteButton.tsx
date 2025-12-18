@@ -5,6 +5,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface FavoriteButtonProps {
   restaurantId: Id<"restaurants">;
@@ -50,7 +51,7 @@ export function FavoriteButton({
     e.stopPropagation();
 
     if (!userId) {
-      // Could redirect to login or show a toast
+      toast.error("Please sign in to save favorites");
       window.location.href = "/login";
       return;
     }
@@ -59,8 +60,15 @@ export function FavoriteButton({
     try {
       // Note: toggle mutation gets userId from auth context, only pass restaurantId
       await toggleFavorite({ restaurantId });
+      // Show success toast based on new state
+      if (isFavorited) {
+        toast.success("Removed from favorites");
+      } else {
+        toast.success("Added to favorites");
+      }
     } catch (err) {
       console.error("Failed to toggle favorite:", err);
+      toast.error("Failed to update favorites");
     }
     setTimeout(() => setIsAnimating(false), 300);
   };

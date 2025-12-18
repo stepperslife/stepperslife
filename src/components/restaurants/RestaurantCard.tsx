@@ -40,12 +40,21 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
             src={restaurant.coverImageUrl}
             alt={restaurant.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              // Replace with fallback gradient on image load error
+              const target = e.currentTarget;
+              target.style.display = 'none';
+              const fallback = target.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = 'flex';
+            }}
           />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-            <Utensils className="h-16 w-16 text-white opacity-50" />
-          </div>
-        )}
+        ) : null}
+        <div
+          className="w-full h-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center"
+          style={{ display: restaurant.coverImageUrl ? 'none' : 'flex' }}
+        >
+          <Utensils className="h-16 w-16 text-white opacity-50" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
         {/* Status Badge */}

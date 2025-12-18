@@ -3,6 +3,7 @@ import { query, mutation, internalQuery } from "./_generated/server";
 import { getCurrentUser, requireAdmin } from "./lib/auth";
 import { requireRestaurantOwner, requireRestaurantRole } from "./lib/restaurantAuth";
 import { USER_ROLES } from "./lib/roles";
+import { validateRequiredString, validatePhoneNumber, validateEmail } from "./lib/validation";
 
 // Get all active restaurants
 export const getAll = query({
@@ -73,9 +74,22 @@ export const create = mutation({
     // Only admins can directly create restaurants
     await requireAdmin(ctx);
 
+    // Validate inputs
+    validateRequiredString(args.name, "Restaurant name", { maxLength: 200 });
+    validatePhoneNumber(args.phone, "Phone number");
+    validateRequiredString(args.address, "Address", { maxLength: 500 });
+    validateRequiredString(args.city, "City", { maxLength: 100 });
+    validateRequiredString(args.state, "State", { maxLength: 50 });
+    validateRequiredString(args.zipCode, "ZIP code", { maxLength: 20 });
+
     const now = Date.now();
     return await ctx.db.insert("restaurants", {
       ...args,
+      name: args.name.trim(),
+      address: args.address.trim(),
+      city: args.city.trim(),
+      state: args.state.trim(),
+      zipCode: args.zipCode.trim(),
       logoUrl: undefined,
       coverImageUrl: undefined,
       operatingHours: undefined,
@@ -292,6 +306,23 @@ export const apply = mutation({
     additionalNotes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Validate inputs
+    validateRequiredString(args.name, "Restaurant name", { maxLength: 200 });
+    validatePhoneNumber(args.phone, "Phone number");
+    validateRequiredString(args.address, "Address", { maxLength: 500 });
+    validateRequiredString(args.city, "City", { maxLength: 100 });
+    validateRequiredString(args.state, "State", { maxLength: 50 });
+    validateRequiredString(args.zipCode, "ZIP code", { maxLength: 20 });
+    validateRequiredString(args.contactName, "Contact name", { maxLength: 100 });
+    validateEmail(args.contactEmail, "Contact email");
+
+    if (args.cuisine.length === 0) {
+      throw new Error("Please select at least one cuisine type");
+    }
+    if (args.cuisine.length > 10) {
+      throw new Error("Maximum 10 cuisine types allowed");
+    }
+
     // SECURITY: Get ownerId from authenticated user, not from client
     const user = await getCurrentUser(ctx);
     const now = Date.now();
@@ -299,6 +330,7 @@ export const apply = mutation({
     // Generate slug from name
     const baseSlug = args.name
       .toLowerCase()
+      .trim()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
@@ -316,15 +348,15 @@ export const apply = mutation({
     }
 
     return await ctx.db.insert("restaurants", {
-      name: args.name,
+      name: args.name.trim(),
       slug,
-      description: args.description,
+      description: args.description?.trim(),
       ownerId: user._id, // SECURE: From auth context, not client
-      address: args.address,
-      city: args.city,
-      state: args.state,
-      zipCode: args.zipCode,
-      phone: args.phone,
+      address: args.address.trim(),
+      city: args.city.trim(),
+      state: args.state.trim(),
+      zipCode: args.zipCode.trim(),
+      phone: args.phone.trim(),
       cuisine: args.cuisine,
       logoUrl: undefined,
       coverImageUrl: undefined,
@@ -342,8 +374,9 @@ export const apply = mutation({
 export const getPending = query({
   args: {},
   handler: async (ctx) => {
-    // This is a read operation, but should only be accessible to admins
-    // The frontend should check user role before displaying this data
+    // Require admin authentication
+    await requireAdmin(ctx);
+
     const allRestaurants = await ctx.db.query("restaurants").collect();
     return allRestaurants.filter((r) => r.isActive === false);
   },

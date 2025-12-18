@@ -1,41 +1,41 @@
 "use client";
 
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/useAuth";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { ArrowLeft, Clock, MapPin, CreditCard, Loader2, Calendar } from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
-
-interface CartItem {
-  menuItemId: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
+import { useFoodCart } from "@/contexts/FoodCartContext";
 
 type PickupTimeOption = {
   label: string;
   value: number | "asap";
 };
 
+// Validation patterns
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^\+?[\d\s\-()]{10,}$/;
+
 export default function RestaurantCheckoutPage() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const router = useRouter();
   const slug = params.slug as string;
 
   const restaurant = useQuery(api.restaurants.getBySlug, { slug });
   const createOrder = useAction(api.foodOrders.createWithNotification);
   const { user } = useAuth();
+  const { cart, clearCart } = useFoodCart();
 
-  // Parse cart from URL params
-  const [cart, setCart] = useState<CartItem[]>([]);
+  // Use cart from context - verify it's for this restaurant
+  const isValidCart = cart.restaurantSlug === slug && cart.items.length > 0;
+  const cartItems = isValidCart ? cart.items : [];
+
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -77,18 +77,6 @@ export default function RestaurantCheckoutPage() {
     return options;
   }, [restaurant]);
 
-  useEffect(() => {
-    const cartParam = searchParams.get("cart");
-    if (cartParam) {
-      try {
-        const parsed = JSON.parse(decodeURIComponent(cartParam));
-        setCart(parsed);
-      } catch {
-        console.error("Failed to parse cart");
-      }
-    }
-  }, [searchParams]);
-
   if (restaurant === undefined) {
     return (
       <>
@@ -102,7 +90,7 @@ export default function RestaurantCheckoutPage() {
     );
   }
 
-  if (restaurant === null || cart.length === 0) {
+  if (restaurant === null || !isValidCart) {
     return (
       <>
         <PublicHeader />
@@ -123,8 +111,9 @@ export default function RestaurantCheckoutPage() {
     );
   }
 
-  const TAX_RATE = 0.0875; // 8.75% tax rate
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Use restaurant-specific tax rate if available, fallback to 8.75%
+  const TAX_RATE = (restaurant as any).taxRate ?? 0.0875;
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const tax = Math.round(subtotal * TAX_RATE);
   const total = subtotal + tax;
 
@@ -134,13 +123,31 @@ export default function RestaurantCheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // Validate form
-      if (!customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
-        throw new Error("Please fill in all required fields");
+      // Validate required fields
+      if (!customerName.trim()) {
+        throw new Error("Please enter your name");
+      }
+
+      // Validate email format
+      const email = customerEmail.trim();
+      if (!email) {
+        throw new Error("Please enter your email address");
+      }
+      if (!EMAIL_REGEX.test(email)) {
+        throw new Error("Please enter a valid email address");
+      }
+
+      // Validate phone format
+      const phone = customerPhone.trim();
+      if (!phone) {
+        throw new Error("Please enter your phone number");
+      }
+      if (!PHONE_REGEX.test(phone)) {
+        throw new Error("Please enter a valid phone number (at least 10 digits)");
       }
 
       // Create order items with proper IDs
-      const orderItems = cart.map((item) => ({
+      const orderItems = cartItems.map((item) => ({
         menuItemId: item.menuItemId as Id<"menuItems">,
         name: item.name,
         price: item.price,
@@ -157,8 +164,8 @@ export default function RestaurantCheckoutPage() {
         restaurantId: restaurant._id,
         customerId: user?._id as Id<"users"> | undefined,
         customerName: customerName.trim(),
-        customerEmail: customerEmail.trim(),
-        customerPhone: customerPhone.trim(),
+        customerEmail: email,
+        customerPhone: phone,
         items: orderItems,
         subtotal,
         tax,
@@ -167,6 +174,22 @@ export default function RestaurantCheckoutPage() {
         specialInstructions: specialInstructions.trim() || undefined,
         paymentMethod: "pay_at_pickup",
       });
+
+      // Clear the cart after successful order
+      clearCart();
+
+      // Save order number to localStorage for guest order tracking
+      if (typeof window !== 'undefined') {
+        const recentOrders = JSON.parse(localStorage.getItem('recentFoodOrders') || '[]');
+        recentOrders.unshift({
+          orderNumber: result.orderNumber,
+          restaurantName: restaurant.name,
+          orderId: result.orderId,
+          placedAt: Date.now(),
+        });
+        // Keep only last 10 orders
+        localStorage.setItem('recentFoodOrders', JSON.stringify(recentOrders.slice(0, 10)));
+      }
 
       // Redirect to confirmation page with order ID
       router.push(`/restaurants/${slug}/order-confirmation?orderId=${result.orderId}`);
@@ -351,7 +374,7 @@ export default function RestaurantCheckoutPage() {
 
                 {/* Cart Items */}
                 <div className="space-y-3 pb-4 border-b mb-4">
-                  {cart.map((item) => (
+                  {cartItems.map((item) => (
                     <div key={item.menuItemId} className="flex justify-between">
                       <div>
                         <span className="font-medium">{item.quantity}x</span>{" "}
