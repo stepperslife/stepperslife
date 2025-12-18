@@ -19,6 +19,8 @@ import {
   ChefHat,
   Utensils,
   BookOpen,
+  ShoppingBag,
+  Package,
 } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -230,6 +232,24 @@ export function PublicHeader({
                           <BookOpen className="w-4 h-4 text-muted-foreground" />
                           My Classes
                         </Link>
+                        <Link
+                          href="/restaurants/my-orders"
+                          onClick={() => setIsProfileOpen(false)}
+                          data-testid="menu-my-food-orders"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                        >
+                          <ShoppingBag className="w-4 h-4 text-muted-foreground" />
+                          My Food Orders
+                        </Link>
+                        <Link
+                          href="/marketplace/orders"
+                          onClick={() => setIsProfileOpen(false)}
+                          data-testid="menu-my-marketplace-orders"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                        >
+                          <Package className="w-4 h-4 text-muted-foreground" />
+                          My Marketplace Orders
+                        </Link>
                         {user?.role === "admin" && (
                           <Link
                             href="/restaurateur/dashboard"
@@ -370,6 +390,22 @@ export function PublicHeader({
                   >
                     <BookOpen className="w-4 h-4" />
                     My Classes
+                  </Link>
+                  <Link
+                    href="/restaurants/my-orders"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    My Food Orders
+                  </Link>
+                  <Link
+                    href="/marketplace/orders"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                  >
+                    <Package className="w-4 h-4" />
+                    My Marketplace Orders
                   </Link>
                   {user?.role === "admin" && (
                     <Link

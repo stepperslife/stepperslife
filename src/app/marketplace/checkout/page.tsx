@@ -98,10 +98,10 @@ export default function CheckoutPage() {
         price: item.productPrice,
       }));
 
-      // Submit order
+      // Submit order (normalize email to lowercase for consistent lookup)
       const result = await createOrder({
         items: orderItems,
-        customerEmail: customerEmail.trim(),
+        customerEmail: customerEmail.trim().toLowerCase(),
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim() || undefined,
         shippingMethod,
@@ -133,7 +133,7 @@ export default function CheckoutPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customerEmail: customerEmail.trim(),
+            customerEmail: customerEmail.trim().toLowerCase(),
             customerName: customerName.trim(),
             customerPhone: customerPhone.trim() || undefined,
             orderNumber: result.orderNumber,

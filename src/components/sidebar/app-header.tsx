@@ -12,7 +12,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, User, Settings, Ticket, Calendar, BookOpen, Utensils, ShieldCheck } from "lucide-react";
+import { LogOut, User, Settings, Ticket, Calendar, BookOpen, Utensils, ShieldCheck, Package, ShoppingBag } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -147,6 +147,14 @@ export function AppHeader() {
               <DropdownMenuItem onClick={() => router.push("/organizer/classes")}>
                 <BookOpen className="mr-2 h-4 w-4" />
                 <span>My Classes</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/restaurants/my-orders")}>
+                <ShoppingBag className="mr-2 h-4 w-4" />
+                <span>My Food Orders</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/marketplace/orders")}>
+                <Package className="mr-2 h-4 w-4" />
+                <span>My Marketplace Orders</span>
               </DropdownMenuItem>
               {(currentUser.role === "restaurateur" || currentUser.role === "admin") && (
                 <DropdownMenuItem onClick={() => router.push("/restaurateur/dashboard")}>
