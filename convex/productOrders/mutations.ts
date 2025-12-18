@@ -8,6 +8,7 @@ export const createProductOrder = mutation({
       v.object({
         productId: v.id("products"),
         productName: v.string(),
+        productImage: v.optional(v.string()), // Product image URL
         variantId: v.optional(v.string()),
         variantName: v.optional(v.string()),
         quantity: v.number(),
@@ -260,5 +261,32 @@ export const cancelOrder = mutation({
     });
 
     return { success: true };
+  },
+});
+
+// ADMIN: Clean up test orders
+export const cleanupTestOrders = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const orders = await ctx.db.query("productOrders").collect();
+
+    let deletedCount = 0;
+
+    for (const order of orders) {
+      // Delete test orders (Test Customer, Guest Customer, or test emails)
+      if (
+        order.customerName === "Test Customer" ||
+        order.customerName === "Guest Customer" ||
+        order.customerName === "Steppers Life Test" ||
+        order.customerEmail === "guest-test@example.com" ||
+        order.customerEmail === "ira@irawatkins.com" ||
+        (order.items && order.items.some((item) => item.productName.includes("E2E Test Product")))
+      ) {
+        await ctx.db.delete(order._id);
+        deletedCount++;
+      }
+    }
+
+    return { deletedCount, message: `Deleted ${deletedCount} test orders` };
   },
 });

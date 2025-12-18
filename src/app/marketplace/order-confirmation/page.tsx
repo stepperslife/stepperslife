@@ -6,8 +6,9 @@ import { api } from "@/convex/_generated/api";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
-import { CheckCircle, Package, Truck, Store, Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { CheckCircle, Package, Truck, Store, Mail, Phone, MapPin, Loader2, ImageIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function OrderConfirmationPage() {
   const searchParams = useSearchParams();
@@ -127,15 +128,34 @@ export default function OrderConfirmationPage() {
               <h3 className="text-sm font-medium text-muted-foreground mb-4">Items Ordered</h3>
               <div className="space-y-4">
                 {order.items.map((item, index) => (
-                  <div key={index} className="flex justify-between items-start">
-                    <div>
+                  <div key={index} className="flex gap-4">
+                    {/* Product Image */}
+                    <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                      {item.productImage ? (
+                        <Image
+                          src={item.productImage}
+                          alt={item.productName}
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    {/* Product Details */}
+                    <div className="flex-1 min-w-0">
                       <p className="font-medium text-foreground">
-                        {item.quantity}x {item.productName}
+                        {item.productName}
                       </p>
                       {item.variantName && (
                         <p className="text-sm text-muted-foreground">{item.variantName}</p>
                       )}
+                      <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                     </div>
+                    {/* Price */}
                     <p className="font-medium text-foreground">
                       ${((item.price * item.quantity) / 100).toFixed(2)}
                     </p>
@@ -251,16 +271,16 @@ export default function OrderConfirmationPage() {
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href="/marketplace"
+              href="/marketplace/orders"
               className="flex-1 px-6 py-3 bg-primary text-white rounded-lg font-semibold text-center hover:bg-primary/90 transition-colors"
             >
-              Continue Shopping
+              View My Orders
             </Link>
             <Link
-              href="/"
+              href="/marketplace"
               className="flex-1 px-6 py-3 border border-input rounded-lg font-semibold text-center text-foreground hover:bg-accent transition-colors"
             >
-              Go to Homepage
+              Continue Shopping
             </Link>
           </div>
         </main>

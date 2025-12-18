@@ -176,3 +176,109 @@ export const getActiveProductsByVendor = query({
     return products;
   },
 });
+
+// Validate cart items before checkout
+export const validateCartItems = query({
+  args: {
+    items: v.array(
+      v.object({
+        productId: v.string(),
+        quantity: v.number(),
+        variantId: v.optional(v.string()),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const validationResults = [];
+    let allValid = true;
+
+    for (const item of args.items) {
+      try {
+        // Try to get the product
+        const product = await ctx.db
+          .query("products")
+          .filter((q) => q.eq(q.field("_id"), item.productId as any))
+          .first();
+
+        if (!product) {
+          validationResults.push({
+            productId: item.productId,
+            valid: false,
+            error: "Product no longer exists",
+          });
+          allValid = false;
+          continue;
+        }
+
+        if (product.status !== "ACTIVE") {
+          validationResults.push({
+            productId: item.productId,
+            productName: product.name,
+            valid: false,
+            error: "Product is no longer available",
+          });
+          allValid = false;
+          continue;
+        }
+
+        // Check inventory if tracking is enabled
+        if (product.trackInventory) {
+          if (item.variantId && product.variants) {
+            const variant = product.variants.find((v) => v.id === item.variantId);
+            if (!variant) {
+              validationResults.push({
+                productId: item.productId,
+                productName: product.name,
+                valid: false,
+                error: "Selected variant no longer exists",
+              });
+              allValid = false;
+              continue;
+            }
+            if (variant.inventoryQuantity < item.quantity) {
+              validationResults.push({
+                productId: item.productId,
+                productName: product.name,
+                valid: false,
+                error: `Only ${variant.inventoryQuantity} in stock`,
+                availableQuantity: variant.inventoryQuantity,
+              });
+              allValid = false;
+              continue;
+            }
+          } else {
+            if (product.inventoryQuantity < item.quantity) {
+              validationResults.push({
+                productId: item.productId,
+                productName: product.name,
+                valid: false,
+                error: `Only ${product.inventoryQuantity} in stock`,
+                availableQuantity: product.inventoryQuantity,
+              });
+              allValid = false;
+              continue;
+            }
+          }
+        }
+
+        validationResults.push({
+          productId: item.productId,
+          productName: product.name,
+          valid: true,
+        });
+      } catch (err) {
+        validationResults.push({
+          productId: item.productId,
+          valid: false,
+          error: "Invalid product ID",
+        });
+        allValid = false;
+      }
+    }
+
+    return {
+      allValid,
+      results: validationResults,
+    };
+  },
+});

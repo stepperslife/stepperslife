@@ -652,3 +652,28 @@ export const reorderProductOptions = mutation({
     throw new Error("Product options feature is not yet implemented in the schema");
   },
 });
+
+// ADMIN: Clean up test products
+export const cleanupTestProducts = mutation({
+  args: {},
+  handler: async (ctx) => {
+    // Get all products
+    const products = await ctx.db.query("products").collect();
+
+    let deletedCount = 0;
+
+    for (const product of products) {
+      // Check if it's a test product (E2E Test Product or Debug Test Product)
+      if (
+        product.name.includes("E2E Test Product") ||
+        product.name.includes("Debug Test Product") ||
+        product.name.includes("Test Product")
+      ) {
+        await ctx.db.delete(product._id);
+        deletedCount++;
+      }
+    }
+
+    return { deletedCount, message: `Deleted ${deletedCount} test products` };
+  },
+});

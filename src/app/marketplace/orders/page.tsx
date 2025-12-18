@@ -17,8 +17,10 @@ import {
   XCircle,
   ArrowRight,
   Mail,
+  ImageIcon,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 type FulfillmentStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED";
@@ -172,17 +174,36 @@ export default function MyOrdersPage() {
 
                     {/* Order Items */}
                     <div className="p-4 sm:p-6">
-                      <div className="space-y-3 mb-4">
+                      <div className="space-y-4 mb-4">
                         {order.items.map((item, index) => (
-                          <div key={index} className="flex justify-between items-start text-sm">
-                            <div>
-                              <p className="font-medium text-foreground">
-                                {item.quantity}x {item.productName}
-                              </p>
-                              {item.variantName && (
-                                <p className="text-muted-foreground">{item.variantName}</p>
+                          <div key={index} className="flex gap-4">
+                            {/* Product Image */}
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                              {item.productImage ? (
+                                <Image
+                                  src={item.productImage}
+                                  alt={item.productName}
+                                  width={80}
+                                  height={80}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <ImageIcon className="w-6 h-6 text-muted-foreground" />
+                                </div>
                               )}
                             </div>
+                            {/* Product Details */}
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-foreground truncate">
+                                {item.productName}
+                              </p>
+                              {item.variantName && (
+                                <p className="text-sm text-muted-foreground">{item.variantName}</p>
+                              )}
+                              <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                            </div>
+                            {/* Price */}
                             <p className="font-medium text-foreground">
                               ${((item.price * item.quantity) / 100).toFixed(2)}
                             </p>

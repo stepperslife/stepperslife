@@ -1308,6 +1308,7 @@ export default defineSchema({
       v.object({
         productId: v.id("products"),
         productName: v.string(),
+        productImage: v.optional(v.string()), // Product image URL for display
         variantId: v.optional(v.string()),
         variantName: v.optional(v.string()),
         quantity: v.number(),

@@ -1,25 +1,52 @@
 "use client";
 
 import { useCart } from "@/contexts/CartContext";
-import { ArrowLeft, Package, Loader2, Truck, Store, CheckCircle } from "lucide-react";
+import { ArrowLeft, Package, Loader2, Truck, Store, CheckCircle, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
-import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useState, useEffect } from "react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, getSubtotal, clearCart } = useCart();
+  const { items, getSubtotal, clearCart, removeItemByIndex } = useCart();
   const createOrder = useMutation(api.productOrders.mutations.createProductOrder);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+  // Validate cart items on load
+  const cartValidation = useQuery(
+    api.products.queries.validateCartItems,
+    items.length > 0
+      ? {
+          items: items.map((item) => ({
+            productId: item.productId as string,
+            quantity: item.quantity,
+            variantId: item.variantId,
+          })),
+        }
+      : "skip"
+  );
+
+  // Update validation errors when validation result changes
+  useEffect(() => {
+    if (cartValidation && !cartValidation.allValid) {
+      const errors = cartValidation.results
+        .filter((r) => !r.valid)
+        .map((r) => `${r.productName || "Unknown product"}: ${r.error}`);
+      setValidationErrors(errors);
+    } else {
+      setValidationErrors([]);
+    }
+  }, [cartValidation]);
   const [shippingMethod, setShippingMethod] = useState<"DELIVERY" | "PICKUP">("DELIVERY");
 
   // Form state
@@ -76,7 +103,14 @@ export default function CheckoutPage() {
     setError("");
     setIsSubmitting(true);
 
+    console.log("[Checkout] Starting order submission...");
+
     try {
+      // Check cart validation first
+      if (validationErrors.length > 0) {
+        throw new Error("Please fix the cart issues before placing your order");
+      }
+
       // Validate required fields
       if (!customerName.trim() || !customerEmail.trim()) {
         throw new Error("Please fill in your name and email");
@@ -92,34 +126,46 @@ export default function CheckoutPage() {
       const orderItems = items.map((item) => ({
         productId: item.productId as Id<"products">,
         productName: item.productName,
+        productImage: item.productImage, // Store product image with order
         variantId: item.variantId,
         variantName: item.variantName,
         quantity: item.quantity,
         price: item.productPrice,
       }));
 
+      console.log("[Checkout] Order items prepared:", orderItems.length, "items");
+      console.log("[Checkout] Customer email:", customerEmail.trim().toLowerCase());
+
       // Submit order (normalize email to lowercase for consistent lookup)
-      const result = await createOrder({
-        items: orderItems,
-        customerEmail: customerEmail.trim().toLowerCase(),
-        customerName: customerName.trim(),
-        customerPhone: customerPhone.trim() || undefined,
-        shippingMethod,
-        shippingAddress: {
-          name: customerName.trim(),
-          address1: address1.trim(),
-          address2: address2.trim() || undefined,
-          city: city.trim(),
-          state: state.trim(),
-          zipCode: zipCode.trim(),
-          country: country.trim(),
-          phone: customerPhone.trim() || undefined,
-        },
-        pickupLocation: shippingMethod === "PICKUP" ? pickupLocation : undefined,
-      });
+      let result;
+      try {
+        result = await createOrder({
+          items: orderItems,
+          customerEmail: customerEmail.trim().toLowerCase(),
+          customerName: customerName.trim(),
+          customerPhone: customerPhone.trim() || undefined,
+          shippingMethod,
+          shippingAddress: {
+            name: customerName.trim(),
+            address1: address1.trim(),
+            address2: address2.trim() || undefined,
+            city: city.trim(),
+            state: state.trim(),
+            zipCode: zipCode.trim(),
+            country: country.trim(),
+            phone: customerPhone.trim() || undefined,
+          },
+          pickupLocation: shippingMethod === "PICKUP" ? pickupLocation : undefined,
+        });
+        console.log("[Checkout] Order created successfully:", result);
+      } catch (orderError: any) {
+        console.error("[Checkout] Failed to create order:", orderError);
+        throw new Error(orderError.message || "Failed to create order. Please try again.");
+      }
 
       // Send order confirmation emails (don't block on this)
       try {
+        console.log("[Checkout] Sending confirmation emails...");
         const emailItems = items.map((item) => ({
           productId: item.productId,
           productName: item.productName,
@@ -129,7 +175,7 @@ export default function CheckoutPage() {
           variantName: item.variantName,
         }));
 
-        await fetch("/api/send-product-order-confirmation", {
+        const emailResponse = await fetch("/api/send-product-order-confirmation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -155,16 +201,21 @@ export default function CheckoutPage() {
             pickupNotes: shippingMethod === "PICKUP" ? pickupLocation : undefined,
           }),
         });
+        const emailResult = await emailResponse.json();
+        console.log("[Checkout] Email response:", emailResult);
       } catch (emailError) {
         // Log but don't block order completion
-        console.error("Failed to send confirmation email:", emailError);
+        console.error("[Checkout] Failed to send confirmation email:", emailError);
       }
 
       // Clear cart and redirect to confirmation
+      console.log("[Checkout] Redirecting to confirmation page...");
       clearCart();
       router.push(`/marketplace/order-confirmation?orderNumber=${result.orderNumber}`);
     } catch (err: any) {
-      setError(err.message || "Failed to place order. Please try again.");
+      console.error("[Checkout] Order submission failed:", err);
+      const errorMessage = err.message || "Failed to place order. Please try again.";
+      setError(errorMessage);
       setIsSubmitting(false);
     }
   };
@@ -437,10 +488,38 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
+                {/* Cart Validation Errors */}
+                {validationErrors.length > 0 && (
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-red-800 dark:text-red-200 mb-2">
+                          Some items in your cart have issues:
+                        </p>
+                        <ul className="text-sm text-red-700 dark:text-red-300 space-y-1 list-disc list-inside">
+                          {validationErrors.map((err, i) => (
+                            <li key={i}>{err}</li>
+                          ))}
+                        </ul>
+                        <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                          Please remove or update these items to continue.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Error Message */}
                 {error && (
                   <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
-                    {error}
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium">Order Failed</p>
+                        <p className="text-sm mt-1">{error}</p>
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -448,7 +527,7 @@ export default function CheckoutPage() {
                 <div className="lg:hidden">
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || validationErrors.length > 0}
                     className="w-full py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
@@ -456,6 +535,8 @@ export default function CheckoutPage() {
                         <Loader2 className="w-5 h-5 animate-spin" />
                         Placing Order...
                       </>
+                    ) : validationErrors.length > 0 ? (
+                      "Fix Cart Issues to Continue"
                     ) : (
                       `Place Order - $${(total / 100).toFixed(2)}`
                     )}
@@ -543,7 +624,7 @@ export default function CheckoutPage() {
                   <div className="hidden lg:block mt-6">
                     <button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || validationErrors.length > 0}
                       className="w-full py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
@@ -551,6 +632,8 @@ export default function CheckoutPage() {
                           <Loader2 className="w-5 h-5 animate-spin" />
                           Placing Order...
                         </>
+                      ) : validationErrors.length > 0 ? (
+                        "Fix Cart Issues"
                       ) : (
                         "Place Order"
                       )}

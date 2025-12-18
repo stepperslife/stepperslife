@@ -35,6 +35,7 @@ export interface ShippingAddress {
 export interface OrderReceiptItem {
   productId?: string;
   productName: string;
+  productImage?: string; // Product image URL for email display
   variantName?: string;
   quantity: number;
   unitPrice: number; // in cents

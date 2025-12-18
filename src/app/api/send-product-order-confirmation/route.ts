@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
       items: orderData.items.map((item): OrderReceiptItem => ({
         productId: item.productId,
         productName: item.productName,
+        productImage: item.productImage,
         variantName: item.variantName,
         quantity: item.quantity,
         unitPrice: item.price,
