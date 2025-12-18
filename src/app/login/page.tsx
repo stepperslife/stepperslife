@@ -230,7 +230,7 @@ export default function LoginPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        data-testid="password-email-input"
+                        data-testid="login-email"
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                         placeholder="you@example.com"
                       />
@@ -250,7 +250,7 @@ export default function LoginPage() {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
-                          data-testid="password-input"
+                          data-testid="login-password"
                           className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                           placeholder="Enter your password"
                         />
@@ -283,7 +283,7 @@ export default function LoginPage() {
                     <Button
                       type="submit"
                       disabled={isLoading}
-                      data-testid="login-submit-button"
+                      data-testid="login-submit"
                       className="w-full py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLoading ? "Signing in..." : "Sign In"}

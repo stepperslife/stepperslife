@@ -61,9 +61,9 @@ export const createEvent = mutation({
         );
       }
 
-      // VALIDATION: Require event image (either imageUrl OR images array)
-      console.log("[createEvent] Checking images - imageUrl:", !!args.imageUrl, "images:", args.images?.length || 0);
-      if (!args.imageUrl && (!args.images || args.images.length === 0)) {
+      // VALIDATION: Require event image for ticketed events (optional for CLASS type)
+      console.log("[createEvent] Checking images - imageUrl:", !!args.imageUrl, "images:", args.images?.length || 0, "eventType:", args.eventType);
+      if (args.eventType !== "CLASS" && !args.imageUrl && (!args.images || args.images.length === 0)) {
         throw new Error(
           "Event image is required. Please upload a professional event image that will be displayed on the event page, checkout, and payment confirmation."
         );
@@ -395,13 +395,15 @@ export const publishEvent = mutation({
     const event = await ctx.db.get(args.eventId);
     if (!event) throw new Error("Event not found");
 
-    // Check for ticket tiers - at least one is required to publish
+    // Check for ticket tiers - required for ticketed events but optional for CLASSes
     const ticketTiers = await ctx.db
       .query("ticketTiers")
       .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
       .collect();
 
-    if (ticketTiers.length === 0) {
+    // Classes can be published without tiers (free classes)
+    // Ticketed events require at least one tier
+    if (ticketTiers.length === 0 && event.eventType !== "CLASS") {
       throw new Error(
         "Cannot publish without ticket/enrollment tiers. Please add at least one pricing tier before publishing."
       );

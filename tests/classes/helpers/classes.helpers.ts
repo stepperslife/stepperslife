@@ -36,9 +36,10 @@ export async function waitForPageLoad(
   timeout = TIMEOUTS.pageLoad
 ): Promise<void> {
   await page.waitForLoadState("domcontentloaded", { timeout });
-  await page.waitForLoadState("networkidle", { timeout });
-  // Small buffer for React hydration
-  await page.waitForTimeout(500);
+  // Don't wait for networkidle - Convex keeps connections open
+  // Just wait for load and give time for React hydration
+  await page.waitForLoadState("load", { timeout });
+  await page.waitForTimeout(1000);
 }
 
 /**

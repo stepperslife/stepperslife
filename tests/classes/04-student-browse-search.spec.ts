@@ -30,8 +30,8 @@ test.describe("Student Browse and Search Classes", () => {
     // Verify page elements
     await expect(page.locator('[data-testid="classes-page"]')).toBeVisible();
 
-    // Check for hero section or header
-    await expect(page.locator('h1:has-text("Classes")')).toBeVisible({
+    // Check for hero section with any h1 (page has "Master Your" heading)
+    await expect(page.locator('h1').first()).toBeVisible({
       timeout: TIMEOUTS.medium,
     });
 

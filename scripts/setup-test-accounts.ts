@@ -31,6 +31,44 @@ const TEST_ACCOUNTS: TestAccount[] = [
     password: "TestPassword123!",
     role: "user",
   },
+  // Dedicated test accounts for instructor vs student testing
+  {
+    name: "Test Instructor",
+    email: "test-instructor@stepperslife.com",
+    password: "TestInstructor123!",
+    role: "organizer",
+  },
+  {
+    name: "Test Student",
+    email: "test-student@stepperslife.com",
+    password: "TestStudent123!",
+    role: "user",
+  },
+  // E2E test accounts for Playwright class tests
+  {
+    name: "E2E Test Instructor",
+    email: "e2e-instructor@stepperslife.com",
+    password: "TestPassword123!",
+    role: "organizer",
+  },
+  {
+    name: "E2E Test Student",
+    email: "e2e-student@stepperslife.com",
+    password: "TestPassword123!",
+    role: "user",
+  },
+  {
+    name: "E2E Test Instructor 2",
+    email: "e2e-instructor2@stepperslife.com",
+    password: "TestPassword123!",
+    role: "organizer",
+  },
+  {
+    name: "E2E Test Student 2",
+    email: "e2e-student2@stepperslife.com",
+    password: "TestPassword123!",
+    role: "user",
+  },
 ];
 
 async function createAccount(account: TestAccount): Promise<boolean> {
