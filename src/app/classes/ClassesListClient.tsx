@@ -3,11 +3,12 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
-import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen } from "lucide-react";
+import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen, GraduationCap, Music, Users, Award, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import { PageHero } from "@/components/ui/PageHero";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ClassesListClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,22 +55,34 @@ export default function ClassesListClient() {
         <PublicHeader />
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-12">
-            <div className="text-center">
-              <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 0.5, repeat: 2 }}
+              >
+                <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+              </motion.div>
               <h3 className="text-xl font-semibold text-foreground mb-2">
                 Connection Issue
               </h3>
               <p className="text-muted-foreground mb-4">
                 Unable to load classes. Please check your connection and try again.
               </p>
-              <button
+              <motion.button
                 type="button"
                 onClick={() => window.location.reload()}
                 className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Retry
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           </div>
         </div>
         <PublicFooter />
@@ -81,12 +94,21 @@ export default function ClassesListClient() {
     return (
       <>
         <PublicHeader />
-        <div className="min-h-screen bg-background">
-          <div className="container mx-auto px-4 py-12">
-            <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-              <p className="mt-4 text-muted-foreground">Loading classes...</p>
-            </div>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <motion.div
+              className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.p
+              className="mt-4 text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              Loading classes...
+            </motion.p>
           </div>
         </div>
         <PublicFooter />
@@ -98,13 +120,223 @@ export default function ClassesListClient() {
     <>
       <PublicHeader />
       <div data-testid="classes-page" className="min-h-screen bg-background">
-        {/* Hero Section */}
-        <PageHero
-          title="Classes"
-          subtitle="Discover stepping classes, workshops, and lessons near you"
-          imageUrl="https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=1200&q=80"
-          imageAlt="Dance class instruction"
-        />
+        {/* EPIC Hero Section */}
+        <section className="relative min-h-[500px] md:min-h-[600px] w-full overflow-hidden">
+          {/* Animated Gradient Background */}
+          <motion.div
+            className="absolute inset-0"
+            animate={{
+              background: [
+                "linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #8b5cf6 100%)",
+                "linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #6d28d9 100%)",
+                "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 50%, #7c3aed 100%)",
+                "linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #8b5cf6 100%)",
+              ],
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          />
+
+          {/* Gradient Overlay for depth */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+
+          {/* Floating Class Icons */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* GraduationCap Icon */}
+            <motion.div
+              className="absolute top-[15%] left-[10%] text-white/20"
+              animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <GraduationCap className="h-16 w-16 md:h-24 md:w-24" />
+            </motion.div>
+
+            {/* Music Icon */}
+            <motion.div
+              className="absolute top-[25%] right-[15%] text-white/15"
+              animate={{ y: [0, 15, 0], rotate: [0, -8, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            >
+              <Music className="h-14 w-14 md:h-20 md:w-20" />
+            </motion.div>
+
+            {/* BookOpen Icon */}
+            <motion.div
+              className="absolute bottom-[30%] left-[8%] text-white/15"
+              animate={{ y: [0, -15, 0], scale: [1, 1.05, 1] }}
+              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            >
+              <BookOpen className="h-12 w-12 md:h-16 md:h-16" />
+            </motion.div>
+
+            {/* Users Icon */}
+            <motion.div
+              className="absolute top-[40%] right-[8%] text-white/20"
+              animate={{ y: [0, -25, 0], scale: [1, 1.1, 1] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+            >
+              <Users className="h-10 w-10 md:h-14 md:w-14" />
+            </motion.div>
+
+            {/* Sparkles */}
+            {[...Array(15)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute"
+                style={{
+                  left: `${5 + Math.random() * 90}%`,
+                  top: `${5 + Math.random() * 90}%`,
+                }}
+                animate={{
+                  opacity: [0.2, 0.6, 0.2],
+                  scale: [1, 1.3, 1],
+                  rotate: [0, 180, 360],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
+              >
+                <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-yellow-400/40" />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Main Content */}
+          <div className="relative z-10 container mx-auto px-4 py-16 md:py-20 flex flex-col items-center justify-center min-h-[500px] md:min-h-[600px]">
+            {/* Class Count Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6"
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-medium">
+                <motion.span
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <GraduationCap className="h-4 w-4" />
+                </motion.span>
+                {classes.length} {classes.length === 1 ? "Class" : "Classes"} Available
+              </span>
+            </motion.div>
+
+            {/* Main Title with Gradient Animation */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-6"
+            >
+              <span className="text-white drop-shadow-lg">Master Your</span>
+              <br />
+              <motion.span
+                className="bg-gradient-to-r from-violet-300 via-purple-200 to-fuchsia-300 bg-clip-text text-transparent bg-[length:200%_auto]"
+                animate={{ backgroundPosition: ["0% center", "200% center"] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              >
+                Stepping Skills
+              </motion.span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg md:text-xl text-white/90 text-center max-w-2xl mb-8"
+            >
+              Discover stepping classes, workshops, and lessons from expert instructors.
+              Learn at your own pace and join a vibrant community.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col sm:flex-row gap-4 mb-12"
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <Button
+                  size="lg"
+                  onClick={() => document.getElementById("classes-list")?.scrollIntoView({ behavior: "smooth" })}
+                  className="bg-white !text-violet-700 hover:bg-violet-50 font-semibold px-8 py-6 text-lg rounded-full shadow-lg"
+                >
+                  <BookOpen className="mr-2 h-5 w-5 text-violet-700" />
+                  Browse Classes
+                </Button>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <Button
+                  size="lg"
+                  variant="outline"
+                  asChild
+                  className="border-2 border-white/50 !text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 font-semibold px-8 py-6 text-lg rounded-full"
+                >
+                  <Link href="/instructor/apply">
+                    <GraduationCap className="mr-2 h-5 w-5 text-white" />
+                    Become an Instructor
+                  </Link>
+                </Button>
+              </motion.div>
+            </motion.div>
+
+            {/* Stats/Features Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="grid grid-cols-3 gap-4 md:gap-8"
+            >
+              <div className="text-center">
+                <motion.div
+                  className="flex items-center justify-center mb-2"
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <GraduationCap className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                </motion.div>
+                <p className="text-white font-bold text-lg md:text-2xl">50+</p>
+                <p className="text-white/70 text-xs md:text-sm">Instructors</p>
+              </div>
+              <div className="text-center">
+                <motion.div
+                  className="flex items-center justify-center mb-2"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                >
+                  <Award className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                </motion.div>
+                <p className="text-white font-bold text-lg md:text-2xl">All Levels</p>
+                <p className="text-white/70 text-xs md:text-sm">Beginner to Pro</p>
+              </div>
+              <div className="text-center">
+                <motion.div
+                  className="flex items-center justify-center mb-2"
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                >
+                  <MapPin className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                </motion.div>
+                <p className="text-white font-bold text-lg md:text-2xl">15+</p>
+                <p className="text-white/70 text-xs md:text-sm">Cities</p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Bottom Gradient Fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+        </section>
 
         {/* Filters */}
         <div className="bg-card border-b border-border sticky top-0 z-10">
@@ -196,10 +428,21 @@ export default function ClassesListClient() {
         </div>
 
         {/* Classes Grid */}
-        <div className="container mx-auto px-4 py-8">
+        <div id="classes-list" className="container mx-auto px-4 py-8">
           {classes.length === 0 ? (
-            <div data-testid="classes-empty-state" className="text-center py-12">
-              <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <motion.div
+              data-testid="classes-empty-state"
+              className="text-center py-12"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              </motion.div>
               <h3 className="text-xl font-semibold text-foreground mb-2">
                 No classes found
               </h3>
@@ -208,26 +451,54 @@ export default function ClassesListClient() {
                   ? "Try adjusting your filters to find more classes"
                   : "Check back soon for upcoming classes!"}
               </p>
-            </div>
+            </motion.div>
           ) : (
             <>
-              <div className="mb-6">
+              <motion.div
+                className="mb-6"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
                 <p data-testid="classes-count" className="text-muted-foreground">
                   Showing {classes.length} {classes.length === 1 ? "class" : "classes"}
                 </p>
-              </div>
+              </motion.div>
 
-              <div data-testid="classes-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <motion.div
+                data-testid="classes-grid"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.1,
+                    },
+                  },
+                }}
+              >
                 {classes.map((classItem) => {
                   const isPast = classItem.endDate && classItem.endDate < Date.now();
 
                   return (
-                    <Link
+                    <motion.div
                       key={classItem._id}
-                      href={`/classes/${classItem._id}`}
-                      data-testid={`class-card-${classItem._id}`}
-                      className="group bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                      variants={{
+                        hidden: { opacity: 0, y: 30 },
+                        visible: { opacity: 1, y: 0 },
+                      }}
+                      transition={{ duration: 0.5 }}
                     >
+                      <motion.div
+                        whileHover={{ y: -8 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      >
+                        <Link
+                          href={`/classes/${classItem._id}`}
+                          data-testid={`class-card-${classItem._id}`}
+                          className="group block bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                        >
                       {/* Class Image */}
                       <div className="relative h-48 bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
                         {classItem.imageUrl ? (
@@ -307,21 +578,23 @@ export default function ClassesListClient() {
                         )}
                       </div>
 
-                      {/* Footer */}
-                      <div className="px-5 py-3 bg-muted/50 border-t border-border">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            by {classItem.organizerName || "SteppersLife"}
-                          </span>
-                          <span className="text-primary font-medium group-hover:underline">
-                            View Details →
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
+                          {/* Footer */}
+                          <div className="px-5 py-3 bg-muted/50 border-t border-border">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-muted-foreground">
+                                by {classItem.organizerName || "SteppersLife"}
+                              </span>
+                              <span className="text-primary font-medium group-hover:underline">
+                                View Details →
+                              </span>
+                            </div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    </motion.div>
                   );
                 })}
-              </div>
+              </motion.div>
             </>
           )}
         </div>
