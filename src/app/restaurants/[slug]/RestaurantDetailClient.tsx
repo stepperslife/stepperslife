@@ -2,8 +2,8 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { MapPin, Phone, Clock, Utensils, Plus, Minus, ShoppingCart, Star } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { MapPin, Phone, Clock, Utensils, Plus, Minus, ShoppingCart } from "lucide-react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -13,7 +13,6 @@ import { RestaurantReviews } from "@/components/restaurants/RestaurantReviews";
 import { StarRating } from "@/components/restaurants/StarRating";
 import { FavoriteButton } from "@/components/restaurants/FavoriteButton";
 import { ShareButton } from "@/components/restaurants/ShareButton";
-import { mockRestaurants } from "@/lib/mock-data/restaurants";
 
 interface CartItem {
   menuItemId: string;
@@ -22,134 +21,32 @@ interface CartItem {
   quantity: number;
 }
 
-// Convert mock restaurant to the format expected by the component
-const getMockRestaurant = (slug: string) => {
-  const mockRestaurant = mockRestaurants.find(r => r.slug === slug);
-  if (!mockRestaurant) return null;
-
-  return {
-    _id: mockRestaurant.id as any, // Cast to avoid type errors with mock IDs
-    slug: mockRestaurant.slug,
-    name: mockRestaurant.name,
-    description: mockRestaurant.description,
-    cuisine: mockRestaurant.cuisine,
-    logoUrl: mockRestaurant.logoUrl,
-    coverImageUrl: mockRestaurant.coverImageUrl,
-    acceptingOrders: mockRestaurant.acceptingOrders,
-    estimatedPickupTime: mockRestaurant.estimatedPickupTime,
-    averageRating: mockRestaurant.averageRating,
-    totalReviews: mockRestaurant.totalReviews,
-    city: "Chicago",
-    state: "IL",
-    zipCode: "60601",
-    address: "123 Main Street",
-    phone: "(312) 555-0100",
-    isActive: true,
-    operatingHours: {
-      monday: { open: "11:00 AM", close: "9:00 PM", closed: false },
-      tuesday: { open: "11:00 AM", close: "9:00 PM", closed: false },
-      wednesday: { open: "11:00 AM", close: "9:00 PM", closed: false },
-      thursday: { open: "11:00 AM", close: "10:00 PM", closed: false },
-      friday: { open: "11:00 AM", close: "11:00 PM", closed: false },
-      saturday: { open: "10:00 AM", close: "11:00 PM", closed: false },
-      sunday: { open: "10:00 AM", close: "8:00 PM", closed: false },
-    },
-  };
-};
-
-// Mock menu items for fallback
-const getMockMenuItems = (restaurantId: string) => {
-  // Only provide mock menu for known mock restaurants
-  const mockMenus: Record<string, Array<{_id: string; name: string; price: number; description: string; categoryId: string; isAvailable: boolean}>> = {
-    "rest_001": [ // Soul Food Spot
-      { _id: "menu_001", name: "Fried Chicken", price: 1499, description: "Crispy fried chicken, 2 pieces", categoryId: "cat_main", isAvailable: true },
-      { _id: "menu_002", name: "Mac & Cheese", price: 599, description: "Creamy homemade mac & cheese", categoryId: "cat_sides", isAvailable: true },
-      { _id: "menu_003", name: "Collard Greens", price: 499, description: "Slow-cooked collard greens", categoryId: "cat_sides", isAvailable: true },
-      { _id: "menu_004", name: "Sweet Tea", price: 299, description: "Southern sweet tea", categoryId: "cat_drinks", isAvailable: true },
-    ],
-    "rest_002": [ // Chicago Deep Dish Kitchen
-      { _id: "menu_005", name: "Classic Deep Dish", price: 2499, description: "Chicago-style deep dish pizza", categoryId: "cat_main", isAvailable: true },
-      { _id: "menu_006", name: "Meat Lovers Deep Dish", price: 2899, description: "Sausage, pepperoni, and bacon", categoryId: "cat_main", isAvailable: true },
-    ],
-  };
-  return mockMenus[restaurantId] || [];
-};
-
-const getMockCategories = (restaurantId: string) => {
-  const mockCategories: Record<string, Array<{_id: string; name: string}>> = {
-    "rest_001": [
-      { _id: "cat_main", name: "Main Dishes" },
-      { _id: "cat_sides", name: "Sides" },
-      { _id: "cat_drinks", name: "Beverages" },
-    ],
-    "rest_002": [
-      { _id: "cat_main", name: "Pizzas" },
-    ],
-  };
-  return mockCategories[restaurantId] || [];
-};
-
 export default function RestaurantDetailClient({ slug }: { slug: string }) {
   const router = useRouter();
-  const convexRestaurant = useQuery(api.restaurants.getBySlug, { slug });
-  const [useFallback, setUseFallback] = useState(false);
-
-  // Fallback to mock data after 3 seconds if Convex doesn't respond
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (convexRestaurant === undefined) {
-        console.warn("Convex query timed out, using fallback data for restaurant:", slug);
-        setUseFallback(true);
-      }
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [convexRestaurant, slug]);
-
-  // Use Convex data if available, otherwise fallback to mock data
-  const restaurant = useMemo(() => {
-    if (convexRestaurant !== undefined) {
-      return convexRestaurant;
-    }
-    if (useFallback) {
-      return getMockRestaurant(slug);
-    }
-    return undefined; // Still loading
-  }, [convexRestaurant, useFallback, slug]);
-
-  // Query menu items - use "skip" when we don't have a valid Convex restaurant
-  const shouldSkipQueries = !convexRestaurant || convexRestaurant === null;
-  const convexMenuItems = useQuery(
-    api.menuItems.getByRestaurant,
-    shouldSkipQueries ? "skip" : { restaurantId: convexRestaurant._id }
-  );
-  const convexCategories = useQuery(
-    api.menuItems.getCategories,
-    shouldSkipQueries ? "skip" : { restaurantId: convexRestaurant._id }
-  );
-
-  // Use mock menu items when using fallback
-  const menuItems = useMemo(() => {
-    if (convexMenuItems) return convexMenuItems;
-    if (useFallback && restaurant) return getMockMenuItems(restaurant._id as string);
-    return undefined;
-  }, [convexMenuItems, useFallback, restaurant]);
-
-  const categories = useMemo(() => {
-    if (convexCategories) return convexCategories;
-    if (useFallback && restaurant) return getMockCategories(restaurant._id as string);
-    return undefined;
-  }, [convexCategories, useFallback, restaurant]);
-
-  const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const reviewStats = useQuery(
-    api.restaurantReviews.getRestaurantStats,
-    shouldSkipQueries ? "skip" : { restaurantId: convexRestaurant._id }
-  );
-
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
 
+  // Fetch restaurant data
+  const restaurant = useQuery(api.restaurants.getBySlug, { slug });
+
+  // Fetch menu data only when we have a valid restaurant
+  const menuItems = useQuery(
+    api.menuItems.getByRestaurant,
+    restaurant ? { restaurantId: restaurant._id } : "skip"
+  );
+  const categories = useQuery(
+    api.menuItems.getCategories,
+    restaurant ? { restaurantId: restaurant._id } : "skip"
+  );
+
+  // Fetch user and review data
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const reviewStats = useQuery(
+    api.restaurantReviews.getRestaurantStats,
+    restaurant ? { restaurantId: restaurant._id } : "skip"
+  );
+
+  // Loading state
   if (restaurant === undefined) {
     return (
       <>
@@ -167,6 +64,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
     );
   }
 
+  // Not found state
   if (restaurant === null) {
     return (
       <>
@@ -183,6 +81,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
     );
   }
 
+  // Cart functions
   const addToCart = (item: { _id: string; name: string; price: number }) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.menuItemId === item._id);
@@ -219,9 +118,9 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
   const itemsByCategory = menuItems?.reduce((acc, item) => {
     const catId = (item.categoryId as string) || "uncategorized";
     if (!acc[catId]) acc[catId] = [];
-    acc[catId].push(item as any);
+    acc[catId].push(item);
     return acc;
-  }, {} as Record<string, any[]>);
+  }, {} as Record<string, typeof menuItems>);
 
   return (
     <>
@@ -270,7 +169,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                     </span>
                   </div>
                 )}
-                {restaurant.cuisine.length > 0 && (
+                {restaurant.cuisine && restaurant.cuisine.length > 0 && (
                   <p className="text-gray-500 dark:text-gray-400 mt-1">
                     {restaurant.cuisine.join(" • ")}
                   </p>
@@ -315,7 +214,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                 </h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map((day) => {
-                    const hours = (restaurant.operatingHours as any)?.[day];
+                    const hours = (restaurant.operatingHours as Record<string, { open: string; close: string; closed: boolean }>)?.[day];
                     const isToday = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase() === day;
                     return (
                       <div key={day} className={`flex justify-between ${isToday ? "font-semibold text-orange-600" : ""}`}>
@@ -334,8 +233,14 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
           {/* Menu */}
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-6">Menu</h2>
-            
-            {!menuItems || menuItems.length === 0 ? (
+
+            {menuItems === undefined ? (
+              <div className="animate-pulse space-y-4">
+                <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+                <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+                <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+              </div>
+            ) : !menuItems || menuItems.length === 0 ? (
               <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <p className="text-gray-500">No menu items available yet</p>
               </div>
@@ -375,13 +280,13 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                     </div>
                   </div>
                 ))}
-                
+
                 {/* Uncategorized items */}
                 {(itemsByCategory?.["uncategorized"]?.length ?? 0) > 0 && (
                   <div>
                     <h3 className="text-xl font-semibold mb-4">Other Items</h3>
                     <div className="grid gap-4">
-                      {itemsByCategory?.["uncategorized"].filter(item => item.isAvailable).map((item) => (
+                      {itemsByCategory?.["uncategorized"]?.filter(item => item.isAvailable).map((item) => (
                         <div
                           key={item._id}
                           className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
@@ -450,7 +355,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                     ✕
                   </button>
                 </div>
-                
+
                 {cart.length === 0 ? (
                   <p className="text-gray-500">Your cart is empty</p>
                 ) : (
@@ -484,7 +389,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                         </div>
                       ))}
                     </div>
-                    
+
                     <div className="border-t mt-6 pt-6">
                       <div className="flex justify-between text-lg font-bold">
                         <span>Total</span>
