@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/useAuth";
 import { Id } from "@/convex/_generated/dataModel";
@@ -15,6 +15,9 @@ import {
   Truck,
   XCircle,
   ShoppingBag,
+  Play,
+  X,
+  Loader2,
 } from "lucide-react";
 
 type FulfillmentStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
@@ -75,6 +78,17 @@ export default function VendorOrdersPage() {
   const [statusFilter, setStatusFilter] = useState<FulfillmentStatus | "">("");
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
 
+  // Order action state
+  const [showShippingModal, setShowShippingModal] = useState(false);
+  const [actionOrder, setActionOrder] = useState<VendorOrder | null>(null);
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [trackingUrl, setTrackingUrl] = useState("");
+  const [updating, setUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
+
+  // Mutation for updating order status
+  const updateStatus = useMutation(api.products.orders.updateFulfillmentStatus);
+
   // Get vendor
   const vendor = useQuery(
     api.vendors.getByOwner,
@@ -123,6 +137,63 @@ export default function VendorOrdersPage() {
     pending: orders?.filter((o: VendorOrder) => o.fulfillmentStatus === "PENDING").length || 0,
     processing: orders?.filter((o: VendorOrder) => o.fulfillmentStatus === "PROCESSING").length || 0,
     shipped: orders?.filter((o: VendorOrder) => o.fulfillmentStatus === "SHIPPED").length || 0,
+  };
+
+  // Handler: Update order status directly (for PROCESSING and DELIVERED)
+  const handleUpdateStatus = async (order: VendorOrder, status: FulfillmentStatus) => {
+    setUpdating(true);
+    setUpdateError(null);
+    try {
+      await updateStatus({
+        orderId: order._id as Id<"productOrders">,
+        fulfillmentStatus: status,
+      });
+    } catch (err) {
+      setUpdateError(err instanceof Error ? err.message : "Failed to update order");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  // Handler: Open shipping modal to enter tracking info
+  const openShippingModal = (order: VendorOrder) => {
+    setActionOrder(order);
+    setTrackingNumber(order.trackingNumber || "");
+    setTrackingUrl(order.trackingUrl || "");
+    setUpdateError(null);
+    setShowShippingModal(true);
+  };
+
+  // Handler: Submit shipment with tracking info
+  const handleShipOrder = async () => {
+    if (!actionOrder) return;
+    setUpdating(true);
+    setUpdateError(null);
+    try {
+      await updateStatus({
+        orderId: actionOrder._id as Id<"productOrders">,
+        fulfillmentStatus: "SHIPPED",
+        trackingNumber: trackingNumber.trim() || undefined,
+        trackingUrl: trackingUrl.trim() || undefined,
+      });
+      setShowShippingModal(false);
+      setActionOrder(null);
+      setTrackingNumber("");
+      setTrackingUrl("");
+    } catch (err) {
+      setUpdateError(err instanceof Error ? err.message : "Failed to ship order");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  // Handler: Close shipping modal
+  const closeShippingModal = () => {
+    setShowShippingModal(false);
+    setActionOrder(null);
+    setTrackingNumber("");
+    setTrackingUrl("");
+    setUpdateError(null);
   };
 
   if (!vendor) {
@@ -398,6 +469,63 @@ export default function VendorOrdersPage() {
                         )}
                       </div>
                     </div>
+
+                    {/* Order Actions */}
+                    {order.fulfillmentStatus !== "DELIVERED" && order.fulfillmentStatus !== "CANCELLED" && (
+                      <div className="mt-6 pt-4 border-t border-border">
+                        <h4 className="font-medium text-foreground mb-3">Order Actions</h4>
+                        <div className="flex flex-wrap gap-3">
+                          {order.fulfillmentStatus === "PENDING" && (
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateStatus(order, "PROCESSING")}
+                              disabled={updating}
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {updating ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Play className="w-4 h-4" />
+                              )}
+                              Start Processing
+                            </button>
+                          )}
+                          {order.fulfillmentStatus === "PROCESSING" && (
+                            <button
+                              type="button"
+                              onClick={() => openShippingModal(order)}
+                              disabled={updating}
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {updating ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Truck className="w-4 h-4" />
+                              )}
+                              Mark as Shipped
+                            </button>
+                          )}
+                          {order.fulfillmentStatus === "SHIPPED" && (
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateStatus(order, "DELIVERED")}
+                              disabled={updating}
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {updating ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <CheckCircle className="w-4 h-4" />
+                              )}
+                              Mark as Delivered
+                            </button>
+                          )}
+                        </div>
+                        {updateError && (
+                          <p className="mt-2 text-sm text-red-600 dark:text-red-400">{updateError}</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -413,6 +541,102 @@ export default function VendorOrdersPage() {
           <p className="text-muted-foreground max-w-sm mx-auto">
             When customers purchase your products, their orders will appear here.
           </p>
+        </div>
+      )}
+
+      {/* Shipping Modal */}
+      {showShippingModal && actionOrder && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-card rounded-xl shadow-xl max-w-md w-full border border-border">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <div>
+                <h3 className="text-lg font-bold text-foreground">Ship Order</h3>
+                <p className="text-sm text-muted-foreground">{actionOrder.orderNumber}</p>
+              </div>
+              <button
+                type="button"
+                onClick={closeShippingModal}
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-muted-foreground" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">
+                  Tracking Number
+                </label>
+                <input
+                  type="text"
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  placeholder="e.g., 1Z999AA10123456784"
+                  className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">
+                  Tracking URL (optional)
+                </label>
+                <input
+                  type="url"
+                  value={trackingUrl}
+                  onChange={(e) => setTrackingUrl(e.target.value)}
+                  placeholder="e.g., https://www.ups.com/track?tracknum=..."
+                  className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+
+              {updateError && (
+                <p className="text-sm text-red-600 dark:text-red-400">{updateError}</p>
+              )}
+
+              <div className="bg-muted/50 rounded-lg p-3">
+                <p className="text-sm text-muted-foreground">
+                  <strong className="text-foreground">Shipping to:</strong>
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {actionOrder.shippingAddress.name}<br />
+                  {actionOrder.shippingAddress.address1}<br />
+                  {actionOrder.shippingAddress.address2 && <>{actionOrder.shippingAddress.address2}<br /></>}
+                  {actionOrder.shippingAddress.city}, {actionOrder.shippingAddress.state} {actionOrder.shippingAddress.zipCode}
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex gap-3 p-4 border-t border-border">
+              <button
+                type="button"
+                onClick={closeShippingModal}
+                disabled={updating}
+                className="flex-1 px-4 py-2 border border-input rounded-lg font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleShipOrder}
+                disabled={updating}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {updating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Shipping...
+                  </>
+                ) : (
+                  <>
+                    <Truck className="w-4 h-4" />
+                    Confirm Shipment
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
