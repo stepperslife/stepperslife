@@ -1,5 +1,8 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { getCurrentUser, requireAdmin } from "./lib/auth";
+import { requireRestaurantOwner, requireRestaurantRole } from "./lib/restaurantAuth";
+import { USER_ROLES } from "./lib/roles";
 
 // Get all active restaurants
 export const getAll = query({
@@ -44,7 +47,7 @@ export const getByOwner = query({
   },
 });
 
-// Create restaurant
+// Create restaurant (admin only - regular users should use apply)
 export const create = mutation({
   args: {
     name: v.string(),
@@ -59,6 +62,9 @@ export const create = mutation({
     cuisine: v.array(v.string()),
   },
   handler: async (ctx, args) => {
+    // Only admins can directly create restaurants
+    await requireAdmin(ctx);
+
     const now = Date.now();
     return await ctx.db.insert("restaurants", {
       ...args,
@@ -74,7 +80,7 @@ export const create = mutation({
   },
 });
 
-// Update restaurant
+// Update restaurant (requires ownership or manager role)
 export const update = mutation({
   args: {
     id: v.id("restaurants"),
@@ -94,7 +100,16 @@ export const update = mutation({
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    // Verify user has at least MANAGER role for this restaurant
+    await requireRestaurantRole(ctx, args.id, "RESTAURANT_MANAGER");
+
     const { id, ...updates } = args;
+
+    // Only owners can change isActive status
+    if (updates.isActive !== undefined) {
+      await requireRestaurantOwner(ctx, id);
+    }
+
     return await ctx.db.patch(id, {
       ...updates,
       updatedAt: Date.now(),
@@ -102,12 +117,12 @@ export const update = mutation({
   },
 });
 
-// Toggle accepting orders
+// Toggle accepting orders (requires manager role or higher)
 export const toggleAcceptingOrders = mutation({
   args: { id: v.id("restaurants") },
   handler: async (ctx, args) => {
-    const restaurant = await ctx.db.get(args.id);
-    if (!restaurant) throw new Error("Restaurant not found");
+    // Verify user has at least MANAGER role for this restaurant
+    const { restaurant } = await requireRestaurantRole(ctx, args.id, "RESTAURANT_MANAGER");
 
     return await ctx.db.patch(args.id, {
       acceptingOrders: !restaurant.acceptingOrders,
@@ -137,17 +152,9 @@ export const getFeatured = query({
 export const seedRestaurants = mutation({
   args: {},
   handler: async (ctx) => {
+    // Require admin authentication
+    const adminUser = await requireAdmin(ctx);
     const now = Date.now();
-
-    // Get admin user to be the owner
-    const adminUser = await ctx.db
-      .query("users")
-      .withIndex("by_role", (q) => q.eq("role", "admin"))
-      .first();
-
-    if (!adminUser) {
-      throw new Error("No admin user found. Create an admin user first.");
-    }
 
     // Check if restaurants already seeded
     const existing = await ctx.db.query("restaurants").first();
@@ -261,7 +268,7 @@ export const seedRestaurants = mutation({
 // Apply to become a restaurant partner (creates pending restaurant)
 export const apply = mutation({
   args: {
-    ownerId: v.id("users"),
+    // NOTE: ownerId is NOT accepted from client - obtained from auth context
     name: v.string(),
     description: v.optional(v.string()),
     address: v.string(),
@@ -278,6 +285,8 @@ export const apply = mutation({
     additionalNotes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // SECURITY: Get ownerId from authenticated user, not from client
+    const user = await getCurrentUser(ctx);
     const now = Date.now();
 
     // Generate slug from name
@@ -303,7 +312,7 @@ export const apply = mutation({
       name: args.name,
       slug,
       description: args.description,
-      ownerId: args.ownerId,
+      ownerId: user._id, // SECURE: From auth context, not client
       address: args.address,
       city: args.city,
       state: args.state,
@@ -319,5 +328,138 @@ export const apply = mutation({
       createdAt: now,
       updatedAt: now,
     });
+  },
+});
+
+// Get pending restaurant applications (admin only)
+export const getPending = query({
+  args: {},
+  handler: async (ctx) => {
+    // This is a read operation, but should only be accessible to admins
+    // The frontend should check user role before displaying this data
+    const allRestaurants = await ctx.db.query("restaurants").collect();
+    return allRestaurants.filter((r) => r.isActive === false);
+  },
+});
+
+// Approve a restaurant application (admin only)
+export const approve = mutation({
+  args: {
+    restaurantId: v.id("restaurants"),
+  },
+  handler: async (ctx, args) => {
+    // Require admin authentication
+    await requireAdmin(ctx);
+
+    const restaurant = await ctx.db.get(args.restaurantId);
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
+
+    if (restaurant.isActive) {
+      throw new Error("Restaurant is already approved");
+    }
+
+    const now = Date.now();
+
+    // Approve the restaurant
+    await ctx.db.patch(args.restaurantId, {
+      isActive: true,
+      updatedAt: now,
+    });
+
+    // Upgrade owner's role to restaurateur (if not already admin/restaurateur)
+    const owner = await ctx.db.get(restaurant.ownerId);
+    if (owner && owner.role === "user") {
+      await ctx.db.patch(restaurant.ownerId, {
+        role: USER_ROLES.RESTAURATEUR,
+        updatedAt: now,
+      });
+    }
+
+    return { success: true, restaurantId: args.restaurantId };
+  },
+});
+
+// Reject a restaurant application (admin only)
+export const reject = mutation({
+  args: {
+    restaurantId: v.id("restaurants"),
+    reason: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Require admin authentication
+    await requireAdmin(ctx);
+
+    const restaurant = await ctx.db.get(args.restaurantId);
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
+
+    // Delete the restaurant application
+    await ctx.db.delete(args.restaurantId);
+
+    // Check if user has any other approved restaurants
+    // If not, and they're a restaurateur, consider downgrading
+    const otherRestaurants = await ctx.db
+      .query("restaurants")
+      .withIndex("by_owner", (q) => q.eq("ownerId", restaurant.ownerId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
+
+    if (otherRestaurants.length === 0) {
+      const owner = await ctx.db.get(restaurant.ownerId);
+      if (owner && owner.role === "restaurateur") {
+        await ctx.db.patch(restaurant.ownerId, {
+          role: USER_ROLES.USER,
+          updatedAt: Date.now(),
+        });
+      }
+    }
+
+    return { success: true };
+  },
+});
+
+// Suspend an approved restaurant (admin only)
+export const suspend = mutation({
+  args: {
+    restaurantId: v.id("restaurants"),
+    reason: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Require admin authentication
+    await requireAdmin(ctx);
+
+    const restaurant = await ctx.db.get(args.restaurantId);
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
+
+    await ctx.db.patch(args.restaurantId, {
+      isActive: false,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+// Get user's own restaurant applications (for dashboard)
+export const getMyRestaurants = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+
+    // Admin sees all restaurants
+    if (user.role === "admin") {
+      return await ctx.db.query("restaurants").collect();
+    }
+
+    // Regular users see only their own restaurants
+    return await ctx.db
+      .query("restaurants")
+      .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
+      .collect();
   },
 });

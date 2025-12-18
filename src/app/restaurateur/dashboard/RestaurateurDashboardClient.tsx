@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { ActivityFeed } from "@/components/restaurants/ActivityFeed";
 import {
   ChefHat,
   Utensils,
@@ -14,10 +17,14 @@ import {
   Clock,
   LogIn,
   Construction,
+  Users,
+  ArrowRight,
 } from "lucide-react";
 
 export default function RestaurateurDashboardClient() {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const myRestaurants = useQuery(api.restaurants.getMyRestaurants);
+  const hasRestaurant = myRestaurants && myRestaurants.length > 0;
 
   // Loading state
   if (isLoading) {
@@ -95,6 +102,13 @@ export default function RestaurateurDashboardClient() {
       comingSoon: false,
     },
     {
+      icon: Users,
+      title: "Staff",
+      description: "Manage your team members",
+      href: "/restaurateur/dashboard/staff",
+      comingSoon: false,
+    },
+    {
       icon: Settings,
       title: "Settings",
       description: "Manage restaurant settings",
@@ -123,22 +137,37 @@ export default function RestaurateurDashboardClient() {
           </div>
         </div>
 
-        {/* Coming Soon Notice */}
+        {/* Dashboard Content */}
         <div className="container mx-auto px-4 py-8">
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-6 mb-8">
-            <div className="flex items-start gap-4">
-              <Construction className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <h2 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-2">
-                  Dashboard Coming Soon
-                </h2>
-                <p className="text-amber-700 dark:text-amber-300">
-                  We're building a powerful dashboard for restaurant owners. In the meantime,
-                  if you've submitted an application, our team will reach out to you soon.
-                </p>
+          {/* Show Activity Feed if user has restaurants */}
+          {hasRestaurant ? (
+            <div className="mb-8">
+              <ActivityFeed showStats={true} limit={10} />
+            </div>
+          ) : (
+            /* Show Application Notice if no restaurant */
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-6 mb-8">
+              <div className="flex items-start gap-4">
+                <Construction className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-2">
+                    Get Started with Your Restaurant
+                  </h2>
+                  <p className="text-amber-700 dark:text-amber-300 mb-4">
+                    You haven't set up a restaurant yet. Submit an application to join our
+                    restaurant partner network and start receiving orders.
+                  </p>
+                  <Link
+                    href="/restaurateur/apply"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
+                  >
+                    Apply Now
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Dashboard Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -190,18 +219,49 @@ export default function RestaurateurDashboardClient() {
           <div className="mt-8 bg-card rounded-xl border border-border p-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
             <div className="flex flex-wrap gap-4">
-              <Link
-                href="/restaurateur/apply"
-                className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
-              >
-                Submit New Application
-              </Link>
-              <Link
-                href="/restaurants"
-                className="px-4 py-2 border border-input rounded-lg font-medium hover:bg-muted transition-colors"
-              >
-                View All Restaurants
-              </Link>
+              {hasRestaurant ? (
+                <>
+                  <Link
+                    href="/restaurateur/dashboard/orders"
+                    className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
+                  >
+                    View Orders
+                  </Link>
+                  <Link
+                    href="/restaurateur/dashboard/menu"
+                    className="px-4 py-2 border border-input rounded-lg font-medium hover:bg-muted transition-colors"
+                  >
+                    Edit Menu
+                  </Link>
+                  <Link
+                    href="/restaurateur/dashboard/staff"
+                    className="px-4 py-2 border border-input rounded-lg font-medium hover:bg-muted transition-colors"
+                  >
+                    Manage Staff
+                  </Link>
+                  <Link
+                    href="/restaurateur/onboarding"
+                    className="px-4 py-2 border border-input rounded-lg font-medium hover:bg-muted transition-colors"
+                  >
+                    Setup Guide
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/restaurateur/apply"
+                    className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
+                  >
+                    Submit Application
+                  </Link>
+                  <Link
+                    href="/restaurants"
+                    className="px-4 py-2 border border-input rounded-lg font-medium hover:bg-muted transition-colors"
+                  >
+                    Browse Restaurants
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

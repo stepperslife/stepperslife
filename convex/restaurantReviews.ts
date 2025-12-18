@@ -1,5 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { getCurrentUser } from "./lib/auth";
+import { requireRestaurantRole } from "./lib/restaurantAuth";
 
 // Get reviews for a restaurant (public)
 export const getByRestaurant = query({
@@ -196,7 +198,7 @@ export const create = mutation({
   },
 });
 
-// Update a review
+// Update a review (only the reviewer can update their own review)
 export const update = mutation({
   args: {
     id: v.id("restaurantReviews"),
@@ -206,6 +208,19 @@ export const update = mutation({
     photos: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+
+    // Get the review and verify ownership
+    const review = await ctx.db.get(args.id);
+    if (!review) {
+      throw new Error("Review not found");
+    }
+
+    // Only the reviewer can update their review (or admin)
+    if (review.customerId !== user._id && user.role !== "admin") {
+      throw new Error("Not authorized: You can only update your own reviews");
+    }
+
     const { id, ...updates } = args;
 
     if (updates.rating !== undefined && (updates.rating < 1 || updates.rating > 5)) {
@@ -219,10 +234,23 @@ export const update = mutation({
   },
 });
 
-// Delete a review
+// Delete a review (only the reviewer can delete their own review)
 export const remove = mutation({
   args: { id: v.id("restaurantReviews") },
   handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+
+    // Get the review and verify ownership
+    const review = await ctx.db.get(args.id);
+    if (!review) {
+      throw new Error("Review not found");
+    }
+
+    // Only the reviewer can delete their review (or admin)
+    if (review.customerId !== user._id && user.role !== "admin") {
+      throw new Error("Not authorized: You can only delete your own reviews");
+    }
+
     // Also delete associated votes
     const votes = await ctx.db
       .query("restaurantReviewVotes")
@@ -237,18 +265,21 @@ export const remove = mutation({
   },
 });
 
-// Vote review as helpful
+// Vote review as helpful (userId from auth, not client)
 export const voteHelpful = mutation({
   args: {
     reviewId: v.id("restaurantReviews"),
-    userId: v.id("users"),
+    // NOTE: userId is NOT accepted from client - obtained from auth context
   },
   handler: async (ctx, args) => {
+    // Get authenticated user
+    const user = await getCurrentUser(ctx);
+
     // Check if user already voted
     const existingVote = await ctx.db
       .query("restaurantReviewVotes")
       .withIndex("by_review_user", (q) =>
-        q.eq("reviewId", args.reviewId).eq("userId", args.userId)
+        q.eq("reviewId", args.reviewId).eq("userId", user._id)
       )
       .first();
 
@@ -267,7 +298,7 @@ export const voteHelpful = mutation({
     // Add vote
     await ctx.db.insert("restaurantReviewVotes", {
       reviewId: args.reviewId,
-      userId: args.userId,
+      userId: user._id,
       voteType: "helpful",
       createdAt: Date.now(),
     });
@@ -283,18 +314,21 @@ export const voteHelpful = mutation({
   },
 });
 
-// Report a review
+// Report a review (userId from auth, not client)
 export const reportReview = mutation({
   args: {
     reviewId: v.id("restaurantReviews"),
-    userId: v.id("users"),
+    // NOTE: userId is NOT accepted from client - obtained from auth context
   },
   handler: async (ctx, args) => {
+    // Get authenticated user
+    const user = await getCurrentUser(ctx);
+
     // Check if user already reported
     const existingReport = await ctx.db
       .query("restaurantReviewVotes")
       .withIndex("by_review_user", (q) =>
-        q.eq("reviewId", args.reviewId).eq("userId", args.userId)
+        q.eq("reviewId", args.reviewId).eq("userId", user._id)
       )
       .filter((q) => q.eq(q.field("voteType"), "reported"))
       .first();
@@ -306,7 +340,7 @@ export const reportReview = mutation({
     // Add report
     await ctx.db.insert("restaurantReviewVotes", {
       reviewId: args.reviewId,
-      userId: args.userId,
+      userId: user._id,
       voteType: "reported",
       createdAt: Date.now(),
     });
@@ -325,24 +359,19 @@ export const reportReview = mutation({
   },
 });
 
-// Restaurant owner responds to a review
+// Restaurant owner responds to a review (requires MANAGER role or higher)
 export const respondToReview = mutation({
   args: {
     reviewId: v.id("restaurantReviews"),
-    ownerId: v.id("users"),
+    // NOTE: ownerId is NOT accepted from client - verified via auth context
     response: v.string(),
   },
   handler: async (ctx, args) => {
     const review = await ctx.db.get(args.reviewId);
     if (!review) throw new Error("Review not found");
 
-    const restaurant = await ctx.db.get(review.restaurantId);
-    if (!restaurant) throw new Error("Restaurant not found");
-
-    // Verify owner
-    if (restaurant.ownerId !== args.ownerId) {
-      throw new Error("Only the restaurant owner can respond to reviews");
-    }
+    // Verify user has at least MANAGER role for this restaurant
+    await requireRestaurantRole(ctx, review.restaurantId, "RESTAURANT_MANAGER");
 
     return await ctx.db.patch(args.reviewId, {
       restaurantResponse: args.response,

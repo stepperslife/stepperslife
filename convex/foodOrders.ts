@@ -2,6 +2,8 @@ import { v } from "convex/values";
 import { query, mutation, action, internalMutation } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
+import { getCurrentUser } from "./lib/auth";
+import { requireRestaurantRole, canTransitionOrderStatus, getRestaurantAccess } from "./lib/restaurantAuth";
 
 // Generate order number
 function generateOrderNumber(): string {
@@ -10,10 +12,13 @@ function generateOrderNumber(): string {
   return `FO-${timestamp}-${random}`;
 }
 
-// Get orders for restaurant
+// Get orders for restaurant (requires staff role or higher)
 export const getByRestaurant = query({
   args: { restaurantId: v.id("restaurants") },
   handler: async (ctx, args) => {
+    // Verify user has at least STAFF role for this restaurant
+    await requireRestaurantRole(ctx, args.restaurantId, "RESTAURANT_STAFF");
+
     return await ctx.db
       .query("foodOrders")
       .withIndex("by_restaurant", (q) => q.eq("restaurantId", args.restaurantId))
@@ -22,10 +27,17 @@ export const getByRestaurant = query({
   },
 });
 
-// Get orders by customer
+// Get orders by customer (user can only see their own orders, admin can see all)
 export const getByCustomer = query({
   args: { customerId: v.id("users") },
   handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+
+    // Only allow viewing own orders (or admin)
+    if (user._id !== args.customerId && user.role !== "admin") {
+      throw new Error("Not authorized: Cannot view other users' orders");
+    }
+
     return await ctx.db
       .query("foodOrders")
       .withIndex("by_customer", (q) => q.eq("customerId", args.customerId))
@@ -194,7 +206,58 @@ export const updateStatus = internalMutation({
   },
 });
 
-// Update order status with customer notification
+// Secure update order status (verifies role-based access)
+export const updateStatusSecure = mutation({
+  args: {
+    id: v.id("foodOrders"),
+    status: v.string(),
+  },
+  handler: async (ctx, args): Promise<{
+    orderId: Id<"foodOrders">;
+    orderNumber: string | undefined;
+    customerId: Id<"users"> | undefined;
+    status: string;
+  }> => {
+    // Get the order
+    const order = await ctx.db.get(args.id);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    // Verify user has access to this restaurant
+    const access = await getRestaurantAccess(ctx, order.restaurantId);
+    if (!access) {
+      throw new Error("Not authorized: No access to this restaurant");
+    }
+
+    // Check if role can make this status transition
+    const role = access.isAdmin ? "ADMIN" : access.role;
+    if (!canTransitionOrderStatus(role, order.status, args.status)) {
+      throw new Error(
+        `Not authorized: ${access.role} cannot transition from ${order.status} to ${args.status}`
+      );
+    }
+
+    // Update status
+    const updates: Record<string, unknown> = { status: args.status };
+    if (args.status === "READY_FOR_PICKUP") {
+      updates.readyAt = Date.now();
+    } else if (args.status === "COMPLETED") {
+      updates.completedAt = Date.now();
+    }
+
+    await ctx.db.patch(args.id, updates);
+
+    return {
+      orderId: args.id,
+      orderNumber: order.orderNumber,
+      customerId: order.customerId,
+      status: args.status,
+    };
+  },
+});
+
+// Update order status with customer notification (secured)
 export const updateStatusWithNotification = action({
   args: {
     id: v.id("foodOrders"),
@@ -206,8 +269,8 @@ export const updateStatusWithNotification = action({
     customerId: Id<"users"> | undefined;
     status: string;
   }> => {
-    // Update the status using internal mutation reference
-    const updateResult = await ctx.runMutation(internal.foodOrders.updateStatus, {
+    // Update the status using secure mutation (verifies role-based access)
+    const updateResult = await ctx.runMutation(api.foodOrders.updateStatusSecure, {
       id: args.id,
       status: args.status,
     });
@@ -234,34 +297,7 @@ export const updateStatusWithNotification = action({
   },
 });
 
-// Helper to verify restaurant ownership for orders
-async function verifyOrderRestaurantOwnership(
-  ctx: { db: any; auth: any },
-  orderId: Id<"foodOrders">
-): Promise<boolean> {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) return false;
-
-  // Get user by email from identity
-  const user = await ctx.db
-    .query("users")
-    .withIndex("by_email", (q: any) => q.eq("email", identity.email))
-    .first();
-
-  if (!user) return false;
-
-  // Get the order
-  const order = await ctx.db.get(orderId);
-  if (!order) return false;
-
-  // Get restaurant and check ownership
-  const restaurant = await ctx.db.get(order.restaurantId);
-  if (!restaurant) return false;
-
-  return restaurant.ownerId === user._id;
-}
-
-// Update payment status
+// Update payment status (requires MANAGER role or higher)
 export const updatePaymentStatus = mutation({
   args: {
     id: v.id("foodOrders"),
@@ -269,11 +305,14 @@ export const updatePaymentStatus = mutation({
     paymentMethod: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Verify the user owns the restaurant for this order
-    const isOwner = await verifyOrderRestaurantOwnership(ctx, args.id);
-    if (!isOwner) {
-      throw new Error("Unauthorized: You do not own this restaurant");
+    // Get the order
+    const order = await ctx.db.get(args.id);
+    if (!order) {
+      throw new Error("Order not found");
     }
+
+    // Verify user has at least MANAGER role for this restaurant
+    await requireRestaurantRole(ctx, order.restaurantId, "RESTAURANT_MANAGER");
 
     return await ctx.db.patch(args.id, {
       paymentStatus: args.paymentStatus,

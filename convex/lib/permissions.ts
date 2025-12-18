@@ -7,8 +7,11 @@
  * @module permissions
  */
 
-import { USER_ROLES, STAFF_ROLES, HIERARCHY_CONFIG, type UserRole, type StaffRole } from "./roles";
+import { USER_ROLES, STAFF_ROLES, RESTAURANT_STAFF_ROLES, HIERARCHY_CONFIG, type UserRole, type StaffRole, type RestaurantStaffRole } from "./roles";
 import type { Doc, Id } from "../_generated/dataModel";
+
+/** Restaurant role includes OWNER plus staff roles */
+export type RestaurantRole = "OWNER" | RestaurantStaffRole;
 
 /**
  * Permission checking utility class
@@ -265,6 +268,29 @@ export class PermissionChecker {
     return user.canCreateTicketedEvents !== false;
   }
 
+  // ==========================================
+  // RESTAURANT PERMISSIONS
+  // ==========================================
+
+  /**
+   * Check if user has RESTAURATEUR platform role
+   * (Can create restaurants, access restaurateur dashboard)
+   */
+  static isRestaurateur(user: Doc<"users"> | null | undefined): boolean {
+    return user?.role === USER_ROLES.RESTAURATEUR || this.isAdmin(user);
+  }
+
+  /**
+   * Check if user is the owner of a specific restaurant
+   */
+  static isRestaurantOwner(
+    user: Doc<"users"> | null | undefined,
+    restaurant: Doc<"restaurants"> | null | undefined
+  ): boolean {
+    if (!user || !restaurant) return false;
+    return this.isAdmin(user) || restaurant.ownerId === user._id;
+  }
+
   /**
    * Check if action should be allowed in production
    * (Used to prevent testing mode in production)
@@ -318,5 +344,24 @@ export async function requireCanManageStaff(
   const canManage = await PermissionChecker.canManageStaff(ctx, user, staff);
   if (!canManage) {
     throw new Error(PermissionChecker.getPermissionError("manage this staff member"));
+  }
+}
+
+// ==========================================
+// RESTAURANT CONVENIENCE FUNCTIONS
+// ==========================================
+
+export function requireRestaurateur(user: Doc<"users"> | null | undefined): void {
+  if (!PermissionChecker.isRestaurateur(user)) {
+    throw new Error(PermissionChecker.getPermissionError("access restaurateur features"));
+  }
+}
+
+export function requireRestaurantOwner(
+  user: Doc<"users"> | null | undefined,
+  restaurant: Doc<"restaurants"> | null | undefined
+): void {
+  if (!PermissionChecker.isRestaurantOwner(user, restaurant)) {
+    throw new Error(PermissionChecker.getPermissionError("manage this restaurant"));
   }
 }

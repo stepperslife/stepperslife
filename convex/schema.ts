@@ -8,7 +8,7 @@ export default defineSchema({
     email: v.string(),
     emailVerified: v.optional(v.boolean()),
     image: v.optional(v.string()),
-    role: v.optional(v.union(v.literal("admin"), v.literal("organizer"), v.literal("user"))),
+    role: v.optional(v.union(v.literal("admin"), v.literal("organizer"), v.literal("restaurateur"), v.literal("user"))),
     // Authentication
     passwordHash: v.optional(v.string()), // bcrypt hash for classic login
     googleId: v.optional(v.string()), // Google OAuth user ID
@@ -1386,6 +1386,49 @@ export default defineSchema({
     .index("by_slug", ["slug"])
     .index("by_owner", ["ownerId"]),
 
+  // Restaurant Staff - Staff members with restaurant-specific roles
+  restaurantStaff: defineTable({
+    restaurantId: v.id("restaurants"),
+    userId: v.id("users"),
+    email: v.string(),
+    name: v.string(),
+    phone: v.optional(v.string()),
+
+    // Role: RESTAURANT_MANAGER or RESTAURANT_STAFF
+    role: v.union(
+      v.literal("RESTAURANT_MANAGER"),
+      v.literal("RESTAURANT_STAFF")
+    ),
+
+    // Granular permissions (allows custom permission overrides)
+    permissions: v.optional(v.object({
+      canManageMenu: v.optional(v.boolean()),
+      canManageHours: v.optional(v.boolean()),
+      canManageOrders: v.optional(v.boolean()),
+      canViewAnalytics: v.optional(v.boolean()),
+      canManageSettings: v.optional(v.boolean()),
+    })),
+
+    // Invitation status
+    status: v.union(
+      v.literal("PENDING"),    // Invitation sent, not accepted
+      v.literal("ACTIVE"),     // Staff member is active
+      v.literal("INACTIVE")    // Deactivated by owner/manager
+    ),
+    invitedAt: v.number(),
+    acceptedAt: v.optional(v.number()),
+    invitedBy: v.id("users"),
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_restaurant", ["restaurantId"])
+    .index("by_user", ["userId"])
+    .index("by_restaurant_user", ["restaurantId", "userId"])
+    .index("by_email", ["email"])
+    .index("by_restaurant_status", ["restaurantId", "status"]),
+
   // Menu Categories - Categories for organizing menu items
   menuCategories: defineTable({
     restaurantId: v.id("restaurants"),
@@ -1511,6 +1554,9 @@ export default defineSchema({
     bannerUrl: v.optional(v.string()),
     categories: v.array(v.string()), // Product categories vendor sells
     commissionPercent: v.number(), // Platform commission (default 15%)
+    tier: v.optional(
+      v.union(v.literal("BASIC"), v.literal("VERIFIED"), v.literal("PREMIUM"))
+    ), // Vendor tier - determines commission and benefits
     website: v.optional(v.string()),
     additionalNotes: v.optional(v.string()),
     status: v.union(
@@ -1535,7 +1581,8 @@ export default defineSchema({
     .index("by_owner", ["ownerId"])
     .index("by_slug", ["slug"])
     .index("by_status", ["status"])
-    .index("by_active", ["isActive"]),
+    .index("by_active", ["isActive"])
+    .index("by_tier", ["tier", "isActive"]),
 
   // Vendor Earnings - Track earnings from each order
   vendorEarnings: defineTable({

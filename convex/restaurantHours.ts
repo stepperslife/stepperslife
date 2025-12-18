@@ -1,7 +1,8 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { requireRestaurantRole } from "./lib/restaurantAuth";
 
-// Get operating hours for a restaurant
+// Get operating hours for a restaurant (public - no auth required)
 export const getHours = query({
   args: { restaurantId: v.id("restaurants") },
   handler: async (ctx, args) => {
@@ -10,7 +11,7 @@ export const getHours = query({
   },
 });
 
-// Update operating hours
+// Update operating hours (requires MANAGER role or higher)
 export const updateHours = mutation({
   args: {
     restaurantId: v.id("restaurants"),
@@ -25,6 +26,9 @@ export const updateHours = mutation({
     }),
   },
   handler: async (ctx, args) => {
+    // Verify user has at least MANAGER role for this restaurant
+    await requireRestaurantRole(ctx, args.restaurantId, "RESTAURANT_MANAGER");
+
     return await ctx.db.patch(args.restaurantId, {
       operatingHours: args.operatingHours,
       updatedAt: Date.now(),
@@ -32,12 +36,13 @@ export const updateHours = mutation({
   },
 });
 
-// Toggle accepting orders status
+// Toggle accepting orders status (requires MANAGER role or higher)
+// NOTE: This is also available via restaurants.toggleAcceptingOrders
 export const toggleAcceptingOrders = mutation({
   args: { restaurantId: v.id("restaurants") },
   handler: async (ctx, args) => {
-    const restaurant = await ctx.db.get(args.restaurantId);
-    if (!restaurant) throw new Error("Restaurant not found");
+    // Verify user has at least MANAGER role for this restaurant
+    const { restaurant } = await requireRestaurantRole(ctx, args.restaurantId, "RESTAURANT_MANAGER");
 
     return await ctx.db.patch(args.restaurantId, {
       acceptingOrders: !restaurant.acceptingOrders,

@@ -37,6 +37,8 @@ export const USER_ROLES = {
   ADMIN: "admin",
   /** Event creator and manager */
   ORGANIZER: "organizer",
+  /** Restaurant owner - can create and manage restaurants */
+  RESTAURATEUR: "restaurateur",
   /** Regular customer/ticket buyer */
   USER: "user",
 } as const;
@@ -67,6 +69,30 @@ export const STAFF_ROLES = {
   TEAM_MEMBERS: "TEAM_MEMBERS",
   /** Sub-sellers assigned by Team Members - earn commission from ticket sales */
   ASSOCIATES: "ASSOCIATES",
+} as const;
+
+/**
+ * Staff roles for restaurant-specific staff members
+ *
+ * HIERARCHY:
+ * - OWNER: The restaurant owner (linked via ownerId, has full control)
+ *   - Full access to all restaurant features
+ *   - Can delete restaurant, manage billing, process refunds
+ *
+ * - RESTAURANT_MANAGER: Operations manager
+ *   - Can manage menu, hours, orders, analytics, and staff
+ *   - Cannot access billing, delete restaurant, or transfer ownership
+ *   - Cannot process refunds
+ *
+ * - RESTAURANT_STAFF: Order fulfillment staff
+ *   - Can view and update order status only
+ *   - Cannot modify menu, hours, settings, or view analytics
+ */
+export const RESTAURANT_STAFF_ROLES = {
+  /** Operations manager - menu, orders, hours, analytics, staff management */
+  RESTAURANT_MANAGER: "RESTAURANT_MANAGER",
+  /** Order fulfillment - view orders and update status only */
+  RESTAURANT_STAFF: "RESTAURANT_STAFF",
 } as const;
 
 /**
@@ -123,6 +149,9 @@ export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 /** Staff role type */
 export type StaffRole = (typeof STAFF_ROLES)[keyof typeof STAFF_ROLES];
 
+/** Restaurant staff role type */
+export type RestaurantStaffRole = (typeof RESTAURANT_STAFF_ROLES)[keyof typeof RESTAURANT_STAFF_ROLES];
+
 /** Commission type */
 export type CommissionType = (typeof COMMISSION_TYPES)[keyof typeof COMMISSION_TYPES];
 
@@ -144,6 +173,13 @@ export function isStaffRole(value: unknown): value is StaffRole {
 }
 
 /**
+ * Type guard to check if a value is a valid restaurant staff role
+ */
+export function isRestaurantStaffRole(value: unknown): value is RestaurantStaffRole {
+  return Object.values(RESTAURANT_STAFF_ROLES).includes(value as RestaurantStaffRole);
+}
+
+/**
  * Type guard to check if a value is a valid transfer status
  */
 export function isTransferStatus(value: unknown): value is TransferStatus {
@@ -153,14 +189,17 @@ export function isTransferStatus(value: unknown): value is TransferStatus {
 /**
  * Get human-readable role name
  */
-export function getRoleName(role: UserRole | StaffRole): string {
-  const roleNames: Record<UserRole | StaffRole, string> = {
+export function getRoleName(role: UserRole | StaffRole | RestaurantStaffRole): string {
+  const roleNames: Record<UserRole | StaffRole | RestaurantStaffRole, string> = {
     [USER_ROLES.ADMIN]: "Administrator",
     [USER_ROLES.ORGANIZER]: "Event Organizer",
+    [USER_ROLES.RESTAURATEUR]: "Restaurateur",
     [USER_ROLES.USER]: "User",
     [STAFF_ROLES.STAFF]: "Door Staff",
     [STAFF_ROLES.TEAM_MEMBERS]: "Team Member",
     [STAFF_ROLES.ASSOCIATES]: "Associate",
+    [RESTAURANT_STAFF_ROLES.RESTAURANT_MANAGER]: "Restaurant Manager",
+    [RESTAURANT_STAFF_ROLES.RESTAURANT_STAFF]: "Restaurant Staff",
   };
   return roleNames[role] || role;
 }
@@ -168,10 +207,11 @@ export function getRoleName(role: UserRole | StaffRole): string {
 /**
  * Get role description
  */
-export function getRoleDescription(role: UserRole | StaffRole): string {
-  const descriptions: Record<UserRole | StaffRole, string> = {
+export function getRoleDescription(role: UserRole | StaffRole | RestaurantStaffRole): string {
+  const descriptions: Record<UserRole | StaffRole | RestaurantStaffRole, string> = {
     [USER_ROLES.ADMIN]: "Full platform access with ability to manage all events and users",
     [USER_ROLES.ORGANIZER]: "Create and manage events, ticket tiers, and staff members",
+    [USER_ROLES.RESTAURATEUR]: "Create and manage restaurants, menus, orders, and restaurant staff",
     [USER_ROLES.USER]: "Browse events and purchase tickets",
     [STAFF_ROLES.STAFF]:
       "Scan and validate tickets at event entrance, can sell if organizer permits",
@@ -179,6 +219,10 @@ export function getRoleDescription(role: UserRole | StaffRole): string {
       "Business partner - can earn up to 100% commission, can assign Associates as sub-sellers without organizer permission",
     [STAFF_ROLES.ASSOCIATES]:
       "Sub-seller assigned by a Team Member - receives ticket allocation and earns commission from sales",
+    [RESTAURANT_STAFF_ROLES.RESTAURANT_MANAGER]:
+      "Restaurant operations manager - can manage menu, hours, orders, analytics, and staff",
+    [RESTAURANT_STAFF_ROLES.RESTAURANT_STAFF]:
+      "Restaurant order fulfillment - can view orders and update order status",
   };
   return descriptions[role] || "Unknown role";
 }

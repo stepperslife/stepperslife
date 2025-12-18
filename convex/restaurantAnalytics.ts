@@ -1,13 +1,17 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
+import { requireRestaurantRole } from "./lib/restaurantAuth";
 
-// Get order stats for a restaurant
+// Get order stats for a restaurant (requires MANAGER role or higher)
 export const getOrderStats = query({
   args: {
     restaurantId: v.id("restaurants"),
     days: v.optional(v.number()), // Last N days, default 30
   },
   handler: async (ctx, args) => {
+    // Verify user has at least MANAGER role for this restaurant
+    await requireRestaurantRole(ctx, args.restaurantId, "RESTAURANT_MANAGER");
+
     const days = args.days || 30;
     const cutoffTime = Date.now() - days * 24 * 60 * 60 * 1000;
 
@@ -45,13 +49,16 @@ export const getOrderStats = query({
   },
 });
 
-// Get daily order trends
+// Get daily order trends (requires MANAGER role or higher)
 export const getDailyTrends = query({
   args: {
     restaurantId: v.id("restaurants"),
     days: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Verify user has at least MANAGER role for this restaurant
+    await requireRestaurantRole(ctx, args.restaurantId, "RESTAURANT_MANAGER");
+
     const days = args.days || 14;
     const cutoffTime = Date.now() - days * 24 * 60 * 60 * 1000;
 
@@ -93,13 +100,16 @@ export const getDailyTrends = query({
   },
 });
 
-// Get popular menu items
+// Get popular menu items (requires MANAGER role or higher)
 export const getPopularItems = query({
   args: {
     restaurantId: v.id("restaurants"),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Verify user has at least MANAGER role for this restaurant
+    await requireRestaurantRole(ctx, args.restaurantId, "RESTAURANT_MANAGER");
+
     const limit = args.limit || 10;
 
     // Get completed orders
@@ -133,13 +143,16 @@ export const getPopularItems = query({
   },
 });
 
-// Get hourly distribution of orders
+// Get hourly distribution of orders (requires MANAGER role or higher)
 export const getHourlyDistribution = query({
   args: {
     restaurantId: v.id("restaurants"),
     days: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Verify user has at least MANAGER role for this restaurant
+    await requireRestaurantRole(ctx, args.restaurantId, "RESTAURANT_MANAGER");
+
     const days = args.days || 30;
     const cutoffTime = Date.now() - days * 24 * 60 * 60 * 1000;
 
@@ -166,10 +179,13 @@ export const getHourlyDistribution = query({
   },
 });
 
-// Get review stats summary
+// Get review stats summary (requires MANAGER role or higher)
 export const getReviewSummary = query({
   args: { restaurantId: v.id("restaurants") },
   handler: async (ctx, args) => {
+    // Verify user has at least MANAGER role for this restaurant
+    await requireRestaurantRole(ctx, args.restaurantId, "RESTAURANT_MANAGER");
+
     const reviews = await ctx.db
       .query("restaurantReviews")
       .withIndex("by_restaurant", (q) => q.eq("restaurantId", args.restaurantId))
