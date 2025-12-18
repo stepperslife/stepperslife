@@ -174,8 +174,21 @@ export default function RestaurantsListClient() {
             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
           />
 
+          {/* Background Food Image */}
+          <motion.div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920&q=80')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.5 }}
+          />
+
           {/* Gradient Overlay for depth */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/50" />
 
           {/* Floating Food Icons */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
