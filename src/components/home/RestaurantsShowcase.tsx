@@ -8,13 +8,33 @@ import { mockRestaurants } from "@/lib/mock-data/restaurants";
 import { Button } from "@/components/ui/button";
 import { Clock, Star, UtensilsCrossed } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useMemo, Component, ReactNode } from "react";
 
-export function RestaurantsShowcase() {
+// Error boundary to catch Convex query errors and fall back gracefully
+class RestaurantsErrorBoundary extends Component<{ children: ReactNode, fallback: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode, fallback: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+// Inner component that uses Convex query
+function RestaurantsShowcaseInner() {
   const convexRestaurants = useQuery(api.restaurants.getFeatured);
+
   // Use Convex data if available, otherwise fall back to mock data
-  const restaurants = convexRestaurants && convexRestaurants.length > 0
-    ? convexRestaurants.map((r) => ({
+  const restaurants = useMemo(() => {
+    if (convexRestaurants && convexRestaurants.length > 0) {
+      return convexRestaurants.map((r) => ({
         id: r._id,
         slug: r.slug,
         name: r.name,
@@ -26,8 +46,45 @@ export function RestaurantsShowcase() {
         estimatedPickupTime: r.estimatedPickupTime,
         averageRating: 4.5, // Default rating since we don't have reviews yet
         totalReviews: 0,
-      }))
-    : mockRestaurants.slice(0, 5);
+      }));
+    }
+    return mockRestaurants.slice(0, 5);
+  }, [convexRestaurants]);
+
+  return <RestaurantsShowcaseContent restaurants={restaurants} />;
+}
+
+// Fallback component that uses mock data
+function RestaurantsShowcaseFallback() {
+  const restaurants = mockRestaurants.slice(0, 5);
+  return <RestaurantsShowcaseContent restaurants={restaurants} />;
+}
+
+// Main export wraps with error boundary
+export function RestaurantsShowcase() {
+  return (
+    <RestaurantsErrorBoundary fallback={<RestaurantsShowcaseFallback />}>
+      <RestaurantsShowcaseInner />
+    </RestaurantsErrorBoundary>
+  );
+}
+
+// Shared content component
+interface Restaurant {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  cuisine: string[];
+  logoUrl: string;
+  coverImageUrl: string;
+  acceptingOrders: boolean;
+  estimatedPickupTime: number;
+  averageRating: number;
+  totalReviews: number;
+}
+
+function RestaurantsShowcaseContent({ restaurants }: { restaurants: Restaurant[] }) {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
