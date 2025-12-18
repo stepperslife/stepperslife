@@ -117,9 +117,16 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
     return undefined; // Still loading
   }, [convexRestaurant, useFallback, slug]);
 
-  // Only query menu items if we have a real restaurant from Convex
-  const convexMenuItems = restaurant && convexRestaurant !== null ? useQuery(api.menuItems.getByRestaurant, { restaurantId: restaurant._id }) : undefined;
-  const convexCategories = restaurant && convexRestaurant !== null ? useQuery(api.menuItems.getCategories, { restaurantId: restaurant._id }) : undefined;
+  // Query menu items - use "skip" when we don't have a valid Convex restaurant
+  const shouldSkipQueries = !convexRestaurant || convexRestaurant === null;
+  const convexMenuItems = useQuery(
+    api.menuItems.getByRestaurant,
+    shouldSkipQueries ? "skip" : { restaurantId: convexRestaurant._id }
+  );
+  const convexCategories = useQuery(
+    api.menuItems.getCategories,
+    shouldSkipQueries ? "skip" : { restaurantId: convexRestaurant._id }
+  );
 
   // Use mock menu items when using fallback
   const menuItems = useMemo(() => {
@@ -135,7 +142,10 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
   }, [convexCategories, useFallback, restaurant]);
 
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const reviewStats = restaurant && convexRestaurant !== null ? useQuery(api.restaurantReviews.getRestaurantStats, { restaurantId: restaurant._id }) : undefined;
+  const reviewStats = useQuery(
+    api.restaurantReviews.getRestaurantStats,
+    shouldSkipQueries ? "skip" : { restaurantId: convexRestaurant._id }
+  );
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
