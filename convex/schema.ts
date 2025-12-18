@@ -447,6 +447,10 @@ export default defineSchema({
     maxPerOrder: v.optional(v.number()),
     minPerOrder: v.optional(v.number()),
     active: v.optional(v.boolean()),
+
+    // Email notification tracking
+    reminderSent: v.optional(v.boolean()), // 24h reminder email sent
+    confirmationSent: v.optional(v.boolean()), // Purchase confirmation email sent
   })
     .index("by_order", ["orderId"])
     .index("by_event", ["eventId"])

@@ -19,4 +19,35 @@ crons.interval(
   internal.orders.cashPaymentsCron.expireCashOrders
 );
 
+/**
+ * Class/Event Reminders
+ * Runs every hour to send reminders for classes/events starting in the next 24 hours
+ */
+crons.interval(
+  "send-class-reminders",
+  { hours: 1 }, // Check every hour
+  internal.notifications.classReminders.sendClassReminders
+);
+
+/**
+ * Instructor Daily Digest
+ * Runs at 8 AM Central time (14:00 UTC) to send daily enrollment summaries
+ * Note: Convex cron times are in UTC
+ */
+crons.daily(
+  "send-daily-digests",
+  { hourUTC: 14, minuteUTC: 0 }, // 8 AM CST / 9 AM CDT
+  internal.notifications.instructorDigests.sendDailyDigests
+);
+
+/**
+ * Instructor Weekly Digest
+ * Runs every Monday at 8 AM Central time (14:00 UTC)
+ */
+crons.weekly(
+  "send-weekly-digests",
+  { dayOfWeek: "monday", hourUTC: 14, minuteUTC: 0 }, // Monday 8 AM CST
+  internal.notifications.instructorDigests.sendWeeklyDigests
+);
+
 export default crons;
