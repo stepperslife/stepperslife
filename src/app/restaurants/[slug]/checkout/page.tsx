@@ -3,6 +3,7 @@
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect, useMemo } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
@@ -31,6 +32,7 @@ export default function RestaurantCheckoutPage() {
 
   const restaurant = useQuery(api.restaurants.getBySlug, { slug });
   const createOrder = useAction(api.foodOrders.createWithNotification);
+  const { user } = useAuth();
 
   // Parse cart from URL params
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -150,9 +152,10 @@ export default function RestaurantCheckoutPage() {
         ? Date.now() + (restaurant.estimatedPickupTime * 60 * 1000)
         : pickupTimeOption;
 
-      // Submit order (with notification)
+      // Submit order (with notification) - link to authenticated user if logged in
       const result = await createOrder({
         restaurantId: restaurant._id,
+        customerId: user?._id as Id<"users"> | undefined,
         customerName: customerName.trim(),
         customerEmail: customerEmail.trim(),
         customerPhone: customerPhone.trim(),
