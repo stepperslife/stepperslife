@@ -102,8 +102,8 @@ export default function ClassDetailClient({ classId, mockData }: ClassDetailClie
       alert("This is a demo class. Sign up functionality coming soon!");
       return;
     }
-    // Navigate to checkout page for this class
-    router.push(`/checkout/class/${classId}`);
+    // Navigate to checkout page for this class (uses events checkout)
+    router.push(`/events/${classId}/checkout`);
   };
 
   if (classDetails === undefined) {
