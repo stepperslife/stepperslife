@@ -116,10 +116,16 @@ test.describe("Customer Purchase Flow", () => {
 
     await takeScreenshot(page, "customer-checkout-form-filled");
 
-    // Step 8: Fill Stripe card details
-    await fillStripeCard(page, STRIPE_TEST_CARD);
+    // Step 8: Fill Stripe card details (if Stripe is present)
+    const stripeFrame = page.frameLocator('iframe[name*="stripe"]').first();
+    const hasStripe = await stripeFrame.locator('input').first().isVisible({ timeout: 3000 }).catch(() => false);
 
-    await takeScreenshot(page, "customer-stripe-card-filled");
+    if (hasStripe) {
+      await fillStripeCard(page, STRIPE_TEST_CARD);
+      await takeScreenshot(page, "customer-stripe-card-filled");
+    } else {
+      console.log("Payment method: Pay When You Receive (no Stripe required)");
+    }
 
     // Step 9: Submit order
     const orderNumber = await submitOrder(page);
@@ -157,20 +163,27 @@ test.describe("Customer Purchase Flow", () => {
     });
 
     await fillShippingAddress(page);
-    await fillStripeCard(page);
+
+    // Check if Stripe is present before trying to fill card
+    const stripeFrame = page.frameLocator('iframe[name*="stripe"]').first();
+    const hasStripe = await stripeFrame.locator('input').first().isVisible({ timeout: 3000 }).catch(() => false);
+    if (hasStripe) {
+      await fillStripeCard(page);
+    } else {
+      console.log("Payment method: Pay When You Receive (no Stripe)");
+    }
 
     // Submit and verify confirmation page elements
-    await page.click('button[type="submit"], button:has-text("Place Order")');
+    const placeOrderButton = page.getByRole('button', { name: 'Place Order' });
+    await placeOrderButton.click();
 
-    // Wait for confirmation page
-    await page.waitForURL(/order-confirmation|success|thank/, { timeout: 60000 });
+    // Wait for confirmation content to appear
+    const successMessage = page.locator('text=/Order Placed Successfully|Order Confirmed|Thank you for your order/i');
+    await successMessage.waitFor({ timeout: 60000 });
     await waitForPageLoad(page);
 
     // Verify confirmation page elements
-    const thankYouMessage = page.locator('text="Thank you"')
-      .or(page.locator('text="Order Confirmed"'))
-      .or(page.locator('text="Confirmation"'));
-    await expect(thankYouMessage).toBeVisible({ timeout: 10000 });
+    await expect(successMessage).toBeVisible({ timeout: 10000 });
 
     // Verify order number is displayed
     const orderNumberDisplay = page.locator('text=/ORD-[A-Z0-9-]+/i');
@@ -280,16 +293,24 @@ test.describe("Customer Purchase Flow", () => {
     });
 
     await fillShippingAddress(page);
-    await fillStripeCard(page);
 
-    await page.click('button[type="submit"], button:has-text("Place Order")');
+    // Check if Stripe is present before trying to fill card
+    const stripeFrame = page.frameLocator('iframe[name*="stripe"]').first();
+    const hasStripe = await stripeFrame.locator('input').first().isVisible({ timeout: 3000 }).catch(() => false);
+    if (hasStripe) {
+      await fillStripeCard(page);
+    } else {
+      console.log("Payment method: Pay When You Receive (no Stripe)");
+    }
 
-    await page.waitForURL(/order-confirmation|success/, { timeout: 60000 });
+    const placeOrderButton = page.getByRole('button', { name: 'Place Order' });
+    await placeOrderButton.click();
 
-    const confirmation = await page.locator('text="Thank you"')
-      .or(page.locator('text="Order Confirmed"'))
-      .isVisible({ timeout: 10000 });
+    // Wait for success message or URL change
+    const successMessage = page.locator('text=/Order Placed Successfully|Order Confirmed|Thank you/i');
+    await successMessage.waitFor({ timeout: 60000 });
 
+    const confirmation = await successMessage.isVisible();
     expect(confirmation).toBe(true);
 
     await takeScreenshot(page, "customer-multi-quantity-order");

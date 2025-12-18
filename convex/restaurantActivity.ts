@@ -29,7 +29,7 @@ export const getRecentActivity = query({
     } else {
       // Get all restaurants user owns or manages
       const myRestaurants = await getMyRestaurants(ctx);
-      restaurantIds = myRestaurants.map((r) => r._id);
+      restaurantIds = myRestaurants.map((r) => r.restaurant._id);
     }
 
     if (restaurantIds.length === 0) {
@@ -49,7 +49,7 @@ export const getRecentActivity = query({
 
     // Fetch recent orders (last 24 hours or most recent 10)
     for (const restaurantId of restaurantIds) {
-      const restaurant = await ctx.db.get(restaurantId as any);
+      const restaurant = await ctx.db.get(restaurantId as any) as { name?: string } | null;
 
       // Get recent orders
       const orders = await ctx.db
@@ -63,8 +63,8 @@ export const getRecentActivity = query({
           id: order._id,
           type: "order",
           title: `New order #${order.orderNumber}`,
-          description: `${order.customerName} - $${order.total.toFixed(2)}`,
-          timestamp: order.createdAt,
+          description: `${order.customerName} - $${(order.total / 100).toFixed(2)}`,
+          timestamp: order.placedAt,
           restaurantId,
           restaurantName: restaurant?.name,
           metadata: {
@@ -83,13 +83,13 @@ export const getRecentActivity = query({
         .take(5);
 
       for (const review of reviews) {
-        const reviewer = await ctx.db.get(review.userId);
+        const reviewer = await ctx.db.get(review.customerId) as { name?: string } | null;
         activities.push({
           id: review._id,
           type: "review",
           title: `New ${review.rating}-star review`,
-          description: review.comment
-            ? review.comment.substring(0, 80) + (review.comment.length > 80 ? "..." : "")
+          description: review.reviewText
+            ? review.reviewText.substring(0, 80) + (review.reviewText.length > 80 ? "..." : "")
             : "No comment",
           timestamp: review.createdAt,
           restaurantId,
@@ -159,7 +159,7 @@ export const getOrderStats = query({
       restaurantIds = [args.restaurantId];
     } else {
       const myRestaurants = await getMyRestaurants(ctx);
-      restaurantIds = myRestaurants.map((r) => r._id);
+      restaurantIds = myRestaurants.map((r) => r.restaurant._id);
     }
 
     if (restaurantIds.length === 0) {
@@ -199,7 +199,7 @@ export const getOrderStats = query({
       const today = await ctx.db
         .query("foodOrders")
         .withIndex("by_restaurant", (q) => q.eq("restaurantId", restaurantId as any))
-        .filter((q) => q.gte(q.field("createdAt"), todayStart))
+        .filter((q) => q.gte(q.field("placedAt"), todayStart))
         .collect();
       todayOrders += today.length;
       todayRevenue += today.reduce((sum, order) => sum + order.total, 0);

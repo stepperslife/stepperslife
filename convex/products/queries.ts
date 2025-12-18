@@ -69,12 +69,12 @@ export const getProductById = query({
 
     try {
       // Try to normalize the string to a valid Convex ID
-      const product = await ctx.db.get(args.productId as any);
+      const product = await ctx.db.get(args.productId as any) as { vendorId?: any; [key: string]: any } | null;
       if (!product) return null;
 
       // Enrich with vendor info
       if (product.vendorId) {
-        const vendor = await ctx.db.get(product.vendorId);
+        const vendor = await ctx.db.get(product.vendorId) as { _id: any; name?: string; slug?: string; logoUrl?: string; description?: string; tier?: string } | null;
         return {
           ...product,
           vendor: vendor ? {

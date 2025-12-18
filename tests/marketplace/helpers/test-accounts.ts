@@ -29,9 +29,9 @@ export const TEST_SHIPPING_ADDRESS = {
   name: "Test Customer",
   address1: "123 Test Street",
   address2: "Suite 100",
-  city: "Chicago",
-  state: "IL",
-  zipCode: "60601",
+  city: "Evanston",
+  state: "Illinois",
+  zipCode: "60201",
   country: "United States",
 };
 

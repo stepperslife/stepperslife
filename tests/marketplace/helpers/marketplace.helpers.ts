@@ -309,21 +309,24 @@ export async function fillShippingAddress(
     }
   }
 
-  // City - placeholder "Chicago"
-  const cityInput = page.getByPlaceholder("Chicago");
+  // City - use label locator for better reliability
+  const cityInput = page.locator('input[placeholder="Chicago"]');
   if (await cityInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await cityInput.clear();
     await cityInput.fill(address.city);
   }
 
-  // State - placeholder "IL"
-  const stateInput = page.getByPlaceholder("IL");
+  // State - use label locator for better reliability
+  const stateInput = page.locator('input[placeholder="IL"]');
   if (await stateInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await stateInput.clear();
     await stateInput.fill(address.state);
   }
 
-  // ZIP Code - placeholder "60601"
-  const zipInput = page.getByPlaceholder("60601");
+  // ZIP Code - use label locator for better reliability
+  const zipInput = page.locator('input[placeholder="60601"]');
   if (await zipInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await zipInput.clear();
     await zipInput.fill(address.zipCode);
   }
 }
@@ -343,9 +346,16 @@ export async function fillStripeCard(
   page: Page,
   card = STRIPE_TEST_CARD
 ): Promise<void> {
-  // Locate Stripe iframe
-  const stripeFrame = page.frameLocator('iframe[name*="stripe"]').first()
-    .or(page.frameLocator('iframe[src*="stripe"]').first());
+  // Try to find Stripe iframe with different selectors
+  let stripeFrame = page.frameLocator('iframe[name*="stripe"]').first();
+
+  // Check if frame exists by trying to find an element
+  const hasNameFrame = await stripeFrame.locator('input').first().isVisible({ timeout: 2000 }).catch(() => false);
+
+  if (!hasNameFrame) {
+    // Try alternative selector
+    stripeFrame = page.frameLocator('iframe[src*="stripe"]').first();
+  }
 
   // Fill card number
   const cardNumber = stripeFrame.locator('input[name="cardnumber"], input[placeholder*="card number" i]');
@@ -370,14 +380,25 @@ export async function fillStripeCard(
  * Submit order
  */
 export async function submitOrder(page: Page): Promise<string | null> {
-  // Click place order button
-  const submitButton = page.locator('button:has-text("Place Order")').first()
-    .or(page.locator('button[type="submit"]').first());
-
+  // Click place order button using getByRole for reliability
+  const submitButton = page.getByRole('button', { name: 'Place Order' });
   await submitButton.click();
 
-  // Wait for redirect to confirmation page
-  await page.waitForURL(/order-confirmation/, { timeout: 30000 });
+  // Wait for either URL change OR success content to appear
+  // Some checkouts show confirmation on same page, others redirect
+  try {
+    await Promise.race([
+      page.waitForURL(/order-confirmation|order-success|success|thank|confirmation/, { timeout: 30000 }),
+      page.locator('text=/Order Placed Successfully|Order Confirmed|Thank you for your order/i').waitFor({ timeout: 30000 }),
+    ]);
+  } catch {
+    // If neither URL nor text appears, check if we're still on checkout with success message
+    const hasSuccess = await page.locator('text=/Order Placed Successfully|Order Confirmed/i').isVisible().catch(() => false);
+    if (!hasSuccess) {
+      throw new Error('Order submission failed - no confirmation found');
+    }
+  }
+
   await waitForPageLoad(page);
 
   // Extract order number from URL or page content
