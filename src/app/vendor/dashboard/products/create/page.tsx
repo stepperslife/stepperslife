@@ -63,7 +63,7 @@ export default function CreateProductPage() {
     user?._id ? { ownerId: user._id as Id<"users"> } : "skip"
   );
 
-  const createProduct = useMutation(api.products.mutations.createProduct);
+  const createProduct = useMutation(api.products.mutations.createVendorProduct);
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
