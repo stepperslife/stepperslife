@@ -1713,4 +1713,56 @@ export default defineSchema({
     .index("by_restaurant", ["restaurantId"])
     .index("by_type", ["type"])
     .index("by_status", ["status"]),
+
+  // ==========================================
+  // EMAIL LOG MODULE - Track all sent emails for audit and resend
+  // ==========================================
+
+  // Email Log - Audit trail for all transactional emails
+  emailLog: defineTable({
+    // Reference to order
+    orderNumber: v.string(),
+    orderId: v.optional(v.id("productOrders")),
+
+    // Recipient info
+    recipientType: v.union(
+      v.literal("CUSTOMER"),
+      v.literal("VENDOR"),
+      v.literal("STAFF")
+    ),
+    recipientEmail: v.string(),
+    recipientName: v.optional(v.string()),
+
+    // Email content
+    subject: v.string(),
+    templateType: v.string(), // "ORDER_RECEIPT", "VENDOR_ALERT", "STAFF_NOTIFICATION"
+
+    // Status tracking
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("SENT"),
+      v.literal("FAILED"),
+      v.literal("RESENT")
+    ),
+
+    // Delivery details
+    messageId: v.optional(v.string()), // Resend message ID
+    attempts: v.number(),
+    lastAttemptAt: v.number(),
+    errorMessage: v.optional(v.string()),
+
+    // Resend tracking
+    resentAt: v.optional(v.number()),
+    resentBy: v.optional(v.id("users")),
+    resentMessageId: v.optional(v.string()),
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_order_number", ["orderNumber"])
+    .index("by_status", ["status"])
+    .index("by_recipient_type", ["recipientType"])
+    .index("by_recipient_email", ["recipientEmail"])
+    .index("by_created_at", ["createdAt"]),
 });

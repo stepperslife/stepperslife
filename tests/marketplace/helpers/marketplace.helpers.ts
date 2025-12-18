@@ -74,16 +74,25 @@ export async function login(page: Page, email: string, password: string): Promis
   await page.waitForTimeout(3000);
   await waitForPageLoad(page);
 
-  // Verify login success by checking for logout option or user menu
-  const isLoggedIn = await page.locator('text="Log Out"')
-    .or(page.locator('text="Sign Out"'))
-    .or(page.locator('[data-testid="user-menu"]'))
-    .or(page.locator('text="Dashboard"'))
-    .or(page.locator('text="My Account"'))
-    .isVisible()
-    .catch(() => false);
+  // Verify login success by checking for logged-in indicators one at a time
+  // Check for "Create Event" link using text (shows when logged in as organizer)
+  // The button shows as "+ Create Event" or "Create Event"
+  const hasCreateEvent = await page.locator('text="Create Event"').first().isVisible().catch(() => false);
+  if (hasCreateEvent) return true;
 
-  return isLoggedIn;
+  // Check for logout button
+  const hasLogout = await page.locator('text="Log Out"').or(page.locator('text="Sign Out"')).isVisible().catch(() => false);
+  if (hasLogout) return true;
+
+  // Check for Dashboard link
+  const hasDashboard = await page.locator('text="Dashboard"').isVisible().catch(() => false);
+  if (hasDashboard) return true;
+
+  // Check for user menu
+  const hasUserMenu = await page.locator('[data-testid="user-menu"]').isVisible().catch(() => false);
+  if (hasUserMenu) return true;
+
+  return false;
 }
 
 /**
@@ -111,37 +120,45 @@ export async function fillProductForm(
     status?: "ACTIVE" | "DRAFT";
   }
 ): Promise<void> {
-  // Product name
-  await page.fill('input[name="name"], input[placeholder*="name" i]', productData.name);
+  // Wait for the form to be ready
+  await page.waitForSelector('input[name="name"]', { timeout: 10000 });
 
-  // Description
-  await page.fill('textarea[name="description"], textarea[placeholder*="description" i]', productData.description);
+  // Product name - use direct name attribute selector
+  await page.fill('input[name="name"]', productData.name);
 
-  // Price (convert to string with 2 decimal places)
-  const priceInput = page.locator('input[name="price"], input[type="number"]').first();
-  await priceInput.fill(productData.price.toFixed(2));
+  // Description - use direct name attribute selector
+  await page.fill('textarea[name="description"]', productData.description);
 
-  // Category (if provided)
+  // Price - use direct name attribute selector
+  await page.fill('input[name="price"]', productData.price.toFixed(2));
+
+  // Category (if provided) - the form uses a select element
   if (productData.category) {
-    const categorySelect = page.locator('select[name="category"]');
+    const categorySelect = page.locator('select').first();
     if (await categorySelect.isVisible().catch(() => false)) {
       await categorySelect.selectOption({ label: productData.category });
     }
   }
 
-  // Inventory quantity
+  // Inventory quantity - fill if provided
   if (productData.inventoryQuantity !== undefined) {
-    const inventoryInput = page.locator('input[name="inventoryQuantity"], input[name="inventory"]');
-    if (await inventoryInput.isVisible().catch(() => false)) {
-      await inventoryInput.fill(productData.inventoryQuantity.toString());
+    const quantityInput = page.locator('input[name="inventoryQuantity"]');
+    if (await quantityInput.isVisible().catch(() => false)) {
+      await quantityInput.fill(productData.inventoryQuantity.toString());
+    } else {
+      // Try spinbutton for quantity
+      const quantitySpinbutton = page.locator('input[type="number"]').nth(1); // Second number input (after price)
+      if (await quantitySpinbutton.isVisible().catch(() => false)) {
+        await quantitySpinbutton.fill(productData.inventoryQuantity.toString());
+      }
     }
   }
 
-  // Status
-  if (productData.status) {
-    const statusSelect = page.locator('select[name="status"]');
+  // Status - set to ACTIVE if specified (second select on the page)
+  if (productData.status === "ACTIVE") {
+    const statusSelect = page.locator('select').last();
     if (await statusSelect.isVisible().catch(() => false)) {
-      await statusSelect.selectOption(productData.status);
+      await statusSelect.selectOption({ label: "Active - Visible in marketplace" });
     }
   }
 }
@@ -150,21 +167,23 @@ export async function fillProductForm(
  * Submit product form and wait for success
  */
 export async function submitProductAndWait(page: Page): Promise<string | null> {
-  // Click submit button
-  await page.click('button[type="submit"]');
+  // Find and click the submit button
+  const submitButton = page.locator('form button[type="submit"]');
+  await submitButton.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(500);
 
-  // Wait for success indication
-  await page.waitForTimeout(2000);
+  // Click the button
+  await submitButton.click();
 
-  // Check for success toast or redirect
-  const successToast = page.locator('text="Product created"').or(page.locator('text="successfully"'));
-  const wasSuccessful = await successToast.isVisible({ timeout: 10000 }).catch(() => false);
-
-  if (wasSuccessful) {
-    // Try to extract product ID from URL if redirected
-    const url = page.url();
-    const productIdMatch = url.match(/products\/([a-z0-9]+)/i);
-    return productIdMatch ? productIdMatch[1] : null;
+  // Wait for redirect to products list (success indicator)
+  try {
+    await page.waitForURL('**/vendor/dashboard/products', { timeout: 15000 });
+    return "created";
+  } catch {
+    // Check if we're on the products list anyway
+    if (page.url().includes('/vendor/dashboard/products') && !page.url().includes('/create')) {
+      return "created";
+    }
   }
 
   return null;
