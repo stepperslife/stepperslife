@@ -346,7 +346,7 @@ export default function ProductDetailPage() {
                 {product.vendor ? (
                   <Link
                     href={`/marketplace/vendors/${product.vendor.slug}`}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors mb-3"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-sky-100 dark:bg-sky-900/30 rounded-lg text-primary/90 dark:text-sky-300 hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors mb-3"
                   >
                     {product.vendor.logo ? (
                       <div className="relative w-5 h-5">

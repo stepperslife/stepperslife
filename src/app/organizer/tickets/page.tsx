@@ -74,7 +74,7 @@ export default function TicketsPage() {
       title: "Available Tickets",
       value: totalTicketsAvailable.toLocaleString(),
       icon: Ticket,
-      color: "bg-purple-500",
+      color: "bg-sky-500",
       href: "/organizer/tickets/inventory",
     },
     {

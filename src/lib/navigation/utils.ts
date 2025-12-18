@@ -206,7 +206,7 @@ export function getRoleColor(role: AllRoles): string {
     case "user":
       return "bg-blue-500 text-white";
     case "STAFF":
-      return "bg-purple-500 text-white";
+      return "bg-sky-500 text-white";
     case "TEAM_MEMBERS":
       return "bg-green-500 text-white";
     case "ASSOCIATES":

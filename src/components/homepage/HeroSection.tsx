@@ -72,7 +72,7 @@ export function HeroSection() {
                 transition={{ duration: 0.6, delay: 0.6 }}
                 className="mt-12 space-y-4"
               >
-                <div className="rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-600/10 dark:from-purple-500/30 dark:to-purple-600/15 p-6 backdrop-blur-sm border border-border/50">
+                <div className="rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 dark:from-primary/30 dark:to-primary/15 p-6 backdrop-blur-sm border border-border/50">
                   <div className="text-3xl font-bold">100+</div>
                   <div className="text-sm text-muted-foreground">Classes</div>
                 </div>

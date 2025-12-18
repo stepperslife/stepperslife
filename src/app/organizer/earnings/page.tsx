@@ -85,7 +85,7 @@ export default function EarningsPage() {
       description: "Configure your payout methods",
       icon: Wallet,
       href: "/organizer/payment-methods",
-      color: "bg-purple-500",
+      color: "bg-sky-500",
     },
   ];
 

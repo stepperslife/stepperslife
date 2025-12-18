@@ -44,7 +44,7 @@ export default function SupportPage() {
       description: "Quick answers to common questions",
       icon: HelpCircle,
       href: "#faqs",
-      color: "bg-purple-500",
+      color: "bg-sky-500",
     },
     {
       title: "Email Support",

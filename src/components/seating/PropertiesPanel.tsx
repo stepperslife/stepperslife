@@ -186,7 +186,7 @@ export default function PropertiesPanel({
               <X className="w-5 h-5" />
             </button>
           </div>
-          <p className="text-sm text-purple-100 mt-1">
+          <p className="text-sm text-sky-100 mt-1">
             {isTable ? `Table ${(data as Table).number}` : (data as Section).name}
           </p>
         </div>

@@ -59,8 +59,8 @@ export function VendorSidebar({ vendorName, vendorSlug }: VendorSidebarProps) {
       {/* Header */}
       <div className="p-6 border-b border-border">
         <Link href="/vendor/dashboard" className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-            <Store className="w-5 h-5 text-purple-600" />
+          <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+            <Store className="w-5 h-5 text-primary" />
           </div>
           <div className="overflow-hidden">
             <h2 className="font-bold text-foreground truncate">
@@ -85,7 +85,7 @@ export function VendorSidebar({ vendorName, vendorSlug }: VendorSidebarProps) {
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
                     isActive
-                      ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600"
+                      ? "bg-sky-100 dark:bg-sky-900/30 text-primary"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
@@ -104,7 +104,7 @@ export function VendorSidebar({ vendorName, vendorSlug }: VendorSidebarProps) {
           <Link
             href={`/marketplace/store/${vendorSlug}`}
             target="_blank"
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:bg-sky-50 dark:hover:bg-sky-900/20 rounded-lg transition-colors"
           >
             <ExternalLink className="w-4 h-4" />
             View My Store

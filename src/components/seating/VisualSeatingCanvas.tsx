@@ -411,8 +411,8 @@ export default function VisualSeatingCanvas({
                 {/* Empty State - Show when no sections */}
                 {sections.length === 0 && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="bg-white/95 rounded-lg shadow-lg border-2 border-purple-300 p-8 max-w-md text-center">
-                      <GridIcon className="w-16 h-16 text-purple-500 mx-auto mb-4" />
+                    <div className="bg-white/95 rounded-lg shadow-lg border-2 border-sky-300 p-8 max-w-md text-center">
+                      <GridIcon className="w-16 h-16 text-sky-500 mx-auto mb-4" />
                       <h3 className="text-xl font-bold text-gray-900 mb-2">
                         {venueImageUrl ? "Ready to Design!" : "Blank Canvas Ready"}
                       </h3>
@@ -421,9 +421,9 @@ export default function VisualSeatingCanvas({
                           ? "Your venue image is loaded. Now add sections to start designing your seating layout."
                           : "No venue image needed! You can design your seating layout on this blank canvas."}
                       </p>
-                      <div className="bg-accent border border-purple-200 rounded-lg p-3 text-left">
+                      <div className="bg-accent border border-sky-200 rounded-lg p-3 text-left">
                         <p className="text-xs font-semibold text-foreground mb-2">📍 Next Steps:</p>
-                        <ol className="text-xs text-purple-800 space-y-1 list-decimal list-inside">
+                        <ol className="text-xs text-sky-800 space-y-1 list-decimal list-inside">
                           <li>Scroll down to click "Add Section to Canvas"</li>
                           <li>Sections will appear here - drag to position</li>
                           <li>Add tables or rows to your sections</li>

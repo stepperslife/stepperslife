@@ -145,14 +145,14 @@ export function PendingInvitations({ variant = "full", onAccept }: PendingInvita
                 </h4>
                 <div className="flex items-center gap-2 mt-1">
                   {invitation.role === "RESTAURANT_MANAGER" ? (
-                    <ShieldCheck className="w-4 h-4 text-purple-600" />
+                    <ShieldCheck className="w-4 h-4 text-primary" />
                   ) : (
                     <Shield className="w-4 h-4 text-blue-600" />
                   )}
                   <span
                     className={`text-sm ${
                       invitation.role === "RESTAURANT_MANAGER"
-                        ? "text-purple-600"
+                        ? "text-primary"
                         : "text-blue-600"
                     }`}
                   >

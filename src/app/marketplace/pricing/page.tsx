@@ -82,10 +82,10 @@ export default function MarketplacePricingPage() {
     <>
       <PublicHeader />
       <MarketplaceSubNav />
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-background dark:from-purple-950/20 dark:to-background">
+      <div className="min-h-screen bg-gradient-to-b from-sky-50 to-background dark:from-sky-950/20 dark:to-background">
         {/* Hero Section */}
         <div className="container mx-auto px-4 py-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 rounded-full text-purple-700 dark:text-purple-300 text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-sky-100 dark:bg-sky-900/30 rounded-full text-primary/90 dark:text-sky-300 text-sm font-medium mb-6">
             <ShoppingBag className="w-4 h-4" />
             Vendor Pricing
           </div>
@@ -99,14 +99,14 @@ export default function MarketplacePricingPage() {
 
           {/* Startup Special Banner */}
           <div className="max-w-3xl mx-auto mb-8">
-            <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-6 text-white">
+            <div className="bg-gradient-to-r from-sky-500 to-pink-500 rounded-2xl p-6 text-white">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Sparkles className="w-6 h-6" />
                 <span className="text-lg font-bold">LAUNCH SPECIAL</span>
                 <Sparkles className="w-6 h-6" />
               </div>
               <p className="text-2xl font-bold mb-2">First 100 Vendors Get 50% Off for 6 Months!</p>
-              <p className="text-purple-100">Plus 0% transaction fees on your first $500 in sales</p>
+              <p className="text-sky-100">Plus 0% transaction fees on your first $500 in sales</p>
             </div>
           </div>
 
@@ -146,12 +146,12 @@ export default function MarketplacePricingPage() {
                 key={tier.name}
                 className={`relative bg-card rounded-2xl shadow-lg overflow-hidden transition-transform hover:scale-105 ${
                   tier.highlighted
-                    ? "ring-2 ring-purple-500 dark:ring-purple-400"
+                    ? "ring-2 ring-sky-500 dark:ring-sky-400"
                     : "border border-border"
                 }`}
               >
                 {tier.highlighted && (
-                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-center text-sm font-medium py-2">
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-sky-500 to-pink-500 text-white text-center text-sm font-medium py-2">
                     Most Popular
                   </div>
                 )}
@@ -186,9 +186,9 @@ export default function MarketplacePricingPage() {
                   </div>
 
                   {/* Transaction Fee Badge */}
-                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg mb-6 w-full">
-                    <TrendingUp className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                    <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-sky-50 dark:bg-sky-900/20 rounded-lg mb-6 w-full">
+                    <TrendingUp className="w-4 h-4 text-primary dark:text-sky-400" />
+                    <span className="text-sm font-medium text-primary/90 dark:text-sky-300">
                       Only {tier.transactionFee} per sale
                     </span>
                   </div>
@@ -198,7 +198,7 @@ export default function MarketplacePricingPage() {
                     href="/vendor/apply"
                     className={`block w-full py-3 px-6 rounded-lg font-semibold text-center transition-colors mb-8 ${
                       tier.highlighted
-                        ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
+                        ? "bg-gradient-to-r from-sky-500 to-pink-500 text-white hover:from-primary hover:to-pink-600"
                         : "bg-muted text-foreground hover:bg-muted/80"
                     }`}
                   >
@@ -235,8 +235,8 @@ export default function MarketplacePricingPage() {
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className="text-center p-6">
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Gift className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Gift className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">Community First</h3>
               <p className="text-muted-foreground text-sm">
@@ -245,8 +245,8 @@ export default function MarketplacePricingPage() {
             </div>
 
             <div className="text-center p-6">
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">No Hidden Fees</h3>
               <p className="text-muted-foreground text-sm">
@@ -255,8 +255,8 @@ export default function MarketplacePricingPage() {
             </div>
 
             <div className="text-center p-6">
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">Grow With Us</h3>
               <p className="text-muted-foreground text-sm">
@@ -286,7 +286,7 @@ export default function MarketplacePricingPage() {
                     <th className="text-center py-4 px-4 font-semibold text-foreground">
                       Starter (8%)
                     </th>
-                    <th className="text-center py-4 px-4 font-semibold text-purple-600">
+                    <th className="text-center py-4 px-4 font-semibold text-primary">
                       Growth (5% + $9.99)
                     </th>
                     <th className="text-center py-4 px-4 font-semibold text-foreground">
@@ -307,7 +307,7 @@ export default function MarketplacePricingPage() {
                       <td className="py-4 px-4 text-center text-muted-foreground">
                         You keep {row.starter}
                       </td>
-                      <td className="py-4 px-4 text-center text-purple-600 font-medium bg-purple-50/50 dark:bg-purple-900/10">
+                      <td className="py-4 px-4 text-center text-primary font-medium bg-sky-50/50 dark:bg-sky-900/10">
                         You keep {row.growth}
                       </td>
                       <td className="py-4 px-4 text-center text-muted-foreground">
@@ -371,7 +371,7 @@ export default function MarketplacePricingPage() {
 
         {/* CTA Section */}
         <div className="container mx-auto px-4 py-16">
-          <div className="max-w-4xl mx-auto bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-8 md:p-12 text-center text-white">
+          <div className="max-w-4xl mx-auto bg-gradient-to-r from-sky-500 to-pink-500 rounded-2xl p-8 md:p-12 text-center text-white">
             <Zap className="w-12 h-12 mx-auto mb-6 opacity-80" />
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Ready to start selling?
@@ -383,13 +383,13 @@ export default function MarketplacePricingPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/vendor/apply"
-                className="px-8 py-4 bg-white text-purple-600 rounded-lg font-semibold hover:bg-purple-50 transition-colors"
+                className="px-8 py-4 bg-white text-primary rounded-lg font-semibold hover:bg-sky-50 transition-colors"
               >
                 Become a Vendor - Free
               </Link>
               <Link
                 href="/marketplace"
-                className="px-8 py-4 bg-purple-600 text-white border-2 border-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+                className="px-8 py-4 bg-primary text-white border-2 border-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Browse Marketplace
               </Link>
@@ -404,7 +404,7 @@ export default function MarketplacePricingPage() {
             <span>Questions? Contact us at </span>
             <a
               href="mailto:vendors@stepperslife.com"
-              className="text-purple-600 hover:underline font-medium"
+              className="text-primary hover:underline font-medium"
             >
               vendors@stepperslife.com
             </a>

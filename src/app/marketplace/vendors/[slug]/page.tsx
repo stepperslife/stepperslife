@@ -127,7 +127,7 @@ export default function VendorStorefrontPage() {
       <MarketplaceSubNav />
       <div className="min-h-screen bg-background">
         {/* Vendor Header Banner */}
-        <div className="relative h-48 md:h-64 bg-gradient-to-br from-purple-600 to-purple-800">
+        <div className="relative h-48 md:h-64 bg-gradient-to-br from-primary to-sky-800">
           {vendor.bannerUrl && (
             <img
               src={vendor.bannerUrl}
@@ -151,8 +151,8 @@ export default function VendorStorefrontPage() {
                     className="w-24 h-24 md:w-32 md:h-32 rounded-xl border-4 border-card object-cover shadow-lg"
                   />
                 ) : (
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl border-4 border-card bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center shadow-lg">
-                    <Store className="w-12 h-12 text-purple-600" />
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl border-4 border-card bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center shadow-lg">
+                    <Store className="w-12 h-12 text-primary" />
                   </div>
                 )}
               </div>
@@ -176,7 +176,7 @@ export default function VendorStorefrontPage() {
                       href={vendor.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-purple-600 hover:text-purple-700"
+                      className="flex items-center gap-1.5 text-primary hover:text-primary/90"
                     >
                       <Globe className="w-4 h-4" />
                       <span>Website</span>
@@ -194,7 +194,7 @@ export default function VendorStorefrontPage() {
                     {vendor.categories.map((category) => (
                       <span
                         key={category}
-                        className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-sm rounded-full"
+                        className="px-3 py-1 bg-sky-100 dark:bg-sky-900/30 text-primary/90 dark:text-sky-300 text-sm rounded-full"
                       >
                         {category}
                       </span>
@@ -326,7 +326,7 @@ export default function VendorStorefrontPage() {
                 {vendor.contactEmail && (
                   <a
                     href={`mailto:${vendor.contactEmail}`}
-                    className="flex items-center gap-2 text-muted-foreground hover:text-purple-600 transition-colors"
+                    className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                   >
                     <Mail className="w-5 h-5" />
                     <span>{vendor.contactEmail}</span>
@@ -335,7 +335,7 @@ export default function VendorStorefrontPage() {
                 {vendor.contactPhone && (
                   <a
                     href={`tel:${vendor.contactPhone}`}
-                    className="flex items-center gap-2 text-muted-foreground hover:text-purple-600 transition-colors"
+                    className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                   >
                     <Phone className="w-5 h-5" />
                     <span>{vendor.contactPhone}</span>

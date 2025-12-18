@@ -109,7 +109,7 @@ export default function VendorsPage() {
                 placeholder="Search vendors by name, description, or location..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -120,10 +120,10 @@ export default function VendorsPage() {
                 <Link
                   key={vendor._id}
                   href={`/marketplace/vendors/${vendor.slug}`}
-                  className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-700 transition-all group"
+                  className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-sky-300 dark:hover:border-primary/90 transition-all group"
                 >
                   {/* Vendor Header/Logo */}
-                  <div className="h-32 bg-gradient-to-br from-purple-600 to-purple-800 relative">
+                  <div className="h-32 bg-gradient-to-br from-primary to-sky-800 relative">
                     {vendor.logo ? (
                       <img
                         src={vendor.logo}
@@ -131,8 +131,8 @@ export default function VendorsPage() {
                         className="absolute bottom-0 left-4 translate-y-1/2 w-20 h-20 rounded-xl border-4 border-card object-cover shadow-lg"
                       />
                     ) : (
-                      <div className="absolute bottom-0 left-4 translate-y-1/2 w-20 h-20 rounded-xl border-4 border-card bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center shadow-lg">
-                        <Store className="w-10 h-10 text-purple-600" />
+                      <div className="absolute bottom-0 left-4 translate-y-1/2 w-20 h-20 rounded-xl border-4 border-card bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center shadow-lg">
+                        <Store className="w-10 h-10 text-primary" />
                       </div>
                     )}
                   </div>
@@ -140,7 +140,7 @@ export default function VendorsPage() {
                   {/* Vendor Info */}
                   <div className="pt-14 p-4">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-lg text-foreground group-hover:text-purple-600 transition-colors">
+                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
                         {vendor.storeName}
                       </h3>
                       <VendorTierBadge tier={vendor.tier || "BASIC"} size="sm" />
@@ -167,7 +167,7 @@ export default function VendorsPage() {
                         {vendor.categories.slice(0, 3).map((category) => (
                           <span
                             key={category}
-                            className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs rounded-full"
+                            className="px-2 py-0.5 bg-sky-100 dark:bg-sky-900/30 text-primary/90 dark:text-sky-300 text-xs rounded-full"
                           >
                             {category}
                           </span>
@@ -186,7 +186,7 @@ export default function VendorsPage() {
                         <Package className="w-4 h-4" />
                         <span>{vendor.productCount || 0} products</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-purple-600 dark:text-purple-400 font-medium group-hover:gap-2 transition-all">
+                      <div className="flex items-center gap-1 text-sm text-primary dark:text-sky-400 font-medium group-hover:gap-2 transition-all">
                         <span>Visit Store</span>
                         <ArrowRight className="w-4 h-4" />
                       </div>
@@ -212,17 +212,17 @@ export default function VendorsPage() {
           )}
 
           {/* Become a Vendor CTA */}
-          <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-xl p-8 mt-12">
+          <div className="bg-gradient-to-r from-primary to-sky-800 rounded-xl p-8 mt-12">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div className="text-white">
                 <h3 className="text-xl font-bold mb-2">Want to sell on SteppersLife?</h3>
-                <p className="text-purple-100">
+                <p className="text-sky-100">
                   Join our marketplace and reach thousands of stepping enthusiasts.
                 </p>
               </div>
               <Link
                 href="/vendor/apply"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-purple-600 rounded-lg font-bold hover:bg-purple-50 transition-colors whitespace-nowrap"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-lg font-bold hover:bg-sky-50 transition-colors whitespace-nowrap"
               >
                 <Store className="w-5 h-5" />
                 Apply to Sell

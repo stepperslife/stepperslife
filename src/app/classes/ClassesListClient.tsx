@@ -248,7 +248,7 @@ export default function ClassesListClient() {
               <span className="text-white drop-shadow-lg">Master Your</span>
               <br />
               <motion.span
-                className="bg-gradient-to-r from-violet-300 via-purple-200 to-fuchsia-300 bg-clip-text text-transparent bg-[length:200%_auto]"
+                className="bg-gradient-to-r from-cyan-200 via-white to-sky-300 bg-clip-text text-transparent bg-[length:200%_auto]"
                 animate={{ backgroundPosition: ["0% center", "200% center"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
               >

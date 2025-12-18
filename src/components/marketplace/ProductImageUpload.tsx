@@ -169,20 +169,20 @@ export function ProductImageUpload({
         onDrop={handleDrop}
         className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg transition-all duration-200 cursor-pointer ${
           isDragging
-            ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20 scale-[1.02]"
-            : "border-border bg-muted/50 hover:bg-muted hover:border-purple-400"
+            ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20 scale-[1.02]"
+            : "border-border bg-muted/50 hover:bg-muted hover:border-sky-400"
         } ${images.length >= maxImages ? "opacity-50 cursor-not-allowed" : ""}`}
       >
         <div className="flex flex-col items-center justify-center py-4">
           {isUploading ? (
             <>
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600 mb-3"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-3"></div>
               {compressionProgress > 0 && compressionProgress < 100 ? (
                 <>
                   <p className="text-sm text-muted-foreground mb-2">Optimizing image...</p>
                   <div className="w-40 h-2 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-purple-600 transition-all duration-300"
+                      className="h-full bg-primary transition-all duration-300"
                       style={{ width: `${compressionProgress}%` }}
                     />
                   </div>
@@ -193,13 +193,13 @@ export function ProductImageUpload({
             </>
           ) : isDragging ? (
             <>
-              <Upload className="w-10 h-10 mb-3 text-purple-600 animate-bounce" />
-              <p className="text-sm font-medium text-purple-600">Drop images here</p>
+              <Upload className="w-10 h-10 mb-3 text-primary animate-bounce" />
+              <p className="text-sm font-medium text-primary">Drop images here</p>
             </>
           ) : (
             <>
               <div className="flex items-center gap-2 mb-2">
-                <Plus className="w-8 h-8 text-purple-600" />
+                <Plus className="w-8 h-8 text-primary" />
                 <ImageIcon className="w-8 h-8 text-muted-foreground" />
               </div>
               <p className="text-sm font-medium text-foreground">
@@ -227,7 +227,7 @@ export function ProductImageUpload({
                 fill
                 className={`object-cover rounded-lg border-2 ${
                   primaryImage === img
-                    ? "border-purple-600 ring-2 ring-purple-300"
+                    ? "border-primary ring-2 ring-sky-300"
                     : "border-border"
                 }`}
               />
@@ -250,7 +250,7 @@ export function ProductImageUpload({
                 </button>
               </div>
               {primaryImage === img && (
-                <span className="absolute top-2 left-2 px-2 py-1 bg-purple-600 text-white text-xs font-medium rounded">
+                <span className="absolute top-2 left-2 px-2 py-1 bg-primary text-white text-xs font-medium rounded">
                   Primary
                 </span>
               )}

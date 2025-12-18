@@ -153,7 +153,7 @@ export function createDefaultRowSection(position: Position): RowSectionItem {
     size: calculateRowSectionSize(rowCount, seatsPerRow),
     rowSpacing: 30,
     seatSpacing: 25,
-    color: "#8B5CF6", // purple-600
+    color: "#8B5CF6", // primary
   };
 }
 
@@ -353,7 +353,7 @@ function generateSeatsForRow(seatCount: number, rowNumber: number): any[] {
  */
 export const SECTION_COLORS = [
   "#3B82F6", // blue
-  "#8B5CF6", // purple
+  "#0EA5E9", // sky
   "#EC4899", // pink
   "#F59E0B", // amber
   "#10B981", // green

@@ -133,13 +133,13 @@ export default function EventsListClient() {
         <section className="relative min-h-[500px] md:min-h-[600px] w-full overflow-hidden">
           {/* Animated Gradient Background */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-violet-900"
+            className="absolute inset-0 bg-gradient-to-br from-sky-900 via-primary to-sky-800"
             animate={{
               background: [
-                "linear-gradient(135deg, #581c87 0%, #312e81 50%, #5b21b6 100%)",
-                "linear-gradient(135deg, #312e81 0%, #5b21b6 50%, #581c87 100%)",
-                "linear-gradient(135deg, #5b21b6 0%, #581c87 50%, #312e81 100%)",
-                "linear-gradient(135deg, #581c87 0%, #312e81 50%, #5b21b6 100%)",
+                "linear-gradient(135deg, #0c4a6e 0%, #0284c7 50%, #075985 100%)",
+                "linear-gradient(135deg, #0284c7 0%, #075985 50%, #0c4a6e 100%)",
+                "linear-gradient(135deg, #075985 0%, #0c4a6e 50%, #0284c7 100%)",
+                "linear-gradient(135deg, #0c4a6e 0%, #0284c7 50%, #075985 100%)",
               ],
             }}
             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
@@ -245,7 +245,7 @@ export default function EventsListClient() {
               >
                 Find Your Next{" "}
                 <motion.span
-                  className="inline-block bg-gradient-to-r from-purple-300 via-pink-300 to-yellow-300 bg-clip-text text-transparent"
+                  className="inline-block bg-gradient-to-r from-sky-300 via-pink-300 to-yellow-300 bg-clip-text text-transparent"
                   animate={{
                     backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                   }}
@@ -280,10 +280,10 @@ export default function EventsListClient() {
                 >
                   <Button
                     size="lg"
-                    className="text-lg px-8 py-6 bg-white !text-purple-900 hover:bg-white/90 shadow-xl shadow-purple-900/30"
+                    className="text-lg px-8 py-6 bg-white !text-primary hover:bg-white/90 shadow-xl shadow-sky-900/30"
                     onClick={() => document.getElementById('events-grid')?.scrollIntoView({ behavior: 'smooth' })}
                   >
-                    <Calendar className="w-5 h-5 mr-2 text-purple-900" />
+                    <Calendar className="w-5 h-5 mr-2 text-primary" />
                     Browse Events
                   </Button>
                 </motion.div>

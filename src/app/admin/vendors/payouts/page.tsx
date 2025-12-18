@@ -25,7 +25,7 @@ type PayoutStatus = "PENDING" | "APPROVED" | "PROCESSING" | "COMPLETED" | "FAILE
 const STATUS_CONFIG: Record<PayoutStatus, { label: string; color: string }> = {
   PENDING: { label: "Pending Review", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" },
   APPROVED: { label: "Approved", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" },
-  PROCESSING: { label: "Processing", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" },
+  PROCESSING: { label: "Processing", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300" },
   COMPLETED: { label: "Completed", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
   FAILED: { label: "Failed", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
 };
@@ -233,7 +233,7 @@ export default function AdminPayoutsPage() {
               placeholder="Search by payout number or vendor..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -241,7 +241,7 @@ export default function AdminPayoutsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as PayoutStatus | "")}
-              className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             >
               <option value="">All Status</option>
               <option value="PENDING">Pending</option>
@@ -365,7 +365,7 @@ export default function AdminPayoutsPage() {
                                   },
                                 })
                               }
-                              className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                              className="px-3 py-1.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
                             >
                               Process
                             </button>
@@ -433,7 +433,7 @@ export default function AdminPayoutsPage() {
                   value={paymentReference}
                   onChange={(e) => setPaymentReference(e.target.value)}
                   placeholder="Transaction ID, check number, etc."
-                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </div>
             )}
@@ -451,7 +451,7 @@ export default function AdminPayoutsPage() {
                     ? "Provide a reason for rejection..."
                     : "Add any notes..."
                 }
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
               />
             </div>
 
@@ -474,7 +474,7 @@ export default function AdminPayoutsPage() {
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                   actionModal.type === "reject"
                     ? "bg-red-600 text-white hover:bg-red-700"
-                    : "bg-purple-600 text-white hover:bg-purple-700"
+                    : "bg-primary text-white hover:bg-primary/90"
                 } disabled:opacity-50`}
               >
                 {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}

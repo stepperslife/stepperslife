@@ -63,7 +63,7 @@ export default function VendorDashboardPage() {
       value: `$${((earningsSummary?.availableBalance || 0) / 100).toFixed(2)}`,
       icon: DollarSign,
       href: "/vendor/dashboard/earnings",
-      color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600",
+      color: "bg-sky-100 dark:bg-sky-900/30 text-primary",
     },
     {
       name: "Total Earnings",
@@ -113,10 +113,10 @@ export default function VendorDashboardPage() {
           <div className="space-y-3">
             <Link
               href="/vendor/dashboard/products/create"
-              className="flex items-center justify-between p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
+              className="flex items-center justify-between p-4 bg-sky-50 dark:bg-sky-900/20 rounded-lg hover:bg-sky-100 dark:hover:bg-sky-900/30 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                   <Plus className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -153,7 +153,7 @@ export default function VendorDashboardPage() {
             <h2 className="text-lg font-bold text-foreground">Recent Earnings</h2>
             <Link
               href="/vendor/dashboard/earnings"
-              className="text-sm text-purple-600 hover:underline"
+              className="text-sm text-primary hover:underline"
             >
               View All
             </Link>
@@ -216,9 +216,9 @@ export default function VendorDashboardPage() {
                 ${(earningsSummary.processingEarnings / 100).toFixed(2)}
               </p>
             </div>
-            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+            <div className="p-4 bg-sky-50 dark:bg-sky-900/20 rounded-lg">
               <p className="text-sm text-muted-foreground">Paid Out</p>
-              <p className="text-xl font-bold text-purple-600">
+              <p className="text-xl font-bold text-primary">
                 ${(earningsSummary.paidEarnings / 100).toFixed(2)}
               </p>
             </div>

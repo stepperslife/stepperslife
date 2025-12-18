@@ -22,7 +22,7 @@ const STATUS_CONFIG: Record<EarningStatus, { label: string; color: string }> = {
   PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" },
   AVAILABLE: { label: "Available", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
   PROCESSING: { label: "Processing", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" },
-  PAID: { label: "Paid", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" },
+  PAID: { label: "Paid", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300" },
   REFUNDED: { label: "Refunded", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
 };
 
@@ -97,8 +97,8 @@ export default function VendorEarningsPage() {
 
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <Banknote className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <Banknote className="w-6 h-6 text-primary" />
             </div>
           </div>
           <p className="text-3xl font-bold text-foreground">
@@ -134,17 +134,17 @@ export default function VendorEarningsPage() {
 
       {/* Request Payout CTA */}
       {(summary?.availableBalance || 0) >= 2500 && (
-        <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl p-6 mb-8">
+        <div className="bg-gradient-to-r from-primary to-primary/90 rounded-xl p-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="text-white">
               <h3 className="text-lg font-bold mb-1">Ready for Payout</h3>
-              <p className="text-purple-100">
+              <p className="text-sky-100">
                 You have {formatCurrency(summary?.availableBalance || 0)} available for withdrawal
               </p>
             </div>
             <Link
               href="/vendor/dashboard/payouts"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-purple-600 rounded-lg font-bold hover:bg-purple-50 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-lg font-bold hover:bg-sky-50 transition-colors"
             >
               Request Payout
               <ArrowRight className="w-5 h-5" />
@@ -154,16 +154,16 @@ export default function VendorEarningsPage() {
       )}
 
       {/* Commission Info */}
-      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-6 mb-8">
+      <div className="bg-sky-50 dark:bg-sky-900/20 rounded-xl p-6 mb-8">
         <div className="flex items-start gap-4">
-          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center flex-shrink-0">
-            <TrendingUp className="w-5 h-5 text-purple-600" />
+          <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/50 rounded-lg flex items-center justify-center flex-shrink-0">
+            <TrendingUp className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-bold text-purple-900 dark:text-purple-100 mb-1">
+            <h3 className="font-bold text-sky-900 dark:text-sky-100 mb-1">
               How Earnings Work
             </h3>
-            <p className="text-sm text-purple-800 dark:text-purple-200">
+            <p className="text-sm text-sky-800 dark:text-sky-200">
               You earn <strong>85%</strong> of each sale (SteppersLife takes a 15% commission).
               Earnings become available for payout after orders are completed.
               Minimum payout is <strong>$25.00</strong>.
@@ -179,7 +179,7 @@ export default function VendorEarningsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as EarningStatus | "")}
-            className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
           >
             <option value="">All Status</option>
             <option value="PENDING">Pending</option>

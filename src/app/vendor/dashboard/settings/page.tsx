@@ -257,8 +257,8 @@ export default function VendorSettingsPage() {
         {/* Store Information */}
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <Store className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <Store className="w-5 h-5 text-primary" />
             </div>
             <h2 className="text-lg font-bold text-foreground">Store Information</h2>
           </div>
@@ -274,7 +274,7 @@ export default function VendorSettingsPage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 placeholder="Your store name"
               />
             </div>
@@ -306,7 +306,7 @@ export default function VendorSettingsPage() {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
                 placeholder="Describe your store and what you sell..."
               />
             </div>
@@ -319,7 +319,7 @@ export default function VendorSettingsPage() {
                 name="businessType"
                 value={formData.businessType}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               >
                 <option value="">Select business type</option>
                 <option value="Individual">Individual / Sole Proprietor</option>
@@ -342,7 +342,7 @@ export default function VendorSettingsPage() {
                     onClick={() => handleCategoryToggle(category)}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                       formData.categories.includes(category)
-                        ? "bg-purple-600 text-white"
+                        ? "bg-primary text-white"
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }`}
                   >
@@ -357,8 +357,8 @@ export default function VendorSettingsPage() {
         {/* Store Branding */}
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <ImageIcon className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <ImageIcon className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-foreground">Store Branding</h2>
@@ -388,8 +388,8 @@ export default function VendorSettingsPage() {
         {/* Contact Information */}
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <Mail className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <Mail className="w-5 h-5 text-primary" />
             </div>
             <h2 className="text-lg font-bold text-foreground">Contact Information</h2>
           </div>
@@ -406,7 +406,7 @@ export default function VendorSettingsPage() {
                 value={formData.contactEmail}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 placeholder="contact@yourstore.com"
               />
             </div>
@@ -421,7 +421,7 @@ export default function VendorSettingsPage() {
                 name="contactPhone"
                 value={formData.contactPhone}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 placeholder="(555) 123-4567"
               />
             </div>
@@ -436,7 +436,7 @@ export default function VendorSettingsPage() {
                 name="website"
                 value={formData.website}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 placeholder="https://yourwebsite.com"
               />
             </div>
@@ -446,8 +446,8 @@ export default function VendorSettingsPage() {
         {/* Location */}
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <MapPin className="w-5 h-5 text-primary" />
             </div>
             <h2 className="text-lg font-bold text-foreground">Business Location</h2>
           </div>
@@ -462,7 +462,7 @@ export default function VendorSettingsPage() {
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 placeholder="123 Main Street"
               />
             </div>
@@ -475,7 +475,7 @@ export default function VendorSettingsPage() {
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   placeholder="City"
                 />
               </div>
@@ -487,7 +487,7 @@ export default function VendorSettingsPage() {
                   name="state"
                   value={formData.state}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   placeholder="State"
                 />
               </div>
@@ -499,7 +499,7 @@ export default function VendorSettingsPage() {
                   name="zipCode"
                   value={formData.zipCode}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   placeholder="12345"
                 />
               </div>
@@ -511,7 +511,7 @@ export default function VendorSettingsPage() {
                   name="country"
                   value={formData.country}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   placeholder="USA"
                 />
               </div>
@@ -520,11 +520,11 @@ export default function VendorSettingsPage() {
         </div>
 
         {/* Commission Info */}
-        <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-6">
-          <h3 className="font-bold text-purple-900 dark:text-purple-100 mb-2">
+        <div className="bg-sky-50 dark:bg-sky-900/20 rounded-xl p-6">
+          <h3 className="font-bold text-sky-900 dark:text-sky-100 mb-2">
             Commission Rate: {vendor.commissionPercent || 15}%
           </h3>
-          <p className="text-sm text-purple-800 dark:text-purple-200">
+          <p className="text-sm text-sky-800 dark:text-sky-200">
             SteppersLife takes a {vendor.commissionPercent || 15}% commission on each sale.
             You keep {100 - (vendor.commissionPercent || 15)}% of each sale.
             Commission rates are set by platform administrators.
@@ -536,7 +536,7 @@ export default function VendorSettingsPage() {
           <button
             type="submit"
             disabled={isSubmitting || !hasChanges}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {isSubmitting ? (
               <>

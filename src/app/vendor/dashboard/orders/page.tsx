@@ -67,7 +67,7 @@ interface VendorOrder {
 const STATUS_CONFIG: Record<FulfillmentStatus, { label: string; color: string; icon: typeof Clock }> = {
   PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
   PROCESSING: { label: "Processing", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", icon: Package },
-  SHIPPED: { label: "Shipped", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300", icon: Truck },
+  SHIPPED: { label: "Shipped", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300", icon: Truck },
   DELIVERED: { label: "Delivered", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
   CANCELLED: { label: "Cancelled", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: XCircle },
 };
@@ -216,8 +216,8 @@ export default function VendorOrdersPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <ShoppingBag className="w-5 h-5 text-primary" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.total}</p>
@@ -249,8 +249,8 @@ export default function VendorOrdersPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <Truck className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <Truck className="w-5 h-5 text-primary" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.shipped}</p>
@@ -270,7 +270,7 @@ export default function VendorOrdersPage() {
               placeholder="Search by order number, customer name, or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -278,7 +278,7 @@ export default function VendorOrdersPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as FulfillmentStatus | "")}
-              className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             >
               <option value="">All Status</option>
               <option value="PENDING">Pending</option>
@@ -315,8 +315,8 @@ export default function VendorOrdersPage() {
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                        <ShoppingBag className="w-6 h-6 text-purple-600" />
+                      <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+                        <ShoppingBag className="w-6 h-6 text-primary" />
                       </div>
                       <div>
                         <p className="font-bold text-foreground">{order.orderNumber}</p>
@@ -421,11 +421,11 @@ export default function VendorOrdersPage() {
 
                     {/* Tracking Info */}
                     {order.trackingNumber && (
-                      <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                        <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-2">
+                      <div className="mt-6 p-4 bg-sky-50 dark:bg-sky-900/20 rounded-lg">
+                        <h4 className="font-medium text-sky-900 dark:text-sky-100 mb-2">
                           Tracking Information
                         </h4>
-                        <p className="text-sm text-purple-800 dark:text-purple-200">
+                        <p className="text-sm text-sky-800 dark:text-sky-200">
                           Tracking #: {order.trackingNumber}
                         </p>
                         {order.trackingUrl && (
@@ -433,7 +433,7 @@ export default function VendorOrdersPage() {
                             href={order.trackingUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-purple-600 hover:text-purple-700 underline"
+                            className="text-sm text-primary hover:text-primary/90 underline"
                           >
                             Track Package
                           </a>
@@ -495,7 +495,7 @@ export default function VendorOrdersPage() {
                               type="button"
                               onClick={() => openShippingModal(order)}
                               disabled={updating}
-                              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                               {updating ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -574,7 +574,7 @@ export default function VendorOrdersPage() {
                   value={trackingNumber}
                   onChange={(e) => setTrackingNumber(e.target.value)}
                   placeholder="e.g., 1Z999AA10123456784"
-                  className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -586,7 +586,7 @@ export default function VendorOrdersPage() {
                   value={trackingUrl}
                   onChange={(e) => setTrackingUrl(e.target.value)}
                   placeholder="e.g., https://www.ups.com/track?tracknum=..."
-                  className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </div>
 
@@ -621,7 +621,7 @@ export default function VendorOrdersPage() {
                 type="button"
                 onClick={handleShipOrder}
                 disabled={updating}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {updating ? (
                   <>

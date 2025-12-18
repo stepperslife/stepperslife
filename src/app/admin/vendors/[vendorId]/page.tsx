@@ -133,8 +133,8 @@ export default function AdminVendorDetailPage() {
 
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-              <Store className="w-8 h-8 text-purple-600" />
+            <div className="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 rounded-xl flex items-center justify-center">
+              <Store className="w-8 h-8 text-primary" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">{vendor.name}</h1>
@@ -154,7 +154,7 @@ export default function AdminVendorDetailPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-card rounded-xl border border-border p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Package className="w-5 h-5 text-purple-600" />
+                <Package className="w-5 h-5 text-primary" />
                 <span className="text-sm text-muted-foreground">Products</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{products?.length || 0}</p>
@@ -177,7 +177,7 @@ export default function AdminVendorDetailPage() {
             </div>
             <div className="bg-card rounded-xl border border-border p-4">
               <div className="flex items-center gap-2 mb-2">
-                <CheckCircle className="w-5 h-5 text-purple-600" />
+                <CheckCircle className="w-5 h-5 text-primary" />
                 <span className="text-sm text-muted-foreground">Paid Out</span>
               </div>
               <p className="text-2xl font-bold text-foreground">
@@ -332,7 +332,7 @@ export default function AdminVendorDetailPage() {
                     href={vendor.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-purple-600 hover:underline"
+                    className="text-primary hover:underline"
                   >
                     {vendor.website}
                   </a>
@@ -403,7 +403,7 @@ export default function AdminVendorDetailPage() {
               </button>
             </div>
             <div className="text-center">
-              <p className="text-4xl font-bold text-purple-600">
+              <p className="text-4xl font-bold text-primary">
                 {vendor.commissionPercent || 15}%
               </p>
               <p className="text-sm text-muted-foreground">Platform Commission</p>
@@ -461,7 +461,7 @@ export default function AdminVendorDetailPage() {
                   min="0"
                   max="100"
                   step="0.1"
-                  className="w-full px-4 py-2 pr-8 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 pr-8 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   %
@@ -483,7 +483,7 @@ export default function AdminVendorDetailPage() {
                 type="button"
                 onClick={handleUpdateCommission}
                 disabled={isUpdating}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {isUpdating && <Loader2 className="w-4 h-4 animate-spin" />}
                 Update

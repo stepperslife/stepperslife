@@ -184,20 +184,20 @@ export function VendorBrandingUpload({
           onDrop={handleDrop}
           className={`flex flex-col items-center justify-center w-full ${containerHeight} border-2 border-dashed rounded-lg transition-all duration-200 cursor-pointer ${
             isDragging
-              ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20 scale-[1.02]"
-              : "border-border bg-muted/50 hover:bg-muted hover:border-purple-400"
+              ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20 scale-[1.02]"
+              : "border-border bg-muted/50 hover:bg-muted hover:border-sky-400"
           }`}
         >
           <div className="flex flex-col items-center justify-center py-4">
             {isUploading ? (
               <>
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-2"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
                 {compressionProgress > 0 && compressionProgress < 100 ? (
                   <>
                     <p className="text-xs text-muted-foreground mb-1">Optimizing...</p>
                     <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-purple-600 transition-all duration-300"
+                        className="h-full bg-primary transition-all duration-300"
                         style={{ width: `${compressionProgress}%` }}
                       />
                     </div>
@@ -208,8 +208,8 @@ export function VendorBrandingUpload({
               </>
             ) : isDragging ? (
               <>
-                <Upload className="w-8 h-8 mb-2 text-purple-600 animate-bounce" />
-                <p className="text-xs font-medium text-purple-600">Drop image here</p>
+                <Upload className="w-8 h-8 mb-2 text-primary animate-bounce" />
+                <p className="text-xs font-medium text-primary">Drop image here</p>
               </>
             ) : (
               <>

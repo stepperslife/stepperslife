@@ -354,7 +354,7 @@ export default function TicketTiersPage() {
                           {tier.name}
                         </h3>
                         {tier.isTablePackage && (
-                          <span className="px-3 py-1 text-xs font-semibold bg-primary/10 dark:bg-purple-900/30 text-primary dark:text-purple-300 rounded-full">
+                          <span className="px-3 py-1 text-xs font-semibold bg-primary/10 dark:bg-sky-900/30 text-primary dark:text-sky-300 rounded-full">
                             TABLE PACKAGE
                           </span>
                         )}

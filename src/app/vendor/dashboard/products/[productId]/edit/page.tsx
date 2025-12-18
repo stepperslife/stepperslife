@@ -243,7 +243,7 @@ export default function EditProductPage() {
           </p>
           <Link
             href="/vendor/dashboard/products"
-            className="mt-4 inline-flex items-center gap-2 text-purple-600 hover:text-purple-700"
+            className="mt-4 inline-flex items-center gap-2 text-primary hover:text-primary/90"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Products
@@ -284,8 +284,8 @@ export default function EditProductPage() {
         {/* Basic Info */}
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <Package className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <Package className="w-5 h-5 text-primary" />
             </div>
             <h2 className="text-lg font-bold text-foreground">Basic Information</h2>
           </div>
@@ -301,7 +301,7 @@ export default function EditProductPage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 placeholder="Enter product name"
               />
             </div>
@@ -316,7 +316,7 @@ export default function EditProductPage() {
                 onChange={handleInputChange}
                 required
                 rows={4}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
                 placeholder="Describe your product..."
               />
             </div>
@@ -329,7 +329,7 @@ export default function EditProductPage() {
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               >
                 <option value="">Select a category</option>
                 {PRODUCT_CATEGORIES.map((cat) => (
@@ -349,7 +349,7 @@ export default function EditProductPage() {
                 name="tags"
                 value={formData.tags}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 placeholder="steppers, dance, apparel"
               />
             </div>
@@ -359,8 +359,8 @@ export default function EditProductPage() {
         {/* Images */}
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <ImagePlus className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <ImagePlus className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-foreground">Product Images</h2>
@@ -379,8 +379,8 @@ export default function EditProductPage() {
         {/* Pricing */}
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-primary" />
             </div>
             <h2 className="text-lg font-bold text-foreground">Pricing</h2>
           </div>
@@ -402,7 +402,7 @@ export default function EditProductPage() {
                   required
                   min="0"
                   step="0.01"
-                  className="w-full pl-8 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full pl-8 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
@@ -423,15 +423,15 @@ export default function EditProductPage() {
                   onChange={handleInputChange}
                   min="0"
                   step="0.01"
-                  className="w-full pl-8 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full pl-8 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
             </div>
           </div>
 
-          <div className="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <p className="text-sm text-purple-900 dark:text-purple-100">
+          <div className="mt-4 p-4 bg-sky-50 dark:bg-sky-900/20 rounded-lg">
+            <p className="text-sm text-sky-900 dark:text-sky-100">
               <strong>Commission:</strong> SteppersLife takes a 15% commission on each sale.
               {formData.price && (
                 <>
@@ -446,8 +446,8 @@ export default function EditProductPage() {
         {/* Inventory */}
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <Layers className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <Layers className="w-5 h-5 text-primary" />
             </div>
             <h2 className="text-lg font-bold text-foreground">Inventory</h2>
           </div>
@@ -462,7 +462,7 @@ export default function EditProductPage() {
                 name="sku"
                 value={formData.sku}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 placeholder="Optional"
               />
             </div>
@@ -477,7 +477,7 @@ export default function EditProductPage() {
                 value={formData.inventoryQuantity}
                 onChange={handleInputChange}
                 min="0"
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -489,7 +489,7 @@ export default function EditProductPage() {
                 name="trackInventory"
                 checked={formData.trackInventory}
                 onChange={handleInputChange}
-                className="w-5 h-5 rounded border-input text-purple-600 focus:ring-purple-500"
+                className="w-5 h-5 rounded border-input text-primary focus:ring-sky-500"
               />
               <span className="text-sm text-foreground">Track inventory for this product</span>
             </label>
@@ -499,8 +499,8 @@ export default function EditProductPage() {
         {/* Shipping */}
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <Truck className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <Truck className="w-5 h-5 text-primary" />
             </div>
             <h2 className="text-lg font-bold text-foreground">Shipping</h2>
           </div>
@@ -512,7 +512,7 @@ export default function EditProductPage() {
                 name="requiresShipping"
                 checked={formData.requiresShipping}
                 onChange={handleInputChange}
-                className="w-5 h-5 rounded border-input text-purple-600 focus:ring-purple-500"
+                className="w-5 h-5 rounded border-input text-primary focus:ring-sky-500"
               />
               <span className="text-sm text-foreground">This product requires shipping</span>
             </label>
@@ -530,7 +530,7 @@ export default function EditProductPage() {
                   value={formData.weight}
                   onChange={handleInputChange}
                   min="0"
-                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   placeholder="Optional"
                 />
               </div>
@@ -550,7 +550,7 @@ export default function EditProductPage() {
                     onChange={handleInputChange}
                     min="0"
                     step="0.01"
-                    className="w-full pl-8 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full pl-8 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                     placeholder="0.00"
                   />
                 </div>
@@ -568,7 +568,7 @@ export default function EditProductPage() {
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
-                className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               >
                 <option value="DRAFT">Draft - Not visible to customers</option>
                 <option value="ACTIVE">Active - Visible in marketplace</option>
@@ -586,7 +586,7 @@ export default function EditProductPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>

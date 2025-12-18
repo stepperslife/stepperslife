@@ -27,7 +27,7 @@ const ROLE_CONFIG: Record<StaffRole, { label: string; description: string; color
   RESTAURANT_MANAGER: {
     label: "Manager",
     description: "Full access to menu, orders, hours, analytics, and staff",
-    color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
+    color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300",
   },
   RESTAURANT_STAFF: {
     label: "Staff",
@@ -279,7 +279,7 @@ export default function StaffManagementPage() {
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         {member.role === "RESTAURANT_MANAGER" ? (
-                          <ShieldCheck className="w-4 h-4 text-purple-600" />
+                          <ShieldCheck className="w-4 h-4 text-primary" />
                         ) : (
                           <Shield className="w-4 h-4 text-blue-600" />
                         )}
@@ -592,7 +592,7 @@ function InviteStaffModal({
                   <div>
                     <div className="flex items-center gap-2">
                       {role === "RESTAURANT_MANAGER" ? (
-                        <ShieldCheck className="w-4 h-4 text-purple-600" />
+                        <ShieldCheck className="w-4 h-4 text-primary" />
                       ) : (
                         <Shield className="w-4 h-4 text-blue-600" />
                       )}

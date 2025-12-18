@@ -75,7 +75,7 @@ export default function FinancialReportsPage() {
               <p className="text-sm text-gray-600">Events</p>
               <p className="text-2xl font-bold text-gray-900">{totalEvents}</p>
             </div>
-            <div className="bg-purple-50 rounded-lg p-4">
+            <div className="bg-sky-50 rounded-lg p-4">
               <p className="text-sm text-gray-600">Avg/Event</p>
               <p className="text-2xl font-bold text-gray-900">
                 ${Math.round(avgRevenuePerEvent).toLocaleString()}

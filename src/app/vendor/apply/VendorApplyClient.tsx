@@ -207,8 +207,8 @@ export default function VendorApplyClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                <LogIn className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogIn className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
                 Sign In to Apply
@@ -219,7 +219,7 @@ export default function VendorApplyClient() {
               </p>
               <Link
                 href={`/login?redirect=${encodeURIComponent("/vendor/apply")}`}
-                className="block w-full px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Sign In to Continue
               </Link>
@@ -263,8 +263,8 @@ export default function VendorApplyClient() {
                   <li>Start selling to our community!</li>
                 </ul>
               </div>
-              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 mb-6 border border-purple-200 dark:border-purple-800">
-                <p className="text-sm text-purple-900 dark:text-purple-100">
+              <div className="bg-sky-50 dark:bg-sky-900/20 rounded-lg p-4 mb-6 border border-sky-200 dark:border-sky-800">
+                <p className="text-sm text-sky-900 dark:text-sky-100">
                   <strong>Your Tier:</strong> Basic Vendor (15% commission). Higher tiers
                   with lower fees are available - contact us to learn more about becoming
                   a Verified (10%) or Premium (5%) vendor.
@@ -273,7 +273,7 @@ export default function VendorApplyClient() {
               <button
                 type="button"
                 onClick={() => router.push("/vendor/dashboard")}
-                className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+                className="w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Go to Vendor Dashboard
               </button>
@@ -291,7 +291,7 @@ export default function VendorApplyClient() {
       <PublicHeader />
       <div className="min-h-screen bg-background">
         {/* Hero */}
-        <div className="bg-gradient-to-br from-purple-600 to-indigo-700 py-12">
+        <div className="bg-gradient-to-br from-primary to-indigo-700 py-12">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4">
@@ -315,8 +315,8 @@ export default function VendorApplyClient() {
             {/* Contact Information */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Contact Information</h2>
               </div>
@@ -332,7 +332,7 @@ export default function VendorApplyClient() {
                     value={formData.contactName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                     placeholder="John Doe"
                   />
                 </div>
@@ -346,7 +346,7 @@ export default function VendorApplyClient() {
                     value={formData.contactEmail}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -360,7 +360,7 @@ export default function VendorApplyClient() {
                     value={formData.contactPhone}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                     placeholder="(312) 555-0123"
                   />
                 </div>
@@ -370,8 +370,8 @@ export default function VendorApplyClient() {
             {/* Store Information */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                  <Store className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center">
+                  <Store className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Store Information</h2>
               </div>
@@ -387,7 +387,7 @@ export default function VendorApplyClient() {
                     value={formData.storeName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                     placeholder="My Awesome Store"
                   />
                 </div>
@@ -400,7 +400,7 @@ export default function VendorApplyClient() {
                     value={formData.description}
                     onChange={handleInputChange}
                     rows={3}
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background resize-none"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background resize-none"
                     placeholder="Tell us about your store, what you sell, and what makes your products special..."
                   />
                 </div>
@@ -416,7 +416,7 @@ export default function VendorApplyClient() {
                         onClick={() => handleCategoryToggle(category)}
                         className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                           formData.categories.includes(category)
-                            ? "bg-purple-600 text-white"
+                            ? "bg-primary text-white"
                             : "bg-muted text-muted-foreground hover:bg-muted/80"
                         }`}
                       >
@@ -431,8 +431,8 @@ export default function VendorApplyClient() {
             {/* Business Information */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Business Information</h2>
               </div>
@@ -446,7 +446,7 @@ export default function VendorApplyClient() {
                     name="businessType"
                     value={formData.businessType}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                   >
                     {BUSINESS_TYPES.map((type) => (
                       <option key={type.value} value={type.value}>
@@ -464,7 +464,7 @@ export default function VendorApplyClient() {
                     name="website"
                     value={formData.website}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                     placeholder="https://www.yourstore.com"
                   />
                 </div>
@@ -474,8 +474,8 @@ export default function VendorApplyClient() {
             {/* Location */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Location</h2>
               </div>
@@ -490,7 +490,7 @@ export default function VendorApplyClient() {
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                     placeholder="123 Main Street"
                   />
                 </div>
@@ -505,7 +505,7 @@ export default function VendorApplyClient() {
                       value={formData.city}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                       placeholder="Chicago"
                     />
                   </div>
@@ -518,7 +518,7 @@ export default function VendorApplyClient() {
                       value={formData.state}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                     >
                       {US_STATES.map((state) => (
                         <option key={state} value={state}>
@@ -537,7 +537,7 @@ export default function VendorApplyClient() {
                       value={formData.zipCode}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background"
+                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background"
                       placeholder="60601"
                     />
                   </div>
@@ -548,8 +548,8 @@ export default function VendorApplyClient() {
             {/* Additional Notes */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Additional Notes</h2>
               </div>
@@ -559,14 +559,14 @@ export default function VendorApplyClient() {
                 value={formData.additionalNotes}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-background resize-none"
+                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background resize-none"
                 placeholder="Anything else you'd like us to know about your store or products..."
               />
             </div>
 
             {/* Commission Notice */}
-            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800">
-              <p className="text-sm text-purple-900 dark:text-purple-100">
+            <div className="bg-sky-50 dark:bg-sky-900/20 rounded-xl p-4 border border-sky-200 dark:border-sky-800">
+              <p className="text-sm text-sky-900 dark:text-sky-100">
                 <strong>Commission Info:</strong> SteppersLife takes a 15% commission on each
                 sale. There are no monthly fees or setup costs. You only pay when you sell!
               </p>
@@ -577,7 +577,7 @@ export default function VendorApplyClient() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-8 py-4 bg-purple-600 text-white rounded-lg font-semibold text-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-8 py-4 bg-primary text-white rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>

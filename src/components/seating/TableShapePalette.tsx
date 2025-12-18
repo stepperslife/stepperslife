@@ -36,7 +36,7 @@ const tableShapes: TableShapeOption[] = [
     label: "Square",
     icon: <Square className="w-5 h-5" />,
     color: "text-primary",
-    bgColor: "bg-accent hover:bg-purple-200 border-purple-300",
+    bgColor: "bg-accent hover:bg-sky-200 border-sky-300",
     description: "Square tables for 4-8 guests",
   },
   {

@@ -166,10 +166,10 @@ export default function RestaurantsListClient() {
             className="absolute inset-0"
             animate={{
               background: [
-                "linear-gradient(135deg, #c2410c 0%, #dc2626 50%, #ea580c 100%)",
-                "linear-gradient(135deg, #dc2626 0%, #ea580c 50%, #c2410c 100%)",
-                "linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #dc2626 100%)",
-                "linear-gradient(135deg, #c2410c 0%, #dc2626 50%, #ea580c 100%)",
+                "linear-gradient(135deg, #0284c7 0%, #1e9df1 50%, #38bdf8 100%)",
+                "linear-gradient(135deg, #1e9df1 0%, #38bdf8 50%, #0284c7 100%)",
+                "linear-gradient(135deg, #38bdf8 0%, #0284c7 50%, #1e9df1 100%)",
+                "linear-gradient(135deg, #0284c7 0%, #1e9df1 50%, #38bdf8 100%)",
               ],
             }}
             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
@@ -286,7 +286,7 @@ export default function RestaurantsListClient() {
               <span className="text-white drop-shadow-lg">Taste the</span>
               <br />
               <motion.span
-                className="bg-gradient-to-r from-yellow-300 via-orange-200 to-amber-300 bg-clip-text text-transparent bg-[length:200%_auto]"
+                className="bg-gradient-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent bg-[length:200%_auto]"
                 animate={{ backgroundPosition: ["0% center", "200% center"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
               >
@@ -320,9 +320,9 @@ export default function RestaurantsListClient() {
                 <Button
                   size="lg"
                   onClick={() => document.getElementById("restaurants")?.scrollIntoView({ behavior: "smooth" })}
-                  className="bg-white !text-orange-600 hover:bg-orange-50 font-semibold px-8 py-6 text-lg rounded-full shadow-lg"
+                  className="bg-white !text-primary hover:bg-sky-50 font-semibold px-8 py-6 text-lg rounded-full shadow-lg"
                 >
-                  <Utensils className="mr-2 h-5 w-5 text-orange-600" />
+                  <Utensils className="mr-2 h-5 w-5 text-primary" />
                   Browse Restaurants
                 </Button>
               </motion.div>
@@ -358,7 +358,7 @@ export default function RestaurantsListClient() {
                   animate={{ y: [0, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <Clock className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                  <Clock className="h-6 w-6 md:h-8 md:w-8 text-cyan-200" />
                 </motion.div>
                 <p className="text-white font-bold text-lg md:text-2xl">15-30</p>
                 <p className="text-white/70 text-xs md:text-sm">Min Pickup</p>
@@ -369,7 +369,7 @@ export default function RestaurantsListClient() {
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                 >
-                  <Star className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                  <Star className="h-6 w-6 md:h-8 md:w-8 text-cyan-200" />
                 </motion.div>
                 <p className="text-white font-bold text-lg md:text-2xl">500+</p>
                 <p className="text-white/70 text-xs md:text-sm">Happy Customers</p>
@@ -380,7 +380,7 @@ export default function RestaurantsListClient() {
                   animate={{ y: [0, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 >
-                  <MapPin className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                  <MapPin className="h-6 w-6 md:h-8 md:w-8 text-cyan-200" />
                 </motion.div>
                 <p className="text-white font-bold text-lg md:text-2xl">20+</p>
                 <p className="text-white/70 text-xs md:text-sm">Cities</p>

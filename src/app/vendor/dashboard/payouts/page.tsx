@@ -23,7 +23,7 @@ type PayoutStatus = "PENDING" | "APPROVED" | "PROCESSING" | "COMPLETED" | "FAILE
 const STATUS_CONFIG: Record<PayoutStatus, { label: string; color: string; icon: typeof Clock }> = {
   PENDING: { label: "Pending Review", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
   APPROVED: { label: "Approved", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", icon: CheckCircle },
-  PROCESSING: { label: "Processing", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300", icon: Loader2 },
+  PROCESSING: { label: "Processing", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300", icon: Loader2 },
   COMPLETED: { label: "Completed", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
   FAILED: { label: "Failed", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: XCircle },
 };
@@ -132,7 +132,7 @@ export default function VendorPayoutsPage() {
           type="button"
           onClick={() => setShowRequestModal(true)}
           disabled={!canRequestPayout || hasPendingPayout}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus className="w-5 h-5" />
           Request Payout
@@ -163,8 +163,8 @@ export default function VendorPayoutsPage() {
 
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-primary" />
             </div>
           </div>
           <p className="text-3xl font-bold text-foreground">{formatCurrency(stats.totalPaid)}</p>
@@ -295,8 +295,8 @@ export default function VendorPayoutsPage() {
                     key={method.id}
                     className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${
                       selectedMethod === method.id
-                        ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                        : "border-border hover:border-purple-300"
+                        ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20"
+                        : "border-border hover:border-sky-300"
                     }`}
                   >
                     <input
@@ -310,13 +310,13 @@ export default function VendorPayoutsPage() {
                     <div
                       className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                         selectedMethod === method.id
-                          ? "bg-purple-100 dark:bg-purple-900/50"
+                          ? "bg-sky-100 dark:bg-sky-900/50"
                           : "bg-muted"
                       }`}
                     >
                       <Icon
                         className={`w-5 h-5 ${
-                          selectedMethod === method.id ? "text-purple-600" : "text-muted-foreground"
+                          selectedMethod === method.id ? "text-primary" : "text-muted-foreground"
                         }`}
                       />
                     </div>
@@ -354,7 +354,7 @@ export default function VendorPayoutsPage() {
                 type="button"
                 onClick={handleRequestPayout}
                 disabled={isSubmitting}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>

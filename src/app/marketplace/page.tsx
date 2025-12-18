@@ -351,7 +351,7 @@ export default function ShopPage() {
               >
                 <Link
                   href="/marketplace/vendors"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-sky-100 dark:bg-sky-900/30 text-primary/90 dark:text-sky-300 rounded-lg hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors"
                 >
                   <Store className="w-5 h-5" />
                   Browse Vendors
@@ -427,7 +427,7 @@ export default function ShopPage() {
                     {product.vendor ? (
                       <Link
                         href={`/marketplace/vendors/${product.vendor.slug}`}
-                        className="inline-flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 mb-2"
+                        className="inline-flex items-center gap-1.5 text-xs text-primary dark:text-sky-400 hover:text-primary/90 dark:hover:text-sky-300 mb-2"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Store className="w-3 h-3" />
@@ -542,7 +542,7 @@ export default function ShopPage() {
                       {product.vendor ? (
                         <Link
                           href={`/marketplace/vendors/${product.vendor.slug}`}
-                          className="inline-flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 mb-2"
+                          className="inline-flex items-center gap-1.5 text-xs text-primary dark:text-sky-400 hover:text-primary/90 dark:hover:text-sky-300 mb-2"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <Store className="w-3 h-3" />

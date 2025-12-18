@@ -106,7 +106,7 @@ export default function TicketInventoryPage() {
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-purple-500 p-3 rounded-lg text-white">
+              <div className="bg-sky-500 p-3 rounded-lg text-white">
                 <Ticket className="w-6 h-6" />
               </div>
             </div>

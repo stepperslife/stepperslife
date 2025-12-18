@@ -157,8 +157,8 @@ export default function AdminVendorsPage() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <Store className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+              <Store className="w-5 h-5 text-primary" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.total}</p>
@@ -225,7 +225,7 @@ export default function AdminVendorsPage() {
               placeholder="Search vendors by name, email, or slug..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -233,7 +233,7 @@ export default function AdminVendorsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as VendorStatus | "")}
-              className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             >
               <option value="">All Status</option>
               <option value="PENDING">Pending</option>
@@ -275,8 +275,8 @@ export default function AdminVendorsPage() {
                     <tr key={vendor._id} className="border-b border-border last:border-0">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                            <Store className="w-5 h-5 text-purple-600" />
+                          <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+                            <Store className="w-5 h-5 text-primary" />
                           </div>
                           <div>
                             <p className="font-medium text-foreground">{vendor.name}</p>
@@ -389,7 +389,7 @@ export default function AdminVendorsPage() {
                                         });
                                         setSelectedVendor(null);
                                       }}
-                                      className="w-full px-4 py-2 text-left text-sm text-purple-600 hover:bg-muted transition-colors flex items-center gap-2"
+                                      className="w-full px-4 py-2 text-left text-sm text-primary hover:bg-muted transition-colors flex items-center gap-2"
                                     >
                                       <Crown className="w-4 h-4" />
                                       Change Tier
@@ -485,7 +485,7 @@ export default function AdminVendorsPage() {
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
                   placeholder="Provide a reason..."
                 />
               </div>
@@ -498,7 +498,7 @@ export default function AdminVendorsPage() {
                     key={tier}
                     className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
                       selectedTier === tier
-                        ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                        ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20"
                         : "border-border hover:bg-muted"
                     }`}
                   >
@@ -508,7 +508,7 @@ export default function AdminVendorsPage() {
                       value={tier}
                       checked={selectedTier === tier}
                       onChange={() => setSelectedTier(tier)}
-                      className="w-4 h-4 text-purple-600"
+                      className="w-4 h-4 text-primary"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -543,7 +543,7 @@ export default function AdminVendorsPage() {
                 disabled={actionModal.type === "changeTier" && selectedTier === actionModal.currentTier}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   actionModal.type === "approve" || actionModal.type === "reactivate" || actionModal.type === "changeTier"
-                    ? "bg-purple-600 text-white hover:bg-purple-700"
+                    ? "bg-primary text-white hover:bg-primary/90"
                     : "bg-red-600 text-white hover:bg-red-700"
                 }`}
               >

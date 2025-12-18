@@ -222,7 +222,7 @@ export default function TableEditor({ table, onUpdate, onDelete, onClose }: Tabl
           <button
             type="button"
             onClick={handleAutoArrange}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:from-primary/90 hover:to-blue-700 transition-all"
           >
             <Wand2 className="w-4 h-4" />
             Auto-Arrange Seats

@@ -69,7 +69,7 @@ export default function MyOrdersPage() {
         );
       case "PROCESSING":
         return (
-          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-purple-500/10 text-purple-600">
+          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-sky-500/10 text-primary">
             <Clock className="h-3 w-3" />
             Processing
           </span>

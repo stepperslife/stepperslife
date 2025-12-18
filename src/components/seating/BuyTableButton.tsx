@@ -31,8 +31,8 @@ export default function BuyTableButton({
       onClick={onBuyTable}
       className={`
         group relative inline-flex items-center gap-2 px-4 py-2
-        bg-gradient-to-r from-purple-600 to-blue-600
-        hover:from-purple-700 hover:to-blue-700
+        bg-gradient-to-r from-primary to-blue-600
+        hover:from-primary/90 hover:to-blue-700
         text-white rounded-lg shadow-md hover:shadow-lg
         transition-all duration-200 transform hover:scale-105
         ${className}

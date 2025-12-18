@@ -80,7 +80,7 @@ export default function VendorLandingPage() {
       <PublicHeader />
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-purple-600 to-indigo-700 py-16 md:py-24">
+        <div className="bg-gradient-to-br from-primary to-sky-700 py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6">
@@ -97,7 +97,7 @@ export default function VendorLandingPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/vendor/apply"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors"
                 >
                   Apply to Sell
                   <ArrowRight className="h-5 w-5" />
@@ -131,8 +131,8 @@ export default function VendorLandingPage() {
                   key={benefit.title}
                   className="bg-card rounded-2xl p-6 border border-border hover:shadow-lg transition-shadow"
                 >
-                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-4">
-                    <benefit.icon className="h-6 w-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-xl flex items-center justify-center mb-4">
+                    <benefit.icon className="h-6 w-6 text-primary" />
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2">
                     {benefit.title}
@@ -160,7 +160,7 @@ export default function VendorLandingPage() {
               {STEPS.map((step, index) => (
                 <div key={step.title} className="relative">
                   <div className="bg-card rounded-2xl p-6 border border-border text-center">
-                    <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">
+                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">
                       {step.number}
                     </div>
                     <h3 className="text-lg font-bold text-foreground mb-2">
@@ -185,7 +185,7 @@ export default function VendorLandingPage() {
         <div className="py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-3xl p-8 md:p-12 text-white">
+              <div className="bg-gradient-to-br from-primary to-sky-700 rounded-3xl p-8 md:p-12 text-white">
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                   <div>
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -236,7 +236,7 @@ export default function VendorLandingPage() {
             </p>
             <Link
               href="/vendor/apply"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-purple-600 text-white rounded-lg font-semibold text-lg hover:bg-purple-700 transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors"
             >
               Apply to Become a Vendor
               <ArrowRight className="h-5 w-5" />

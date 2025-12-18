@@ -52,8 +52,8 @@ export default function VendorDashboardLayout({
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Store className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Store className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
                 Become a Vendor
@@ -64,7 +64,7 @@ export default function VendorDashboardLayout({
               </p>
               <Link
                 href="/vendor/apply"
-                className="block w-full px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Apply to Sell
               </Link>

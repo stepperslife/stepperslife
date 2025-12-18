@@ -44,7 +44,7 @@ export default function ReportsPage() {
       description: "View attendee demographics and participation",
       icon: Users,
       href: "/organizer/reports/attendees",
-      color: "bg-purple-500",
+      color: "bg-sky-500",
       stats: `${totalTicketsSold.toLocaleString()} total attendees`,
     },
     {

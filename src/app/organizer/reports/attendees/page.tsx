@@ -63,7 +63,7 @@ export default function AttendeeReportsPage() {
           <p className="text-gray-600 mb-6">
             Detailed attendee analytics and demographics will be available here
           </p>
-          <div className="bg-purple-50 rounded-lg p-4 max-w-md mx-auto">
+          <div className="bg-sky-50 rounded-lg p-4 max-w-md mx-auto">
             <p className="text-sm text-gray-600">Total Attendees</p>
             <p className="text-2xl font-bold text-gray-900">{totalTicketsSold.toLocaleString()}</p>
           </div>
