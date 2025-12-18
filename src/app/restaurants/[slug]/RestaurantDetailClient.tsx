@@ -235,12 +235,24 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                       {itemsByCategory?.[category._id]?.filter(item => item.isAvailable).map((item) => (
                         <div
                           key={item._id}
-                          className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
+                          className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
                         >
-                          <div className="flex-1">
+                          {/* Menu Item Image */}
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt={item.name}
+                              className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0 flex items-center justify-center">
+                              <Utensils className="h-8 w-8 text-gray-400" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
                             <h4 className="font-medium">{item.name}</h4>
                             {item.description && (
-                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
                                 {item.description}
                               </p>
                             )}
@@ -252,7 +264,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             <button
                               type="button"
                               onClick={() => addToCart(item)}
-                              className="ml-4 p-3 min-w-[44px] min-h-[44px] bg-orange-600 text-white rounded-full hover:bg-orange-700 flex items-center justify-center"
+                              className="p-3 min-w-[44px] min-h-[44px] bg-orange-600 text-white rounded-full hover:bg-orange-700 flex items-center justify-center flex-shrink-0"
                               aria-label={`Add ${item.name} to cart`}
                             >
                               <Plus className="h-5 w-5" />
@@ -272,12 +284,24 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                       {itemsByCategory?.["uncategorized"]?.filter(item => item.isAvailable).map((item) => (
                         <div
                           key={item._id}
-                          className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
+                          className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
                         >
-                          <div className="flex-1">
+                          {/* Menu Item Image */}
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt={item.name}
+                              className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0 flex items-center justify-center">
+                              <Utensils className="h-8 w-8 text-gray-400" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
                             <h4 className="font-medium">{item.name}</h4>
                             {item.description && (
-                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
                                 {item.description}
                               </p>
                             )}
@@ -289,7 +313,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             <button
                               type="button"
                               onClick={() => addToCart(item)}
-                              className="ml-4 p-3 min-w-[44px] min-h-[44px] bg-orange-600 text-white rounded-full hover:bg-orange-700 flex items-center justify-center"
+                              className="p-3 min-w-[44px] min-h-[44px] bg-orange-600 text-white rounded-full hover:bg-orange-700 flex items-center justify-center flex-shrink-0"
                               aria-label={`Add ${item.name} to cart`}
                             >
                               <Plus className="h-5 w-5" />
