@@ -6,25 +6,100 @@
  */
 
 import { v } from "convex/values";
-import { action, mutation, query } from "./_generated/server";
+import { action, mutation, query, internalAction, internalMutation } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
+
+// =====================================================
+// PUBLIC WRAPPER FOR CLI ACCESS
+// =====================================================
+
+/**
+ * Public wrapper to run the internal setup action from CLI
+ * Run via: npx convex run testSetup:runSetup
+ */
+export const runSetup = action({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.runAction(internal.testSetup.setupTestRestaurant, {});
+  },
+});
+
+/**
+ * Enable order acceptance for the restaurant
+ * Run via: npx convex run testSetup:enableOrders
+ */
+export const enableOrders = action({
+  args: {},
+  handler: async (ctx) => {
+    const restaurant = await ctx.runQuery(api.restaurants.getBySlug, {
+      slug: "dk-soul-food",
+    });
+
+    if (!restaurant) {
+      return { success: false, error: "Restaurant not found" };
+    }
+
+    await ctx.runMutation(internal.restaurants.enableOrdersInternal, {
+      restaurantId: restaurant._id,
+    });
+
+    return { success: true, restaurantId: restaurant._id };
+  },
+});
+
+/**
+ * Complete setup: enable orders and create test customer
+ * Run via: npx convex run testSetup:completeSetup
+ */
+export const completeSetup = action({
+  args: {},
+  handler: async (ctx) => {
+    const steps: string[] = [];
+
+    // 1. Enable orders
+    const restaurant = await ctx.runQuery(api.restaurants.getBySlug, {
+      slug: "dk-soul-food",
+    });
+
+    if (!restaurant) {
+      return { success: false, error: "Restaurant not found", steps };
+    }
+
+    await ctx.runMutation(internal.restaurants.enableOrdersInternal, {
+      restaurantId: restaurant._id,
+    });
+    steps.push("✓ Order acceptance enabled");
+
+    // 2. Create test customer account
+    const testCustomer = await ctx.runMutation(api.testing.setup.createTestUser, {});
+    steps.push(`✓ Test customer: ${testCustomer.email} (${testCustomer.created ? "created" : "exists"})`);
+
+    return {
+      success: true,
+      restaurantId: restaurant._id,
+      testCustomerEmail: testCustomer.email,
+      testCustomerPassword: "TestPassword123!",
+      steps,
+    };
+  },
+});
 
 // =====================================================
 // CONFIGURATION
 // =====================================================
 
 const RESTAURANT_DATA = {
-  name: "Steppers Soul Kitchen",
-  description: "Authentic soul food with a modern twist. Family recipes passed down for generations.",
-  address: "123 Main Street",
+  name: "DK Soul Food",
+  description: "Authentic soul food made with love. Serving the community with delicious home-style cooking.",
+  address: "Chicago, IL",
   city: "Chicago",
   state: "IL",
   zipCode: "60601",
   phone: "(312) 555-0100",
   cuisine: ["Soul Food", "Southern", "Comfort Food"],
-  contactName: "Test Owner",
-  contactEmail: "owner@stepperslife.com",
+  contactName: "Ira Watkins",
+  contactEmail: "ira@irawatkins.com",
   estimatedPickupTime: 25,
 };
 
@@ -78,18 +153,17 @@ const MENU_ITEMS = [
 ];
 
 // =====================================================
-// MAIN SETUP ACTION
+// MAIN SETUP ACTION (uses internal mutations for auth bypass)
 // =====================================================
 
-export const setupTestRestaurant = action({
+export const setupTestRestaurant = internalAction({
   args: {
     skipIfExists: v.optional(v.boolean()),
+    ownerId: v.optional(v.id("users")),
   },
   handler: async (ctx, args): Promise<{
     success: boolean;
     restaurantId?: string;
-    orderId?: string;
-    orderNumber?: string;
     errors: string[];
     steps: string[];
   }> => {
@@ -99,7 +173,7 @@ export const setupTestRestaurant = action({
     try {
       // Check if restaurant already exists
       const existing = await ctx.runQuery(api.restaurants.getBySlug, {
-        slug: "steppers-soul-kitchen",
+        slug: "dk-soul-food",
       });
 
       if (existing) {
@@ -111,78 +185,68 @@ export const setupTestRestaurant = action({
             steps: ["Restaurant already exists, skipping setup"],
           };
         }
-        // Continue with existing restaurant for order testing
-        steps.push(`Using existing restaurant: ${existing._id}`);
-
-        // Try to place order
-        const orderResult = await placeTestOrder(ctx, existing._id, steps, errors);
         return {
-          success: errors.length === 0,
+          success: true,
           restaurantId: existing._id,
-          orderId: orderResult?.orderId,
-          orderNumber: orderResult?.orderNumber,
-          errors,
-          steps,
+          errors: [],
+          steps: ["Restaurant already exists"],
         };
       }
 
-      // STEP 1: Create Restaurant
+      // Get an owner ID - either provided or find the ira@irawatkins.com user
+      let ownerId = args.ownerId;
+      if (!ownerId) {
+        // Find the restaurant owner by email
+        const ownerUser = await ctx.runQuery(internal.users.queries.getByEmailInternal, {
+          email: "ira@irawatkins.com",
+        });
+        if (!ownerUser) {
+          // Fall back to admin user
+          const adminUser = await ctx.runQuery(internal.users.queries.getAdminUser, {});
+          if (!adminUser) {
+            errors.push("No owner user found. Please provide ownerId.");
+            return { success: false, errors, steps };
+          }
+          ownerId = adminUser._id;
+          steps.push(`Using admin user as owner: ${adminUser.email}`);
+        } else {
+          ownerId = ownerUser._id;
+          steps.push(`Using ${ownerUser.email} as restaurant owner`);
+        }
+      }
+
+      // STEP 1: Create Restaurant using internal mutation
       steps.push("Creating restaurant...");
       let restaurantId: Id<"restaurants">;
       try {
-        restaurantId = await ctx.runMutation(api.restaurants.apply, RESTAURANT_DATA);
+        restaurantId = await ctx.runMutation(internal.restaurants.createInternal, {
+          name: RESTAURANT_DATA.name,
+          description: RESTAURANT_DATA.description,
+          ownerId,
+          address: RESTAURANT_DATA.address,
+          city: RESTAURANT_DATA.city,
+          state: RESTAURANT_DATA.state,
+          zipCode: RESTAURANT_DATA.zipCode,
+          phone: RESTAURANT_DATA.phone,
+          cuisine: RESTAURANT_DATA.cuisine,
+          contactName: RESTAURANT_DATA.contactName,
+          contactEmail: RESTAURANT_DATA.contactEmail,
+          estimatedPickupTime: RESTAURANT_DATA.estimatedPickupTime,
+          operatingHours: OPERATING_HOURS,
+          isActive: true,
+        });
         steps.push(`✓ Restaurant created: ${restaurantId}`);
       } catch (error: any) {
         errors.push(`Failed to create restaurant: ${error.message}`);
         return { success: false, errors, steps };
       }
 
-      // STEP 2: Approve Restaurant (requires admin)
-      steps.push("Approving restaurant...");
-      try {
-        await ctx.runMutation(api.restaurants.approve, { restaurantId });
-        steps.push("✓ Restaurant approved");
-      } catch (error: any) {
-        errors.push(`Failed to approve restaurant: ${error.message}`);
-        // Continue anyway - might already be approved or user is owner
-      }
-
-      // STEP 3: Configure Operating Hours
-      steps.push("Setting operating hours...");
-      try {
-        await ctx.runMutation(api.restaurantHours.updateHours, {
-          restaurantId,
-          operatingHours: OPERATING_HOURS,
-        });
-        steps.push("✓ Operating hours set");
-      } catch (error: any) {
-        errors.push(`Failed to set hours: ${error.message}`);
-      }
-
-      // STEP 4: Invite Staff
-      steps.push("Inviting staff...");
-      for (const staff of STAFF_INVITES) {
-        try {
-          await ctx.runAction(api.restaurantStaff.inviteStaffWithEmail, {
-            restaurantId,
-            email: staff.email,
-            name: staff.name,
-            phone: staff.phone,
-            role: staff.role,
-            permissions: staff.permissions,
-          });
-          steps.push(`✓ Invited ${staff.name} (${staff.role})`);
-        } catch (error: any) {
-          errors.push(`Failed to invite ${staff.name}: ${error.message}`);
-        }
-      }
-
-      // STEP 5: Create Menu Categories
+      // STEP 2: Create Menu Categories using internal mutation
       steps.push("Creating menu categories...");
       const categoryIds: Record<string, Id<"menuCategories">> = {};
       for (const cat of MENU_CATEGORIES) {
         try {
-          categoryIds[cat.name] = await ctx.runMutation(api.menuItems.createCategory, {
+          categoryIds[cat.name] = await ctx.runMutation(internal.menuItems.createCategoryInternal, {
             restaurantId,
             name: cat.name,
             description: cat.description,
@@ -194,9 +258,8 @@ export const setupTestRestaurant = action({
         }
       }
 
-      // STEP 6: Create Menu Items
+      // STEP 3: Create Menu Items using internal mutation
       steps.push("Creating menu items...");
-      const menuItemIds: Record<string, Id<"menuItems">> = {};
       for (const item of MENU_ITEMS) {
         try {
           const categoryId = categoryIds[item.category];
@@ -204,7 +267,7 @@ export const setupTestRestaurant = action({
             errors.push(`Category not found for item ${item.name}: ${item.category}`);
             continue;
           }
-          menuItemIds[item.name] = await ctx.runMutation(api.menuItems.create, {
+          await ctx.runMutation(internal.menuItems.createInternal, {
             restaurantId,
             categoryId,
             name: item.name,
@@ -218,23 +281,9 @@ export const setupTestRestaurant = action({
         }
       }
 
-      // STEP 7: Enable Order Acceptance
-      steps.push("Enabling order acceptance...");
-      try {
-        await ctx.runMutation(api.restaurants.toggleAcceptingOrders, { id: restaurantId });
-        steps.push("✓ Order acceptance enabled");
-      } catch (error: any) {
-        errors.push(`Failed to enable orders: ${error.message}`);
-      }
-
-      // STEP 8: Place Test Order
-      const orderResult = await placeTestOrder(ctx, restaurantId, steps, errors, menuItemIds);
-
       return {
         success: errors.length === 0,
         restaurantId,
-        orderId: orderResult?.orderId,
-        orderNumber: orderResult?.orderNumber,
         errors,
         steps,
       };
@@ -378,7 +427,7 @@ export const getTestRestaurant = query({
   handler: async (ctx) => {
     return await ctx.db
       .query("restaurants")
-      .withIndex("by_slug", (q) => q.eq("slug", "steppers-soul-kitchen"))
+      .withIndex("by_slug", (q) => q.eq("slug", "dk-soul-food"))
       .first();
   },
 });
@@ -388,7 +437,7 @@ export const getTestOrderStats = query({
   handler: async (ctx) => {
     const restaurant = await ctx.db
       .query("restaurants")
-      .withIndex("by_slug", (q) => q.eq("slug", "steppers-soul-kitchen"))
+      .withIndex("by_slug", (q) => q.eq("slug", "dk-soul-food"))
       .first();
 
     if (!restaurant) {
@@ -447,7 +496,7 @@ export const cleanupTestRestaurant = mutation({
   handler: async (ctx, args) => {
     const restaurant = await ctx.db
       .query("restaurants")
-      .withIndex("by_slug", (q) => q.eq("slug", "steppers-soul-kitchen"))
+      .withIndex("by_slug", (q) => q.eq("slug", "dk-soul-food"))
       .first();
 
     if (!restaurant) {
@@ -487,7 +536,25 @@ export const cleanupTestRestaurant = mutation({
       await ctx.db.delete(item._id);
     }
 
-    // Delete restaurant
+    // Delete reviews
+    const reviews = await ctx.db
+      .query("restaurantReviews")
+      .withIndex("by_restaurant", (q) => q.eq("restaurantId", restaurant._id))
+      .collect();
+    for (const review of reviews) {
+      await ctx.db.delete(review._id);
+    }
+
+    // Delete favorites
+    const favorites = await ctx.db
+      .query("favoriteRestaurants")
+      .withIndex("by_restaurant", (q) => q.eq("restaurantId", restaurant._id))
+      .collect();
+    for (const fav of favorites) {
+      await ctx.db.delete(fav._id);
+    }
+
+    // Delete restaurant (operatingHours are stored inline)
     await ctx.db.delete(restaurant._id);
 
     return {
@@ -497,6 +564,8 @@ export const cleanupTestRestaurant = mutation({
         staff: staff.length,
         categories: categories.length,
         menuItems: menuItems.length,
+        reviews: reviews.length,
+        favorites: favorites.length,
       },
     };
   },

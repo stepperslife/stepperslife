@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import {
   validatePrice,
@@ -291,5 +291,54 @@ export const getRestaurantByOwner = query({
       .query("restaurants")
       .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId))
       .first();
+  },
+});
+
+/**
+ * Internal mutation to create a menu category (for admin setup)
+ */
+export const createCategoryInternal = internalMutation({
+  args: {
+    restaurantId: v.id("restaurants"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    sortOrder: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    return await ctx.db.insert("menuCategories", {
+      ...args,
+      name: args.name.trim(),
+      description: args.description?.trim(),
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+/**
+ * Internal mutation to create a menu item (for admin setup)
+ */
+export const createInternal = internalMutation({
+  args: {
+    restaurantId: v.id("restaurants"),
+    categoryId: v.optional(v.id("menuCategories")),
+    name: v.string(),
+    description: v.optional(v.string()),
+    price: v.number(),
+    imageUrl: v.optional(v.string()),
+    sortOrder: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    return await ctx.db.insert("menuItems", {
+      ...args,
+      name: args.name.trim(),
+      description: args.description?.trim(),
+      isAvailable: true,
+      createdAt: now,
+      updatedAt: now,
+    });
   },
 });

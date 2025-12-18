@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation, internalQuery } from "./_generated/server";
+import { query, mutation, internalQuery, internalMutation } from "./_generated/server";
 import { getCurrentUser, requireAdmin } from "./lib/auth";
 import { requireRestaurantOwner, requireRestaurantRole } from "./lib/restaurantAuth";
 import { USER_ROLES } from "./lib/roles";
@@ -501,5 +501,72 @@ export const getMyRestaurants = query({
       .query("restaurants")
       .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
       .collect();
+  },
+});
+
+/**
+ * Internal mutation to enable orders for a restaurant
+ */
+export const enableOrdersInternal = internalMutation({
+  args: { restaurantId: v.id("restaurants") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.restaurantId, {
+      acceptingOrders: true,
+      updatedAt: Date.now(),
+    });
+    return { success: true };
+  },
+});
+
+/**
+ * Internal mutation to create a restaurant for admin setup
+ * This bypasses auth for use in scripts/setup actions
+ */
+export const createInternal = internalMutation({
+  args: {
+    name: v.string(),
+    description: v.optional(v.string()),
+    ownerId: v.id("users"),
+    address: v.string(),
+    city: v.string(),
+    state: v.string(),
+    zipCode: v.string(),
+    phone: v.string(),
+    cuisine: v.array(v.string()),
+    contactName: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+    estimatedPickupTime: v.optional(v.number()),
+    operatingHours: v.optional(v.any()),
+    isActive: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    // Generate slug from name
+    const slug = args.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+    return await ctx.db.insert("restaurants", {
+      name: args.name.trim(),
+      slug,
+      description: args.description?.trim(),
+      ownerId: args.ownerId,
+      address: args.address.trim(),
+      city: args.city.trim(),
+      state: args.state.trim(),
+      zipCode: args.zipCode.trim(),
+      phone: args.phone.trim(),
+      cuisine: args.cuisine,
+      logoUrl: undefined,
+      coverImageUrl: undefined,
+      operatingHours: args.operatingHours,
+      acceptingOrders: false,
+      estimatedPickupTime: args.estimatedPickupTime || 30,
+      isActive: args.isActive ?? true,
+      createdAt: now,
+      updatedAt: now,
+    });
   },
 });

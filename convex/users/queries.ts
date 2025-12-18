@@ -184,3 +184,38 @@ export const getPayPalAccount = query({
     };
   },
 });
+
+/**
+ * Get an admin user (internal - for setup scripts)
+ */
+export const getAdminUser = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    // First try to find the primary admin
+    const primaryAdmin = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
+      .first();
+
+    if (primaryAdmin) {
+      return primaryAdmin;
+    }
+
+    // Otherwise find any admin user
+    const allUsers = await ctx.db.query("users").collect();
+    return allUsers.find((u) => u.role === "admin") || null;
+  },
+});
+
+/**
+ * Get user by email (internal - for setup scripts)
+ */
+export const getByEmailInternal = internalQuery({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+  },
+});
