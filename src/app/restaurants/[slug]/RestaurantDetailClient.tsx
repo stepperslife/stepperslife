@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { MapPin, Phone, Clock, Utensils, Plus, Minus, ShoppingCart, Star } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -13,6 +13,7 @@ import { RestaurantReviews } from "@/components/restaurants/RestaurantReviews";
 import { StarRating } from "@/components/restaurants/StarRating";
 import { FavoriteButton } from "@/components/restaurants/FavoriteButton";
 import { ShareButton } from "@/components/restaurants/ShareButton";
+import { mockRestaurants } from "@/lib/mock-data/restaurants";
 
 interface CartItem {
   menuItemId: string;
@@ -21,13 +22,120 @@ interface CartItem {
   quantity: number;
 }
 
+// Convert mock restaurant to the format expected by the component
+const getMockRestaurant = (slug: string) => {
+  const mockRestaurant = mockRestaurants.find(r => r.slug === slug);
+  if (!mockRestaurant) return null;
+
+  return {
+    _id: mockRestaurant.id as any, // Cast to avoid type errors with mock IDs
+    slug: mockRestaurant.slug,
+    name: mockRestaurant.name,
+    description: mockRestaurant.description,
+    cuisine: mockRestaurant.cuisine,
+    logoUrl: mockRestaurant.logoUrl,
+    coverImageUrl: mockRestaurant.coverImageUrl,
+    acceptingOrders: mockRestaurant.acceptingOrders,
+    estimatedPickupTime: mockRestaurant.estimatedPickupTime,
+    averageRating: mockRestaurant.averageRating,
+    totalReviews: mockRestaurant.totalReviews,
+    city: "Chicago",
+    state: "IL",
+    zipCode: "60601",
+    address: "123 Main Street",
+    phone: "(312) 555-0100",
+    isActive: true,
+    operatingHours: {
+      monday: { open: "11:00 AM", close: "9:00 PM", closed: false },
+      tuesday: { open: "11:00 AM", close: "9:00 PM", closed: false },
+      wednesday: { open: "11:00 AM", close: "9:00 PM", closed: false },
+      thursday: { open: "11:00 AM", close: "10:00 PM", closed: false },
+      friday: { open: "11:00 AM", close: "11:00 PM", closed: false },
+      saturday: { open: "10:00 AM", close: "11:00 PM", closed: false },
+      sunday: { open: "10:00 AM", close: "8:00 PM", closed: false },
+    },
+  };
+};
+
+// Mock menu items for fallback
+const getMockMenuItems = (restaurantId: string) => {
+  // Only provide mock menu for known mock restaurants
+  const mockMenus: Record<string, Array<{_id: string; name: string; price: number; description: string; categoryId: string; isAvailable: boolean}>> = {
+    "rest_001": [ // Soul Food Spot
+      { _id: "menu_001", name: "Fried Chicken", price: 1499, description: "Crispy fried chicken, 2 pieces", categoryId: "cat_main", isAvailable: true },
+      { _id: "menu_002", name: "Mac & Cheese", price: 599, description: "Creamy homemade mac & cheese", categoryId: "cat_sides", isAvailable: true },
+      { _id: "menu_003", name: "Collard Greens", price: 499, description: "Slow-cooked collard greens", categoryId: "cat_sides", isAvailable: true },
+      { _id: "menu_004", name: "Sweet Tea", price: 299, description: "Southern sweet tea", categoryId: "cat_drinks", isAvailable: true },
+    ],
+    "rest_002": [ // Chicago Deep Dish Kitchen
+      { _id: "menu_005", name: "Classic Deep Dish", price: 2499, description: "Chicago-style deep dish pizza", categoryId: "cat_main", isAvailable: true },
+      { _id: "menu_006", name: "Meat Lovers Deep Dish", price: 2899, description: "Sausage, pepperoni, and bacon", categoryId: "cat_main", isAvailable: true },
+    ],
+  };
+  return mockMenus[restaurantId] || [];
+};
+
+const getMockCategories = (restaurantId: string) => {
+  const mockCategories: Record<string, Array<{_id: string; name: string}>> = {
+    "rest_001": [
+      { _id: "cat_main", name: "Main Dishes" },
+      { _id: "cat_sides", name: "Sides" },
+      { _id: "cat_drinks", name: "Beverages" },
+    ],
+    "rest_002": [
+      { _id: "cat_main", name: "Pizzas" },
+    ],
+  };
+  return mockCategories[restaurantId] || [];
+};
+
 export default function RestaurantDetailClient({ slug }: { slug: string }) {
   const router = useRouter();
-  const restaurant = useQuery(api.restaurants.getBySlug, { slug });
-  const menuItems = restaurant ? useQuery(api.menuItems.getByRestaurant, { restaurantId: restaurant._id }) : undefined;
-  const categories = restaurant ? useQuery(api.menuItems.getCategories, { restaurantId: restaurant._id }) : undefined;
+  const convexRestaurant = useQuery(api.restaurants.getBySlug, { slug });
+  const [useFallback, setUseFallback] = useState(false);
+
+  // Fallback to mock data after 3 seconds if Convex doesn't respond
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (convexRestaurant === undefined) {
+        console.warn("Convex query timed out, using fallback data for restaurant:", slug);
+        setUseFallback(true);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [convexRestaurant, slug]);
+
+  // Use Convex data if available, otherwise fallback to mock data
+  const restaurant = useMemo(() => {
+    if (convexRestaurant !== undefined) {
+      return convexRestaurant;
+    }
+    if (useFallback) {
+      return getMockRestaurant(slug);
+    }
+    return undefined; // Still loading
+  }, [convexRestaurant, useFallback, slug]);
+
+  // Only query menu items if we have a real restaurant from Convex
+  const convexMenuItems = restaurant && convexRestaurant !== null ? useQuery(api.menuItems.getByRestaurant, { restaurantId: restaurant._id }) : undefined;
+  const convexCategories = restaurant && convexRestaurant !== null ? useQuery(api.menuItems.getCategories, { restaurantId: restaurant._id }) : undefined;
+
+  // Use mock menu items when using fallback
+  const menuItems = useMemo(() => {
+    if (convexMenuItems) return convexMenuItems;
+    if (useFallback && restaurant) return getMockMenuItems(restaurant._id as string);
+    return undefined;
+  }, [convexMenuItems, useFallback, restaurant]);
+
+  const categories = useMemo(() => {
+    if (convexCategories) return convexCategories;
+    if (useFallback && restaurant) return getMockCategories(restaurant._id as string);
+    return undefined;
+  }, [convexCategories, useFallback, restaurant]);
+
   const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const reviewStats = restaurant ? useQuery(api.restaurantReviews.getRestaurantStats, { restaurantId: restaurant._id }) : undefined;
+  const reviewStats = restaurant && convexRestaurant !== null ? useQuery(api.restaurantReviews.getRestaurantStats, { restaurantId: restaurant._id }) : undefined;
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
@@ -99,11 +207,11 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
 
   // Group menu items by category
   const itemsByCategory = menuItems?.reduce((acc, item) => {
-    const catId = item.categoryId || "uncategorized";
+    const catId = (item.categoryId as string) || "uncategorized";
     if (!acc[catId]) acc[catId] = [];
-    acc[catId].push(item);
+    acc[catId].push(item as any);
     return acc;
-  }, {} as Record<string, typeof menuItems>);
+  }, {} as Record<string, any[]>);
 
   return (
     <>

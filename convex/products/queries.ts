@@ -56,9 +56,36 @@ export const getActiveProducts = query({
 });
 
 // Get single product by ID
-// Note: Uses v.string() instead of v.id() to allow graceful handling of invalid IDs
-// This prevents server errors when invalid product IDs are passed
+// Note: Uses v.id() for type safety - caller should validate ID before calling
 export const getProductById = query({
+  args: { productId: v.id("products") },
+  handler: async (ctx, args) => {
+    const product = await ctx.db.get(args.productId);
+    if (!product) return null;
+
+    // Enrich with vendor info
+    if (product.vendorId) {
+      const vendor = await ctx.db.get(product.vendorId);
+      return {
+        ...product,
+        vendor: vendor ? {
+          _id: vendor._id,
+          storeName: vendor.name,
+          slug: vendor.slug,
+          logo: vendor.logoUrl,
+          description: vendor.description,
+          tier: vendor.tier || "BASIC",
+        } : null,
+      };
+    }
+    return { ...product, vendor: null };
+  },
+});
+
+// Get single product by ID (string version - for graceful error handling)
+// Note: Uses v.string() to allow graceful handling of invalid IDs
+// This prevents server errors when invalid product IDs are passed from URLs
+export const getProductByIdSafe = query({
   args: { productId: v.string() },
   handler: async (ctx, args) => {
     // Validate the ID looks like a Convex ID (alphanumeric, 20+ chars)
@@ -68,13 +95,17 @@ export const getProductById = query({
     }
 
     try {
-      // Try to normalize the string to a valid Convex ID
-      const product = await ctx.db.get(args.productId as any) as { vendorId?: any; [key: string]: any } | null;
+      // Try to get the product - cast to products table ID type
+      const product = await ctx.db
+        .query("products")
+        .filter((q) => q.eq(q.field("_id"), args.productId as any))
+        .first();
+
       if (!product) return null;
 
       // Enrich with vendor info
       if (product.vendorId) {
-        const vendor = await ctx.db.get(product.vendorId) as { _id: any; name?: string; slug?: string; logoUrl?: string; description?: string; tier?: string } | null;
+        const vendor = await ctx.db.get(product.vendorId);
         return {
           ...product,
           vendor: vendor ? {

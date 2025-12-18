@@ -8,11 +8,12 @@ import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { RestaurantCard } from "@/components/restaurants/RestaurantCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
 import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
+import { mockRestaurants } from "@/lib/mock-data/restaurants";
 
 // All available cuisine types
 const ALL_CUISINES = [
@@ -36,8 +37,53 @@ const ALL_CUISINES = [
 
 type SortOption = "name" | "pickup_time" | "newest";
 
+// Convert mock data to the format expected by the component
+const getMockRestaurantsAsConvex = () => mockRestaurants.map(r => ({
+  _id: r.id as any, // Cast to avoid type errors with mock IDs
+  slug: r.slug,
+  name: r.name,
+  description: r.description,
+  cuisine: r.cuisine,
+  logoUrl: r.logoUrl,
+  coverImageUrl: r.coverImageUrl,
+  acceptingOrders: r.acceptingOrders,
+  estimatedPickupTime: r.estimatedPickupTime,
+  averageRating: r.averageRating,
+  totalReviews: r.totalReviews,
+  city: "Chicago",
+  state: "IL",
+  address: "123 Main Street",
+  phone: "(312) 555-0100",
+  isActive: true,
+  createdAt: Date.now(),
+}));
+
 export default function RestaurantsListClient() {
-  const restaurants = useQuery(api.public.queries.getActiveRestaurants);
+  const convexRestaurants = useQuery(api.public.queries.getActiveRestaurants);
+  const [useFallback, setUseFallback] = useState(false);
+
+  // Fallback to mock data after 3 seconds if Convex doesn't respond
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (convexRestaurants === undefined) {
+        console.warn("Convex query timed out, using fallback data");
+        setUseFallback(true);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [convexRestaurants]);
+
+  // Use Convex data if available, otherwise fallback to mock data
+  const restaurants = useMemo(() => {
+    if (convexRestaurants && convexRestaurants.length > 0) {
+      return convexRestaurants;
+    }
+    if (useFallback || convexRestaurants?.length === 0) {
+      return getMockRestaurantsAsConvex();
+    }
+    return undefined; // Still loading
+  }, [convexRestaurants, useFallback]);
 
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
