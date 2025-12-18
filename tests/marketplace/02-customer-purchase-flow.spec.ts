@@ -177,23 +177,21 @@ test.describe("Customer Purchase Flow", () => {
     const placeOrderButton = page.getByRole('button', { name: 'Place Order' });
     await placeOrderButton.click();
 
-    // Wait for confirmation content to appear
-    const successMessage = page.locator('text=/Order Placed Successfully|Order Confirmed|Thank you for your order/i');
-    await successMessage.waitFor({ timeout: 60000 });
+    // Wait for confirmation content to appear - use specific h1 heading
+    const successHeading = page.getByRole('heading', { name: 'Order Placed Successfully!' });
+    await successHeading.waitFor({ timeout: 60000 });
     await waitForPageLoad(page);
 
     // Verify confirmation page elements
-    await expect(successMessage).toBeVisible({ timeout: 10000 });
+    await expect(successHeading).toBeVisible({ timeout: 10000 });
 
     // Verify order number is displayed
     const orderNumberDisplay = page.locator('text=/ORD-[A-Z0-9-]+/i');
     await expect(orderNumberDisplay).toBeVisible({ timeout: 5000 });
 
-    // Verify order details are shown
-    const orderDetails = page.locator('text="Order Details"')
-      .or(page.locator('text="Items"'))
-      .or(page.locator('text="Total"'));
-    await expect(orderDetails).toBeVisible({ timeout: 5000 });
+    // Verify order details are shown - use specific heading
+    const orderDetailsHeading = page.getByRole('heading', { name: 'Order Details' });
+    await expect(orderDetailsHeading).toBeVisible({ timeout: 5000 });
 
     await takeScreenshot(page, "customer-confirmation-details");
   });
@@ -306,11 +304,11 @@ test.describe("Customer Purchase Flow", () => {
     const placeOrderButton = page.getByRole('button', { name: 'Place Order' });
     await placeOrderButton.click();
 
-    // Wait for success message or URL change
-    const successMessage = page.locator('text=/Order Placed Successfully|Order Confirmed|Thank you/i');
-    await successMessage.waitFor({ timeout: 60000 });
+    // Wait for success message - use specific h1 heading
+    const successHeading = page.getByRole('heading', { name: 'Order Placed Successfully!' });
+    await successHeading.waitFor({ timeout: 60000 });
 
-    const confirmation = await successMessage.isVisible();
+    const confirmation = await successHeading.isVisible();
     expect(confirmation).toBe(true);
 
     await takeScreenshot(page, "customer-multi-quantity-order");

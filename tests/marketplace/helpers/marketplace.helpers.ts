@@ -417,10 +417,11 @@ export async function submitOrder(page: Page): Promise<string | null> {
  * Verify order confirmation page
  */
 export async function verifyOrderConfirmation(page: Page, orderNumber?: string): Promise<boolean> {
-  // Check for confirmation indicators
-  const confirmationIndicators = page.locator('text="Order Confirmed"')
-    .or(page.locator('text="Thank you"'))
-    .or(page.locator('text="Confirmation"'));
+  // Check for confirmation indicators - match the actual page content "Order Placed Successfully!"
+  const confirmationIndicators = page.locator('text="Order Placed Successfully"')
+    .or(page.locator('text="Order Confirmed"'))
+    .or(page.locator('text="Thank you for your order"'))
+    .or(page.locator('h1:has-text("Order")'));
 
   const hasConfirmation = await confirmationIndicators.isVisible({ timeout: 5000 }).catch(() => false);
 
