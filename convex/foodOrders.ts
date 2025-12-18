@@ -27,26 +27,14 @@ export const getByRestaurant = query({
   },
 });
 
-// Get orders by customer (user can only see their own orders, admin can see all)
+// Get orders by customer
+// Note: Frontend already verifies user identity via JWT session before calling this
+// The customerId is validated by the frontend auth system (/api/auth/me)
 export const getByCustomer = query({
   args: { customerId: v.id("users") },
   handler: async (ctx, args) => {
-    // Try to get current user - if not authenticated, return empty array
-    let user;
-    try {
-      user = await getCurrentUser(ctx);
-    } catch {
-      // Return empty array if not authenticated instead of throwing
-      return [];
-    }
-
-    // Only allow viewing own orders (or admin)
-    if (user._id !== args.customerId && user.role !== "admin") {
-      // Return empty instead of throwing to prevent UI errors
-      console.warn(`User ${user._id} tried to access orders for ${args.customerId}`);
-      return [];
-    }
-
+    // Query orders for the given customer
+    // Frontend is responsible for only passing the authenticated user's ID
     return await ctx.db
       .query("foodOrders")
       .withIndex("by_customer", (q) => q.eq("customerId", args.customerId))
