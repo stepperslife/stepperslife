@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalQuery } from "./_generated/server";
 import { getCurrentUser, requireAdmin } from "./lib/auth";
 import { requireRestaurantOwner, requireRestaurantRole } from "./lib/restaurantAuth";
 import { USER_ROLES } from "./lib/roles";
@@ -44,6 +44,14 @@ export const getByOwner = query({
       .query("restaurants")
       .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId))
       .collect();
+  },
+});
+
+// Get restaurant by ID (internal - for use by other Convex functions)
+export const getByIdInternal = internalQuery({
+  args: { id: v.id("restaurants") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
   },
 });
 

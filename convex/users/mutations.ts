@@ -449,6 +449,41 @@ export const disconnectPaymentProcessor = mutation({
 });
 
 /**
+ * Internal mutation to update password hash (for CLI/testing use)
+ * This is called from the deploy key, not from the browser
+ */
+export const internalUpdatePasswordHash = internalMutation({
+  args: {
+    userId: v.id("users"),
+    passwordHash: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, {
+      passwordHash: args.passwordHash,
+      updatedAt: Date.now(),
+    });
+    return { success: true };
+  },
+});
+
+/**
+ * Internal mutation to update user role (for CLI/testing use)
+ */
+export const internalUpdateUserRole = internalMutation({
+  args: {
+    userId: v.id("users"),
+    role: v.union(v.literal("admin"), v.literal("organizer"), v.literal("user")),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, {
+      role: args.role,
+      updatedAt: Date.now(),
+    });
+    return { success: true, role: args.role };
+  },
+});
+
+/**
  * Update user password hash (ADMIN ONLY - highly sensitive)
  * PRODUCTION: Requires admin authentication
  */

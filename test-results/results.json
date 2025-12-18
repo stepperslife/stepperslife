@@ -303,7 +303,7 @@
           "specs": [
             {
               "title": "vendor can login and access product creation page",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -316,116 +316,18 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4440,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:24:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 24
-                        },
-                        "snippet": "  22 |     // Step 1: Login as vendor\n  23 |     const loginSuccess = await loginAsVendor(page);\n> 24 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  25 |\n  26 |     // Step 2: Navigate to product creation\n  27 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 24
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  22 |     // Step 1: Login as vendor\n  23 |     const loginSuccess = await loginAsVendor(page);\n> 24 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  25 |\n  26 |     // Step 2: Navigate to product creation\n  27 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:24:26"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 5145,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:09:15.864Z",
+                      "startTime": "2025-12-18T17:06:35.793Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 24
-                      }
-                    },
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4168,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:24:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 24
-                        },
-                        "snippet": "  22 |     // Step 1: Login as vendor\n  23 |     const loginSuccess = await loginAsVendor(page);\n> 24 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  25 |\n  26 |     // Step 2: Navigate to product creation\n  27 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 24
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  22 |     // Step 1: Login as vendor\n  23 |     const loginSuccess = await loginAsVendor(page);\n> 24 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  25 |\n  26 |     // Step 2: Navigate to product creation\n  27 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:24:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:09:20.839Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-retry1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-retry1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-retry1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-retry1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 24
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-b71a837a93fa05df4341",
@@ -435,7 +337,7 @@
             },
             {
               "title": "vendor can create a new product with full details",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -446,118 +348,24 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 2,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4182,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:39:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 39
-                        },
-                        "snippet": "  37 |     // Step 1: Login as vendor\n  38 |     const loginSuccess = await loginAsVendor(page);\n> 39 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  40 |\n  41 |     // Step 2: Navigate to product creation\n  42 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 5770,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 39
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  37 |     // Step 1: Login as vendor\n  38 |     const loginSuccess = await loginAsVendor(page);\n> 39 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  40 |\n  41 |     // Step 2: Navigate to product creation\n  42 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:39:26"
+                          "text": "Product created: E2E Test Product 1766077601101-bhn4w9 (ID: created)\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:09:25.402Z",
+                      "startTime": "2025-12-18T17:06:41.057Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 39
-                      }
-                    },
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4193,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:39:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 39
-                        },
-                        "snippet": "  37 |     // Step 1: Login as vendor\n  38 |     const loginSuccess = await loginAsVendor(page);\n> 39 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  40 |\n  41 |     // Step 2: Navigate to product creation\n  42 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 39
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  37 |     // Step 1: Login as vendor\n  38 |     const loginSuccess = await loginAsVendor(page);\n> 39 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  40 |\n  41 |     // Step 2: Navigate to product creation\n  42 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:39:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:09:30.047Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-retry1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-retry1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-retry1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-retry1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 39
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-5e3524bd42901ae9df7a",
@@ -567,7 +375,7 @@
             },
             {
               "title": "newly created product appears in marketplace",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -578,128 +386,34 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 4,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4138,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:73:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 73
-                        },
-                        "snippet": "  71 |     // Step 1: Login as vendor\n  72 |     const loginSuccess = await loginAsVendor(page);\n> 73 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  74 |\n  75 |     // Step 2: Create a product\n  76 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 9552,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 73
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  71 |     // Step 1: Login as vendor\n  72 |     const loginSuccess = await loginAsVendor(page);\n> 73 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  74 |\n  75 |     // Step 2: Create a product\n  76 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:73:26"
+                          "text": "Product \"E2E Test Product 1766077606885-mnu9s\" verified in marketplace\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:09:34.643Z",
+                      "startTime": "2025-12-18T17:06:46.834Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 73
-                      }
-                    },
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4246,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:73:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 73
-                        },
-                        "snippet": "  71 |     // Step 1: Login as vendor\n  72 |     const loginSuccess = await loginAsVendor(page);\n> 73 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  74 |\n  75 |     // Step 2: Create a product\n  76 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 73
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  71 |     // Step 1: Login as vendor\n  72 |     const loginSuccess = await loginAsVendor(page);\n> 73 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  74 |\n  75 |     // Step 2: Create a product\n  76 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:73:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:09:39.176Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-retry1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-retry1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-retry1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-retry1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 73
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-be983a28f99d12775f27",
               "file": "marketplace/01-vendor-product-creation.spec.ts",
-              "line": 70,
+              "line": 66,
               "column": 7
             },
             {
               "title": "vendor can view product in their dashboard",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -710,128 +424,34 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 6,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4184,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:114:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 114
-                        },
-                        "snippet": "  112 |     // Step 1: Login as vendor\n  113 |     const loginSuccess = await loginAsVendor(page);\n> 114 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  115 |\n  116 |     // Step 2: Create a product\n  117 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 6638,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 114
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  112 |     // Step 1: Login as vendor\n  113 |     const loginSuccess = await loginAsVendor(page);\n> 114 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  115 |\n  116 |     // Step 2: Create a product\n  117 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:114:26"
+                          "text": "Product \"E2E Test Product 1766077616459-0hymuu\" verified in vendor dashboard\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:09:43.825Z",
+                      "startTime": "2025-12-18T17:06:56.395Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 114
-                      }
-                    },
-                    {
-                      "workerIndex": 7,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4226,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:114:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 114
-                        },
-                        "snippet": "  112 |     // Step 1: Login as vendor\n  113 |     const loginSuccess = await loginAsVendor(page);\n> 114 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  115 |\n  116 |     // Step 2: Create a product\n  117 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 114
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  112 |     // Step 1: Login as vendor\n  113 |     const loginSuccess = await loginAsVendor(page);\n> 114 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  115 |\n  116 |     // Step 2: Create a product\n  117 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:114:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:09:48.495Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-retry1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-retry1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-retry1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-retry1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 114
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-5fe9268e1b02617a09f0",
               "file": "marketplace/01-vendor-product-creation.spec.ts",
-              "line": 111,
+              "line": 107,
               "column": 7
             },
             {
               "title": "full product creation process with all fields",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -842,128 +462,34 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 8,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4182,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:145:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 145
-                        },
-                        "snippet": "  143 |     // Step 1: Login as vendor\n  144 |     const loginSuccess = await loginAsVendor(page);\n> 145 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  146 |\n  147 |     // Step 2: Navigate to product creation\n  148 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 8073,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 145
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  143 |     // Step 1: Login as vendor\n  144 |     const loginSuccess = await loginAsVendor(page);\n> 145 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  146 |\n  147 |     // Step 2: Navigate to product creation\n  148 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:145:26"
+                          "text": "Full product creation test completed: E2E Test Product 1766077623090-kmexb\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:09:53.124Z",
+                      "startTime": "2025-12-18T17:07:03.039Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 145
-                      }
-                    },
-                    {
-                      "workerIndex": 9,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4214,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:145:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 145
-                        },
-                        "snippet": "  143 |     // Step 1: Login as vendor\n  144 |     const loginSuccess = await loginAsVendor(page);\n> 145 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  146 |\n  147 |     // Step 2: Navigate to product creation\n  148 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 145
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  143 |     // Step 1: Login as vendor\n  144 |     const loginSuccess = await loginAsVendor(page);\n> 145 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  146 |\n  147 |     // Step 2: Navigate to product creation\n  148 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:145:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:09:57.710Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-retry1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-retry1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-retry1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-retry1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 145
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-0b060b1fa2e088125b08",
               "file": "marketplace/01-vendor-product-creation.spec.ts",
-              "line": 140,
+              "line": 136,
               "column": 7
             },
             {
               "title": "vendor can login and access product creation page",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -974,118 +500,20 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 12,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4180,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:24:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 24
-                        },
-                        "snippet": "  22 |     // Step 1: Login as vendor\n  23 |     const loginSuccess = await loginAsVendor(page);\n> 24 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  25 |\n  26 |     // Step 2: Navigate to product creation\n  27 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 24
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  22 |     // Step 1: Login as vendor\n  23 |     const loginSuccess = await loginAsVendor(page);\n> 24 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  25 |\n  26 |     // Step 2: Navigate to product creation\n  27 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:24:26"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 5083,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:11:08.521Z",
+                      "startTime": "2025-12-18T17:07:46.607Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-repeat1/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 24
-                      }
-                    },
-                    {
-                      "workerIndex": 13,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4175,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:24:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 24
-                        },
-                        "snippet": "  22 |     // Step 1: Login as vendor\n  23 |     const loginSuccess = await loginAsVendor(page);\n> 24 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  25 |\n  26 |     // Step 2: Navigate to product creation\n  27 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 24
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  22 |     // Step 1: Login as vendor\n  23 |     const loginSuccess = await loginAsVendor(page);\n> 24 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  25 |\n  26 |     // Step 2: Navigate to product creation\n  27 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:24:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:13.096Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-retry1-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-retry1-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-retry1-repeat1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-1c426-ccess-product-creation-page-chromium-retry1-repeat1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 24
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-7935f4048aed5f832e51",
@@ -1095,7 +523,7 @@
             },
             {
               "title": "vendor can create a new product with full details",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -1106,118 +534,24 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 14,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4212,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:39:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 39
-                        },
-                        "snippet": "  37 |     // Step 1: Login as vendor\n  38 |     const loginSuccess = await loginAsVendor(page);\n> 39 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  40 |\n  41 |     // Step 2: Navigate to product creation\n  42 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 5843,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 39
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  37 |     // Step 1: Login as vendor\n  38 |     const loginSuccess = await loginAsVendor(page);\n> 39 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  40 |\n  41 |     // Step 2: Navigate to product creation\n  42 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:39:26"
+                          "text": "Product created: E2E Test Product 1766077671831-rmksih (ID: created)\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:11:17.665Z",
+                      "startTime": "2025-12-18T17:07:51.784Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-repeat1/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 39
-                      }
-                    },
-                    {
-                      "workerIndex": 15,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4225,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:39:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 39
-                        },
-                        "snippet": "  37 |     // Step 1: Login as vendor\n  38 |     const loginSuccess = await loginAsVendor(page);\n> 39 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  40 |\n  41 |     // Step 2: Navigate to product creation\n  42 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 39
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  37 |     // Step 1: Login as vendor\n  38 |     const loginSuccess = await loginAsVendor(page);\n> 39 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  40 |\n  41 |     // Step 2: Navigate to product creation\n  42 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:39:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:22.254Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-retry1-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-retry1-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-retry1-repeat1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-93f48-w-product-with-full-details-chromium-retry1-repeat1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 39
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-c9c16ea278c8810635b8",
@@ -1227,7 +561,7 @@
             },
             {
               "title": "newly created product appears in marketplace",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -1238,128 +572,34 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 16,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4199,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:73:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 73
-                        },
-                        "snippet": "  71 |     // Step 1: Login as vendor\n  72 |     const loginSuccess = await loginAsVendor(page);\n> 73 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  74 |\n  75 |     // Step 2: Create a product\n  76 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 9550,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 73
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  71 |     // Step 1: Login as vendor\n  72 |     const loginSuccess = await loginAsVendor(page);\n> 73 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  74 |\n  75 |     // Step 2: Create a product\n  76 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:73:26"
+                          "text": "Product \"E2E Test Product 1766077677685-s54oe\" verified in marketplace\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:11:26.949Z",
+                      "startTime": "2025-12-18T17:07:57.635Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-repeat1/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 73
-                      }
-                    },
-                    {
-                      "workerIndex": 17,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4204,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:73:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 73
-                        },
-                        "snippet": "  71 |     // Step 1: Login as vendor\n  72 |     const loginSuccess = await loginAsVendor(page);\n> 73 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  74 |\n  75 |     // Step 2: Create a product\n  76 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 73
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  71 |     // Step 1: Login as vendor\n  72 |     const loginSuccess = await loginAsVendor(page);\n> 73 |     expect(loginSuccess).toBe(true);\n     |                          ^\n  74 |\n  75 |     // Step 2: Create a product\n  76 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:73:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:31.543Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-retry1-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-retry1-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-retry1-repeat1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-196ed-duct-appears-in-marketplace-chromium-retry1-repeat1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 73
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-63ddac951bc476595e8d",
               "file": "marketplace/01-vendor-product-creation.spec.ts",
-              "line": 70,
+              "line": 66,
               "column": 7
             },
             {
               "title": "vendor can view product in their dashboard",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -1370,128 +610,34 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 18,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4200,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:114:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 114
-                        },
-                        "snippet": "  112 |     // Step 1: Login as vendor\n  113 |     const loginSuccess = await loginAsVendor(page);\n> 114 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  115 |\n  116 |     // Step 2: Create a product\n  117 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 6641,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 114
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  112 |     // Step 1: Login as vendor\n  113 |     const loginSuccess = await loginAsVendor(page);\n> 114 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  115 |\n  116 |     // Step 2: Create a product\n  117 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:114:26"
+                          "text": "Product \"E2E Test Product 1766077687244-ard808\" verified in vendor dashboard\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:11:36.155Z",
+                      "startTime": "2025-12-18T17:08:07.191Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-repeat1/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 114
-                      }
-                    },
-                    {
-                      "workerIndex": 19,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4140,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:114:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 114
-                        },
-                        "snippet": "  112 |     // Step 1: Login as vendor\n  113 |     const loginSuccess = await loginAsVendor(page);\n> 114 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  115 |\n  116 |     // Step 2: Create a product\n  117 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 114
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  112 |     // Step 1: Login as vendor\n  113 |     const loginSuccess = await loginAsVendor(page);\n> 114 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  115 |\n  116 |     // Step 2: Create a product\n  117 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:114:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:40.714Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-retry1-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-retry1-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-retry1-repeat1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-5534b--product-in-their-dashboard-chromium-retry1-repeat1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 114
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-96874f1acfaa60828f8c",
               "file": "marketplace/01-vendor-product-creation.spec.ts",
-              "line": 111,
+              "line": 107,
               "column": 7
             },
             {
               "title": "full product creation process with all fields",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -1502,123 +648,29 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 20,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4226,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:145:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 145
-                        },
-                        "snippet": "  143 |     // Step 1: Login as vendor\n  144 |     const loginSuccess = await loginAsVendor(page);\n> 145 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  146 |\n  147 |     // Step 2: Navigate to product creation\n  148 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 8119,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 145
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  143 |     // Step 1: Login as vendor\n  144 |     const loginSuccess = await loginAsVendor(page);\n> 145 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  146 |\n  147 |     // Step 2: Navigate to product creation\n  148 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:145:26"
+                          "text": "Full product creation test completed: E2E Test Product 1766077693893-z476km\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:11:45.270Z",
+                      "startTime": "2025-12-18T17:08:13.839Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-repeat1/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 145
-                      }
-                    },
-                    {
-                      "workerIndex": 21,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4146,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:145:26",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                          "column": 26,
-                          "line": 145
-                        },
-                        "snippet": "  143 |     // Step 1: Login as vendor\n  144 |     const loginSuccess = await loginAsVendor(page);\n> 145 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  146 |\n  147 |     // Step 2: Navigate to product creation\n  148 |     await navigateToProductCreation(page);"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                            "column": 26,
-                            "line": 145
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  143 |     // Step 1: Login as vendor\n  144 |     const loginSuccess = await loginAsVendor(page);\n> 145 |     expect(loginSuccess).toBe(true);\n      |                          ^\n  146 |\n  147 |     // Step 2: Navigate to product creation\n  148 |     await navigateToProductCreation(page);\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts:145:26"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:49.890Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-retry1-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-retry1-repeat1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-retry1-repeat1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-01-vendor-prod-18a38-ion-process-with-all-fields-chromium-retry1-repeat1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/01-vendor-product-creation.spec.ts",
-                        "column": 26,
-                        "line": 145
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "7f561d9c5442a45c6c28-350ed0cbde6e8756fbf1",
               "file": "marketplace/01-vendor-product-creation.spec.ts",
-              "line": 140,
+              "line": 136,
               "column": 7
             }
           ]
@@ -1651,19 +703,19 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 10,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
                       "duration": 1072,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Found 16 products on marketplace\n"
+                          "text": "Found 30 products on marketplace\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:10:02.343Z",
+                      "startTime": "2025-12-18T17:07:11.122Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1689,15 +741,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 10,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3539,
+                      "duration": 2815,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:10:03.502Z",
+                      "startTime": "2025-12-18T17:07:12.199Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1723,25 +775,25 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 10,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8144,
+                      "duration": 8642,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Customer login: proceeding as guest\n"
+                          "text": "Customer login: success\n"
                         },
                         {
                           "text": "Payment method: Pay When You Receive (no Stripe required)\n"
                         },
                         {
-                          "text": "Order completed: ORD-1766074214641-9196\n"
+                          "text": "Order completed: ORD-1766077642814-7294\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:10:07.047Z",
+                      "startTime": "2025-12-18T17:07:15.020Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1767,10 +819,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 10,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8508,
+                      "duration": 9327,
                       "errors": [],
                       "stdout": [
                         {
@@ -1779,7 +831,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:10:15.196Z",
+                      "startTime": "2025-12-18T17:07:23.670Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1805,10 +857,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 10,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4695,
+                      "duration": 4793,
                       "errors": [],
                       "stdout": [
                         {
@@ -1820,7 +872,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:10:23.710Z",
+                      "startTime": "2025-12-18T17:07:33.003Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1846,10 +898,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 10,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8764,
+                      "duration": 8392,
                       "errors": [],
                       "stdout": [
                         {
@@ -1861,7 +913,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:10:28.410Z",
+                      "startTime": "2025-12-18T17:07:37.801Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1887,19 +939,19 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 22,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1118,
+                      "duration": 1089,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Found 16 products on marketplace\n"
+                          "text": "Found 34 products on marketplace\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:11:54.437Z",
+                      "startTime": "2025-12-18T17:08:21.968Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1925,15 +977,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 22,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2948,
+                      "duration": 2890,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:11:55.642Z",
+                      "startTime": "2025-12-18T17:08:23.062Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1959,25 +1011,25 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 22,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8074,
+                      "duration": 8495,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Customer login: proceeding as guest\n"
+                          "text": "Customer login: success\n"
                         },
                         {
                           "text": "Payment method: Pay When You Receive (no Stripe required)\n"
                         },
                         {
-                          "text": "Order completed: ORD-1766074326133-9259\n"
+                          "text": "Order completed: ORD-1766077713866-1291\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:11:58.595Z",
+                      "startTime": "2025-12-18T17:08:25.964Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2003,10 +1055,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 22,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8360,
+                      "duration": 8443,
                       "errors": [],
                       "stdout": [
                         {
@@ -2015,7 +1067,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:12:06.674Z",
+                      "startTime": "2025-12-18T17:08:34.466Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2041,10 +1093,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 22,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 5300,
+                      "duration": 4928,
                       "errors": [],
                       "stdout": [
                         {
@@ -2056,7 +1108,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:12:15.040Z",
+                      "startTime": "2025-12-18T17:08:42.915Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2082,10 +1134,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 22,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 10005,
+                      "duration": 8666,
                       "errors": [],
                       "stdout": [
                         {
@@ -2097,7 +1149,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-18T16:12:20.348Z",
+                      "startTime": "2025-12-18T17:08:47.848Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2113,746 +1165,15 @@
           ]
         }
       ]
-    },
-    {
-      "title": "marketplace/03-order-notification-verification.spec.ts",
-      "file": "marketplace/03-order-notification-verification.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Order Notifications & Earnings Verification",
-          "file": "marketplace/03-order-notification-verification.spec.ts",
-          "line": 31,
-          "column": 6,
-          "specs": [
-            {
-              "title": "complete purchase triggers email notifications",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 0,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n\n    at navigateToProductCreation (/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts:97:96)\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/03-order-notification-verification.spec.ts:43:5",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                          "column": 96,
-                          "line": 97
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mmarketplace/helpers/marketplace.helpers.ts:97\n\n   95 |\n   96 |   // Verify we're on the create product page\n>  97 |   await expect(page.locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()).toBeVisible({ timeout: 10000 });\n      |                                                                                                ^\n   98 | }\n   99 |\n  100 | /**"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                            "column": 96,
-                            "line": 97
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n\n\n   at marketplace/helpers/marketplace.helpers.ts:97\n\n   95 |\n   96 |   // Verify we're on the create product page\n>  97 |   await expect(page.locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()).toBeVisible({ timeout: 10000 });\n      |                                                                                                ^\n   98 | }\n   99 |\n  100 | /**\n    at navigateToProductCreation (/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts:97:96)\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/03-order-notification-verification.spec.ts:43:5"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:10:37.183Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                        "column": 96,
-                        "line": 97
-                      }
-                    },
-                    {
-                      "workerIndex": 11,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 0,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n\n    at navigateToProductCreation (/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts:97:96)\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/03-order-notification-verification.spec.ts:43:5",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                          "column": 96,
-                          "line": 97
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mmarketplace/helpers/marketplace.helpers.ts:97\n\n   95 |\n   96 |   // Verify we're on the create product page\n>  97 |   await expect(page.locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()).toBeVisible({ timeout: 10000 });\n      |                                                                                                ^\n   98 | }\n   99 |\n  100 | /**"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                            "column": 96,
-                            "line": 97
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n\n\n   at marketplace/helpers/marketplace.helpers.ts:97\n\n   95 |\n   96 |   // Verify we're on the create product page\n>  97 |   await expect(page.locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()).toBeVisible({ timeout: 10000 });\n      |                                                                                                ^\n   98 | }\n   99 |\n  100 | /**\n    at navigateToProductCreation (/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts:97:96)\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/03-order-notification-verification.spec.ts:43:5"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:10:52.877Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium-retry1/test-failed-1.png"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium-retry1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium-retry1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                        "column": 96,
-                        "line": 97
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-5f869f0949436a171d65",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 55,
-              "column": 7
-            },
-            {
-              "title": "vendor receives order in dashboard",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:10:52.427Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:08.170Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-7d046d14162a21dc68b5",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 100,
-              "column": 7
-            },
-            {
-              "title": "vendor earnings are updated after purchase",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:10:52.427Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:08.170Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-59a192a31b6b29dbc964",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 155,
-              "column": 7
-            },
-            {
-              "title": "verify commission calculation (15% platform fee)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:10:52.427Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:08.170Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-4a9321bdd3d3455ee324",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 215,
-              "column": 7
-            },
-            {
-              "title": "order status tracking works correctly",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:10:52.427Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:08.170Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-5c78632198daaaf5f930",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 247,
-              "column": 7
-            },
-            {
-              "title": "full end-to-end flow with all verifications",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:10:52.427Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:11:08.170Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-3c5de3f66a6107881719",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 298,
-              "column": 7
-            },
-            {
-              "title": "complete purchase triggers email notifications",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 22,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 0,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n\n    at navigateToProductCreation (/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts:97:96)\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/03-order-notification-verification.spec.ts:43:5",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                          "column": 96,
-                          "line": 97
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mmarketplace/helpers/marketplace.helpers.ts:97\n\n   95 |\n   96 |   // Verify we're on the create product page\n>  97 |   await expect(page.locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()).toBeVisible({ timeout: 10000 });\n      |                                                                                                ^\n   98 | }\n   99 |\n  100 | /**"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                            "column": 96,
-                            "line": 97
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n\n\n   at marketplace/helpers/marketplace.helpers.ts:97\n\n   95 |\n   96 |   // Verify we're on the create product page\n>  97 |   await expect(page.locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()).toBeVisible({ timeout: 10000 });\n      |                                                                                                ^\n   98 | }\n   99 |\n  100 | /**\n    at navigateToProductCreation (/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts:97:96)\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/03-order-notification-verification.spec.ts:43:5"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:12:30.363Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium-repeat1/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                        "column": 96,
-                        "line": 97
-                      }
-                    },
-                    {
-                      "workerIndex": 23,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 0,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n\n    at navigateToProductCreation (/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts:97:96)\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/03-order-notification-verification.spec.ts:43:5",
-                        "location": {
-                          "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                          "column": 96,
-                          "line": 97
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mmarketplace/helpers/marketplace.helpers.ts:97\n\n   95 |\n   96 |   // Verify we're on the create product page\n>  97 |   await expect(page.locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()).toBeVisible({ timeout: 10000 });\n      |                                                                                                ^\n   98 | }\n   99 |\n  100 | /**"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                            "column": 96,
-                            "line": 97
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()\u001b[22m\n\n\n   at marketplace/helpers/marketplace.helpers.ts:97\n\n   95 |\n   96 |   // Verify we're on the create product page\n>  97 |   await expect(page.locator('h1, h2').filter({ hasText: /add|create|new.*product/i }).first()).toBeVisible({ timeout: 10000 });\n      |                                                                                                ^\n   98 | }\n   99 |\n  100 | /**\n    at navigateToProductCreation (/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts:97:96)\n    at /Users/irawatkins/Documents/stepperslife/tests/marketplace/03-order-notification-verification.spec.ts:43:5"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:12:45.920Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium-retry1-repeat1/test-failed-1.png"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium-retry1-repeat1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/irawatkins/Documents/stepperslife/test-results/artifacts/marketplace-03-order-notif-21115-riggers-email-notifications-chromium-retry1-repeat1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/irawatkins/Documents/stepperslife/tests/marketplace/helpers/marketplace.helpers.ts",
-                        "column": 96,
-                        "line": 97
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-01560316a39f0dd79b81",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 55,
-              "column": 7
-            },
-            {
-              "title": "vendor receives order in dashboard",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:12:45.527Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:13:01.279Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-4dfd2aff359c00ddd299",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 100,
-              "column": 7
-            },
-            {
-              "title": "vendor earnings are updated after purchase",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:12:45.527Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:13:01.279Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-00c17f8f46d37374da48",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 155,
-              "column": 7
-            },
-            {
-              "title": "verify commission calculation (15% platform fee)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:12:45.527Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:13:01.279Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-a2e22e60d6a82afe59fe",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 215,
-              "column": 7
-            },
-            {
-              "title": "order status tracking works correctly",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:12:45.527Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:13:01.279Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-1b3429888e89a71babdc",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 247,
-              "column": 7
-            },
-            {
-              "title": "full end-to-end flow with all verifications",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-18T16:12:45.527Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-12-18T16:13:01.279Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c57744b8da7ecf33c34d-50c157302233028cb5a2",
-              "file": "marketplace/03-order-notification-verification.spec.ts",
-              "line": 298,
-              "column": 7
-            }
-          ]
-        }
-      ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-18T16:09:15.499Z",
-    "duration": 225794.959,
-    "expected": 12,
-    "skipped": 10,
-    "unexpected": 12,
+    "startTime": "2025-12-18T17:06:35.491Z",
+    "duration": 141084.839,
+    "expected": 22,
+    "skipped": 0,
+    "unexpected": 0,
     "flaky": 0
   }
 }

@@ -154,7 +154,7 @@ export const sendClassReminders = internalAction({
           : null;
 
         // Format date/time
-        const eventDate = new Date(ticket.event.startDate);
+        const eventDate = new Date(ticket.event.startDate || Date.now());
         const formattedDate = eventDate.toLocaleDateString("en-US", {
           weekday: "long",
           month: "long",
@@ -170,6 +170,13 @@ export const sendClassReminders = internalAction({
         // Determine if this is a class or event
         const isClass = ticket.event.eventType === "CLASS";
 
+        // Extract location info (can be string or object)
+        const loc = ticket.event.location;
+        const locationInfo =
+          typeof loc === "string"
+            ? { venueName: loc, address: "", city: "", state: "", zipCode: "" }
+            : loc || { venueName: "", address: "", city: "", state: "", zipCode: "" };
+
         // Prepare reminder data
         const reminderData = isClass
           ? {
@@ -180,12 +187,12 @@ export const sendClassReminders = internalAction({
               instructorName: organizerDetails?.name || "Instructor",
               classDate: formattedDate,
               classTime: formattedTime,
-              venueName: ticket.event.location?.venueName || "",
-              venueAddress: ticket.event.location?.address || "",
-              venueCity: ticket.event.location?.city || "",
-              venueState: ticket.event.location?.state || "",
-              venueZip: ticket.event.location?.zipCode || "",
-              ticketCode: ticket.ticketCode,
+              venueName: locationInfo.venueName || "",
+              venueAddress: locationInfo.address || "",
+              venueCity: locationInfo.city || "",
+              venueState: locationInfo.state || "",
+              venueZip: locationInfo.zipCode || "",
+              ticketCode: ticket.ticketCode || "",
             }
           : {
               type: "event" as const,
@@ -195,12 +202,12 @@ export const sendClassReminders = internalAction({
               organizerName: organizerDetails?.name,
               eventDate: formattedDate,
               eventTime: formattedTime,
-              venueName: ticket.event.location?.venueName || "",
-              venueAddress: ticket.event.location?.address || "",
-              venueCity: ticket.event.location?.city || "",
-              venueState: ticket.event.location?.state || "",
-              venueZip: ticket.event.location?.zipCode || "",
-              ticketCode: ticket.ticketCode,
+              venueName: locationInfo.venueName || "",
+              venueAddress: locationInfo.address || "",
+              venueCity: locationInfo.city || "",
+              venueState: locationInfo.state || "",
+              venueZip: locationInfo.zipCode || "",
+              ticketCode: ticket.ticketCode || "",
             };
 
         // Send the reminder email

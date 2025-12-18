@@ -98,10 +98,10 @@ export const getInstructorUpcomingClasses = internalQuery({
       const ticketCount = await ctx.db
         .query("tickets")
         .withIndex("by_event", (q) => q.eq("eventId", event._id))
-        .filter((q) => q.eq(q.field("status"), "valid"))
+        .filter((q) => q.eq(q.field("status"), "VALID"))
         .collect();
 
-      const eventDate = new Date(event.startDate);
+      const eventDate = new Date(event.startDate || Date.now());
       classesWithEnrollments.push({
         className: event.name,
         classDate: `${eventDate.toLocaleDateString("en-US", {
@@ -135,11 +135,15 @@ export const getEventDetails = internalQuery({
 // Get tier details
 export const getTierDetails = internalQuery({
   args: {
-    tierId: v.id("eventTiers"),
+    tierId: v.id("ticketTiers"),
   },
   handler: async (ctx, args) => {
     const tier = await ctx.db.get(args.tierId);
-    return tier;
+    if (!tier) return null;
+    return {
+      name: tier.name,
+      price: tier.price,
+    };
   },
 });
 
@@ -183,10 +187,10 @@ export const sendDailyDigests = internalAction({
             { eventId: ticket.eventId }
           );
 
-          const tier = ticket.tierId
+          const tier = ticket.ticketTierId
             ? await ctx.runQuery(
                 internal.notifications.instructorDigests.getTierDetails,
-                { tierId: ticket.tierId }
+                { tierId: ticket.ticketTierId }
               )
             : null;
 
@@ -310,10 +314,10 @@ export const sendWeeklyDigests = internalAction({
             { eventId: ticket.eventId }
           );
 
-          const tier = ticket.tierId
+          const tier = ticket.ticketTierId
             ? await ctx.runQuery(
                 internal.notifications.instructorDigests.getTierDetails,
-                { tierId: ticket.tierId }
+                { tierId: ticket.ticketTierId }
               )
             : null;
 

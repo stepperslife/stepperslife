@@ -55,12 +55,8 @@ test.describe("Vendor Product Creation", () => {
     // Step 4: Submit the product
     const productId = await submitProductAndWait(page);
 
-    // Verify success
-    const successIndicator = page.locator('text="Product created"')
-      .or(page.locator('text="successfully"'))
-      .or(page.locator('text="Success"'));
-
-    await expect(successIndicator).toBeVisible({ timeout: 15000 });
+    // Verify success - we should be redirected to the products list
+    await expect(page).toHaveURL(/\/vendor\/dashboard\/products(?!\/create)/, { timeout: 15000 });
 
     await takeScreenshot(page, "vendor-product-created-success");
 
@@ -157,38 +153,16 @@ test.describe("Vendor Product Creation", () => {
       status: "ACTIVE" as const,
     };
 
-    // Fill basic fields
+    // Fill basic fields using helper
     await fillProductForm(page, fullProductData);
-
-    // Check for and fill any additional fields that might be present
-    const weightInput = page.locator('input[name="weight"]');
-    if (await weightInput.isVisible().catch(() => false)) {
-      await weightInput.fill("1.5");
-    }
-
-    const skuInput = page.locator('input[name="sku"]');
-    if (await skuInput.isVisible().catch(() => false)) {
-      await skuInput.fill(`E2E-${Date.now()}`);
-    }
 
     await takeScreenshot(page, "vendor-full-product-form");
 
-    // Step 4: Submit
-    await page.click('button[type="submit"]');
+    // Step 4: Submit using helper function
+    const productId = await submitProductAndWait(page);
 
-    // Wait for success
-    await page.waitForTimeout(3000);
-
-    // Verify success
-    const successIndicator = page.locator('text="Product created"')
-      .or(page.locator('text="successfully"'))
-      .or(page.locator('text="Success"'));
-
-    // Either success message or redirect to products list
-    const urlChanged = page.url().includes("/products") && !page.url().includes("/create");
-    const hasSuccessMessage = await successIndicator.isVisible({ timeout: 5000 }).catch(() => false);
-
-    expect(urlChanged || hasSuccessMessage).toBe(true);
+    // Verify success - we should be redirected to the products list
+    await expect(page).toHaveURL(/\/vendor\/dashboard\/products(?!\/create)/, { timeout: 15000 });
 
     await takeScreenshot(page, "vendor-full-product-success");
 

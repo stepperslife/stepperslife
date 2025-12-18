@@ -4,7 +4,7 @@
  */
 
 export const VENDOR_ACCOUNT = {
-  email: "iradwaktins@gmail.com",
+  email: "ira@irawatkins.com",
   password: "Bobby321!",
   name: "Test Vendor",
 };
