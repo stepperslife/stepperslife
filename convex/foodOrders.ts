@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation, action, internalMutation } from "./_generated/server";
+import { query, mutation, action, internalMutation, internalQuery } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { getCurrentUser } from "./lib/auth";
@@ -31,11 +31,20 @@ export const getByRestaurant = query({
 export const getByCustomer = query({
   args: { customerId: v.id("users") },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
+    // Try to get current user - if not authenticated, return empty array
+    let user;
+    try {
+      user = await getCurrentUser(ctx);
+    } catch {
+      // Return empty array if not authenticated instead of throwing
+      return [];
+    }
 
     // Only allow viewing own orders (or admin)
     if (user._id !== args.customerId && user.role !== "admin") {
-      throw new Error("Not authorized: Cannot view other users' orders");
+      // Return empty instead of throwing to prevent UI errors
+      console.warn(`User ${user._id} tried to access orders for ${args.customerId}`);
+      return [];
     }
 
     return await ctx.db
@@ -59,6 +68,14 @@ export const getByOrderNumber = query({
 
 // Get order by ID
 export const getById = query({
+  args: { id: v.id("foodOrders") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
+// Get order by ID (internal - for use by other Convex functions)
+export const getByIdInternal = internalQuery({
   args: { id: v.id("foodOrders") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
@@ -151,7 +168,7 @@ export const createWithNotification = action({
     // Create the order
     const orderResult = await ctx.runMutation(internal.foodOrders.create, args);
 
-    // Trigger notification to restaurant
+    // Trigger push notification to restaurant
     try {
       await ctx.runAction(
         api.notifications.restaurantNotifications.notifyNewFoodOrder,
@@ -166,7 +183,35 @@ export const createWithNotification = action({
       );
     } catch (error) {
       // Don't fail the order if notification fails
-      console.error("Failed to send order notification:", error);
+      console.error("Failed to send push notification:", error);
+    }
+
+    // Send customer confirmation email
+    try {
+      await ctx.runAction(
+        api.notifications.foodOrderNotifications.sendCustomerOrderConfirmation,
+        {
+          foodOrderId: orderResult.orderId,
+          restaurantId: orderResult.restaurantId,
+        }
+      );
+    } catch (error) {
+      // Don't fail the order if email fails
+      console.error("Failed to send customer confirmation email:", error);
+    }
+
+    // Send restaurant new order alert email
+    try {
+      await ctx.runAction(
+        api.notifications.foodOrderNotifications.sendRestaurantNewOrderAlert,
+        {
+          foodOrderId: orderResult.orderId,
+          restaurantId: orderResult.restaurantId,
+        }
+      );
+    } catch (error) {
+      // Don't fail the order if email fails
+      console.error("Failed to send restaurant alert email:", error);
     }
 
     return orderResult;
@@ -275,7 +320,7 @@ export const updateStatusWithNotification = action({
       status: args.status,
     });
 
-    // Send notification to customer if they have a subscription
+    // Send push notification to customer if they have a subscription
     if (updateResult.customerId) {
       try {
         await ctx.runAction(
@@ -289,11 +334,77 @@ export const updateStatusWithNotification = action({
         );
       } catch (error) {
         // Don't fail if notification fails
-        console.error("Failed to send customer notification:", error);
+        console.error("Failed to send customer push notification:", error);
       }
     }
 
+    // Send status update email to customer
+    try {
+      await ctx.runAction(
+        api.notifications.foodOrderNotifications.sendCustomerStatusUpdate,
+        {
+          foodOrderId: args.id,
+          newStatus: args.status,
+        }
+      );
+    } catch (error) {
+      // Don't fail if email fails
+      console.error("Failed to send customer status update email:", error);
+    }
+
     return updateResult;
+  },
+});
+
+// Get all food orders (admin only - for debugging)
+export const getAllOrders = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    if (user.role !== "admin") {
+      throw new Error("Admin access required");
+    }
+    return await ctx.db.query("foodOrders").order("desc").take(50);
+  },
+});
+
+// Get all food orders (internal - for CLI debugging)
+export const getAllOrdersInternal = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("foodOrders").order("desc").take(50);
+  },
+});
+
+// Link orphaned orders to users by email (internal - for CLI migrations)
+export const linkOrphanedOrders = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    // Get all orders without customerId
+    const orphanedOrders = await ctx.db
+      .query("foodOrders")
+      .filter((q) => q.eq(q.field("customerId"), undefined))
+      .collect();
+
+    let linkedCount = 0;
+    for (const order of orphanedOrders) {
+      // Find user by customerEmail
+      const matchingUser = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", order.customerEmail))
+        .first();
+
+      if (matchingUser) {
+        await ctx.db.patch(order._id, { customerId: matchingUser._id });
+        linkedCount++;
+      }
+    }
+
+    return {
+      orphanedCount: orphanedOrders.length,
+      linkedCount,
+      message: `Linked ${linkedCount} of ${orphanedOrders.length} orphaned orders to users`
+    };
   },
 });
 

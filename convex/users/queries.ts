@@ -1,6 +1,7 @@
 import { v } from "convex/values";
-import { query } from "../_generated/server";
+import { query, internalQuery } from "../_generated/server";
 import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
+import { isTestingModeAllowed } from "../lib/auth";
 
 /**
  * Get current authenticated user
@@ -10,15 +11,19 @@ export const getCurrentUser = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
 
-    // TESTING MODE: Fall back to test user when not authenticated
+    // No identity - return null (user must log in)
+    // Testing mode only allowed in development environments
     if (!identity) {
-      console.warn("[getCurrentUser Query] TESTING MODE - Using test user (no identity)");
-      const testUser = await ctx.db
-        .query("users")
-        .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
-        .first();
-
-      return testUser;
+      if (isTestingModeAllowed()) {
+        console.warn("[getCurrentUser Query] TESTING MODE - Using test user (no identity)");
+        const testUser = await ctx.db
+          .query("users")
+          .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
+          .first();
+        return testUser;
+      }
+      // In production, return null if not authenticated
+      return null;
     }
 
     // Parse the identity (which is a JSON string from our NextAuth integration)
@@ -64,6 +69,16 @@ export const getUserById = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.userId);
+  },
+});
+
+/**
+ * Get user by ID (internal - for use by other Convex functions)
+ */
+export const getByIdInternal = internalQuery({
+  args: { id: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
   },
 });
 
