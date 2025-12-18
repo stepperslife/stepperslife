@@ -190,12 +190,12 @@ export async function POST(request: NextRequest) {
 
           <!-- Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
-              <h1 style="margin: 0; color: white; font-size: 28px; font-weight: bold;">
-                Ticket Confirmation
+            <td style="background: #1a1a1a; padding: 40px 30px; text-align: center; border-bottom: 3px solid #000000;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold; letter-spacing: 2px;">
+                STEPPERSLIFE
               </h1>
-              <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">
-                Your tickets are ready!
+              <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.8); font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                Ticket Confirmation
               </p>
             </td>
           </tr>
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
                       ${event.location.address}, ${event.location.city}, ${event.location.state} ${event.location.zipCode}
                     </p>
                     <p style="margin: 15px 0 0 0;">
-                      <a href="${mapsLink}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #667eea; color: white; text-decoration: none; border-radius: 5px; font-size: 14px;">
+                      <a href="${mapsLink}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #1a1a1a; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 600;">
                         Get Directions
                       </a>
                     </p>
@@ -261,8 +261,8 @@ export async function POST(request: NextRequest) {
                         <td align="right" style="padding: 5px 0; color: #333; font-size: 14px;">${orderDetails.paymentMethod}</td>
                       </tr>
                       <tr>
-                        <td style="padding: 10px 0 5px 0; color: #333; font-weight: bold; font-size: 16px;">Total Paid:</td>
-                        <td align="right" style="padding: 10px 0 5px 0; color: #667eea; font-weight: bold; font-size: 18px;">$${orderTotal}</td>
+                        <td style="padding: 10px 0 5px 0; color: #1a1a1a; font-weight: bold; font-size: 16px; border-top: 2px solid #1a1a1a;">Total Paid:</td>
+                        <td align="right" style="padding: 10px 0 5px 0; color: #1a1a1a; font-weight: bold; font-size: 18px; border-top: 2px solid #1a1a1a;">$${orderTotal}</td>
                       </tr>
                     </table>
                   </td>
@@ -286,15 +286,15 @@ export async function POST(request: NextRequest) {
 
           <!-- Footer -->
           <tr>
-            <td style="background: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
+            <td style="background: #fafafa; padding: 30px; text-align: center; border-top: 2px solid #1a1a1a;">
               <p style="margin: 0 0 10px 0; color: #666; font-size: 14px;">
-                Questions? Contact us at <a href="mailto:support@stepperslife.com" style="color: #667eea; text-decoration: none;">support@stepperslife.com</a>
+                Questions? Contact us at <a href="mailto:support@stepperslife.com" style="color: #1a1a1a; text-decoration: underline;">support@stepperslife.com</a>
               </p>
               <p style="margin: 0; color: #999; font-size: 12px;">
                 © ${new Date().getFullYear()} SteppersLife. All rights reserved.
               </p>
               <p style="margin: 10px 0 0 0; color: #999; font-size: 12px;">
-                <a href="https://events.stepperslife.com" style="color: #667eea; text-decoration: none;">Visit SteppersLife Events</a>
+                <a href="https://stepperslife.com" style="color: #1a1a1a; text-decoration: underline;">Visit SteppersLife</a>
               </p>
             </td>
           </tr>
