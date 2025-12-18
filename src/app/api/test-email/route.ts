@@ -15,6 +15,16 @@ import {
   generateInstructorCancellationNotification,
   generateTicketCancellationEmail,
 } from '@/lib/email/templates/cancellation-templates';
+import {
+  generateClassReminderEmail,
+  generateEventReminderEmail,
+  generateMultiClassReminderEmail,
+} from '@/lib/email/templates/reminder-templates';
+import {
+  generateInstructorDailyDigest,
+  generateInstructorWeeklyDigest,
+  generateNoActivityDigest,
+} from '@/lib/email/templates/digest-templates';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -270,6 +280,173 @@ const TICKET_CANCEL_DATA = {
   cancelledAt: new Date(),
 };
 
+// Sample reminder data
+const CLASS_REMINDER_DATA = {
+  studentName: 'Ira Watkins',
+  studentEmail: 'thestepperslife@gmail.com',
+  className: 'Beginner Chicago Stepping',
+  instructorName: 'Marcus Johnson',
+  classDate: 'Tomorrow, January 26, 2025',
+  classTime: '7:00 PM',
+  classEndTime: '9:00 PM',
+  venueName: 'Chicago Dance Studio',
+  venueAddress: '123 Michigan Ave',
+  venueCity: 'Chicago',
+  venueState: 'IL',
+  venueZip: '60601',
+  ticketCode: 'TKT-STEP-001',
+  whatToBring: 'Comfortable dance shoes, water bottle, and a positive attitude!',
+};
+
+const EVENT_REMINDER_DATA = {
+  attendeeName: 'Ira Watkins',
+  attendeeEmail: 'thestepperslife@gmail.com',
+  eventName: 'Chicago Steppers Ball 2025',
+  organizerName: 'SteppersLife Events',
+  eventDate: 'Tomorrow, February 15, 2025',
+  eventTime: '8:00 PM',
+  eventEndTime: '2:00 AM',
+  venueName: 'Chicago Cultural Center',
+  venueAddress: '78 E Washington St',
+  venueCity: 'Chicago',
+  venueState: 'IL',
+  venueZip: '60602',
+  ticketCode: 'EVT-BALL-001',
+  ticketTier: 'VIP Table',
+  seatInfo: 'Table 5, Seats 1-2',
+  dressCode: 'Semi-formal attire. Gentlemen: suit or dress shirt. Ladies: cocktail dress or elegant attire.',
+};
+
+const MULTI_CLASS_REMINDER_DATA = {
+  studentName: 'Ira Watkins',
+  studentEmail: 'thestepperslife@gmail.com',
+  classes: [
+    {
+      className: 'Beginner Chicago Stepping',
+      instructorName: 'Marcus Johnson',
+      classDate: 'Tomorrow, January 26, 2025',
+      classTime: '10:00 AM',
+      venueName: 'Chicago Dance Studio',
+      venueAddress: '123 Michigan Ave',
+      ticketCode: 'TKT-STEP-001',
+    },
+    {
+      className: 'Advanced Footwork Workshop',
+      instructorName: 'Lisa Williams',
+      classDate: 'Tomorrow, January 26, 2025',
+      classTime: '2:00 PM',
+      venueName: 'South Side Dance Hall',
+      venueAddress: '456 King Dr',
+      ticketCode: 'TKT-STEP-002',
+    },
+  ],
+};
+
+// Sample digest data
+const DAILY_DIGEST_DATA = {
+  instructorName: 'Marcus Johnson',
+  instructorEmail: 'thestepperslife@gmail.com',
+  digestDate: 'Wednesday, December 18, 2024',
+  enrollments: [
+    {
+      studentName: 'Sarah Williams',
+      className: 'Beginner Chicago Stepping',
+      tierName: 'Single Session',
+      enrolledAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      amountCents: 2500,
+    },
+    {
+      studentName: 'Michael Brown',
+      className: 'Beginner Chicago Stepping',
+      tierName: 'Monthly Pass',
+      enrolledAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+      amountCents: 8000,
+    },
+    {
+      studentName: 'Jennifer Davis',
+      className: 'Intermediate Stepping',
+      tierName: 'Single Session',
+      enrolledAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
+      amountCents: 3000,
+    },
+  ],
+  cancellations: [
+    {
+      studentName: 'Robert Taylor',
+      className: 'Beginner Chicago Stepping',
+      cancelledAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
+      refundAmountCents: 2500,
+    },
+  ],
+  summary: {
+    totalNewEnrollments: 3,
+    totalCancellations: 1,
+    grossRevenueCents: 13500,
+    platformFeesCents: 1350,
+    netRevenueCents: 12150,
+  },
+  upcomingClasses: [
+    {
+      className: 'Beginner Chicago Stepping',
+      classDate: 'Saturday, Dec 21 @ 7:00 PM',
+      enrollmentCount: 18,
+      capacity: 30,
+    },
+    {
+      className: 'Intermediate Stepping',
+      classDate: 'Sunday, Dec 22 @ 3:00 PM',
+      enrollmentCount: 12,
+      capacity: 20,
+    },
+  ],
+};
+
+const WEEKLY_DIGEST_DATA = {
+  instructorName: 'Marcus Johnson',
+  instructorEmail: 'thestepperslife@gmail.com',
+  weekStart: 'December 9, 2024',
+  weekEnd: 'December 15, 2024',
+  enrollments: [
+    { studentName: 'Sarah Williams', className: 'Beginner Stepping', tierName: 'Single', enrolledAt: new Date(), amountCents: 2500 },
+    { studentName: 'Michael Brown', className: 'Beginner Stepping', tierName: 'Monthly', enrolledAt: new Date(), amountCents: 8000 },
+  ],
+  cancellations: [
+    { studentName: 'John Doe', className: 'Beginner Stepping', cancelledAt: new Date(), refundAmountCents: 2500 },
+  ],
+  summary: {
+    totalNewEnrollments: 24,
+    totalCancellations: 3,
+    grossRevenueCents: 62500,
+    platformFeesCents: 6250,
+    netRevenueCents: 56250,
+    classesHeld: 8,
+    studentsAttended: 142,
+  },
+  topClasses: [
+    { className: 'Beginner Chicago Stepping', enrollments: 12, revenue: 30000 },
+    { className: 'Intermediate Stepping', enrollments: 8, revenue: 24000 },
+    { className: 'Advanced Footwork', enrollments: 4, revenue: 16000 },
+  ],
+  comparison: {
+    enrollmentChange: 15,
+    revenueChange: 22,
+  },
+};
+
+const NO_ACTIVITY_DATA = {
+  instructorName: 'Marcus Johnson',
+  instructorEmail: 'thestepperslife@gmail.com',
+  lastActivityDate: 'December 10, 2024',
+  upcomingClasses: [
+    {
+      className: 'Beginner Chicago Stepping',
+      classDate: 'Saturday, Dec 21 @ 7:00 PM',
+      enrollmentCount: 5,
+      capacity: 30,
+    },
+  ],
+};
+
 // Available templates for testing
 const TEMPLATES: Record<string, () => { html: string; subject: string }> = {
   'enrollment-receipt': () => ({
@@ -284,6 +461,14 @@ const TEMPLATES: Record<string, () => { html: string; subject: string }> = {
   'refund-confirmation': () => generateRefundConfirmationEmail(REFUND_DATA),
   'instructor-cancellation': () => generateInstructorCancellationNotification(INSTRUCTOR_CANCEL_DATA),
   'ticket-cancellation': () => generateTicketCancellationEmail(TICKET_CANCEL_DATA),
+  // Reminder templates
+  'class-reminder': () => generateClassReminderEmail(CLASS_REMINDER_DATA),
+  'event-reminder': () => generateEventReminderEmail(EVENT_REMINDER_DATA),
+  'multi-class-reminder': () => generateMultiClassReminderEmail(MULTI_CLASS_REMINDER_DATA),
+  // Digest templates
+  'daily-digest': () => generateInstructorDailyDigest(DAILY_DIGEST_DATA),
+  'weekly-digest': () => generateInstructorWeeklyDigest(WEEKLY_DIGEST_DATA),
+  'no-activity-digest': () => generateNoActivityDigest(NO_ACTIVITY_DATA),
 };
 
 // GET: Preview email in browser
@@ -342,6 +527,14 @@ export async function POST(request: NextRequest) {
       'refund-confirmation': 'SteppersLife <noreply@stepperslife.com>',
       'instructor-cancellation': 'SteppersLife Classes <classes@stepperslife.com>',
       'ticket-cancellation': 'SteppersLife Events <events@stepperslife.com>',
+      // Reminder templates
+      'class-reminder': 'SteppersLife Classes <classes@stepperslife.com>',
+      'event-reminder': 'SteppersLife Events <events@stepperslife.com>',
+      'multi-class-reminder': 'SteppersLife Classes <classes@stepperslife.com>',
+      // Digest templates
+      'daily-digest': 'SteppersLife <noreply@stepperslife.com>',
+      'weekly-digest': 'SteppersLife <noreply@stepperslife.com>',
+      'no-activity-digest': 'SteppersLife <noreply@stepperslife.com>',
     };
 
     const { data, error } = await resend.emails.send({
