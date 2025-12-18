@@ -9,6 +9,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { BWTemplate } from '@/lib/email/templates/base-bw-template';
+import {
+  generateEnrollmentCancellationEmail,
+  generateRefundConfirmationEmail,
+  generateInstructorCancellationNotification,
+  generateTicketCancellationEmail,
+} from '@/lib/email/templates/cancellation-templates';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -209,6 +215,61 @@ function generateInstructorNotificationHTML(): string {
   return BWTemplate.wrap(content, 'New student enrolled in your class');
 }
 
+// Sample cancellation data
+const CANCELLATION_DATA = {
+  studentName: 'Ira Watkins',
+  studentEmail: 'thestepperslife@gmail.com',
+  orderNumber: 'CLS-2024-A1B2C3D4',
+  className: 'Beginner Chicago Stepping',
+  instructorName: 'Marcus Johnson',
+  classDate: 'Saturday, January 25, 2025',
+  classTime: '7:00 PM',
+  refundAmount: 2852,
+  refundStatus: 'pending' as const,
+  cancellationReason: 'Schedule conflict',
+  cancelledAt: new Date(),
+};
+
+const REFUND_DATA = {
+  customerName: 'Ira Watkins',
+  customerEmail: 'thestepperslife@gmail.com',
+  orderNumber: 'CLS-2024-A1B2C3D4',
+  itemName: 'Beginner Chicago Stepping',
+  itemType: 'class' as const,
+  refundAmount: 2852,
+  originalPaymentMethod: 'Card ending in 4242',
+  refundMethod: 'Original payment method',
+  estimatedArrival: '5-7 business days',
+  refundedAt: new Date(),
+};
+
+const INSTRUCTOR_CANCEL_DATA = {
+  instructorName: 'Marcus Johnson',
+  instructorEmail: 'instructor@stepperslife.com',
+  studentName: 'Ira Watkins',
+  className: 'Beginner Chicago Stepping',
+  classDate: 'Saturday, January 25, 2025',
+  tierName: 'Single Session',
+  refundAmount: 2500,
+  reason: 'Schedule conflict',
+  remainingEnrollments: 11,
+  cancelledAt: new Date(),
+};
+
+const TICKET_CANCEL_DATA = {
+  attendeeName: 'Ira Watkins',
+  attendeeEmail: 'thestepperslife@gmail.com',
+  orderNumber: 'EVT-2024-X1Y2Z3W4',
+  eventName: 'Chicago Steppers Ball 2025',
+  eventDate: 'Saturday, February 14, 2025',
+  eventTime: '8:00 PM',
+  venueName: 'Chicago Cultural Center',
+  ticketCount: 2,
+  refundAmount: 15000,
+  refundStatus: 'pending' as const,
+  cancelledAt: new Date(),
+};
+
 // Available templates for testing
 const TEMPLATES: Record<string, () => { html: string; subject: string }> = {
   'enrollment-receipt': () => ({
@@ -219,6 +280,10 @@ const TEMPLATES: Record<string, () => { html: string; subject: string }> = {
     html: generateInstructorNotificationHTML(),
     subject: 'New Enrollment: Beginner Chicago Stepping'
   }),
+  'enrollment-cancellation': () => generateEnrollmentCancellationEmail(CANCELLATION_DATA),
+  'refund-confirmation': () => generateRefundConfirmationEmail(REFUND_DATA),
+  'instructor-cancellation': () => generateInstructorCancellationNotification(INSTRUCTOR_CANCEL_DATA),
+  'ticket-cancellation': () => generateTicketCancellationEmail(TICKET_CANCEL_DATA),
 };
 
 // GET: Preview email in browser
@@ -273,6 +338,10 @@ export async function POST(request: NextRequest) {
     const fromAddresses: Record<string, string> = {
       'enrollment-receipt': 'SteppersLife Classes <classes@stepperslife.com>',
       'instructor-notification': 'SteppersLife Classes <classes@stepperslife.com>',
+      'enrollment-cancellation': 'SteppersLife Classes <classes@stepperslife.com>',
+      'refund-confirmation': 'SteppersLife <noreply@stepperslife.com>',
+      'instructor-cancellation': 'SteppersLife Classes <classes@stepperslife.com>',
+      'ticket-cancellation': 'SteppersLife Events <events@stepperslife.com>',
     };
 
     const { data, error } = await resend.emails.send({
