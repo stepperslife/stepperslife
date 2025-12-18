@@ -136,11 +136,10 @@ export const getFeatured = query({
   args: {},
   handler: async (ctx) => {
     try {
-      const restaurants = await ctx.db
-        .query("restaurants")
-        .withIndex("by_active", (q) => q.eq("isActive", true))
-        .take(5);
-      return restaurants;
+      // Use filter instead of index to avoid potential index issues
+      const allRestaurants = await ctx.db.query("restaurants").collect();
+      const activeRestaurants = allRestaurants.filter((r) => r.isActive === true);
+      return activeRestaurants.slice(0, 5);
     } catch (error) {
       console.error("Error fetching featured restaurants:", error);
       return [];
