@@ -1,15 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { RoleBasedSidebar } from "@/components/navigation";
 import { AppHeader } from "@/components/sidebar/app-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { NavUser } from "@/lib/navigation/types";
 import { generateUserInitials } from "@/lib/navigation/utils";
+import Link from "next/link";
 
 export default function OrganizerLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<NavUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Fetch user data from auth API
   useEffect(() => {
@@ -34,18 +38,22 @@ export default function OrganizerLayout({ children }: { children: React.ReactNod
 
           setUser(navUser);
         } else {
-          setUser(null);
+          // Not authenticated - redirect to login
+          const returnUrl = encodeURIComponent(pathname);
+          router.push(`/login?returnUrl=${returnUrl}`);
         }
       } catch (error) {
         console.error("Failed to fetch user:", error);
-        setUser(null);
+        // On error, redirect to login
+        const returnUrl = encodeURIComponent(pathname);
+        router.push(`/login?returnUrl=${returnUrl}`);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [router, pathname]);
 
   // Show loading state
   if (loading) {
@@ -56,12 +64,18 @@ export default function OrganizerLayout({ children }: { children: React.ReactNod
     );
   }
 
-  // Show error if no user (should redirect to login in production)
+  // Show login prompt with link if redirect didn't happen
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
+        <div className="text-center space-y-4">
           <p className="text-muted-foreground">Please log in to continue</p>
+          <Link
+            href={`/login?returnUrl=${encodeURIComponent(pathname)}`}
+            className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Go to Login
+          </Link>
         </div>
       </div>
     );
