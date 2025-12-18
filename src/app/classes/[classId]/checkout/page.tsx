@@ -99,33 +99,41 @@ export default function ClassCheckoutPage() {
     setIsProcessing(true);
 
     try {
-      // Create the order
-      const orderResult = await createOrder({
+      // Calculate order totals (free classes have 0 fees)
+      const subtotalCents = selectedTier ? selectedTier.priceCents * quantity : 0;
+      const platformFeeCents = 0; // No platform fee for classes
+      const processingFeeCents = 0; // No processing fee for free classes
+      const totalCents = subtotalCents + platformFeeCents + processingFeeCents;
+
+      // Create the order - returns orderId directly
+      const orderId = await createOrder({
         eventId: classId,
         ticketTierId: selectedTierId,
         quantity,
         buyerEmail: buyerEmail.trim().toLowerCase(),
         buyerName: buyerName.trim(),
-        paymentMethod: isFree ? "cash" : "cash", // For now, use cash method
+        subtotalCents,
+        platformFeeCents,
+        processingFeeCents,
+        totalCents,
       });
 
-      if (!orderResult.success) {
-        throw new Error(orderResult.message || "Failed to create enrollment");
+      if (!orderId) {
+        throw new Error("Failed to create enrollment");
       }
 
-      // For free classes or cash payment, complete the order immediately
+      // For free classes, complete the order immediately with FREE payment method
       const completeResult = await completeOrder({
-        orderId: orderResult.orderId!,
-        paymentIntentId: isFree ? "FREE_ENROLLMENT" : "CASH_PAYMENT",
+        orderId: orderId,
+        paymentId: isFree ? "FREE_ENROLLMENT" : "CASH_PAYMENT",
+        paymentMethod: isFree ? "FREE" : "CASH",
       });
 
-      if (!completeResult.success) {
-        throw new Error(completeResult.message || "Failed to complete enrollment");
-      }
-
-      // Get the ticket code from the result
-      if (completeResult.tickets && completeResult.tickets.length > 0) {
-        setEnrollmentCode(completeResult.tickets[0].ticketCode);
+      // completeOrder returns { success: true, ticketCount }
+      if (completeResult?.success) {
+        // Generate a simple confirmation code from the order ID
+        const confirmationCode = `ENR-${orderId.slice(-8).toUpperCase()}`;
+        setEnrollmentCode(confirmationCode);
       }
 
       setIsSuccess(true);
