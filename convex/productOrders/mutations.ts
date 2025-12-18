@@ -98,10 +98,10 @@ export const createProductOrder = mutation({
       }
     }
 
-    // Create order
+    // Create order (normalize email to lowercase for consistent lookup)
     const orderId = await ctx.db.insert("productOrders", {
       orderNumber,
-      customerEmail: args.customerEmail,
+      customerEmail: args.customerEmail.toLowerCase().trim(),
       customerName: args.customerName,
       customerPhone: args.customerPhone,
       shippingAddress: args.shippingAddress,

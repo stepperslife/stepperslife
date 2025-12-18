@@ -40,13 +40,16 @@ export const getOrderById = query({
   },
 });
 
-// Get orders by customer email
+// Get orders by customer email (case-insensitive)
 export const getOrdersByEmail = query({
   args: { email: v.string() },
   handler: async (ctx, args) => {
+    // Normalize email to lowercase for consistent matching
+    const normalizedEmail = args.email.toLowerCase().trim();
+
     const orders = await ctx.db
       .query("productOrders")
-      .withIndex("by_email", (q) => q.eq("customerEmail", args.email))
+      .withIndex("by_email", (q) => q.eq("customerEmail", normalizedEmail))
       .order("desc")
       .collect();
 
@@ -92,10 +95,11 @@ export const createOrder = mutation({
     const orderCount = await ctx.db.query("productOrders").collect();
     const orderNumber = `ORD-${new Date().getFullYear()}-${String(orderCount.length + 1).padStart(4, "0")}`;
 
-    // Create order
+    // Create order (normalize email to lowercase for consistent lookup)
     const orderId = await ctx.db.insert("productOrders", {
       orderNumber,
       ...args,
+      customerEmail: args.customerEmail.toLowerCase().trim(),
       paymentStatus: "PENDING",
       fulfillmentStatus: "PENDING",
       createdAt: Date.now(),

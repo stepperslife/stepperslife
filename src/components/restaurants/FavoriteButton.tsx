@@ -57,7 +57,8 @@ export function FavoriteButton({
 
     setIsAnimating(true);
     try {
-      await toggleFavorite({ userId, restaurantId });
+      // Note: toggle mutation gets userId from auth context, only pass restaurantId
+      await toggleFavorite({ restaurantId });
     } catch (err) {
       console.error("Failed to toggle favorite:", err);
     }

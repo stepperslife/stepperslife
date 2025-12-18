@@ -52,13 +52,16 @@ export const getOrderByNumber = query({
   },
 });
 
-// Get orders by customer email
+// Get orders by customer email (case-insensitive)
 export const getOrdersByEmail = query({
   args: { email: v.string() },
   handler: async (ctx, args) => {
+    // Normalize email to lowercase for consistent matching
+    const normalizedEmail = args.email.toLowerCase().trim();
+
     const orders = await ctx.db
       .query("productOrders")
-      .withIndex("by_email", (q) => q.eq("customerEmail", args.email))
+      .withIndex("by_email", (q) => q.eq("customerEmail", normalizedEmail))
       .order("desc")
       .collect();
     return orders;
