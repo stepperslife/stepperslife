@@ -212,7 +212,7 @@ function generateInstructorNotificationHTML(): string {
         </table>
       </div>
 
-      ${BWTemplate.primaryButton('View Roster', 'https://stepperslife.com/instructor/classes')}
+      ${BWTemplate.primaryButton('View Roster', 'https://stepperslife.com/organizer/classes')}
 
       <div class="divider"></div>
 

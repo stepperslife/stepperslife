@@ -1,0 +1,254 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "SteppersLife" [ref=e5]:
+        - /url: /
+        - img "SteppersLife" [ref=e7]
+      - generic [ref=e8]:
+        - button "Dark mode" [ref=e9]:
+          - img [ref=e10]
+        - button "Toggle menu" [ref=e12]:
+          - img [ref=e13]
+  - navigation [ref=e16]:
+    - link "Browse" [ref=e17]:
+      - /url: /restaurants
+      - img [ref=e18]
+      - text: Browse
+    - link "Favorites" [ref=e21]:
+      - /url: /restaurants/favorites
+      - img [ref=e22]
+      - text: Favorites
+    - link "My Orders" [ref=e24]:
+      - /url: /restaurants/my-orders
+      - img [ref=e25]
+      - text: My Orders
+    - link "Pricing" [ref=e29]:
+      - /url: /restaurants/pricing
+      - img [ref=e30]
+      - text: Pricing
+    - link "Add Restaurant" [ref=e32]:
+      - /url: /restaurateur/apply
+      - img [ref=e33]
+      - text: Add Restaurant
+    - link "Help" [ref=e34]:
+      - /url: /help
+      - img [ref=e35]
+      - text: Help
+  - generic [ref=e38]:
+    - generic [ref=e39]:
+      - img [ref=e42]
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - generic [ref=e48]:
+              - heading "DK Soul Food" [level=1] [ref=e49]
+              - button "Add to favorites" [ref=e50]:
+                - img [ref=e51]
+              - button "Share" [ref=e54]:
+                - img [ref=e55]
+            - paragraph [ref=e61]: Soul Food • Southern • Comfort Food
+          - generic [ref=e62]: Accepting Orders
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - img [ref=e65]
+            - text: Chicago, IL, Chicago, IL 60601
+          - generic [ref=e68]:
+            - img [ref=e69]
+            - text: (312) 555-0100
+          - generic [ref=e71]:
+            - img [ref=e72]
+            - text: ~25 min pickup
+        - paragraph [ref=e75]: Authentic soul food made with love. Serving the community with delicious home-style cooking.
+        - generic [ref=e76]:
+          - heading "Operating Hours" [level=3] [ref=e77]:
+            - img [ref=e78]
+            - text: Operating Hours
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - generic [ref=e83]: monday
+              - generic [ref=e84]: 11:00 AM - 9:00 PM
+            - generic [ref=e85]:
+              - generic [ref=e86]: tuesday
+              - generic [ref=e87]: 11:00 AM - 9:00 PM
+            - generic [ref=e88]:
+              - generic [ref=e89]: wednesday
+              - generic [ref=e90]: 11:00 AM - 9:00 PM
+            - generic [ref=e91]:
+              - generic [ref=e92]: thursday
+              - generic [ref=e93]: 11:00 AM - 10:00 PM
+            - generic [ref=e94]:
+              - generic [ref=e95]: friday
+              - generic [ref=e96]: 11:00 AM - 11:00 PM
+            - generic [ref=e97]:
+              - generic [ref=e98]: saturday
+              - generic [ref=e99]: 10:00 AM - 11:00 PM
+            - generic [ref=e100]:
+              - generic [ref=e101]: sunday
+              - generic [ref=e102]: 10:00 AM - 8:00 PM
+      - generic [ref=e103]:
+        - heading "Menu" [level=2] [ref=e104]
+        - generic [ref=e105]:
+          - heading "Appetizers" [level=3] [ref=e107]
+          - generic [ref=e108]:
+            - heading "Main Dishes" [level=3] [ref=e109]
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - heading "Fried Chicken" [level=4] [ref=e113]
+                  - paragraph [ref=e114]: Crispy fried chicken, 2 pieces with your choice of side
+                  - paragraph [ref=e115]: $14.99
+                - button [ref=e116]:
+                  - img [ref=e117]
+              - generic [ref=e118]:
+                - generic [ref=e119]:
+                  - heading "Smothered Pork Chops" [level=4] [ref=e120]
+                  - paragraph [ref=e121]: Tender pork chops in rich onion gravy
+                  - paragraph [ref=e122]: $16.99
+                - button [ref=e123]:
+                  - img [ref=e124]
+          - generic [ref=e125]:
+            - heading "Sides" [level=3] [ref=e126]
+            - generic [ref=e127]:
+              - generic [ref=e128]:
+                - generic [ref=e129]:
+                  - heading "Mac & Cheese" [level=4] [ref=e130]
+                  - paragraph [ref=e131]: Creamy three-cheese macaroni
+                  - paragraph [ref=e132]: $5.99
+                - button [ref=e133]:
+                  - img [ref=e134]
+              - generic [ref=e135]:
+                - generic [ref=e136]:
+                  - heading "Collard Greens" [level=4] [ref=e137]
+                  - paragraph [ref=e138]: Slow-cooked with smoked turkey
+                  - paragraph [ref=e139]: $4.99
+                - button [ref=e140]:
+                  - img [ref=e141]
+              - generic [ref=e142]:
+                - generic [ref=e143]:
+                  - heading "Cornbread" [level=4] [ref=e144]
+                  - paragraph [ref=e145]: Sweet buttermilk cornbread
+                  - paragraph [ref=e146]: $2.99
+                - button [ref=e147]:
+                  - img [ref=e148]
+          - generic [ref=e149]:
+            - heading "Desserts" [level=3] [ref=e150]
+            - generic [ref=e152]:
+              - generic [ref=e153]:
+                - heading "Sweet Potato Pie" [level=4] [ref=e154]
+                - paragraph [ref=e155]: Homemade with love
+                - paragraph [ref=e156]: $6.99
+              - button [ref=e157]:
+                - img [ref=e158]
+          - generic [ref=e159]:
+            - heading "Beverages" [level=3] [ref=e160]
+            - generic [ref=e161]:
+              - generic [ref=e162]:
+                - generic [ref=e163]:
+                  - heading "Sweet Tea" [level=4] [ref=e164]
+                  - paragraph [ref=e165]: Southern-style sweet tea
+                  - paragraph [ref=e166]: $2.99
+                - button [ref=e167]:
+                  - img [ref=e168]
+              - generic [ref=e169]:
+                - generic [ref=e170]:
+                  - heading "Lemonade" [level=4] [ref=e171]
+                  - paragraph [ref=e172]: Fresh-squeezed lemonade
+                  - paragraph [ref=e173]: $3.49
+                - button [ref=e174]:
+                  - img [ref=e175]
+      - generic [ref=e176]:
+        - heading "Reviews & Ratings" [level=2] [ref=e177]
+        - generic [ref=e178]:
+          - generic [ref=e180]:
+            - generic [ref=e181]:
+              - generic [ref=e182]:
+                - generic [ref=e183]: "0.0"
+                - generic [ref=e185]:
+                  - button [disabled] [ref=e186]:
+                    - img [ref=e187]
+                  - button [disabled] [ref=e189]:
+                    - img [ref=e190]
+                  - button [disabled] [ref=e192]:
+                    - img [ref=e193]
+                  - button [disabled] [ref=e195]:
+                    - img [ref=e196]
+                  - button [disabled] [ref=e198]:
+                    - img [ref=e199]
+                - paragraph [ref=e201]: 0 reviews
+              - generic [ref=e202]:
+                - generic [ref=e203]:
+                  - generic [ref=e204]: 5★
+                  - generic [ref=e206]: "0"
+                - generic [ref=e207]:
+                  - generic [ref=e208]: 4★
+                  - generic [ref=e210]: "0"
+                - generic [ref=e211]:
+                  - generic [ref=e212]: 3★
+                  - generic [ref=e214]: "0"
+                - generic [ref=e215]:
+                  - generic [ref=e216]: 2★
+                  - generic [ref=e218]: "0"
+                - generic [ref=e219]:
+                  - generic [ref=e220]: 1★
+                  - generic [ref=e222]: "0"
+            - button "Write a Review" [ref=e224]:
+              - img [ref=e225]
+              - text: Write a Review
+          - generic [ref=e227]:
+            - heading "Customer Reviews" [level=3] [ref=e228]
+            - generic [ref=e229]:
+              - img [ref=e230]
+              - paragraph [ref=e232]: No reviews yet. Be the first to share your experience!
+              - button "Write the First Review" [ref=e233]
+    - button "View Cart (2) $31.98" [ref=e234]:
+      - img [ref=e235]
+      - generic [ref=e239]: View Cart (2)
+      - generic [ref=e240]: $31.98
+  - contentinfo [ref=e241]:
+    - generic [ref=e242]:
+      - generic [ref=e243]:
+        - button "Toggle About section" [ref=e245]:
+          - heading "About" [level=3] [ref=e246]
+          - img [ref=e247]
+        - button "Toggle For Organizers section" [ref=e250]:
+          - heading "For Organizers" [level=3] [ref=e251]
+          - img [ref=e252]
+        - button "Toggle Resources section" [ref=e255]:
+          - heading "Resources" [level=3] [ref=e256]
+          - img [ref=e257]
+        - button "Toggle Legal section" [ref=e260]:
+          - heading "Legal" [level=3] [ref=e261]
+          - img [ref=e262]
+      - generic [ref=e265]:
+        - paragraph [ref=e266]: © 2025 SteppersLife Events. All rights reserved.
+        - paragraph [ref=e267]:
+          - text: Made with
+          - img [ref=e268]
+          - text: for the stepping community
+  - navigation [ref=e270]:
+    - generic [ref=e271]:
+      - link "Home" [ref=e272]:
+        - /url: /
+        - img [ref=e274]
+        - generic [ref=e277]: Home
+      - link "Events" [ref=e278]:
+        - /url: /events
+        - img [ref=e280]
+        - generic [ref=e282]: Events
+      - link "Shop" [ref=e283]:
+        - /url: /marketplace
+        - img [ref=e285]
+        - generic [ref=e288]: Shop
+      - link "Food" [ref=e289]:
+        - /url: /restaurants
+        - img [ref=e291]
+        - generic [ref=e295]: Food
+      - link "Account" [ref=e296]:
+        - /url: /login
+        - img [ref=e298]
+        - generic [ref=e301]: Account
+  - alert [ref=e302]
+```

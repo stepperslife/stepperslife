@@ -186,7 +186,7 @@ export function generateInstructorDailyDigest(data: InstructorDailyDigestData): 
         </tbody>
       </table>
 
-      ${BWTemplate.primaryButton('View Instructor Dashboard', 'https://stepperslife.com/instructor/dashboard')}
+      ${BWTemplate.primaryButton('View Instructor Dashboard', 'https://stepperslife.com/organizer/dashboard')}
 
       <div class="divider"></div>
 
@@ -337,7 +337,7 @@ export function generateInstructorWeeklyDigest(data: InstructorWeeklyDigestData)
         ${BWTemplate.noticeBox(`${data.summary.totalCancellations} cancellation${data.summary.totalCancellations > 1 ? 's' : ''} this week. Consider following up with students to understand why.`)}
       ` : ''}
 
-      ${BWTemplate.primaryButton('View Full Analytics', 'https://stepperslife.com/instructor/analytics')}
+      ${BWTemplate.primaryButton('View Full Analytics', 'https://stepperslife.com/organizer/analytics')}
 
       <div class="divider"></div>
 
@@ -384,7 +384,7 @@ export function generateNoActivityDigest(data: NoActivityDigestData): { html: st
     : `
       <div style="background: #fafafa; border: 1px solid #e0e0e0; border-radius: 4px; padding: 24px; text-align: center;">
         <div style="font-size: 14px; color: #666666; margin-bottom: 16px;">No upcoming classes scheduled</div>
-        <a href="https://stepperslife.com/instructor/classes/new" style="display: inline-block; padding: 10px 20px; background: #1a1a1a; color: #ffffff; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: 500;">
+        <a href="https://stepperslife.com/organizer/classes/create" style="display: inline-block; padding: 10px 20px; background: #1a1a1a; color: #ffffff; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: 500;">
           Create a Class
         </a>
       </div>
@@ -408,7 +408,7 @@ export function generateNoActivityDigest(data: NoActivityDigestData): { html: st
 
       ${BWTemplate.noticeBox('Tip: Promote your classes on social media or share your class links with your network to boost enrollments.')}
 
-      ${BWTemplate.primaryButton('View Dashboard', 'https://stepperslife.com/instructor/dashboard')}
+      ${BWTemplate.primaryButton('View Dashboard', 'https://stepperslife.com/organizer/dashboard')}
 
       <div class="divider"></div>
 

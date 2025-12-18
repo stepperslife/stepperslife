@@ -12,6 +12,7 @@ import {
   Eye,
   EyeOff,
   MapPin,
+  GraduationCap,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
@@ -76,6 +77,21 @@ export default function OrganizerClassesPage() {
 
   return (
     <div className="min-h-screen bg-muted" data-testid="organizer-classes-page">
+      {/* Instructor Role Indicator */}
+      <div className="bg-amber-50 border-b border-amber-200">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center gap-2">
+            <div className="bg-amber-100 p-1.5 rounded-full">
+              <GraduationCap className="w-4 h-4 text-amber-600" />
+            </div>
+            <div>
+              <span className="font-medium text-amber-900 text-sm">Instructor View</span>
+              <span className="text-amber-700 text-xs ml-2">Classes you teach and manage</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
@@ -86,9 +102,9 @@ export default function OrganizerClassesPage() {
         <div className="container mx-auto px-4 py-4 md:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">My Classes</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">My Teaching Classes</h1>
               <p className="text-sm md:text-base text-muted-foreground mt-1">
-                Manage your class listings
+                Classes you created and manage as an instructor
               </p>
             </div>
             <Link

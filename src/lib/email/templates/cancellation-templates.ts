@@ -127,7 +127,7 @@ export function generateEnrollmentCancellationEmail(data: EnrollmentCancellation
 
       ${BWTemplate.noticeBox('If you cancelled by mistake or have any questions, please contact us within 24 hours at support@stepperslife.com')}
 
-      ${BWTemplate.primaryButton('Browse Classes', 'https://stepperslife.com/classes')}
+      ${BWTemplate.primaryButton('View My Enrollments', 'https://stepperslife.com/my-classes')}
 
       <div class="divider"></div>
 
@@ -296,7 +296,7 @@ export function generateInstructorCancellationNotification(data: InstructorCance
         </table>
       </div>
 
-      ${BWTemplate.primaryButton('View Class Roster', 'https://stepperslife.com/instructor/classes')}
+      ${BWTemplate.primaryButton('View Class Roster', 'https://stepperslife.com/organizer/classes')}
 
       <div class="divider"></div>
 
@@ -400,7 +400,7 @@ export function generateTicketCancellationEmail(data: TicketCancellationData): {
 
       ${BWTemplate.noticeBox('Your tickets are no longer valid for entry. If you cancelled by mistake, please contact us immediately.')}
 
-      ${BWTemplate.primaryButton('Browse Events', 'https://stepperslife.com/events')}
+      ${BWTemplate.primaryButton('View My Tickets', 'https://stepperslife.com/my-tickets')}
 
       <div class="divider"></div>
 
