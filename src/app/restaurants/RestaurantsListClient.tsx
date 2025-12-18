@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Utensils, Search, X, SlidersHorizontal } from "lucide-react";
+import { Utensils, Search, X, SlidersHorizontal, Coffee, ChefHat, Flame, Clock, MapPin, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -10,6 +11,7 @@ import { api } from "@/convex/_generated/api";
 import { useState, useMemo } from "react";
 import { RestaurantCard } from "@/components/restaurants/RestaurantCard";
 import { motion, AnimatePresence } from "framer-motion";
+import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
 
 // All available cuisine types
 const ALL_CUISINES = [
@@ -42,6 +44,7 @@ export default function RestaurantsListClient() {
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   // Get unique cities from restaurants
   const cities = useMemo(() => {
@@ -128,15 +131,15 @@ export default function RestaurantsListClient() {
       <>
         <PublicHeader />
         <RestaurantsSubNav />
-        <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
             <motion.div
-              className="h-8 w-8 border-4 border-orange-600 border-t-transparent rounded-full mx-auto mb-4"
+              className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             />
             <motion.p
-              className="text-gray-600 dark:text-gray-400"
+              className="text-muted-foreground"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -154,105 +157,226 @@ export default function RestaurantsListClient() {
     <>
       <PublicHeader />
       <RestaurantsSubNav />
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white dark:from-gray-900 dark:to-gray-800">
-        {/* Hero Section with Parallax Effect */}
-        <div className="relative overflow-hidden">
+      <div className="min-h-screen bg-background">
+        {/* EPIC Hero Section */}
+        <section className="relative min-h-[500px] md:min-h-[600px] w-full overflow-hidden">
+          {/* Animated Gradient Background */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-orange-600/90 to-red-600/90"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          />
-          <motion.div
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80')",
-              backgroundSize: "contain",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
+            className="absolute inset-0"
+            animate={{
+              background: [
+                "linear-gradient(135deg, #c2410c 0%, #dc2626 50%, #ea580c 100%)",
+                "linear-gradient(135deg, #dc2626 0%, #ea580c 50%, #c2410c 100%)",
+                "linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #dc2626 100%)",
+                "linear-gradient(135deg, #c2410c 0%, #dc2626 50%, #ea580c 100%)",
+              ],
             }}
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
           />
-          <div className="relative container mx-auto px-4 py-16 md:py-24">
-            <div className="max-w-2xl">
-              <motion.h1
-                className="text-4xl md:text-5xl font-bold text-white mb-4"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                Delicious Food,
-                <br />
-                <motion.span
-                  className="text-orange-200"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                >
-                  Ready for Pickup
-                </motion.span>
-              </motion.h1>
-              <motion.p
-                className="text-lg text-white/90 mb-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                Order from the best local restaurants in the stepping community.
-                Fresh food, fast pickup, no delivery fees.
-              </motion.p>
-              <motion.div
-                className="flex flex-wrap gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.98 }}>
-                  <Link
-                    href="#restaurants"
-                    className="px-6 py-3 bg-white text-orange-600 rounded-full font-semibold hover:bg-orange-50 transition-colors inline-block"
-                  >
-                    Browse Restaurants
-                  </Link>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.98 }}>
-                  <Link
-                    href="/restaurateur/apply"
-                    className="px-6 py-3 bg-white/10 backdrop-blur-sm text-white rounded-full font-semibold hover:bg-white/20 transition-colors border border-white/30 inline-block"
-                  >
-                    Become a Partner Restaurant
-                  </Link>
-                </motion.div>
-              </motion.div>
-            </div>
-          </div>
 
-          {/* Animated floating food icons */}
+          {/* Gradient Overlay for depth */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+
+          {/* Floating Food Icons */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {[...Array(8)].map((_, i) => (
+            {/* Utensils Icon */}
+            <motion.div
+              className="absolute top-[15%] left-[10%] text-white/20"
+              animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Utensils className="h-16 w-16 md:h-24 md:w-24" />
+            </motion.div>
+
+            {/* Coffee Icon */}
+            <motion.div
+              className="absolute top-[25%] right-[15%] text-white/15"
+              animate={{ y: [0, 15, 0], rotate: [0, -8, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            >
+              <Coffee className="h-14 w-14 md:h-20 md:w-20" />
+            </motion.div>
+
+            {/* ChefHat Icon */}
+            <motion.div
+              className="absolute bottom-[30%] left-[8%] text-white/15"
+              animate={{ y: [0, -15, 0], scale: [1, 1.05, 1] }}
+              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            >
+              <ChefHat className="h-12 w-12 md:h-16 md:w-16" />
+            </motion.div>
+
+            {/* Flame Icon */}
+            <motion.div
+              className="absolute top-[40%] right-[8%] text-white/20"
+              animate={{ y: [0, -25, 0], scale: [1, 1.1, 1] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+            >
+              <Flame className="h-10 w-10 md:h-14 md:w-14" />
+            </motion.div>
+
+            {/* Steam/Smoke Particles */}
+            {[...Array(15)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-4 h-4 bg-white/10 rounded-full"
+                className="absolute rounded-full"
                 style={{
-                  left: `${10 + Math.random() * 80}%`,
-                  top: `${Math.random() * 100}%`,
+                  width: Math.random() * 8 + 4 + "px",
+                  height: Math.random() * 8 + 4 + "px",
+                  left: `${5 + Math.random() * 90}%`,
+                  bottom: `${Math.random() * 40}%`,
+                  background: `rgba(255, 255, 255, ${0.1 + Math.random() * 0.2})`,
                 }}
                 animate={{
-                  y: [0, -30, 0],
-                  opacity: [0.3, 0.6, 0.3],
+                  y: [0, -100 - Math.random() * 100],
+                  opacity: [0, 0.6, 0],
+                  scale: [0.5, 1.5, 2],
                 }}
                 transition={{
-                  duration: 3 + Math.random() * 2,
+                  duration: 4 + Math.random() * 3,
                   repeat: Infinity,
-                  delay: Math.random() * 2,
-                  ease: "easeInOut",
+                  delay: Math.random() * 3,
+                  ease: "easeOut",
                 }}
               />
             ))}
           </div>
-        </div>
+
+          {/* Main Content */}
+          <div className="relative z-10 container mx-auto px-4 py-16 md:py-20 flex flex-col items-center justify-center min-h-[500px] md:min-h-[600px]">
+            {/* Restaurant Count Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6"
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-medium">
+                <motion.span
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Utensils className="h-4 w-4" />
+                </motion.span>
+                {restaurants.length} {restaurants.length === 1 ? "Restaurant" : "Restaurants"} Available
+              </span>
+            </motion.div>
+
+            {/* Main Title with Gradient Animation */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-6"
+            >
+              <span className="text-white drop-shadow-lg">Taste the</span>
+              <br />
+              <motion.span
+                className="bg-gradient-to-r from-yellow-300 via-orange-200 to-amber-300 bg-clip-text text-transparent bg-[length:200%_auto]"
+                animate={{ backgroundPosition: ["0% center", "200% center"] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              >
+                Community Flavors
+              </motion.span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg md:text-xl text-white/90 text-center max-w-2xl mb-8"
+            >
+              Order from the best local restaurants in the stepping community.
+              Fresh food, fast pickup, no delivery fees.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col sm:flex-row gap-4 mb-12"
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <Button
+                  size="lg"
+                  onClick={() => document.getElementById("restaurants")?.scrollIntoView({ behavior: "smooth" })}
+                  className="bg-white !text-orange-600 hover:bg-orange-50 font-semibold px-8 py-6 text-lg rounded-full shadow-lg"
+                >
+                  <Utensils className="mr-2 h-5 w-5 text-orange-600" />
+                  Browse Restaurants
+                </Button>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <Button
+                  size="lg"
+                  variant="outline"
+                  asChild
+                  className="border-2 border-white/50 !text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 font-semibold px-8 py-6 text-lg rounded-full"
+                >
+                  <Link href="/restaurateur/apply">
+                    <ChefHat className="mr-2 h-5 w-5 text-white" />
+                    Partner With Us
+                  </Link>
+                </Button>
+              </motion.div>
+            </motion.div>
+
+            {/* Stats/Features Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="grid grid-cols-3 gap-4 md:gap-8"
+            >
+              <div className="text-center">
+                <motion.div
+                  className="flex items-center justify-center mb-2"
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Clock className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                </motion.div>
+                <p className="text-white font-bold text-lg md:text-2xl">15-30</p>
+                <p className="text-white/70 text-xs md:text-sm">Min Pickup</p>
+              </div>
+              <div className="text-center">
+                <motion.div
+                  className="flex items-center justify-center mb-2"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                >
+                  <Star className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                </motion.div>
+                <p className="text-white font-bold text-lg md:text-2xl">500+</p>
+                <p className="text-white/70 text-xs md:text-sm">Happy Customers</p>
+              </div>
+              <div className="text-center">
+                <motion.div
+                  className="flex items-center justify-center mb-2"
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                >
+                  <MapPin className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                </motion.div>
+                <p className="text-white font-bold text-lg md:text-2xl">20+</p>
+                <p className="text-white/70 text-xs md:text-sm">Cities</p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Bottom Gradient Fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+        </section>
 
         {/* Restaurants Section */}
         <div id="restaurants" className="container mx-auto px-4 py-12">
@@ -262,10 +386,10 @@ export default function RestaurantsListClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
               {restaurants.length > 0 ? "Order from Our Restaurants" : "Restaurants Coming Soon"}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+            <p className="text-muted-foreground max-w-xl mx-auto">
               {restaurants.length > 0
                 ? "Browse our selection of amazing restaurants and place your order for pickup"
                 : "We're building our restaurant network. Check back soon or apply to join!"
@@ -283,7 +407,7 @@ export default function RestaurantsListClient() {
             >
               {/* Search Input */}
               <div className="relative max-w-xl mx-auto">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <label htmlFor="restaurant-search" className="sr-only">Search restaurants or cuisines</label>
                 <input
                   id="restaurant-search"
@@ -291,14 +415,14 @@ export default function RestaurantsListClient() {
                   placeholder="Search restaurants or cuisines..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm transition-shadow"
+                  className="w-full pl-12 pr-10 py-3 rounded-full border border-border bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm transition-shadow"
                 />
                 <AnimatePresence>
                   {searchQuery && (
                     <motion.button
                       type="button"
                       onClick={() => setSearchQuery("")}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       aria-label="Clear search"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -316,7 +440,7 @@ export default function RestaurantsListClient() {
                 <motion.button
                   type="button"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="md:hidden flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  className="md:hidden flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card text-card-foreground"
                   aria-expanded={showFilters}
                   aria-label="Toggle filters"
                   whileHover={{ scale: 1.02 }}
@@ -326,7 +450,7 @@ export default function RestaurantsListClient() {
                   Filters
                   {hasActiveFilters && (
                     <motion.span
-                      className="w-2 h-2 rounded-full bg-orange-500"
+                      className="w-2 h-2 rounded-full bg-primary"
                       aria-label="Active filters"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -341,7 +465,7 @@ export default function RestaurantsListClient() {
                     id="city-filter"
                     value={selectedCity}
                     onChange={(e) => setSelectedCity(e.target.value)}
-                    className="px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="px-4 py-2 rounded-full border border-border bg-card text-card-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="">All Cities</option>
                     {cities.map(city => (
@@ -357,7 +481,7 @@ export default function RestaurantsListClient() {
                     id="sort-by"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="px-4 py-2 rounded-full border border-border bg-card text-card-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="name">Sort by Name</option>
                     <option value="pickup_time">Fastest Pickup</option>
@@ -365,13 +489,16 @@ export default function RestaurantsListClient() {
                   </select>
                 </div>
 
+                {/* View Toggle */}
+                <ViewToggle view={viewMode} onViewChange={setViewMode} />
+
                 {/* Clear Filters */}
                 <AnimatePresence>
                   {hasActiveFilters && (
                     <motion.button
                       type="button"
                       onClick={clearFilters}
-                      className="flex items-center gap-1 px-4 py-2 rounded-full text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-sm font-medium"
+                      className="flex items-center gap-1 px-4 py-2 rounded-full text-primary hover:bg-accent text-sm font-medium"
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
@@ -399,8 +526,8 @@ export default function RestaurantsListClient() {
                       onClick={() => toggleCuisine(cuisine)}
                       className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                         selectedCuisines.includes(cuisine)
-                          ? "bg-orange-600 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                       }`}
                       aria-pressed={selectedCuisines.includes(cuisine)}
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -419,7 +546,7 @@ export default function RestaurantsListClient() {
               <AnimatePresence>
                 {hasActiveFilters && (
                   <motion.p
-                    className="text-center text-sm text-gray-500 dark:text-gray-400"
+                    className="text-center text-sm text-muted-foreground"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
@@ -433,7 +560,7 @@ export default function RestaurantsListClient() {
 
           {filteredRestaurants.length > 0 ? (
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              className={getViewClasses(viewMode, "restaurants")}
               initial="hidden"
               animate="visible"
               variants={{
@@ -469,25 +596,25 @@ export default function RestaurantsListClient() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-block p-8 bg-orange-50 dark:bg-orange-900/20 rounded-3xl">
+              <div className="inline-block p-8 bg-accent rounded-3xl">
                 {hasActiveFilters ? (
                   <>
                     <motion.div
                       animate={{ y: [0, -5, 0] }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <Search className="h-16 w-16 mx-auto text-orange-400 mb-4" />
+                      <Search className="h-16 w-16 mx-auto text-primary mb-4" />
                     </motion.div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-foreground mb-2">
                       No Restaurants Found
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
+                    <p className="text-muted-foreground mb-4 max-w-md">
                       No restaurants match your current filters. Try adjusting your search or filters.
                     </p>
                     <motion.button
                       type="button"
                       onClick={clearFilters}
-                      className="inline-block px-6 py-3 bg-orange-600 text-white rounded-full font-semibold hover:bg-orange-700 transition-colors"
+                      className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-full font-semibold hover:bg-primary/90 transition-colors"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -500,18 +627,18 @@ export default function RestaurantsListClient() {
                       animate={{ rotate: [0, 5, -5, 0] }}
                       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <Utensils className="h-16 w-16 mx-auto text-orange-400 mb-4" />
+                      <Utensils className="h-16 w-16 mx-auto text-primary mb-4" />
                     </motion.div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-foreground mb-2">
                       No Restaurants Yet
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
+                    <p className="text-muted-foreground mb-4 max-w-md">
                       We're actively onboarding restaurants. Be the first to join our platform!
                     </p>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Link
                         href="/restaurateur/apply"
-                        className="inline-block px-6 py-3 bg-orange-600 text-white rounded-full font-semibold hover:bg-orange-700 transition-colors"
+                        className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-full font-semibold hover:bg-primary/90 transition-colors"
                       >
                         Apply Now
                       </Link>
@@ -530,7 +657,7 @@ export default function RestaurantsListClient() {
             transition={{ duration: 0.6, delay: 0.5 }}
           >
             <motion.div
-              className="inline-block p-8 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 rounded-3xl"
+              className="inline-block p-8 bg-accent border border-border rounded-3xl"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
@@ -538,18 +665,18 @@ export default function RestaurantsListClient() {
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
-                <Utensils className="h-12 w-12 mx-auto text-orange-600 mb-4" />
+                <Utensils className="h-12 w-12 mx-auto text-primary mb-4" />
               </motion.div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-bold text-foreground mb-2">
                 Own a Restaurant?
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
+              <p className="text-muted-foreground mb-4 max-w-md">
                 Join the SteppersLife restaurant network and reach thousands of customers in the stepping community.
               </p>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
                   href="/restaurateur/apply"
-                  className="inline-block px-6 py-3 bg-orange-600 text-white rounded-full font-semibold hover:bg-orange-700 transition-colors"
+                  className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-full font-semibold hover:bg-primary/90 transition-colors"
                 >
                   Apply to Join
                 </Link>

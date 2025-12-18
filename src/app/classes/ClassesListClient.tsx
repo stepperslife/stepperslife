@@ -9,12 +9,14 @@ import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
 
 export default function ClassesListClient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
   const [showPastClasses, setShowPastClasses] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   const classes = useQuery(api.public.queries.getPublishedClasses, {
     searchTerm: searchTerm || undefined,
@@ -390,6 +392,9 @@ export default function ClassesListClient() {
                   Show past classes
                 </span>
               </label>
+
+              {/* View Toggle */}
+              <ViewToggle view={viewMode} onViewChange={setViewMode} />
             </div>
 
             {/* Active Filters Display */}
@@ -467,7 +472,7 @@ export default function ClassesListClient() {
 
               <motion.div
                 data-testid="classes-grid"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className={getViewClasses(viewMode, "classes")}
                 initial="hidden"
                 animate="visible"
                 variants={{
