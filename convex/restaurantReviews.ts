@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getCurrentUser } from "./lib/auth";
 import { requireRestaurantRole } from "./lib/restaurantAuth";
+import { validateRating, validateRequiredString, validateArray, sanitizeText } from "./lib/validation";
 
 // Get reviews for a restaurant (public)
 export const getByRestaurant = query({
@@ -140,9 +141,20 @@ export const create = mutation({
     photos: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    // Validate rating
-    if (args.rating < 1 || args.rating > 5) {
-      throw new Error("Rating must be between 1 and 5");
+    // Validate rating (checks for NaN, ensures 1-5 integer)
+    validateRating(args.rating, "Rating");
+
+    // Validate optional text fields
+    if (args.title) {
+      validateRequiredString(args.title, "Review title", { minLength: 0, maxLength: 200 });
+    }
+    if (args.reviewText) {
+      validateRequiredString(args.reviewText, "Review text", { minLength: 0, maxLength: 5000 });
+    }
+
+    // Validate photos array (max 10 photos)
+    if (args.photos) {
+      validateArray(args.photos, "Photos", { maxItems: 10 });
     }
 
     // Check if user already reviewed
@@ -185,8 +197,8 @@ export const create = mutation({
       customerId: args.customerId,
       orderId: args.orderId,
       rating: args.rating,
-      title: args.title,
-      reviewText: args.reviewText,
+      title: sanitizeText(args.title || "", 200),
+      reviewText: sanitizeText(args.reviewText || "", 5000),
       photos: args.photos || [],
       isVerifiedPurchase,
       helpfulCount: 0,
@@ -210,6 +222,20 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
+    // Validate inputs if provided
+    if (args.rating !== undefined) {
+      validateRating(args.rating, "Rating");
+    }
+    if (args.title !== undefined) {
+      validateRequiredString(args.title, "Review title", { minLength: 0, maxLength: 200 });
+    }
+    if (args.reviewText !== undefined) {
+      validateRequiredString(args.reviewText, "Review text", { minLength: 0, maxLength: 5000 });
+    }
+    if (args.photos !== undefined) {
+      validateArray(args.photos, "Photos", { maxItems: 10 });
+    }
+
     // Get the review and verify ownership
     const review = await ctx.db.get(args.id);
     if (!review) {
@@ -223,12 +249,10 @@ export const update = mutation({
 
     const { id, ...updates } = args;
 
-    if (updates.rating !== undefined && (updates.rating < 1 || updates.rating > 5)) {
-      throw new Error("Rating must be between 1 and 5");
-    }
-
     return await ctx.db.patch(id, {
       ...updates,
+      title: args.title !== undefined ? sanitizeText(args.title, 200) : undefined,
+      reviewText: args.reviewText !== undefined ? sanitizeText(args.reviewText, 5000) : undefined,
       updatedAt: Date.now(),
     });
   },
@@ -367,6 +391,9 @@ export const respondToReview = mutation({
     response: v.string(),
   },
   handler: async (ctx, args) => {
+    // Validate response
+    validateRequiredString(args.response, "Response", { minLength: 1, maxLength: 2000 });
+
     const review = await ctx.db.get(args.reviewId);
     if (!review) throw new Error("Review not found");
 
@@ -374,7 +401,7 @@ export const respondToReview = mutation({
     await requireRestaurantRole(ctx, review.restaurantId, "RESTAURANT_MANAGER");
 
     return await ctx.db.patch(args.reviewId, {
-      restaurantResponse: args.response,
+      restaurantResponse: sanitizeText(args.response, 2000),
       restaurantResponseAt: Date.now(),
       updatedAt: Date.now(),
     });

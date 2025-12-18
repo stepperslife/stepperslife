@@ -1,6 +1,11 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
+import {
+  validatePrice,
+  validateRequiredString,
+  validateSortOrder,
+} from "./lib/validation";
 
 // Helper to verify restaurant ownership
 async function verifyRestaurantOwnership(
@@ -67,6 +72,14 @@ export const createCategory = mutation({
     sortOrder: v.number(),
   },
   handler: async (ctx, args) => {
+    // Validate inputs
+    validateRequiredString(args.name, "Category name", { maxLength: 100 });
+    validateSortOrder(args.sortOrder, "Sort order");
+
+    if (args.description) {
+      validateRequiredString(args.description, "Description", { minLength: 0, maxLength: 500 });
+    }
+
     // Verify ownership
     const isOwner = await verifyRestaurantOwnership(ctx, args.restaurantId);
     if (!isOwner) {
@@ -76,6 +89,8 @@ export const createCategory = mutation({
     const now = Date.now();
     return await ctx.db.insert("menuCategories", {
       ...args,
+      name: args.name.trim(),
+      description: args.description?.trim(),
       isActive: true,
       createdAt: now,
       updatedAt: now,
@@ -95,6 +110,15 @@ export const create = mutation({
     sortOrder: v.number(),
   },
   handler: async (ctx, args) => {
+    // Validate inputs
+    validateRequiredString(args.name, "Menu item name", { maxLength: 200 });
+    validatePrice(args.price, "Menu item price");
+    validateSortOrder(args.sortOrder, "Sort order");
+
+    if (args.description) {
+      validateRequiredString(args.description, "Description", { minLength: 0, maxLength: 1000 });
+    }
+
     // Verify ownership
     const isOwner = await verifyRestaurantOwnership(ctx, args.restaurantId);
     if (!isOwner) {
@@ -104,6 +128,8 @@ export const create = mutation({
     const now = Date.now();
     return await ctx.db.insert("menuItems", {
       ...args,
+      name: args.name.trim(),
+      description: args.description?.trim(),
       isAvailable: true,
       createdAt: now,
       updatedAt: now,
@@ -124,6 +150,20 @@ export const update = mutation({
     sortOrder: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Validate inputs if provided
+    if (args.name !== undefined) {
+      validateRequiredString(args.name, "Menu item name", { maxLength: 200 });
+    }
+    if (args.price !== undefined) {
+      validatePrice(args.price, "Menu item price");
+    }
+    if (args.sortOrder !== undefined) {
+      validateSortOrder(args.sortOrder, "Sort order");
+    }
+    if (args.description !== undefined && args.description !== null) {
+      validateRequiredString(args.description, "Description", { minLength: 0, maxLength: 1000 });
+    }
+
     // Get the menu item to check restaurant ownership
     const menuItem = await ctx.db.get(args.id);
     if (!menuItem) {
@@ -139,6 +179,8 @@ export const update = mutation({
     const { id, ...updates } = args;
     return await ctx.db.patch(id, {
       ...updates,
+      name: args.name?.trim(),
+      description: args.description?.trim(),
       updatedAt: Date.now(),
     });
   },

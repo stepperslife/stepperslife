@@ -1394,7 +1394,8 @@ export default defineSchema({
   // Restaurant Staff - Staff members with restaurant-specific roles
   restaurantStaff: defineTable({
     restaurantId: v.id("restaurants"),
-    userId: v.id("users"),
+    // userId is optional for pending invitations (before the invited user accepts)
+    userId: v.optional(v.id("users")),
     email: v.string(),
     name: v.string(),
     phone: v.optional(v.string()),

@@ -109,7 +109,8 @@ export const getRecentActivity = query({
         .take(5);
 
       for (const staff of staffChanges) {
-        const staffUser = await ctx.db.get(staff.userId);
+        // userId may be undefined for pending invitations
+        const staffUser = staff.userId ? await ctx.db.get(staff.userId) : null;
         const statusLabel =
           staff.status === "ACTIVE"
             ? "joined"

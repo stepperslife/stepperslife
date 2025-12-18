@@ -1,8 +1,10 @@
 import { v } from "convex/values";
 import { query, mutation, action } from "./_generated/server";
 import { api, internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 import { getCurrentUser } from "./lib/auth";
 import { requireRestaurantRole, requireRestaurantOwner, getMyRestaurants } from "./lib/restaurantAuth";
+import { validateEmail, validateRequiredString, validatePhoneNumber } from "./lib/validation";
 
 // Get staff for a restaurant (requires MANAGER role or higher)
 export const getByRestaurant = query({
@@ -19,11 +21,12 @@ export const getByRestaurant = query({
     // Get user details for each staff member
     const staffWithUsers = await Promise.all(
       staff.map(async (member) => {
-        const user = await ctx.db.get(member.userId);
+        // userId may be undefined for pending invitations
+        const user = member.userId ? await ctx.db.get(member.userId) : null;
         return {
           ...member,
-          userEmail: user?.email,
-          userName: user?.name,
+          userEmail: user?.email || member.email,
+          userName: user?.name || member.name,
           userImage: user?.image,
         };
       })
@@ -101,6 +104,14 @@ export const inviteStaff = mutation({
     })),
   },
   handler: async (ctx, args) => {
+    // Validate inputs
+    validateEmail(args.email, "Staff email");
+    validateRequiredString(args.name, "Staff name", { maxLength: 100 });
+
+    if (args.phone) {
+      validatePhoneNumber(args.phone, "Phone number");
+    }
+
     // Get current user
     const user = await getCurrentUser(ctx);
 
@@ -112,10 +123,12 @@ export const inviteStaff = mutation({
       await requireRestaurantOwner(ctx, args.restaurantId);
     }
 
+    const normalizedEmail = args.email.toLowerCase().trim();
+
     // Check if email is already invited to this restaurant
     const existingInvite = await ctx.db
       .query("restaurantStaff")
-      .withIndex("by_email", (q) => q.eq("email", args.email.toLowerCase()))
+      .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .filter((q) => q.eq(q.field("restaurantId"), args.restaurantId))
       .first();
 
@@ -126,7 +139,7 @@ export const inviteStaff = mutation({
     // Check if user exists with this email
     const existingUser = await ctx.db
       .query("users")
-      .withIndex("by_email", (q) => q.eq("email", args.email.toLowerCase()))
+      .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .first();
 
     const now = Date.now();
@@ -138,15 +151,16 @@ export const inviteStaff = mutation({
     }
 
     // Create staff invitation
+    // userId is optional when status is PENDING (invitation not yet accepted)
     const staffId = await ctx.db.insert("restaurantStaff", {
       restaurantId: args.restaurantId,
-      userId: existingUser?._id || ("pending" as any), // Will be updated when they accept
-      email: args.email.toLowerCase(),
-      name: args.name,
+      userId: existingUser?._id,
+      email: normalizedEmail,
+      name: args.name.trim(),
       phone: args.phone,
       role: args.role,
       permissions: args.permissions,
-      status: existingUser ? "PENDING" : "PENDING", // Always pending until accepted
+      status: "PENDING" as const,
       invitedAt: now,
       invitedBy: user._id,
       createdAt: now,
@@ -158,8 +172,8 @@ export const inviteStaff = mutation({
       staffId,
       status: "invited",
       emailInfo: {
-        email: args.email.toLowerCase(),
-        name: args.name,
+        email: normalizedEmail,
+        name: args.name.trim(),
         restaurantName: restaurant.name,
         role: args.role,
         invitedByName: user.name || "A team member",

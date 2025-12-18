@@ -46,6 +46,7 @@ import type * as lib_permissions from "../lib/permissions.js";
 import type * as lib_restaurantAuth from "../lib/restaurantAuth.js";
 import type * as lib_roles from "../lib/roles.js";
 import type * as lib_timezone from "../lib/timezone.js";
+import type * as lib_validation from "../lib/validation.js";
 import type * as lib_vendorTiers from "../lib/vendorTiers.js";
 import type * as menuItems from "../menuItems.js";
 import type * as migrations from "../migrations.js";
@@ -155,6 +156,7 @@ declare const fullApi: ApiFromModules<{
   "lib/restaurantAuth": typeof lib_restaurantAuth;
   "lib/roles": typeof lib_roles;
   "lib/timezone": typeof lib_timezone;
+  "lib/validation": typeof lib_validation;
   "lib/vendorTiers": typeof lib_vendorTiers;
   menuItems: typeof menuItems;
   migrations: typeof migrations;
