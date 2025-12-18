@@ -10,6 +10,7 @@ import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
+import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
 
 export default function ClassesListClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -140,11 +141,11 @@ export default function ClassesListClient() {
 
           {/* Background Dancing Image */}
           <motion.div
-            className="absolute inset-0 opacity-20"
+            className="absolute inset-0 opacity-25"
             style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1504609813442-a8f4e83eb7c3?w=1920&q=80')",
+              backgroundImage: "url('https://images.unsplash.com/photo-1545959570-a94084071b5d?w=1920&q=80')",
               backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundPosition: "center top",
             }}
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
@@ -483,136 +484,206 @@ export default function ClassesListClient() {
                 </p>
               </motion.div>
 
-              <motion.div
-                data-testid="classes-grid"
-                className={getViewClasses(viewMode, "classes")}
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.1,
-                    },
-                  },
-                }}
-              >
-                {classes.map((classItem) => {
-                  const isPast = classItem.endDate && classItem.endDate < Date.now();
-
-                  return (
-                    <motion.div
-                      key={classItem._id}
-                      variants={{
-                        hidden: { opacity: 0, y: 30 },
-                        visible: { opacity: 1, y: 0 },
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <motion.div
-                        whileHover={{ y: -8 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              {viewMode === "masonry" ? (
+                <PortfolioGrid
+                  items={classes}
+                  getKey={(classItem) => classItem._id}
+                  renderItem={(classItem) => {
+                    const isPast = classItem.endDate && classItem.endDate < Date.now();
+                    return (
+                      <Link
+                        href={`/classes/${classItem._id}`}
+                        data-testid={`class-card-${classItem._id}`}
+                        className="group block"
                       >
-                        <Link
-                          href={`/classes/${classItem._id}`}
-                          data-testid={`class-card-${classItem._id}`}
-                          className="group block bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                        <motion.div
+                          className="bg-card rounded-lg shadow-md overflow-hidden"
+                          whileHover={{
+                            y: -8,
+                            boxShadow: "0 20px 40px -10px rgba(0,0,0,0.2)",
+                          }}
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         >
-                      {/* Class Image */}
-                      <div className="relative h-48 bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
-                        {classItem.imageUrl ? (
-                          <img
-                            src={classItem.imageUrl}
-                            alt={classItem.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <BookOpen className="w-16 h-16 text-white opacity-50" />
-                          </div>
-                        )}
-                        {isPast && (
-                          <div className="absolute top-2 right-2 bg-foreground/75 text-background px-3 py-1 rounded-full text-sm font-medium">
-                            Past Class
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Class Details */}
-                      <div className="p-5">
-                        <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                          {classItem.name}
-                        </h3>
-
-                        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                          {classItem.description}
-                        </p>
-
-                        {/* Date & Time */}
-                        {classItem.startDate && (
-                          <div className="flex items-start gap-2 mb-2 text-sm text-foreground">
-                            <Calendar className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-                            <div>
-                              <div className="font-medium">
-                                {formatClassDate(classItem.startDate, classItem.timezone)}
+                          {/* Class Image */}
+                          <div className="relative aspect-[4/3] bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
+                            {classItem.imageUrl ? (
+                              <img
+                                src={classItem.imageUrl}
+                                alt={classItem.name}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <BookOpen className="w-16 h-16 text-white opacity-50" />
                               </div>
-                              {classItem.eventTimeLiteral && (
-                                <div className="text-muted-foreground">
-                                  {classItem.eventTimeLiteral}
+                            )}
+                            {isPast && (
+                              <div className="absolute top-2 right-2 bg-foreground/75 text-background px-3 py-1 rounded-full text-sm font-medium">
+                                Past Class
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          </div>
+
+                          {/* Class Details */}
+                          <div className="p-4">
+                            <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                              {classItem.name}
+                            </h3>
+
+                            {classItem.startDate && (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Calendar className="w-4 h-4 text-primary" />
+                                <span>{formatClassDate(classItem.startDate, classItem.timezone)}</span>
+                              </div>
+                            )}
+
+                            {classItem.location && typeof classItem.location === "object" && (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                                <MapPin className="w-4 h-4 text-primary" />
+                                <span className="truncate">
+                                  {classItem.location.city}, {classItem.location.state}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      </Link>
+                    );
+                  }}
+                />
+              ) : (
+                <motion.div
+                  data-testid="classes-grid"
+                  className={getViewClasses(viewMode, "classes")}
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.1,
+                      },
+                    },
+                  }}
+                >
+                  {classes.map((classItem) => {
+                    const isPast = classItem.endDate && classItem.endDate < Date.now();
+
+                    return (
+                      <motion.div
+                        key={classItem._id}
+                        variants={{
+                          hidden: { opacity: 0, y: 30 },
+                          visible: { opacity: 1, y: 0 },
+                        }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <motion.div
+                          whileHover={{ y: -8 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        >
+                          <Link
+                            href={`/classes/${classItem._id}`}
+                            data-testid={`class-card-${classItem._id}`}
+                            className="group block bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                          >
+                            {/* Class Image */}
+                            <div className="relative h-48 bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
+                              {classItem.imageUrl ? (
+                                <img
+                                  src={classItem.imageUrl}
+                                  alt={classItem.name}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <BookOpen className="w-16 h-16 text-white opacity-50" />
+                                </div>
+                              )}
+                              {isPast && (
+                                <div className="absolute top-2 right-2 bg-foreground/75 text-background px-3 py-1 rounded-full text-sm font-medium">
+                                  Past Class
                                 </div>
                               )}
                             </div>
-                          </div>
-                        )}
 
-                        {/* Location */}
-                        {classItem.location && typeof classItem.location === "object" && (
-                          <div className="flex items-center gap-2 mb-3 text-sm text-foreground">
-                            <MapPin className="w-4 h-4 shrink-0 text-primary" />
-                            <span>
-                              {classItem.location.venueName && `${classItem.location.venueName}, `}
-                              {classItem.location.city}, {classItem.location.state}
-                            </span>
-                          </div>
-                        )}
+                            {/* Class Details */}
+                            <div className="p-5">
+                              <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                                {classItem.name}
+                              </h3>
 
-                        {/* Categories */}
-                        {classItem.categories && classItem.categories.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {classItem.categories.slice(0, 3).map((category, idx) => (
-                              <span
-                                key={idx}
-                                className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-accent text-accent-foreground"
-                              >
-                                <Tag className="w-3 h-3" />
-                                {category}
-                              </span>
-                            ))}
-                            {classItem.categories.length > 3 && (
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                                +{classItem.categories.length - 3} more
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                              <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                                {classItem.description}
+                              </p>
 
-                          {/* Footer */}
-                          <div className="px-5 py-3 bg-muted/50 border-t border-border">
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-muted-foreground">
-                                by {classItem.organizerName || "SteppersLife"}
-                              </span>
-                              <span className="text-primary font-medium group-hover:underline">
-                                View Details →
-                              </span>
+                              {/* Date & Time */}
+                              {classItem.startDate && (
+                                <div className="flex items-start gap-2 mb-2 text-sm text-foreground">
+                                  <Calendar className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                                  <div>
+                                    <div className="font-medium">
+                                      {formatClassDate(classItem.startDate, classItem.timezone)}
+                                    </div>
+                                    {classItem.eventTimeLiteral && (
+                                      <div className="text-muted-foreground">
+                                        {classItem.eventTimeLiteral}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Location */}
+                              {classItem.location && typeof classItem.location === "object" && (
+                                <div className="flex items-center gap-2 mb-3 text-sm text-foreground">
+                                  <MapPin className="w-4 h-4 shrink-0 text-primary" />
+                                  <span>
+                                    {classItem.location.venueName && `${classItem.location.venueName}, `}
+                                    {classItem.location.city}, {classItem.location.state}
+                                  </span>
+                                </div>
+                              )}
+
+                              {/* Categories */}
+                              {classItem.categories && classItem.categories.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                  {classItem.categories.slice(0, 3).map((category, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-accent text-accent-foreground"
+                                    >
+                                      <Tag className="w-3 h-3" />
+                                      {category}
+                                    </span>
+                                  ))}
+                                  {classItem.categories.length > 3 && (
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+                                      +{classItem.categories.length - 3} more
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        </Link>
+
+                            {/* Footer */}
+                            <div className="px-5 py-3 bg-muted/50 border-t border-border">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">
+                                  by {classItem.organizerName || "SteppersLife"}
+                                </span>
+                                <span className="text-primary font-medium group-hover:underline">
+                                  View Details →
+                                </span>
+                              </div>
+                            </div>
+                          </Link>
+                        </motion.div>
                       </motion.div>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
+                    );
+                  })}
+                </motion.div>
+              )}
             </>
           )}
         </div>
