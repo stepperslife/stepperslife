@@ -39,14 +39,25 @@ setup("authenticate as admin", async ({ page }) => {
   console.log(`  Logging in as: ${ADMIN_CREDENTIALS.email}`);
 
   // Wait for form to be ready
-  await page.waitForSelector('input[type="email"]', { timeout: 10000 });
+  await page.waitForSelector('[data-testid="email-input"], input[type="email"]', { timeout: 10000 });
 
-  // Fill credentials
-  await page.fill('input[type="email"]', ADMIN_CREDENTIALS.email);
-  await page.fill('input[type="password"]', ADMIN_CREDENTIALS.password);
+  // The login page has a collapsible password section - need to expand it first
+  const passwordToggle = page.locator('[data-testid="password-login-toggle"]');
+  if (await passwordToggle.isVisible()) {
+    console.log("  Expanding password login section...");
+    await passwordToggle.click();
+    await page.waitForSelector('[data-testid="login-email"], input#email', { timeout: 5000 });
+  }
+
+  // Fill credentials - use the password form fields
+  const emailInput = page.locator('[data-testid="login-email"], input#email').first();
+  const passwordInput = page.locator('input[type="password"], input#password').first();
+
+  await emailInput.fill(ADMIN_CREDENTIALS.email);
+  await passwordInput.fill(ADMIN_CREDENTIALS.password);
 
   // Submit form
-  await page.click('button[type="submit"]');
+  await page.click('[data-testid="password-login-form"] button[type="submit"], button[type="submit"]');
 
   // Wait for navigation after login
   await page.waitForTimeout(3000);
