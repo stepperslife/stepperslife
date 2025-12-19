@@ -519,6 +519,7 @@ export default function TicketTiersPage() {
                 tiers={newTiers}
                 onChange={setNewTiers}
                 showPresets={false}
+                hideAddButton={true}
               />
             </div>
 
