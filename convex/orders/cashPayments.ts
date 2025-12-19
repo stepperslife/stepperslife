@@ -259,6 +259,107 @@ export const approveCashOrder = mutation({
 });
 
 /**
+ * Approve a cash payment as the event organizer
+ * Simpler than approveCashOrder - just requires being the event owner
+ * Used from organizer dashboard to quickly approve pending cash orders
+ */
+export const organizerApproveCashOrder = mutation({
+  args: {
+    orderId: v.id("orders"),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    // Get current user
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    // Get order
+    const order = await ctx.db.get(args.orderId);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    // Verify order status
+    if (order.status !== "PENDING_PAYMENT") {
+      throw new Error(`Cannot approve order with status: ${order.status}`);
+    }
+
+    // Get event and verify ownership
+    const event = await ctx.db.get(order.eventId);
+    if (!event) {
+      throw new Error("Event not found");
+    }
+
+    // Get user to check if they're the organizer or admin
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check authorization: must be event organizer or admin
+    const isOrganizer = event.organizerId === user._id;
+    const isAdmin = user.role === "admin";
+
+    if (!isOrganizer && !isAdmin) {
+      throw new Error("Not authorized to approve orders for this event");
+    }
+
+    // Update order to COMPLETED
+    await ctx.db.patch(args.orderId, {
+      status: "COMPLETED",
+      paidAt: now,
+      approvedBy: user._id, // Track who approved
+      updatedAt: now,
+    });
+
+    // Activate all tickets
+    const tickets = await ctx.db
+      .query("tickets")
+      .withIndex("by_order", (q) => q.eq("orderId", args.orderId))
+      .collect();
+
+    for (const ticket of tickets) {
+      await ctx.db.patch(ticket._id, {
+        status: "VALID",
+        updatedAt: now,
+      });
+    }
+
+    // Update ticket tier sold counts
+    const tierUpdates = new Map<string, number>();
+    for (const ticket of tickets) {
+      if (ticket.ticketTierId) {
+        const tierId = ticket.ticketTierId.toString();
+        tierUpdates.set(tierId, (tierUpdates.get(tierId) || 0) + 1);
+      }
+    }
+
+    for (const [tierId, count] of tierUpdates) {
+      const tier = await ctx.db.get(tierId as Id<"ticketTiers">);
+      if (tier) {
+        await ctx.db.patch(tier._id, {
+          sold: tier.sold + count,
+        });
+      }
+    }
+
+    return {
+      success: true,
+      orderId: args.orderId,
+      ticketsActivated: tickets.length,
+      approvedBy: user.name || user.email,
+    };
+  },
+});
+
+/**
  * Generate activation code for cash order
  * Seller generates code, gives to customer, customer activates
  */

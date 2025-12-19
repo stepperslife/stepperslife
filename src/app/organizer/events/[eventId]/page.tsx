@@ -76,6 +76,8 @@ export default function EventDashboardPage() {
   const event = useQuery(api.events.queries.getEventById, { eventId });
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const publishEvent = useMutation(api.events.mutations.publishEvent);
+  const approveCashOrder = useMutation(api.orders.cashPayments.organizerApproveCashOrder);
+  const [approvingOrderId, setApprovingOrderId] = useState<string | null>(null);
   const statistics = useQuery(
     api.events.queries.getEventStatistics,
     currentUser ? { eventId } : "skip"
@@ -759,22 +761,56 @@ export default function EventDashboardPage() {
                           ${(order.totalCents / 100).toFixed(2)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                              order.status === "COMPLETED"
-                                ? "bg-success/10 text-success"
-                                : order.status === "PENDING"
-                                  ? "bg-warning/10 text-warning"
-                                  : order.status === "FAILED"
-                                    ? "bg-destructive/10 text-destructive"
-                                    : "bg-muted text-foreground"
-                            }`}
-                          >
-                            {order.status === "COMPLETED" && <CheckCircle2 className="w-3 h-3" />}
-                            {order.status === "PENDING" && <Clock className="w-3 h-3" />}
-                            {order.status === "FAILED" && <XCircle className="w-3 h-3" />}
-                            {order.status}
-                          </span>
+                          {/* Show dropdown for PENDING_PAYMENT (cash) orders, badge for others */}
+                          {order.status === "PENDING_PAYMENT" ? (
+                            <div className="flex items-center gap-2">
+                              <select
+                                value={order.status}
+                                onChange={async (e) => {
+                                  if (e.target.value === "COMPLETED") {
+                                    setApprovingOrderId(order._id);
+                                    try {
+                                      await approveCashOrder({ orderId: order._id as Id<"orders"> });
+                                      // Order list will auto-refresh via Convex reactivity
+                                    } catch (error: any) {
+                                      console.error("Failed to approve order:", error);
+                                      alert(error.message || "Failed to approve order");
+                                    } finally {
+                                      setApprovingOrderId(null);
+                                    }
+                                  }
+                                }}
+                                disabled={approvingOrderId === order._id}
+                                className="text-xs px-2 py-1 rounded border border-warning bg-warning/10 text-warning font-medium cursor-pointer hover:bg-warning/20 focus:outline-none focus:ring-2 focus:ring-warning/50"
+                              >
+                                <option value="PENDING_PAYMENT">⏳ Pending Cash</option>
+                                <option value="COMPLETED">✓ Approve Payment</option>
+                              </select>
+                              {approvingOrderId === order._id && (
+                                <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
+                              )}
+                            </div>
+                          ) : (
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                                order.status === "COMPLETED"
+                                  ? "bg-success/10 text-success"
+                                  : order.status === "PENDING"
+                                    ? "bg-warning/10 text-warning"
+                                    : order.status === "FAILED"
+                                      ? "bg-destructive/10 text-destructive"
+                                      : order.status === "CANCELLED"
+                                        ? "bg-muted text-muted-foreground"
+                                        : "bg-muted text-foreground"
+                              }`}
+                            >
+                              {order.status === "COMPLETED" && <CheckCircle2 className="w-3 h-3" />}
+                              {order.status === "PENDING" && <Clock className="w-3 h-3" />}
+                              {order.status === "FAILED" && <XCircle className="w-3 h-3" />}
+                              {order.status === "CANCELLED" && <XCircle className="w-3 h-3" />}
+                              {order.status}
+                            </span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                           {format(new Date(order.createdAt), "MMM d, yyyy h:mm a")}
