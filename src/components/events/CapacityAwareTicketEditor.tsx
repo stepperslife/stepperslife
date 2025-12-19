@@ -25,6 +25,7 @@ interface CapacityAwareTicketEditorProps {
   onChange: (tiers: TicketTier[]) => void;
   sold?: number;
   showPresets?: boolean;
+  hideAddButton?: boolean;
 }
 
 export function CapacityAwareTicketEditor({
@@ -33,6 +34,7 @@ export function CapacityAwareTicketEditor({
   onChange,
   sold = 0,
   showPresets = true,
+  hideAddButton = false,
 }: CapacityAwareTicketEditorProps) {
   const [expandedTiers, setExpandedTiers] = useState<Set<string>>(new Set());
 
@@ -397,14 +399,16 @@ export function CapacityAwareTicketEditor({
       </div>
 
       {/* Add Tier Button */}
-      <button
-        type="button"
-        onClick={addTier}
-        className="w-full py-3 border-2 border-dashed border dark:border rounded-lg hover:border-primary hover:bg-accent transition-colors flex items-center justify-center gap-2 text-muted-foreground dark:text-muted-foreground hover:text-primary font-medium"
-      >
-        <Plus className="w-5 h-5" />
-        Add Ticket Tier
-      </button>
+      {!hideAddButton && (
+        <button
+          type="button"
+          onClick={addTier}
+          className="w-full py-3 border-2 border-dashed border dark:border rounded-lg hover:border-primary hover:bg-accent transition-colors flex items-center justify-center gap-2 text-muted-foreground dark:text-muted-foreground hover:text-primary font-medium"
+        >
+          <Plus className="w-5 h-5" />
+          Add Ticket Tier
+        </button>
+      )}
     </div>
   );
 }

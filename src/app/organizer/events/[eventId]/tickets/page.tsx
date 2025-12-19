@@ -515,6 +515,7 @@ export default function TicketTiersPage() {
                 tiers={editTierData}
                 onChange={setEditTierData}
                 showPresets={false}
+                hideAddButton={true}
               />
             </div>
 
