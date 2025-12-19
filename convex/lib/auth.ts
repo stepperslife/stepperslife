@@ -21,6 +21,8 @@ export const isTestingModeAllowed = (): boolean => {
 export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
   const identity = await ctx.auth.getUserIdentity();
 
+  console.log("[getCurrentUser] Identity:", identity ? JSON.stringify(identity) : "null");
+
   if (!identity) {
     // TESTING MODE: Only allow in non-production environments
     if (isTestingModeAllowed()) {
@@ -36,12 +38,14 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
     }
 
     // In production or if test user not found, require authentication
+    console.error("[getCurrentUser] No identity found - user not authenticated");
     throw new Error("Not authenticated");
   }
 
   // Extract email from identity
   // Convex auth identity can have different structures depending on the provider
-  const email = identity.email || identity.tokenIdentifier?.split("|")[1];
+  // The email is passed as a custom claim in the JWT
+  const email = identity.email || (identity as any).tokenIdentifier?.split("|").pop();
 
   if (!email || typeof email !== "string") {
     throw new Error("No email found in authentication token");
