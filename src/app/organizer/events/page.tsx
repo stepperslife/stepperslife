@@ -23,6 +23,7 @@ import {
   BarChart3,
   Eye,
   EyeOff,
+  Copy,
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -49,6 +50,7 @@ export default function OrganizerEventsPage() {
   const bulkDeleteEvents = useMutation(api.events.mutations.bulkDeleteEvents);
   const publishEvent = useMutation(api.events.mutations.publishEvent);
   const unpublishEvent = useMutation(api.events.mutations.updateEvent);
+  const duplicateEvent = useMutation(api.events.mutations.duplicateEvent);
 
   // Helper: Check if event needs tickets
   const needsTickets = (event: any) => {
@@ -67,6 +69,17 @@ export default function OrganizerEventsPage() {
     failedCount: number;
     failedEvents: Array<{ eventId: string; reason: string }>;
   } | null>(null);
+
+  // Duplicate event state
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [duplicatingEventId, setDuplicatingEventId] = useState<Id<"events"> | null>(null);
+  const [duplicateOptions, setDuplicateOptions] = useState({
+    newName: "",
+    copyTickets: true,
+    copySeating: true,
+    copyStaff: true,
+  });
+  const [isDuplicating, setIsDuplicating] = useState(false);
 
   // Show loading while Convex queries are loading
   // Layout already handles auth protection via REST API
@@ -221,6 +234,47 @@ export default function OrganizerEventsPage() {
       alert(`Error deleting events: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  // Handle opening duplicate dialog
+  const handleOpenDuplicate = (eventId: Id<"events">, eventName: string) => {
+    setDuplicatingEventId(eventId);
+    setDuplicateOptions({
+      newName: `${eventName} (Copy)`,
+      copyTickets: true,
+      copySeating: true,
+      copyStaff: true,
+    });
+    setShowDuplicateDialog(true);
+  };
+
+  // Handle duplicate event
+  const handleDuplicateEvent = async () => {
+    if (!duplicatingEventId) return;
+
+    setIsDuplicating(true);
+    try {
+      const result = await duplicateEvent({
+        eventId: duplicatingEventId,
+        options: {
+          newName: duplicateOptions.newName || undefined,
+          copyTickets: duplicateOptions.copyTickets,
+          copySeating: duplicateOptions.copySeating,
+          copyStaff: duplicateOptions.copyStaff,
+        },
+      });
+
+      setShowDuplicateDialog(false);
+      setDuplicatingEventId(null);
+
+      // Navigate to the new event
+      router.push(`/organizer/events/${result.newEventId}/edit`);
+    } catch (error) {
+      console.error("Error duplicating event:", error);
+      alert(`Error duplicating event: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setIsDuplicating(false);
     }
   };
 
@@ -742,6 +796,16 @@ export default function OrganizerEventsPage() {
                           View Public
                         </Link>
 
+                        {/* Duplicate Event Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenDuplicate(event._id, event.name)}
+                          className="flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-primary/30 bg-primary/5 text-primary rounded-lg hover:bg-primary/10 transition-colors flex-1 sm:flex-none"
+                        >
+                          <Copy className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                          <span>Duplicate</span>
+                        </button>
+
                         {/* Setup Payment - Prominent if needed */}
                         {!event.paymentModelSelected && event.eventType === "TICKETED_EVENT" && (
                           <Link
@@ -850,6 +914,126 @@ export default function OrganizerEventsPage() {
                     <>
                       <Trash2 className="w-4 h-4" />
                       Delete {selectedEvents.size} Event{selectedEvents.size !== 1 ? "s" : ""}
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Duplicate Event Dialog */}
+        {showDuplicateDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Copy className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-foreground mb-2">Duplicate Event</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Create a copy of this event with all its configurations.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    New Event Name
+                  </label>
+                  <input
+                    type="text"
+                    value={duplicateOptions.newName}
+                    onChange={(e) =>
+                      setDuplicateOptions({ ...duplicateOptions, newName: e.target.value })
+                    }
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    placeholder="Event name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    What to Copy
+                  </label>
+                  <label className="flex items-center gap-3 p-3 bg-muted rounded-lg cursor-pointer hover:bg-muted/80">
+                    <input
+                      type="checkbox"
+                      checked={duplicateOptions.copyTickets}
+                      onChange={(e) =>
+                        setDuplicateOptions({ ...duplicateOptions, copyTickets: e.target.checked })
+                      }
+                      className="w-4 h-4 text-primary rounded focus:ring-primary"
+                    />
+                    <div>
+                      <span className="font-medium text-foreground">Ticket Tiers</span>
+                      <p className="text-xs text-muted-foreground">Copy all ticket types and pricing</p>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 bg-muted rounded-lg cursor-pointer hover:bg-muted/80">
+                    <input
+                      type="checkbox"
+                      checked={duplicateOptions.copySeating}
+                      onChange={(e) =>
+                        setDuplicateOptions({ ...duplicateOptions, copySeating: e.target.checked })
+                      }
+                      className="w-4 h-4 text-primary rounded focus:ring-primary"
+                    />
+                    <div>
+                      <span className="font-medium text-foreground">Seating Chart</span>
+                      <p className="text-xs text-muted-foreground">Copy seating layout configuration</p>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 bg-muted rounded-lg cursor-pointer hover:bg-muted/80">
+                    <input
+                      type="checkbox"
+                      checked={duplicateOptions.copyStaff}
+                      onChange={(e) =>
+                        setDuplicateOptions({ ...duplicateOptions, copyStaff: e.target.checked })
+                      }
+                      className="w-4 h-4 text-primary rounded focus:ring-primary"
+                    />
+                    <div>
+                      <span className="font-medium text-foreground">Staff Members</span>
+                      <p className="text-xs text-muted-foreground">Copy team and seller assignments</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDuplicateDialog(false);
+                    setDuplicatingEventId(null);
+                  }}
+                  disabled={isDuplicating}
+                  className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDuplicateEvent}
+                  disabled={isDuplicating}
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isDuplicating ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      Duplicating...
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      Duplicate Event
                     </>
                   )}
                 </button>

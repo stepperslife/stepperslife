@@ -15,6 +15,7 @@ import {
   Users,
   Calendar,
   Info,
+  Copy,
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -35,6 +36,12 @@ export default function TicketTiersPage() {
   const [showEditTier, setShowEditTier] = useState(false);
   const [showCongratsModal, setShowCongratsModal] = useState(false);
 
+  // Duplicate tier state
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [duplicatingTierId, setDuplicatingTierId] = useState<Id<"ticketTiers"> | null>(null);
+  const [duplicateNewName, setDuplicateNewName] = useState("");
+  const [isDuplicating, setIsDuplicating] = useState(false);
+
   // Form state - now using CapacityAwareTicketEditor format
   const [newTiers, setNewTiers] = useState<EditorTicketTier[]>([]);
   const [editTierData, setEditTierData] = useState<EditorTicketTier[]>([]);
@@ -52,6 +59,7 @@ export default function TicketTiersPage() {
   const createTier = useMutation(api.tickets.mutations.createTicketTier);
   const updateTier = useMutation(api.tickets.mutations.updateTicketTier);
   const deleteTier = useMutation(api.tickets.mutations.deleteTicketTier);
+  const duplicateTier = useMutation(api.tickets.mutations.duplicateTicketTier);
   const markPopupShown = useMutation(api.users.mutations.markFirstEventTicketPopupShown);
 
   // Show congratulations popup for first event
@@ -225,6 +233,36 @@ export default function TicketTiersPage() {
     } catch (error: any) {
       console.error("Delete tier error:", error);
       alert(error.message || "Failed to delete ticket tier");
+    }
+  };
+
+  // Handle opening duplicate dialog
+  const handleOpenDuplicate = (tierId: Id<"ticketTiers">, tierName: string) => {
+    setDuplicatingTierId(tierId);
+    setDuplicateNewName(`${tierName} (Copy)`);
+    setShowDuplicateDialog(true);
+  };
+
+  // Handle duplicate tier
+  const handleDuplicateTier = async () => {
+    if (!duplicatingTierId) return;
+
+    setIsDuplicating(true);
+    try {
+      await duplicateTier({
+        tierId: duplicatingTierId,
+        newName: duplicateNewName || undefined,
+      });
+
+      setShowDuplicateDialog(false);
+      setDuplicatingTierId(null);
+      setDuplicateNewName("");
+      alert("Ticket tier duplicated successfully!");
+    } catch (error: any) {
+      console.error("Duplicate tier error:", error);
+      alert(error.message || "Failed to duplicate ticket tier");
+    } finally {
+      setIsDuplicating(false);
     }
   };
 
@@ -440,6 +478,13 @@ export default function TicketTiersPage() {
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
+                        onClick={() => handleOpenDuplicate(tier._id, tier.name)}
+                        className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                        title="Duplicate tier"
+                      >
+                        <Copy className="w-5 h-5" />
+                      </button>
+                      <button
                         onClick={() => handleDeleteTier(tier._id)}
                         className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg transition-colors"
                         title="Delete tier"
@@ -535,6 +580,76 @@ export default function TicketTiersPage() {
                 className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold"
               >
                 Update Ticket Tier
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Duplicate Ticket Tier Dialog */}
+      {showDuplicateDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-card dark:bg-card rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <Copy className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-foreground dark:text-white mb-2">
+                  Duplicate Ticket Tier
+                </h3>
+                <p className="text-muted-foreground dark:text-muted-foreground text-sm">
+                  Create a copy of this ticket tier with the same settings.
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-foreground dark:text-white mb-1">
+                New Tier Name
+              </label>
+              <input
+                type="text"
+                value={duplicateNewName}
+                onChange={(e) => setDuplicateNewName(e.target.value)}
+                className="w-full px-4 py-2 border border-border dark:border rounded-lg bg-background dark:bg-background text-foreground dark:text-white focus:ring-2 focus:ring-primary focus:border-primary"
+                placeholder="Tier name"
+              />
+              <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-2">
+                The new tier will have 0 tickets sold and the same price/quantity as the original.
+              </p>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDuplicateDialog(false);
+                  setDuplicatingTierId(null);
+                  setDuplicateNewName("");
+                }}
+                disabled={isDuplicating}
+                className="px-4 py-2 border border-border dark:border text-foreground dark:text-muted-foreground rounded-lg hover:bg-muted dark:hover:bg-background transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDuplicateTier}
+                disabled={isDuplicating}
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {isDuplicating ? (
+                  <>
+                    <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                    Duplicating...
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    Duplicate Tier
+                  </>
+                )}
               </button>
             </div>
           </div>
