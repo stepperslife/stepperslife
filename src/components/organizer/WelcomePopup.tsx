@@ -1,8 +1,8 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Gift, Sparkles, Ticket, DollarSign } from "lucide-react";
+import { Check } from "lucide-react";
 
 interface WelcomePopupProps {
   open: boolean;
@@ -11,69 +11,43 @@ interface WelcomePopupProps {
 }
 
 export function WelcomePopup({ open, onClose, creditsRemaining }: WelcomePopupProps) {
-  const creditValue = (creditsRemaining * 0.3).toFixed(2);
-
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold flex items-center justify-center gap-2">
-            <Gift className="w-8 h-8 text-primary animate-bounce" />
-            Welcome to SteppersLife Events!
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+        {/* Header with gradient */}
+        <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 p-8 text-white text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">Welcome to SteppersLife!</h2>
+          <div className="text-5xl md:text-6xl mb-3">🎉</div>
+          <p className="text-lg md:text-xl">
+            You've received <span className="font-bold">{creditsRemaining.toLocaleString()} FREE</span> tickets to get started!
+          </p>
+        </div>
 
-        <div className="space-y-6 py-4">
-          {/* Celebration Banner */}
-          <div className="bg-gradient-to-r from-primary/10 via-blue-50 to-primary/10 rounded-lg p-6 text-center border-2 border-primary/20">
-            <Sparkles className="w-12 h-12 text-primary mx-auto mb-3" />
-            <h3 className="text-3xl font-bold text-primary mb-2">
-              {creditsRemaining.toLocaleString()} FREE Tickets!
-            </h3>
-            <p className="text-sm text-muted-foreground">Worth ${creditValue} to help you get started</p>
-          </div>
-
-          {/* What You Get */}
-          <div className="space-y-3">
-            <h4 className="font-semibold text-foreground flex items-center gap-2">
-              <Ticket className="w-5 h-5 text-primary" />
-              Here's what you can do:
-            </h4>
-            <ul className="space-y-2 text-sm text-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold mt-0.5">•</span>
-                <span>
-                  Create your first event completely <strong>FREE</strong>
-                </span>
+        {/* Content */}
+        <div className="p-6 space-y-5">
+          {/* What you can do */}
+          <div>
+            <h3 className="font-semibold text-foreground mb-3">Here's what you can do:</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3">
+                <div className="w-5 h-5 bg-success/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-3 h-3 text-success" />
+                </div>
+                <span className="text-foreground">Create your first event</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold mt-0.5">•</span>
-                <span>List up to {creditsRemaining.toLocaleString()} tickets at no cost</span>
+              <li className="flex items-start gap-3">
+                <div className="w-5 h-5 bg-success/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-3 h-3 text-success" />
+                </div>
+                <span className="text-foreground">Use {creditsRemaining.toLocaleString()} free tickets - no charges!</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold mt-0.5">•</span>
-                <span>
-                  Collect <strong>100% of ticket sales</strong> revenue
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold mt-0.5">•</span>
-                <span>Try out all our features risk-free</span>
+              <li className="flex items-start gap-3">
+                <div className="w-5 h-5 bg-success/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-3 h-3 text-success" />
+                </div>
+                <span className="text-foreground">After free tickets: <strong>$0.30 per ticket</strong></span>
               </li>
             </ul>
-          </div>
-
-          {/* How Credits Work */}
-          <div className="bg-accent rounded-lg p-4 border border-primary/30">
-            <h4 className="font-semibold text-foreground flex items-center gap-2 mb-2">
-              <DollarSign className="w-5 h-5 text-primary" />
-              How Free Tickets Work:
-            </h4>
-            <p className="text-sm text-foreground leading-relaxed">
-              Your free tickets will be automatically applied when you create an event. Once used,
-              you can purchase more tickets at just <strong>$0.30 each</strong> to continue hosting
-              events with zero transaction fees.
-            </p>
           </div>
 
           {/* CTA Button */}
@@ -81,12 +55,8 @@ export function WelcomePopup({ open, onClose, creditsRemaining }: WelcomePopupPr
             onClick={onClose}
             className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-6 text-lg"
           >
-            Get Started - Create My Event
+            Get Started
           </Button>
-
-          <p className="text-xs text-center text-muted-foreground">
-            Your free tickets never expire and are ready to use anytime!
-          </p>
         </div>
       </DialogContent>
     </Dialog>

@@ -15,8 +15,6 @@ import {
   Package,
   Trash2,
   Gift,
-  Sparkles,
-  X,
   Edit,
   TrendingUp,
   Check,
@@ -29,8 +27,9 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Id } from "@/convex/_generated/dataModel";
+import { WelcomePopup } from "@/components/organizer/WelcomePopup";
 
 export default function OrganizerEventsPage() {
   const router = useRouter();
@@ -51,6 +50,7 @@ export default function OrganizerEventsPage() {
   const publishEvent = useMutation(api.events.mutations.publishEvent);
   const unpublishEvent = useMutation(api.events.mutations.updateEvent);
   const duplicateEvent = useMutation(api.events.mutations.duplicateEvent);
+  const markWelcomePopupShown = useMutation(api.users.mutations.markWelcomePopupShown);
 
   // Helper: Check if event needs tickets
   const needsTickets = (event: any) => {
@@ -63,7 +63,7 @@ export default function OrganizerEventsPage() {
   const [selectedEvents, setSelectedEvents] = useState<Set<Id<"events">>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showWelcomeBanner, setShowWelcomeBanner] = useState(true);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [deleteResult, setDeleteResult] = useState<{
     deletedCount: number;
     failedCount: number;
@@ -80,6 +80,29 @@ export default function OrganizerEventsPage() {
     copyStaff: true,
   });
   const [isDuplicating, setIsDuplicating] = useState(false);
+
+  // Show welcome popup for new organizers who haven't seen it
+  useEffect(() => {
+    if (
+      currentUser &&
+      !currentUser.welcomePopupShown &&
+      credits &&
+      credits.creditsRemaining === 1000 &&
+      credits.creditsUsed === 0
+    ) {
+      setShowWelcomePopup(true);
+    }
+  }, [currentUser, credits]);
+
+  // Handle closing the welcome popup
+  const handleCloseWelcomePopup = async () => {
+    setShowWelcomePopup(false);
+    try {
+      await markWelcomePopupShown({});
+    } catch (error) {
+      console.error("Failed to mark welcome popup as shown:", error);
+    }
+  };
 
   // Show loading while Convex queries are loading
   // Layout already handles auth protection via REST API
@@ -343,53 +366,36 @@ export default function OrganizerEventsPage() {
 
       {/* Main Content - Mobile Optimized */}
       <main className="container mx-auto px-4 py-4 md:py-8">
-        {/* Welcome Banner for New Organizers - Mobile Optimized */}
-        {effectiveCredits &&
+        {/* Welcome Popup Modal for First-Time Organizers */}
+        <WelcomePopup
+          open={showWelcomePopup}
+          onClose={handleCloseWelcomePopup}
+          creditsRemaining={effectiveCredits?.creditsRemaining || 1000}
+        />
+
+        {/* Small Reminder Badge - Shows after popup was dismissed */}
+        {currentUser?.welcomePopupShown &&
+          effectiveCredits &&
           effectiveCredits.creditsRemaining === 1000 &&
-          effectiveCredits.creditsUsed === 0 &&
-          showWelcomeBanner && (
+          effectiveCredits.creditsUsed === 0 && (
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               className="mb-4 md:mb-6"
             >
-              <div className="bg-accent border-2 border-primary rounded-lg p-4 md:p-6 shadow-lg">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3 flex-1">
-                    <div className="w-10 h-10 md:w-14 md:h-14 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="w-5 h-5 md:w-8 md:h-8 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg md:text-2xl font-bold text-foreground mb-1 md:mb-2 flex items-center gap-1 md:gap-2">
-                        <span className="truncate">Welcome to SteppersLife!</span>
-                        <span className="text-lg md:text-2xl">🎉</span>
-                      </h3>
-                      <p className="text-sm md:text-lg text-foreground mb-2 md:mb-3">
-                        You've received{" "}
-                        <span className="font-bold text-primary">1,000 FREE tickets</span> to get
-                        started!
-                      </p>
-                      <div className="bg-white/70 rounded-lg p-3 md:p-4 border border-primary/20">
-                        <p className="text-xs md:text-sm text-muted-foreground mb-1.5 md:mb-2">
-                          <strong>Here's what you can do:</strong>
-                        </p>
-                        <ul className="text-xs md:text-sm text-foreground space-y-0.5 md:space-y-1 list-disc list-inside">
-                          <li>Create your first event</li>
-                          <li>Use 1,000 free tickets - no charges!</li>
-                          <li>After free tickets: $0.30 per ticket</li>
-                        </ul>
-                      </div>
-                    </div>
+              <div className="bg-gradient-to-r from-primary/10 via-accent to-primary/10 border border-primary/30 rounded-lg p-3 md:p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                    <Gift className="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowWelcomeBanner(false)}
-                    className="text-muted-foreground hover:text-muted-foreground transition-colors flex-shrink-0 p-1"
-                    aria-label="Close welcome banner"
-                  >
-                    <X className="w-4 h-4 md:w-5 md:h-5" />
-                  </button>
+                  <div className="flex-1">
+                    <p className="text-sm md:text-base font-semibold text-foreground">
+                      🎉 You have <span className="text-primary">1,000 FREE tickets</span> to use!
+                    </p>
+                    <p className="text-xs md:text-sm text-muted-foreground">
+                      Create your first event - no charges until you use them all.
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>
