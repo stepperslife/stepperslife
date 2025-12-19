@@ -374,7 +374,30 @@ test.describe("Restaurant Pricing Page", () => {
 });
 
 test.describe("Apply Page Plan Display", () => {
+  // Helper to login before testing apply page (requires authentication)
+  async function loginFirst(page: Page) {
+    await page.goto(`${BASE_URL}/login`);
+    await waitForPageLoad(page, 5000);
+
+    // Expand password login if collapsed
+    const passwordToggle = page.locator('[data-testid="password-login-toggle"]');
+    if (await passwordToggle.isVisible()) {
+      await passwordToggle.click();
+      await page.waitForTimeout(1000);
+    }
+
+    // Fill credentials using proper selectors
+    const emailInput = page.locator('[data-testid="login-email"], input#email').first();
+    const passwordInput = page.locator('input[type="password"], input#password').first();
+
+    await emailInput.fill("ira@irawatkins.com");
+    await passwordInput.fill("Bobby321!");
+    await page.click('[data-testid="password-login-form"] button[type="submit"], button[type="submit"]');
+    await waitForPageLoad(page, 5000);
+  }
+
   test("Apply page shows selected Starter plan", async ({ page }) => {
+    await loginFirst(page);
     await page.goto(`${BASE_URL}/restaurateur/apply?plan=starter`);
     await waitForPageLoad(page);
 
@@ -385,6 +408,7 @@ test.describe("Apply Page Plan Display", () => {
   });
 
   test("Apply page shows selected Growth plan", async ({ page }) => {
+    await loginFirst(page);
     await page.goto(`${BASE_URL}/restaurateur/apply?plan=growth`);
     await waitForPageLoad(page);
 
@@ -395,6 +419,7 @@ test.describe("Apply Page Plan Display", () => {
   });
 
   test("Apply page shows selected Professional plan", async ({ page }) => {
+    await loginFirst(page);
     await page.goto(`${BASE_URL}/restaurateur/apply?plan=professional`);
     await waitForPageLoad(page);
 
@@ -405,6 +430,7 @@ test.describe("Apply Page Plan Display", () => {
   });
 
   test("Apply page defaults to Starter when no plan specified", async ({ page }) => {
+    await loginFirst(page);
     await page.goto(`${BASE_URL}/restaurateur/apply`);
     await waitForPageLoad(page);
 
