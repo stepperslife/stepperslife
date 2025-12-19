@@ -85,7 +85,10 @@ export const allocateEventTickets = mutation({
           organizerId: user._id,
           paymentModel: "PREPAY",
           ticketsAllocated: args.ticketQuantity,
-          customerPaymentMethods: ["CASH"],
+          // Allow all customer payment methods for PREPAY (organizer receives 100%, no split needed)
+          customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
+          stripeConnectAccountId: user.stripeConnectedAccountId,
+          paypalMerchantId: user.paypalMerchantId,
           isActive: true,
           activatedAt: Date.now(),
           platformFeePercent: 0,
@@ -130,7 +133,10 @@ export const allocateEventTickets = mutation({
         organizerId: user._id,
         paymentModel: "PREPAY",
         ticketsAllocated: args.ticketQuantity,
-        customerPaymentMethods: ["CASH"],
+        // Allow all customer payment methods for PREPAY (organizer receives 100%, no split needed)
+        customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
+        stripeConnectAccountId: user.stripeConnectedAccountId,
+        paypalMerchantId: user.paypalMerchantId,
         isActive: true,
         activatedAt: Date.now(),
         platformFeePercent: 0,
@@ -363,12 +369,14 @@ export const createEventPaymentConfig = mutation({
     }
 
     // Create new config
+    // Note: For admin/migration use, we set all payment methods but organizer accounts may not be connected
     const configId = await ctx.db.insert("eventPaymentConfig", {
       eventId: args.eventId,
       organizerId: args.organizerId,
       paymentModel: args.paymentModel,
       ticketsAllocated: args.ticketsAllocated,
-      customerPaymentMethods: ["CASH"],
+      // Allow all customer payment methods for PREPAY (organizer receives 100%, no split needed)
+      customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
       isActive: true,
       activatedAt: Date.now(),
       platformFeePercent: 0,
@@ -420,13 +428,19 @@ export const confirmEventTicketPurchase = mutation({
       .first();
 
     if (!config) {
+      // Get organizer's payment accounts for the config
+      const organizer = await ctx.db.get(transaction.organizerId);
+
       // Create new config with purchased allocation
       const configId = await ctx.db.insert("eventPaymentConfig", {
         eventId: args.eventId,
         organizerId: transaction.organizerId,
         paymentModel: "PREPAY",
         ticketsAllocated: transaction.ticketsPurchased,
-        customerPaymentMethods: ["CASH"],
+        // Allow all customer payment methods for PREPAY (organizer receives 100%, no split needed)
+        customerPaymentMethods: ["CASH", "STRIPE", "PAYPAL"],
+        stripeConnectAccountId: organizer?.stripeConnectedAccountId,
+        paypalMerchantId: organizer?.paypalMerchantId,
         isActive: true,
         activatedAt: Date.now(),
         platformFeePercent: 0,
