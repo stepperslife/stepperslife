@@ -43,7 +43,7 @@ export default function RestaurateurClient() {
       <RestaurantsSubNav />
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-orange-600 to-red-600">
+        <div className="relative overflow-hidden bg-gradient-to-br from-sky-600 to-primary">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{
               backgroundImage: "url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1600&q=80')",
@@ -129,7 +129,7 @@ export default function RestaurateurClient() {
 
         {/* CTA Section */}
         <div className="container mx-auto px-4 py-16">
-          <div className="bg-gradient-to-br from-orange-600 to-red-600 rounded-3xl p-8 md:p-12 text-center">
+          <div className="bg-gradient-to-br from-sky-600 to-primary rounded-3xl p-8 md:p-12 text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Ready to Grow Your Business?
             </h2>

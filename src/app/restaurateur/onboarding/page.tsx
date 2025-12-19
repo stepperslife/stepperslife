@@ -124,7 +124,7 @@ export default function RestaurantOnboardingPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+      <div className="bg-gradient-to-r from-sky-500 to-primary text-white">
         <div className="max-w-4xl mx-auto px-6 py-12">
           <h1 className="text-3xl font-bold mb-2">
             Welcome to SteppersLife Restaurants!

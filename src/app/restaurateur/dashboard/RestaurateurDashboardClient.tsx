@@ -123,7 +123,7 @@ export default function RestaurateurDashboardClient() {
       <RestaurantsSubNav />
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <div className="bg-gradient-to-br from-orange-600 to-red-600 py-8">
+        <div className="bg-gradient-to-br from-sky-600 to-primary py-8">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">

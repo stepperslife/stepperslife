@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
@@ -25,6 +25,12 @@ export function ImageUpload({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const generateUploadUrl = useMutation(api.upload.generateUploadUrl);
+  const getImageUrl = useMutation(api.upload.getImageUrl);
+
+  // Update preview when currentImageUrl changes
+  useEffect(() => {
+    setPreview(currentImageUrl || null);
+  }, [currentImageUrl]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,12 +75,14 @@ export function ImageUpload({
 
       const { storageId } = await response.json();
 
-      // Get the public URL (Convex returns the storage ID, we need to construct the URL)
-      // The URL format depends on your Convex setup
-      const publicUrl = `${process.env.NEXT_PUBLIC_CONVEX_URL?.replace(".cloud", ".site")}/getImage?storageId=${storageId}`;
+      // Get the public URL for the uploaded image
+      const imageUrl = await getImageUrl({ storageId });
 
-      // For now, just use the storage ID as reference - the actual URL will be fetched when displaying
-      onImageUploaded(storageId);
+      if (imageUrl) {
+        onImageUploaded(imageUrl);
+      } else {
+        throw new Error("Failed to get image URL");
+      }
     } catch (err: any) {
       setError(err.message || "Failed to upload image");
       setPreview(currentImageUrl || null);

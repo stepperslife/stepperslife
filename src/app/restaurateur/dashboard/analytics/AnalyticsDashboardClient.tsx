@@ -142,7 +142,7 @@ export default function AnalyticsDashboardClient() {
       <RestaurantsSubNav />
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <div className="bg-gradient-to-br from-orange-600 to-red-600 py-6">
+        <div className="bg-gradient-to-br from-sky-600 to-primary py-6">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-4">
               <Link
