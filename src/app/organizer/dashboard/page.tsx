@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Calendar,
   TrendingUp,
@@ -239,22 +240,41 @@ export default function OrganizerDashboardPage() {
                     <Link
                       key={event._id}
                       href={`/organizer/events/${event._id}`}
-                      className="block p-4 hover:bg-muted rounded-lg transition-colors border"
+                      className="flex items-center gap-4 p-4 hover:bg-muted rounded-lg transition-colors border"
                     >
-                      <h3 className="font-semibold text-foreground mb-1">{event.name}</h3>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        {event.startDate && (
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            {formatEventDate(event.startDate, event.timezone)}
-                          </span>
+                      {/* Thumbnail */}
+                      <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                        {event.imageUrl ? (
+                          <Image
+                            src={event.imageUrl}
+                            alt={event.name}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-accent">
+                            <Calendar className="w-6 h-6 text-muted-foreground" />
+                          </div>
                         )}
-                        {event.totalTickets && (
-                          <span className="flex items-center gap-1">
-                            <Ticket className="w-4 h-4" />
-                            {event.ticketsSold || 0}/{event.totalTickets} sold
-                          </span>
-                        )}
+                      </div>
+                      {/* Event Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-foreground mb-1 truncate">{event.name}</h3>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          {event.startDate && (
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              {formatEventDate(event.startDate, event.timezone)}
+                            </span>
+                          )}
+                          {event.totalTickets && (
+                            <span className="flex items-center gap-1">
+                              <Ticket className="w-4 h-4" />
+                              {event.ticketsSold || 0}/{event.totalTickets} sold
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </Link>
                   ))}
@@ -296,26 +316,43 @@ export default function OrganizerDashboardPage() {
                     <Link
                       key={event._id}
                       href={`/organizer/events/${event._id}`}
-                      className="block p-4 hover:bg-muted rounded-lg transition-colors border"
+                      className="flex items-center gap-4 p-4 hover:bg-muted rounded-lg transition-colors border"
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-foreground mb-1">{event.name}</h3>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            {event.ticketTierCount !== undefined && (
-                              <span className="flex items-center gap-1">
-                                <Ticket className="w-4 h-4" />
-                                {event.ticketTierCount} tiers
-                              </span>
-                            )}
-                            {event.totalTickets && <span>{event.totalTickets} tickets</span>}
+                      {/* Thumbnail */}
+                      <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                        {event.imageUrl ? (
+                          <Image
+                            src={event.imageUrl}
+                            alt={event.name}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-accent">
+                            <Calendar className="w-6 h-6 text-muted-foreground" />
                           </div>
-                        </div>
-                        {event.startDate && event.startDate > Date.now() && (
-                          <span className="px-2 py-1 text-xs font-semibold bg-success/10 text-success rounded-full">
-                            Upcoming
-                          </span>
                         )}
+                      </div>
+                      {/* Event Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-foreground mb-1 truncate">{event.name}</h3>
+                          {event.startDate && event.startDate > Date.now() && (
+                            <span className="px-2 py-1 text-xs font-semibold bg-success/10 text-success rounded-full flex-shrink-0">
+                              Upcoming
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                          {event.ticketTierCount !== undefined && (
+                            <span className="flex items-center gap-1">
+                              <Ticket className="w-4 h-4" />
+                              {event.ticketTierCount} tiers
+                            </span>
+                          )}
+                          {event.totalTickets && <span>{event.totalTickets} tickets</span>}
+                        </div>
                       </div>
                     </Link>
                   ))}
