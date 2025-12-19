@@ -67,9 +67,9 @@ const nextConfig = {
           },
         ],
       },
-      // Security headers for all other routes
+      // Security headers for all other routes (excluding scanner routes)
       {
-        source: '/(.*)',
+        source: '/:path((?!staff/scan-tickets|scan/).*)',
         headers: [
           {
             key: 'X-Frame-Options',
