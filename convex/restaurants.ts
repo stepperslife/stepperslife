@@ -570,3 +570,22 @@ export const createInternal = internalMutation({
     });
   },
 });
+
+/**
+ * Internal mutation to update restaurant fields (bypasses auth)
+ */
+export const updateInternal = internalMutation({
+  args: {
+    id: v.id("restaurants"),
+    coverImageUrl: v.optional(v.string()),
+    logoUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+    await ctx.db.patch(id, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+    return { success: true };
+  },
+});

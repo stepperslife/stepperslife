@@ -23,9 +23,9 @@ export default function FavoritesPage() {
       <>
         <PublicHeader />
         <RestaurantsSubNav />
-        <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
           <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-orange-600 mx-auto mb-4" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
             <p className="text-muted-foreground dark:text-muted-foreground">Loading...</p>
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function FavoritesPage() {
       <>
         <PublicHeader />
         <RestaurantsSubNav />
-        <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white dark:from-gray-900 dark:to-gray-800">
+        <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white dark:from-gray-900 dark:to-gray-800">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto text-center">
               <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
@@ -50,7 +50,7 @@ export default function FavoritesPage() {
               <p className="text-muted-foreground dark:text-muted-foreground mb-6">
                 Create an account or sign in to save your favorite restaurants for quick access.
               </p>
-              <Button asChild className="bg-orange-600 hover:bg-orange-700">
+              <Button asChild className="bg-primary hover:bg-primary/90">
                 <Link href="/login">Sign In</Link>
               </Button>
             </div>
@@ -65,7 +65,7 @@ export default function FavoritesPage() {
     <>
       <PublicHeader />
       <RestaurantsSubNav />
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white dark:from-gray-900 dark:to-gray-800">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
@@ -83,11 +83,11 @@ export default function FavoritesPage() {
           {/* Favorites Grid */}
           {favorites === undefined ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : favorites.length === 0 ? (
             <div className="text-center py-16">
-              <div className="inline-block p-8 bg-orange-50 dark:bg-orange-900/20 rounded-3xl">
+              <div className="inline-block p-8 bg-sky-50 dark:bg-sky-900/20 rounded-3xl">
                 <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
                 <h2 className="text-xl font-bold text-foreground dark:text-white mb-2">
                   No favorites yet
@@ -95,7 +95,7 @@ export default function FavoritesPage() {
                 <p className="text-muted-foreground dark:text-muted-foreground mb-6 max-w-md">
                   Click the heart icon on any restaurant to save it to your favorites for quick access.
                 </p>
-                <Button asChild className="bg-orange-600 hover:bg-orange-700">
+                <Button asChild className="bg-primary hover:bg-primary/90">
                   <Link href="/restaurants">Browse Restaurants</Link>
                 </Button>
               </div>

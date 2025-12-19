@@ -50,7 +50,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
           />
         ) : null}
         <div
-          className="w-full h-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center"
+          className="w-full h-full bg-gradient-to-br from-primary to-sky-600 flex items-center justify-center"
           style={{ display: restaurant.coverImageUrl ? 'none' : 'flex' }}
         >
           <Utensils className="h-16 w-16 text-white opacity-50" />
@@ -103,7 +103,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
         )}
 
         {restaurant.cuisine && restaurant.cuisine.length > 0 && (
-          <p className="text-sm text-orange-600 dark:text-orange-400 mb-3">
+          <p className="text-sm text-primary dark:text-sky-400 mb-3">
             {restaurant.cuisine.join(" • ")}
           </p>
         )}
