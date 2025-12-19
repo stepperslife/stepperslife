@@ -203,6 +203,7 @@ export const create = internalMutation({
     pickupTime: v.optional(v.number()),
     specialInstructions: v.optional(v.string()),
     paymentMethod: v.optional(v.string()),
+    paymentStatus: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<{
     orderId: Id<"foodOrders">;
@@ -278,7 +279,7 @@ export const create = internalMutation({
       ...args,
       orderNumber,
       status: "PENDING",
-      paymentStatus: "pending",
+      paymentStatus: args.paymentStatus || "pending",
       placedAt: now,
     });
 
@@ -315,6 +316,7 @@ export const createWithNotification = action({
     pickupTime: v.optional(v.number()),
     specialInstructions: v.optional(v.string()),
     paymentMethod: v.optional(v.string()),
+    paymentStatus: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<{
     orderId: Id<"foodOrders">;
@@ -584,26 +586,51 @@ export const linkOrphanedOrders = internalMutation({
 // Update payment status (requires MANAGER role or higher)
 export const updatePaymentStatus = mutation({
   args: {
-    id: v.id("foodOrders"),
+    orderId: v.id("foodOrders"),
     paymentStatus: v.string(),
     paymentMethod: v.optional(v.string()),
+    stripePaymentIntentId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // Validate payment status
     validatePaymentStatus(args.paymentStatus);
 
     // Get the order
-    const order = await ctx.db.get(args.id);
+    const order = await ctx.db.get(args.orderId);
     if (!order) {
       throw new Error("Order not found");
     }
 
-    // Verify user has at least MANAGER role for this restaurant
+    // Get current user - allow customer who placed the order to update payment
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity) {
+      // If user is the customer who placed the order, allow update
+      const user = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), identity.email))
+        .first();
+
+      if (user && order.customerId && order.customerId === user._id) {
+        // Customer can update their own order's payment status
+        const updateData: Record<string, any> = {
+          paymentStatus: args.paymentStatus,
+        };
+        if (args.paymentMethod) updateData.paymentMethod = args.paymentMethod;
+        if (args.stripePaymentIntentId) updateData.stripePaymentIntentId = args.stripePaymentIntentId;
+
+        return await ctx.db.patch(args.orderId, updateData);
+      }
+    }
+
+    // Otherwise require MANAGER role
     await requireRestaurantRole(ctx, order.restaurantId, "RESTAURANT_MANAGER");
 
-    return await ctx.db.patch(args.id, {
+    const updateData: Record<string, any> = {
       paymentStatus: args.paymentStatus,
-      paymentMethod: args.paymentMethod,
-    });
+    };
+    if (args.paymentMethod) updateData.paymentMethod = args.paymentMethod;
+    if (args.stripePaymentIntentId) updateData.stripePaymentIntentId = args.stripePaymentIntentId;
+
+    return await ctx.db.patch(args.orderId, updateData);
   },
 });

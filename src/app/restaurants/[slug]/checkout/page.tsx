@@ -1,22 +1,25 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useQuery, useAction } from "convex/react";
+import { useQuery, useAction, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/useAuth";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import { ArrowLeft, Clock, MapPin, CreditCard, Loader2, Calendar, LogIn } from "lucide-react";
+import { ArrowLeft, Clock, MapPin, CreditCard, Loader2, Calendar, LogIn, Wallet, DollarSign, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 import { useFoodCart } from "@/contexts/FoodCartContext";
+import { FoodOrderStripeCheckout } from "@/components/checkout/FoodOrderStripeCheckout";
 
 type PickupTimeOption = {
   label: string;
   value: number | "asap";
 };
+
+type PaymentMethod = "card" | "pay_at_pickup";
 
 // Validation patterns
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,6 +32,7 @@ export default function RestaurantCheckoutPage() {
 
   const restaurant = useQuery(api.restaurants.getBySlug, { slug });
   const createOrder = useAction(api.foodOrders.createWithNotification);
+  const updateOrderPayment = useMutation(api.foodOrders.updatePaymentStatus);
   const { user } = useAuth();
   const { cart, clearCart } = useFoodCart();
 
@@ -43,6 +47,18 @@ export default function RestaurantCheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [pickupTimeOption, setPickupTimeOption] = useState<"asap" | number>("asap");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const [checkoutStep, setCheckoutStep] = useState<"details" | "payment">("details");
+  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
+  const [pendingOrderNumber, setPendingOrderNumber] = useState<string | null>(null);
+
+  // Pre-fill user info
+  useEffect(() => {
+    if (user) {
+      if (user.name && !customerName) setCustomerName(user.name);
+      if (user.email && !customerEmail) setCustomerEmail(user.email);
+    }
+  }, [user]);
 
   // Generate pickup time slots
   const pickupTimeOptions = useMemo<PickupTimeOption[]>(() => {
@@ -154,34 +170,93 @@ export default function RestaurantCheckoutPage() {
   const tax = Math.round(subtotal * TAX_RATE);
   const total = subtotal + tax;
 
+  const validateForm = () => {
+    // Validate required fields
+    if (!customerName.trim()) {
+      throw new Error("Please enter your name");
+    }
+
+    // Validate email format
+    const email = customerEmail.trim();
+    if (!email) {
+      throw new Error("Please enter your email address");
+    }
+    if (!EMAIL_REGEX.test(email)) {
+      throw new Error("Please enter a valid email address");
+    }
+
+    // Validate phone format
+    const phone = customerPhone.trim();
+    if (!phone) {
+      throw new Error("Please enter your phone number");
+    }
+    if (!PHONE_REGEX.test(phone)) {
+      throw new Error("Please enter a valid phone number (at least 10 digits)");
+    }
+
+    return { email, phone };
+  };
+
+  const handleProceedToPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      validateForm();
+
+      if (paymentMethod === "card") {
+        // For card payments, create a pending order first
+        setIsSubmitting(true);
+
+        const orderItems = cartItems.map((item) => ({
+          menuItemId: item.menuItemId as Id<"menuItems">,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        }));
+
+        const pickupTime = pickupTimeOption === "asap"
+          ? Date.now() + (restaurant.estimatedPickupTime * 60 * 1000)
+          : pickupTimeOption;
+
+        // Create pending order
+        const result = await createOrder({
+          restaurantId: restaurant._id,
+          customerId: user?._id as Id<"users"> | undefined,
+          customerName: customerName.trim(),
+          customerEmail: customerEmail.trim(),
+          customerPhone: customerPhone.trim(),
+          items: orderItems,
+          subtotal,
+          tax,
+          total,
+          pickupTime,
+          specialInstructions: specialInstructions.trim() || undefined,
+          paymentMethod: "stripe",
+          paymentStatus: "pending",
+        });
+
+        setPendingOrderId(result.orderId);
+        setPendingOrderNumber(result.orderNumber);
+        setCheckoutStep("payment");
+        setIsSubmitting(false);
+      } else {
+        // For pay at pickup, submit directly
+        handleSubmitOrder(e);
+      }
+    } catch (err: any) {
+      setError(err.message || "Please check your information and try again.");
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsSubmitting(true);
 
     try {
-      // Validate required fields
-      if (!customerName.trim()) {
-        throw new Error("Please enter your name");
-      }
-
-      // Validate email format
-      const email = customerEmail.trim();
-      if (!email) {
-        throw new Error("Please enter your email address");
-      }
-      if (!EMAIL_REGEX.test(email)) {
-        throw new Error("Please enter a valid email address");
-      }
-
-      // Validate phone format
-      const phone = customerPhone.trim();
-      if (!phone) {
-        throw new Error("Please enter your phone number");
-      }
-      if (!PHONE_REGEX.test(phone)) {
-        throw new Error("Please enter a valid phone number (at least 10 digits)");
-      }
+      const { email, phone } = validateForm();
 
       // Create order items with proper IDs
       const orderItems = cartItems.map((item) => ({
@@ -236,6 +311,101 @@ export default function RestaurantCheckoutPage() {
     }
   };
 
+  const handlePaymentSuccess = async (result: { paymentIntentId: string }) => {
+    try {
+      // Update order payment status
+      if (pendingOrderId) {
+        await updateOrderPayment({
+          orderId: pendingOrderId as Id<"foodOrders">,
+          paymentStatus: "paid",
+          stripePaymentIntentId: result.paymentIntentId,
+        });
+      }
+
+      // Clear the cart
+      clearCart();
+
+      // Save order number to localStorage
+      if (typeof window !== 'undefined' && pendingOrderNumber) {
+        const recentOrders = JSON.parse(localStorage.getItem('recentFoodOrders') || '[]');
+        recentOrders.unshift({
+          orderNumber: pendingOrderNumber,
+          restaurantName: restaurant.name,
+          orderId: pendingOrderId,
+          placedAt: Date.now(),
+        });
+        localStorage.setItem('recentFoodOrders', JSON.stringify(recentOrders.slice(0, 10)));
+      }
+
+      // Redirect to confirmation page
+      router.push(`/restaurants/${slug}/order-confirmation?orderId=${pendingOrderId}`);
+    } catch (err: any) {
+      console.error("Failed to update payment status:", err);
+      // Still redirect - the payment went through
+      router.push(`/restaurants/${slug}/order-confirmation?orderId=${pendingOrderId}`);
+    }
+  };
+
+  const handlePaymentError = (errorMsg: string) => {
+    setError(errorMsg);
+  };
+
+  const handleBackFromPayment = () => {
+    setCheckoutStep("details");
+    setPendingOrderId(null);
+    setPendingOrderNumber(null);
+  };
+
+  // Payment step view
+  if (checkoutStep === "payment" && pendingOrderId) {
+    return (
+      <>
+        <PublicHeader />
+        <RestaurantsSubNav />
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto px-4 py-8 max-w-xl">
+            <button
+              onClick={handleBackFromPayment}
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to order details
+            </button>
+
+            <h1 className="text-3xl font-bold mb-2">Payment</h1>
+            <p className="text-muted-foreground mb-8">
+              Complete your payment for order #{pendingOrderNumber}
+            </p>
+
+            <div className="bg-card rounded-lg border p-6 mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-lg font-semibold">Order Total</span>
+                <span className="text-2xl font-bold text-primary">${(total / 100).toFixed(2)}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Paying to {restaurant.name}
+              </p>
+            </div>
+
+            <FoodOrderStripeCheckout
+              total={total}
+              orderId={pendingOrderId}
+              orderNumber={pendingOrderNumber || ""}
+              restaurantId={restaurant._id}
+              restaurantName={restaurant.name}
+              customerName={customerName}
+              customerEmail={customerEmail}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentError={handlePaymentError}
+              onBack={handleBackFromPayment}
+            />
+          </div>
+        </div>
+        <PublicFooter />
+      </>
+    );
+  }
+
   return (
     <>
       <PublicHeader />
@@ -259,7 +429,7 @@ export default function RestaurantCheckoutPage() {
           <div className="grid md:grid-cols-2 gap-8">
             {/* Order Form */}
             <div>
-              <form onSubmit={handleSubmitOrder} className="space-y-6">
+              <form onSubmit={paymentMethod === "card" ? handleProceedToPayment : handleSubmitOrder} className="space-y-6">
                 <div className="bg-card rounded-lg border p-6">
                   <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
 
@@ -272,7 +442,7 @@ export default function RestaurantCheckoutPage() {
                         type="text"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
-                        className="w-full px-3 py-2 border rounded-lg bg-background focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
                         placeholder="John Doe"
                         required
                       />
@@ -286,7 +456,7 @@ export default function RestaurantCheckoutPage() {
                         type="email"
                         value={customerEmail}
                         onChange={(e) => setCustomerEmail(e.target.value)}
-                        className="w-full px-3 py-2 border rounded-lg bg-background focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
                         placeholder="john@example.com"
                         required
                       />
@@ -300,7 +470,7 @@ export default function RestaurantCheckoutPage() {
                         type="tel"
                         value={customerPhone}
                         onChange={(e) => setCustomerPhone(e.target.value)}
-                        className="w-full px-3 py-2 border rounded-lg bg-background focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
                         placeholder="(555) 123-4567"
                         required
                       />
@@ -339,7 +509,7 @@ export default function RestaurantCheckoutPage() {
                   <textarea
                     value={specialInstructions}
                     onChange={(e) => setSpecialInstructions(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg bg-background focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
                     placeholder="Any allergies, special requests, or notes for the restaurant..."
                     rows={3}
                   />
@@ -347,14 +517,58 @@ export default function RestaurantCheckoutPage() {
 
                 <div className="bg-card rounded-lg border p-6">
                   <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-                  <div className="flex items-center gap-3 p-4 bg-primary/5 dark:bg-primary/20 border border-primary/30 dark:border-primary/40 rounded-lg">
-                    <CreditCard className="h-5 w-5 text-primary" />
-                    <div>
-                      <p className="font-medium">Pay at Pickup</p>
-                      <p className="text-sm text-muted-foreground">
-                        Pay when you pick up your order
-                      </p>
-                    </div>
+                  <div className="space-y-3">
+                    {/* Card / Cash App Option */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("card")}
+                      className={`w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-colors text-left ${
+                        paymentMethod === "card"
+                          ? "border-primary bg-primary/5 dark:bg-primary/20"
+                          : "border-border hover:border-primary/30"
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        paymentMethod === "card" ? "bg-primary text-white" : "bg-muted"
+                      }`}>
+                        <CreditCard className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">Credit Card / Cash App</p>
+                        <p className="text-sm text-muted-foreground">
+                          Pay securely with card or Cash App
+                        </p>
+                      </div>
+                      {paymentMethod === "card" && (
+                        <CheckCircle className="h-5 w-5 text-primary" />
+                      )}
+                    </button>
+
+                    {/* Pay at Pickup Option */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("pay_at_pickup")}
+                      className={`w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-colors text-left ${
+                        paymentMethod === "pay_at_pickup"
+                          ? "border-primary bg-primary/5 dark:bg-primary/20"
+                          : "border-border hover:border-primary/30"
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        paymentMethod === "pay_at_pickup" ? "bg-primary text-white" : "bg-muted"
+                      }`}>
+                        <DollarSign className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">Pay at Pickup</p>
+                        <p className="text-sm text-muted-foreground">
+                          Pay when you pick up your order
+                        </p>
+                      </div>
+                      {paymentMethod === "pay_at_pickup" && (
+                        <CheckCircle className="h-5 w-5 text-primary" />
+                      )}
+                    </button>
                   </div>
                 </div>
 
@@ -372,8 +586,10 @@ export default function RestaurantCheckoutPage() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="h-5 w-5 animate-spin" />
-                      Placing Order...
+                      Processing...
                     </>
+                  ) : paymentMethod === "card" ? (
+                    `Continue to Payment - $${(total / 100).toFixed(2)}`
                   ) : (
                     `Place Order - $${(total / 100).toFixed(2)}`
                   )}
