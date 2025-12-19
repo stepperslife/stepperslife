@@ -35,6 +35,7 @@ const InteractiveSeatingChart = dynamic(
 import { TierCountdown, TierAvailabilityBadge } from "@/components/events/TierCountdown";
 import {
   ArrowLeft,
+  AlertTriangle,
   CheckCircle2,
   Ticket,
   UserCheck,
@@ -937,21 +938,6 @@ export default function CheckoutPage() {
                 <div className="bg-white rounded-lg shadow-md p-6">
                   <h3 className="font-semibold text-foreground mb-4">Payment Method</h3>
 
-                  {/* Payment Model Info */}
-                  {paymentModel === "PREPAY" ? (
-                    <div className="bg-success/10 border border-success/30 rounded-lg p-4 mb-4">
-                      <div className="flex items-start gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-semibold text-success">No Additional Fees</p>
-                          <p className="text-xs text-success mt-1">
-                            The organizer has prepaid platform fees. You only pay the ticket price!
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-
                   {/* Payment Method Selector - Only show payment methods the organizer has configured */}
                   {!useStripePayment && (hasStripeConfigured || hasPayPalConfigured || hasCashConfigured) && (
                     <div className={`grid gap-3 mb-6 ${
@@ -1072,14 +1058,12 @@ export default function CheckoutPage() {
                     // Cash payment (physical USD, staff validated)
                     <div className="space-y-4">
                       <div className="bg-warning/10 border-2 border-warning/30 rounded-lg p-4">
-                        <h4 className="font-semibold text-foreground mb-2">Cash Payment Instructions</h4>
-                        <ol className="text-sm text-foreground space-y-2 list-decimal list-inside">
-                          <li>Your order will be held for 30 minutes</li>
-                          <li>Bring physical USD cash to the event</li>
-                          <li>Pay the staff member at the door</li>
-                          <li>Staff will validate your payment with their code</li>
-                          <li>Your tickets will be activated immediately</li>
-                        </ol>
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+                          <p className="text-sm text-foreground">
+                            <strong>Important:</strong> Payment must be verified by event staff before your ticket is activated.
+                          </p>
+                        </div>
                       </div>
                       <div className="flex gap-3">
                         <button
