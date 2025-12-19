@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/contexts/CartContext";
-import { ArrowLeft, Package, Loader2, Truck, Store, CheckCircle, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Package, Loader2, Truck, Store, CheckCircle, AlertTriangle, LogIn } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -17,6 +17,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, getSubtotal, clearCart, removeItemByIndex } = useCart();
   const createOrder = useMutation(api.productOrders.mutations.createProductOrder);
+  const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -70,6 +71,57 @@ export default function CheckoutPage() {
   const estimatedShipping = shippingMethod === "DELIVERY" ? 999 : 0; // $9.99 flat rate for now
   const tax = Math.round(subtotal * TAX_RATE);
   const total = subtotal + estimatedShipping + tax;
+
+  // Loading state for user authentication check
+  if (currentUser === undefined) {
+    return (
+      <>
+        <PublicHeader />
+        <MarketplaceSubNav />
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        </div>
+        <PublicFooter />
+      </>
+    );
+  }
+
+  // Require login to checkout
+  if (!currentUser) {
+    const redirectUrl = encodeURIComponent("/marketplace/checkout");
+    return (
+      <>
+        <PublicHeader />
+        <MarketplaceSubNav />
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto px-4 py-16">
+            <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
+              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogIn className="w-8 h-8 text-primary" />
+              </div>
+              <h1 className="text-2xl font-bold text-foreground mb-4">Sign In to Continue</h1>
+              <p className="text-muted-foreground mb-8">
+                Please sign in to complete your purchase.
+              </p>
+              <Link
+                href={`/login?redirect=${redirectUrl}`}
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+              >
+                Sign In
+              </Link>
+              <p className="text-sm text-muted-foreground mt-4">
+                Don't have an account?{" "}
+                <Link href={`/register?redirect=${redirectUrl}`} className="text-primary hover:underline">
+                  Create one
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+        <PublicFooter />
+      </>
+    );
+  }
 
   if (items.length === 0) {
     return (

@@ -13,6 +13,7 @@ import {
   User,
   Mail,
   BookOpen,
+  LogIn,
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -147,7 +148,7 @@ export default function ClassCheckoutPage() {
   };
 
   // Loading state
-  if (isLoading) {
+  if (isLoading || currentUser === undefined) {
     return (
       <>
         <PublicHeader />
@@ -155,6 +156,42 @@ export default function ClassCheckoutPage() {
           <div className="text-center">
             <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             <p className="mt-4 text-muted-foreground">Loading class details...</p>
+          </div>
+        </div>
+        <PublicFooter />
+      </>
+    );
+  }
+
+  // Require login to enroll
+  if (!currentUser) {
+    const redirectUrl = encodeURIComponent(`/classes/${classId}/checkout`);
+    return (
+      <>
+        <PublicHeader />
+        <div className="min-h-screen bg-muted">
+          <div className="container mx-auto px-4 py-16">
+            <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
+              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogIn className="w-8 h-8 text-primary" />
+              </div>
+              <h1 className="text-2xl font-bold text-foreground mb-4">Sign In to Continue</h1>
+              <p className="text-muted-foreground mb-8">
+                Please sign in to enroll in this class.
+              </p>
+              <Link
+                href={`/login?redirect=${redirectUrl}`}
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+              >
+                Sign In
+              </Link>
+              <p className="text-sm text-muted-foreground mt-4">
+                Don't have an account?{" "}
+                <Link href={`/register?redirect=${redirectUrl}`} className="text-primary hover:underline">
+                  Create one
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
         <PublicFooter />

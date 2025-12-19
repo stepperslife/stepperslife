@@ -43,6 +43,7 @@ import {
   Package,
   Zap,
   TrendingDown,
+  LogIn,
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -428,14 +429,43 @@ export default function CheckoutPage() {
     <>
       <PublicHeader />
       {/* Loading State */}
-      {(isLoading || !eventDetails) && (
+      {(isLoading || !eventDetails || currentUser === undefined) && (
         <div className="min-h-screen bg-muted flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>
       )}
 
+      {/* Login Required State */}
+      {!isLoading && eventDetails && currentUser === null && (
+        <div className="min-h-screen bg-muted">
+          <div className="container mx-auto px-4 py-16">
+            <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
+              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogIn className="w-8 h-8 text-primary" />
+              </div>
+              <h1 className="text-2xl font-bold text-foreground mb-4">Sign In to Continue</h1>
+              <p className="text-muted-foreground mb-8">
+                Please sign in to purchase tickets for this event.
+              </p>
+              <Link
+                href={`/login?redirect=${encodeURIComponent(`/events/${eventId}/checkout`)}`}
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+              >
+                Sign In
+              </Link>
+              <p className="text-sm text-muted-foreground mt-4">
+                Don't have an account?{" "}
+                <Link href={`/register?redirect=${encodeURIComponent(`/events/${eventId}/checkout`)}`} className="text-primary hover:underline">
+                  Create one
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Success State */}
-      {!isLoading && eventDetails && isSuccess && (
+      {!isLoading && eventDetails && currentUser && isSuccess && (
         <div className="min-h-screen bg-muted flex items-center justify-center p-4" data-testid="payment-success">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -491,7 +521,7 @@ export default function CheckoutPage() {
       )}
 
       {/* Main Checkout Form */}
-      {!isLoading && eventDetails && !isSuccess && (
+      {!isLoading && eventDetails && currentUser && !isSuccess && (
         <div className="min-h-screen bg-muted">
           {/* Step Indicator - Sticky Header */}
           <div className="bg-card border-b border-border sticky top-0 z-40">
