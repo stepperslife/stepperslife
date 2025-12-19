@@ -473,32 +473,8 @@ export default function ClassesListClient() {
             </motion.div>
           ) : (
             <>
-              {viewMode === "list" ? (
-                /* List View - Image on left */
-                <div data-testid="classes-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {classes.map((classItem) => (
-                    <Link
-                      key={classItem._id}
-                      href={`/classes/${classItem._id}`}
-                      data-testid={`class-card-${classItem._id}`}
-                      className="group block"
-                    >
-                      {classItem.imageUrl ? (
-                        <img
-                          src={classItem.imageUrl}
-                          alt={classItem.name}
-                          className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
-                        />
-                      ) : (
-                        <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-                          <BookOpen className="w-16 h-16 text-white opacity-50" />
-                        </div>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                /* Masonry Image Gallery */
+              {viewMode === "masonry" ? (
+                /* Masonry View - 4 columns stacked */
                 <div data-testid="classes-grid" className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[0, 1, 2, 3].map((columnIndex) => (
                     <div key={columnIndex} className="grid gap-4">
@@ -526,6 +502,54 @@ export default function ClassesListClient() {
                           </div>
                         ))}
                     </div>
+                  ))}
+                </div>
+              ) : viewMode === "list" ? (
+                /* List View - Single column large images */
+                <div data-testid="classes-grid" className="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
+                  {classes.map((classItem) => (
+                    <Link
+                      key={classItem._id}
+                      href={`/classes/${classItem._id}`}
+                      data-testid={`class-card-${classItem._id}`}
+                      className="group block"
+                    >
+                      {classItem.imageUrl ? (
+                        <img
+                          src={classItem.imageUrl}
+                          alt={classItem.name}
+                          className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
+                        />
+                      ) : (
+                        <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                          <BookOpen className="w-16 h-16 text-white opacity-50" />
+                        </div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                /* Default Grid View - 2x3 columns */
+                <div data-testid="classes-grid" className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {classes.map((classItem) => (
+                    <Link
+                      key={classItem._id}
+                      href={`/classes/${classItem._id}`}
+                      data-testid={`class-card-${classItem._id}`}
+                      className="group block"
+                    >
+                      {classItem.imageUrl ? (
+                        <img
+                          src={classItem.imageUrl}
+                          alt={classItem.name}
+                          className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
+                        />
+                      ) : (
+                        <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                          <BookOpen className="w-16 h-16 text-white opacity-50" />
+                        </div>
+                      )}
+                    </Link>
                   ))}
                 </div>
               )}
