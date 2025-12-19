@@ -315,7 +315,6 @@ export const organizerApproveCashOrder = mutation({
     await ctx.db.patch(args.orderId, {
       status: "COMPLETED",
       paidAt: now,
-      approvedBy: user._id, // Track who approved
       updatedAt: now,
     });
 
