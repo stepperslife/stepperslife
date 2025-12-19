@@ -111,6 +111,27 @@ export default function CheckoutPage() {
     }
   }, [searchParams]);
 
+  // Auto-select default payment method based on available options
+  // Priority: Cash (if available) > Card (if Stripe configured) > PayPal (if configured)
+  useEffect(() => {
+    if (paymentConfig === undefined) return; // Still loading
+
+    const hasStripe = !!paymentConfig?.stripeConnectAccountId &&
+      (paymentConfig?.customerPaymentMethods?.includes("STRIPE") ?? false);
+    const hasPayPal = !!paymentConfig?.paypalMerchantId &&
+      (paymentConfig?.customerPaymentMethods?.includes("PAYPAL") ?? false);
+    const hasCash = paymentConfig?.customerPaymentMethods?.includes("CASH") ?? true;
+
+    // Set default to first available method
+    if (hasCash) {
+      setPaymentMethod("cash");
+    } else if (hasStripe) {
+      setPaymentMethod("card");
+    } else if (hasPayPal) {
+      setPaymentMethod("paypal");
+    }
+  }, [paymentConfig]);
+
   // Only require eventDetails to show tickets, not authentication
   const isLoading = eventDetails === undefined;
 
@@ -123,6 +144,15 @@ export default function CheckoutPage() {
   const paymentModel = paymentConfig?.paymentModel || "PREPAY";
   // Only force Stripe if CREDIT_CARD AND Stripe Connect is configured
   const useStripePayment = paymentModel === "CREDIT_CARD" && !!paymentConfig?.stripeConnectAccountId;
+
+  // Determine which payment methods are available based on organizer's configuration
+  // Check both the customerPaymentMethods array AND the presence of account IDs
+  const hasStripeConfigured = !!paymentConfig?.stripeConnectAccountId &&
+    (paymentConfig?.customerPaymentMethods?.includes("STRIPE") ?? false);
+  const hasPayPalConfigured = !!paymentConfig?.paypalMerchantId &&
+    (paymentConfig?.customerPaymentMethods?.includes("PAYPAL") ?? false);
+  // Cash is always available if included in customerPaymentMethods OR if no config exists (fallback)
+  const hasCashConfigured = paymentConfig?.customerPaymentMethods?.includes("CASH") ?? true;
 
   const subtotal =
     purchaseType === "bundle" && selectedBundle
@@ -922,45 +952,58 @@ export default function CheckoutPage() {
                     </div>
                   ) : null}
 
-                  {/* Payment Method Selector - CUSTOMER payment methods only (Stripe/PayPal/Cash) */}
-                  {!useStripePayment && (
-                    <div className="grid grid-cols-3 gap-3 mb-6" data-testid="payment-method-selector">
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("card")}
-                        data-testid="payment-method-card"
-                        className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                          paymentMethod === "card"
-                            ? "border-primary bg-accent text-foreground font-semibold"
-                            : "border hover:border"
-                        }`}
-                      >
-                        Card / Cash App Pay
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("paypal")}
-                        data-testid="payment-method-paypal"
-                        className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                          paymentMethod === "paypal"
-                            ? "border-[#0070BA] bg-info/10 text-[#003087] font-semibold"
-                            : "border hover:border"
-                        }`}
-                      >
-                        PayPal
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("cash")}
-                        data-testid="payment-method-cash"
-                        className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                          paymentMethod === "cash"
-                            ? "border-success bg-success/10 text-success font-semibold"
-                            : "border hover:border"
-                        }`}
-                      >
-                        Cash In-Person
-                      </button>
+                  {/* Payment Method Selector - Only show payment methods the organizer has configured */}
+                  {!useStripePayment && (hasStripeConfigured || hasPayPalConfigured || hasCashConfigured) && (
+                    <div className={`grid gap-3 mb-6 ${
+                      // Dynamic grid columns based on available payment methods
+                      [hasStripeConfigured, hasPayPalConfigured, hasCashConfigured].filter(Boolean).length === 1
+                        ? "grid-cols-1"
+                        : [hasStripeConfigured, hasPayPalConfigured, hasCashConfigured].filter(Boolean).length === 2
+                          ? "grid-cols-2"
+                          : "grid-cols-3"
+                    }`} data-testid="payment-method-selector">
+                      {hasStripeConfigured && (
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod("card")}
+                          data-testid="payment-method-card"
+                          className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                            paymentMethod === "card"
+                              ? "border-primary bg-accent text-foreground font-semibold"
+                              : "border hover:border"
+                          }`}
+                        >
+                          Card / Cash App Pay
+                        </button>
+                      )}
+                      {hasPayPalConfigured && (
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod("paypal")}
+                          data-testid="payment-method-paypal"
+                          className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                            paymentMethod === "paypal"
+                              ? "border-[#0070BA] bg-info/10 text-[#003087] font-semibold"
+                              : "border hover:border"
+                          }`}
+                        >
+                          PayPal
+                        </button>
+                      )}
+                      {hasCashConfigured && (
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod("cash")}
+                          data-testid="payment-method-cash"
+                          className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                            paymentMethod === "cash"
+                              ? "border-success bg-success/10 text-success font-semibold"
+                              : "border hover:border"
+                          }`}
+                        >
+                          Cash In-Person
+                        </button>
+                      )}
                     </div>
                   )}
 
