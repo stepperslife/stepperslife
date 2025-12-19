@@ -70,6 +70,8 @@ export async function POST(request: NextRequest) {
 
     // Determine which connected account to use
     let stripeAccountId = connectedAccountId;
+    let organizerId: string | undefined;
+    let settlementAmount = 0;
 
     // If eventId provided, fetch payment config from Convex
     if (eventId && !connectedAccountId) {
@@ -93,6 +95,31 @@ export async function POST(request: NextRequest) {
         }
 
         stripeAccountId = paymentConfig.stripeConnectAccountId;
+
+        // Get organizer ID for debt settlement
+        const event = await convex.query(api.events.queries.getEventById, { eventId });
+        organizerId = event?.organizerId;
+
+        // Check organizer's platform debt and calculate settlement
+        if (organizerId && platformFee > 0) {
+          try {
+            const debt = await convex.query(api.platformDebt.queries.getDebtByOrganizerId, {
+              organizerId,
+            });
+
+            if (debt?.hasDebt && debt.remainingDebtCents > 0) {
+              // Cap settlement at 100% of normal platform fee (so customer sees at most 2x fee)
+              const maxSettlement = platformFee;
+              settlementAmount = Math.min(debt.remainingDebtCents, maxSettlement);
+              console.log(
+                `[Stripe] Debt settlement: organizer ${organizerId} owes $${(debt.remainingDebtCents / 100).toFixed(2)}, settling $${(settlementAmount / 100).toFixed(2)} from this order`
+              );
+            }
+          } catch (debtError) {
+            // Don't fail the payment if debt check fails, just log and continue
+            console.warn("[Stripe] Failed to check organizer debt:", debtError);
+          }
+        }
       } catch (convexError: any) {
         console.error("[Stripe Connect] Failed to fetch payment config:", convexError);
         return NextResponse.json(
@@ -109,6 +136,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Total platform fee includes normal fee + debt settlement
+    const totalPlatformFee = platformFee + settlementAmount;
+
     // Create Payment Intent based on charge pattern
     let paymentIntent;
 
@@ -116,6 +146,17 @@ export async function POST(request: NextRequest) {
     const idempotencyKey = orderId
       ? generateIdempotencyKey(orderId, amount)
       : generateIdempotencyKey(crypto.randomUUID(), amount);
+
+    // Metadata includes settlement info for webhook processing
+    const paymentMetadata = {
+      orderId: orderId || "",
+      orderNumber: orderNumber || "",
+      eventId: eventId || "",
+      organizerId: organizerId || "",
+      settlementAmount: settlementAmount.toString(), // Debt settlement amount in cents
+      chargeType: "SPLIT", // Identifies this as a split payment (ticket sales)
+      ...metadata,
+    };
 
     if (useDirectCharge) {
       // DIRECT CHARGE Pattern
@@ -126,13 +167,10 @@ export async function POST(request: NextRequest) {
         {
           amount: amount,
           currency: currency,
-          application_fee_amount: platformFee, // Platform's cut
+          application_fee_amount: totalPlatformFee, // Platform's cut (includes debt settlement)
           metadata: {
-            orderId: orderId || "",
-            orderNumber: orderNumber || "",
+            ...paymentMetadata,
             chargePattern: "DIRECT",
-            chargeType: "SPLIT", // Identifies this as a split payment (ticket sales)
-            ...metadata,
           },
           // Explicitly enable Card and Cash App Pay for ticket purchases
           // Note: Cash App Pay must be enabled in Stripe Dashboard first
@@ -152,16 +190,13 @@ export async function POST(request: NextRequest) {
         {
           amount: amount,
           currency: currency,
-          application_fee_amount: platformFee, // Platform's cut
+          application_fee_amount: totalPlatformFee, // Platform's cut (includes debt settlement)
           transfer_data: {
             destination: stripeAccountId, // Organizer's account
           },
           metadata: {
-            orderId: orderId || "",
-            orderNumber: orderNumber || "",
+            ...paymentMetadata,
             chargePattern: "DESTINATION",
-            chargeType: "SPLIT", // Identifies this as a split payment (ticket sales)
-            ...metadata,
           },
           // Explicitly enable Card and Cash App Pay for ticket purchases
           // Note: Cash App Pay must be enabled in Stripe Dashboard first

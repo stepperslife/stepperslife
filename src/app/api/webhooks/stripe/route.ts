@@ -162,6 +162,31 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       paymentIntentId: paymentIntent.id,
     });
 
+    // Record debt settlement if this payment included a settlement amount
+    const settlementAmount = parseInt(metadata?.settlementAmount || "0", 10);
+    const organizerId = metadata?.organizerId;
+    const eventId = metadata?.eventId;
+
+    if (settlementAmount > 0 && organizerId) {
+      try {
+        await convex.mutation(api.platformDebt.mutations.recordSettlement, {
+          organizerId,
+          orderId,
+          eventId,
+          settlementAmountCents: settlementAmount,
+        });
+        console.log(
+          `[Stripe Webhook] Recorded debt settlement for organizer ${organizerId}: $${(settlementAmount / 100).toFixed(2)}`
+        );
+      } catch (settlementError: any) {
+        console.error(
+          `[Stripe Webhook] Failed to record debt settlement for order ${orderId}:`,
+          settlementError
+        );
+        // Don't fail the order - the debt will be collected on the next payment
+      }
+    }
+
   } catch (error: any) {
     console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error);
   }

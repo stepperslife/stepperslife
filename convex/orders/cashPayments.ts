@@ -11,7 +11,7 @@
 
 import { v } from "convex/values";
 import { mutation, query } from "../_generated/server";
-import { api } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
 
 const CASH_HOLD_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
@@ -249,6 +249,25 @@ export const approveCashOrder = mutation({
       createdAt: now,
     });
 
+    // Track platform debt for CREDIT_CARD model events
+    // (For PREPAY events, the organizer already paid the platform fee upfront)
+    const event = await ctx.db.get(order.eventId);
+    if (event?.organizerId) {
+      const paymentConfig = await ctx.db
+        .query("eventPaymentConfig")
+        .withIndex("by_event", (q) => q.eq("eventId", order.eventId))
+        .first();
+
+      if (paymentConfig?.paymentModel === "CREDIT_CARD") {
+        // Record the platform fee owed from this cash order
+        await ctx.runMutation(internal.platformDebt.mutations.addCashOrderDebt, {
+          organizerId: event.organizerId,
+          orderId: args.orderId,
+          eventId: order.eventId,
+          subtotalCents: order.subtotalCents,
+        });
+      }
+    }
 
     return {
       success: true,
@@ -358,6 +377,25 @@ export const organizerApproveCashOrder = mutation({
         api.notifications.ticketNotifications.sendCashOrderConfirmation,
         { orderId: args.orderId }
       );
+    }
+
+    // Track platform debt for CREDIT_CARD model events
+    // (For PREPAY events, the organizer already paid the platform fee upfront)
+    if (event.organizerId) {
+      const paymentConfig = await ctx.db
+        .query("eventPaymentConfig")
+        .withIndex("by_event", (q) => q.eq("eventId", order.eventId))
+        .first();
+
+      if (paymentConfig?.paymentModel === "CREDIT_CARD") {
+        // Record the platform fee owed from this cash order
+        await ctx.runMutation(internal.platformDebt.mutations.addCashOrderDebt, {
+          organizerId: event.organizerId,
+          orderId: args.orderId,
+          eventId: order.eventId,
+          subtotalCents: order.subtotalCents,
+        });
+      }
     }
 
     return {

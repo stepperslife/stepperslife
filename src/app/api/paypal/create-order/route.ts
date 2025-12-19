@@ -1,4 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
+
+const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL!;
+const convex = new ConvexHttpClient(CONVEX_URL);
 
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_SECRET_KEY = process.env.PAYPAL_SECRET_KEY;
@@ -141,6 +146,8 @@ export async function POST(request: NextRequest) {
       amount, // Total amount in cents
       platformFee = 0, // Platform fee in cents (for split payments)
       orderId, // SteppersLife order ID
+      eventId, // Event ID for debt lookup
+      organizerId, // Organizer ID for debt lookup
       description,
       organizerPaypalEmail, // Organizer's PayPal email (for split payments)
       organizerPaypalMerchantId, // Organizer's PayPal Merchant ID (for split payments)
@@ -154,11 +161,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check organizer's platform debt and calculate settlement
+    let settlementAmount = 0;
+    if (organizerId && platformFee > 0) {
+      try {
+        const debt = await convex.query(api.platformDebt.queries.getDebtByOrganizerId, {
+          organizerId,
+        });
+
+        if (debt?.hasDebt && debt.remainingDebtCents > 0) {
+          // Cap settlement at 100% of normal platform fee (so customer sees at most 2x fee)
+          const maxSettlement = platformFee;
+          settlementAmount = Math.min(debt.remainingDebtCents, maxSettlement);
+          console.log(
+            `[PayPal] Debt settlement: organizer ${organizerId} owes $${(debt.remainingDebtCents / 100).toFixed(2)}, settling $${(settlementAmount / 100).toFixed(2)} from this order`
+          );
+        }
+      } catch (debtError) {
+        // Don't fail the payment if debt check fails, just log and continue
+        console.warn("[PayPal] Failed to check organizer debt:", debtError);
+      }
+    }
+
+    // Total platform fee includes normal fee + debt settlement
+    const totalPlatformFee = platformFee + settlementAmount;
+
     const accessToken = await getPayPalAccessToken();
 
     // Convert cents to dollars for PayPal
     const amountInDollars = (amount / 100).toFixed(2);
-    const platformFeeInDollars = (platformFee / 100).toFixed(2);
+    const platformFeeInDollars = (totalPlatformFee / 100).toFixed(2);
 
     // Build purchase unit
     const purchaseUnit: any = {
@@ -170,7 +202,10 @@ export async function POST(request: NextRequest) {
       },
       custom_id: JSON.stringify({
         orderId,
-        platformFee,
+        eventId,
+        organizerId,
+        platformFee: totalPlatformFee,
+        settlementAmount, // Amount being used to settle organizer debt
         ...metadata,
       }),
     };

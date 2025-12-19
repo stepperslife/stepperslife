@@ -158,6 +158,33 @@ export async function POST(request: NextRequest) {
           orderId: steppersLifeOrderId as any,
           paymentIntentId: paypalOrderId, // Use PayPal order ID as payment reference
         });
+
+        // Record debt settlement if this payment included a settlement amount
+        // Parse custom_id from the purchase unit to get settlement info
+        const customIdString = captureData.purchase_units?.[0]?.custom_id;
+        if (customIdString) {
+          try {
+            const customData = JSON.parse(customIdString);
+            const settlementAmount = customData.settlementAmount || 0;
+            const organizerId = customData.organizerId;
+            const eventId = customData.eventId;
+            const orderId = customData.orderId || steppersLifeOrderId;
+
+            if (settlementAmount > 0 && organizerId) {
+              await convex.mutation(api.platformDebt.mutations.recordSettlement, {
+                organizerId,
+                orderId,
+                eventId,
+                settlementAmountCents: settlementAmount,
+              });
+              console.log(
+                `[PayPal] Recorded debt settlement for organizer ${organizerId}: $${(settlementAmount / 100).toFixed(2)}`
+              );
+            }
+          } catch (parseError) {
+            console.warn("[PayPal] Failed to parse custom_id for settlement:", parseError);
+          }
+        }
       } catch (convexError: any) {
         console.error("[PayPal] Failed to update order in Convex:", convexError);
         // Don't fail the response - payment was captured successfully

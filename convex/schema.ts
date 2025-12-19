@@ -697,6 +697,9 @@ export default defineSchema({
       )
     ),
 
+    // Platform debt settlement (extra amount taken from this order to settle cash payment debt)
+    debtSettlementCents: v.optional(v.number()),
+
     // Timestamps
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -1785,4 +1788,65 @@ export default defineSchema({
     .index("by_recipient_type", ["recipientType"])
     .index("by_recipient_email", ["recipientEmail"])
     .index("by_created_at", ["createdAt"]),
+
+  // ============================================================================
+  // PLATFORM DEBT TRACKING
+  // Tracks platform fees owed from cash payments, settled via digital payments
+  // ============================================================================
+
+  // Organizer's total platform debt balance
+  organizerPlatformDebt: defineTable({
+    organizerId: v.id("users"),
+
+    // Debt tracking (all in cents)
+    totalDebtCents: v.number(), // Total platform fees owed from all cash orders
+    totalSettledCents: v.number(), // Total recovered from digital payments
+    remainingDebtCents: v.number(), // What's still owed (totalDebt - totalSettled)
+
+    // Audit timestamps
+    lastCashOrderAt: v.optional(v.number()), // When last cash order added debt
+    lastSettlementAt: v.optional(v.number()), // When last settlement deduction occurred
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_organizer", ["organizerId"])
+    .index("by_remaining_debt", ["remainingDebtCents"]),
+
+  // Ledger of all debt transactions (for audit trail)
+  platformDebtLedger: defineTable({
+    organizerId: v.id("users"),
+
+    // Transaction type
+    transactionType: v.union(
+      v.literal("CASH_ORDER_DEBT"), // Debt added from cash payment approval
+      v.literal("DIGITAL_SETTLEMENT"), // Debt recovered from digital payment
+      v.literal("MANUAL_PAYMENT"), // Organizer paid platform directly
+      v.literal("ADJUSTMENT") // Admin adjustment
+    ),
+
+    // Related entities
+    orderId: v.optional(v.id("orders")), // The order that created/settled debt
+    eventId: v.optional(v.id("events")), // Event for context
+
+    // Amount (always positive, type determines add/subtract)
+    amountCents: v.number(),
+
+    // Running balance after this transaction
+    balanceAfterCents: v.number(),
+
+    // Details
+    description: v.string(),
+    notes: v.optional(v.string()), // Admin notes for adjustments
+    processedBy: v.optional(v.id("users")), // Admin who processed (for manual/adjustments)
+
+    // Timestamps
+    createdAt: v.number(),
+  })
+    .index("by_organizer", ["organizerId"])
+    .index("by_order", ["orderId"])
+    .index("by_event", ["eventId"])
+    .index("by_type", ["transactionType"])
+    .index("by_organizer_and_created", ["organizerId", "createdAt"]),
 });
