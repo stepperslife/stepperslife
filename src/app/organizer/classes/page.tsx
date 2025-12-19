@@ -155,7 +155,7 @@ export default function OrganizerClassesPage() {
           </div>
           <div className="bg-white rounded-lg shadow-sm border p-4" data-testid="class-stats-upcoming">
             <div className="flex items-center gap-2 mb-2">
-              <Calendar className="w-5 h-5 text-blue-500" />
+              <Calendar className="w-5 h-5 text-primary" />
               <span className="text-sm text-muted-foreground">Upcoming</span>
             </div>
             <p className="text-2xl font-bold text-foreground">

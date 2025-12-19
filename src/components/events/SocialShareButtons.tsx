@@ -63,7 +63,7 @@ export function SocialShareButtons({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm font-medium text-gray-600 mr-2">Share:</span>
+      <span className="text-sm font-medium text-muted-foreground mr-2">Share:</span>
 
       <button
         type="button"
@@ -78,7 +78,7 @@ export function SocialShareButtons({
       <button
         type="button"
         onClick={() => handleShare("twitter")}
-        className="flex items-center gap-2 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+        className="flex items-center gap-2 px-3 py-2 bg-black text-white rounded-lg hover:bg-accent transition-colors text-sm font-medium"
         aria-label="Share on X (Twitter)"
       >
         <Twitter className="w-4 h-4" />
@@ -99,7 +99,7 @@ export function SocialShareButtons({
         type="button"
         onClick={handleCopyLink}
         className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
-          copied ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          copied ? "bg-success text-white" : "bg-muted text-foreground hover:bg-muted"
         }`}
         aria-label="Copy link"
       >

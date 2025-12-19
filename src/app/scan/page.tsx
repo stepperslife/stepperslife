@@ -41,9 +41,9 @@ export default function ScanEventSelectionPage() {
       <div className="container mx-auto px-4 py-8">
         {events.length === 0 ? (
           <div className="bg-white rounded-lg shadow-xl p-12 text-center">
-            <QrCode className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">No Events Available</h2>
-            <p className="text-gray-600 mb-6">
+            <QrCode className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-foreground mb-2">No Events Available</h2>
+            <p className="text-muted-foreground mb-6">
               You don't have permission to scan tickets for any events.
             </p>
             <Link
@@ -82,13 +82,13 @@ export default function ScanEventSelectionPage() {
                   <div className="flex-1 p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
+                        <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                           {event.name}
                         </h3>
 
                         <div className="space-y-2 mb-4">
                           {event.startDate && (
-                            <div className="flex items-center gap-2 text-gray-600">
+                            <div className="flex items-center gap-2 text-muted-foreground">
                               <Calendar className="w-4 h-4 flex-shrink-0" />
                               <span className="text-sm">
                                 {format(event.startDate, "EEEE, MMM d, yyyy 'at' h:mm a")}
@@ -97,7 +97,7 @@ export default function ScanEventSelectionPage() {
                           )}
 
                           {event.location && typeof event.location === "object" && (
-                            <div className="flex items-center gap-2 text-gray-600">
+                            <div className="flex items-center gap-2 text-muted-foreground">
                               <MapPin className="w-4 h-4 flex-shrink-0" />
                               <span className="text-sm">
                                 {event.location.venueName && `${event.location.venueName}, `}

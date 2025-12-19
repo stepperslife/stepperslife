@@ -301,14 +301,14 @@ export default function MyTeamPage() {
       {showAddSubSeller && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 sticky top-0 bg-white">
-              <h2 className="text-2xl font-bold text-gray-900">Add Default Sub-Seller</h2>
+            <div className="p-6 border-b border sticky top-0 bg-white">
+              <h2 className="text-2xl font-bold text-foreground">Add Default Sub-Seller</h2>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6">
               {error && (
                 <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-600" />
+                  <AlertCircle className="w-5 h-5 text-destructive" />
                   <span className="text-red-800">{error}</span>
                 </div>
               )}

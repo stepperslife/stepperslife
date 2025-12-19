@@ -25,7 +25,7 @@ type RestaurantStatus = "pending" | "active" | "suspended";
 
 const STATUS_CONFIG: Record<RestaurantStatus, { label: string; color: string; icon: typeof Clock }> = {
   pending: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
-  active: { label: "Active", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
+  active: { label: "Active", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
   suspended: { label: "Suspended", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: AlertTriangle },
 };
 
@@ -178,8 +178,8 @@ export default function AdminRestaurantsPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-success" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.active}</p>
@@ -190,7 +190,7 @@ export default function AdminRestaurantsPage() {
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
+              <AlertTriangle className="w-5 h-5 text-destructive" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.suspended}</p>
@@ -359,7 +359,7 @@ export default function AdminRestaurantsPage() {
                                         });
                                         setSelectedRestaurant(null);
                                       }}
-                                      className="w-full px-4 py-2 text-left text-sm text-green-600 hover:bg-muted transition-colors"
+                                      className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
                                     >
                                       Approve
                                     </button>
@@ -373,7 +373,7 @@ export default function AdminRestaurantsPage() {
                                         });
                                         setSelectedRestaurant(null);
                                       }}
-                                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-muted transition-colors"
+                                      className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
                                     >
                                       Reject
                                     </button>
@@ -390,7 +390,7 @@ export default function AdminRestaurantsPage() {
                                       });
                                       setSelectedRestaurant(null);
                                     }}
-                                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-muted transition-colors"
+                                    className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
                                   >
                                     Suspend
                                   </button>
@@ -406,7 +406,7 @@ export default function AdminRestaurantsPage() {
                                       });
                                       setSelectedRestaurant(null);
                                     }}
-                                    className="w-full px-4 py-2 text-left text-sm text-green-600 hover:bg-muted transition-colors"
+                                    className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
                                   >
                                     Reactivate
                                   </button>

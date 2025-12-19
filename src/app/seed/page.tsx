@@ -24,11 +24,11 @@ export default function SeedPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-2xl w-full bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Seed Sample Events</h1>
+    <div className="min-h-screen bg-card flex items-center justify-center px-4">
+      <div className="max-w-2xl w-full bg-white rounded-lg shadow-sm border border p-8">
+        <h1 className="text-3xl font-bold text-foreground mb-4">Seed Sample Events</h1>
 
-        <p className="text-gray-600 mb-6">
+        <p className="text-muted-foreground mb-6">
           This will create 6 sample stepping events with Unsplash images to test the platform.
         </p>
 
@@ -52,20 +52,20 @@ export default function SeedPage() {
         </div>
 
         {status === "success" && (
-          <div className="flex items-center gap-2 text-green-600 mb-4">
+          <div className="flex items-center gap-2 text-success mb-4">
             <CheckCircle className="w-5 h-5" />
             <span>{message}</span>
           </div>
         )}
 
         {status === "error" && (
-          <div className="flex items-center gap-2 text-red-600 mb-4">
+          <div className="flex items-center gap-2 text-destructive mb-4">
             <AlertCircle className="w-5 h-5" />
             <span>{message}</span>
           </div>
         )}
 
-        <div className="text-sm text-gray-500 mt-6">
+        <div className="text-sm text-muted-foreground mt-6">
           <p className="font-semibold mb-2">After running the command:</p>
           <ol className="list-decimal list-inside space-y-1">
             <li>Go to homepage (/) to see the events in masonry grid</li>

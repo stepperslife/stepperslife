@@ -32,7 +32,7 @@ export function PageHero({ title, subtitle, imageUrl, imageAlt }: PageHeroProps)
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
           {title}
         </h1>
-        <p className="text-lg md:text-xl text-gray-200 max-w-2xl drop-shadow-md">
+        <p className="text-lg md:text-xl text-foreground max-w-2xl drop-shadow-md">
           {subtitle}
         </p>
       </div>

@@ -58,7 +58,7 @@ export default function ActiveEventsPage() {
                       </div>
                     </div>
                   </div>
-                  <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Active</span>
+                  <span className="px-3 py-1 bg-success/20 text-green-800 text-sm font-medium rounded-full">Active</span>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -78,7 +78,7 @@ export default function ActiveEventsPage() {
                     <p className="text-xs text-muted-foreground">Available</p>
                   </div>
                   <div className="text-center p-3 border rounded-lg">
-                    <DollarSign className="h-5 w-5 mx-auto mb-1 text-green-600" />
+                    <DollarSign className="h-5 w-5 mx-auto mb-1 text-success" />
                     <p className="text-2xl font-bold">${event.earnings}</p>
                     <p className="text-xs text-muted-foreground">Earnings</p>
                   </div>

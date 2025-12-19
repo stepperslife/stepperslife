@@ -27,7 +27,7 @@ export default function MarketplaceCheckoutError({
       <div className="max-w-md w-full bg-card rounded-lg shadow-lg p-8 text-center">
         <div className="mb-6">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-            <ShoppingBag className="w-8 h-8 text-red-500" />
+            <ShoppingBag className="w-8 h-8 text-destructive" />
           </div>
         </div>
 
@@ -47,7 +47,7 @@ export default function MarketplaceCheckoutError({
               {error.message}
             </p>
             {error.digest && (
-              <p className="text-xs font-mono text-red-600 mt-1">
+              <p className="text-xs font-mono text-destructive mt-1">
                 Error ID: {error.digest}
               </p>
             )}

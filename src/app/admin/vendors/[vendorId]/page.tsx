@@ -29,9 +29,9 @@ type VendorStatus = "PENDING" | "APPROVED" | "SUSPENDED" | "REJECTED";
 
 const STATUS_CONFIG: Record<VendorStatus, { label: string; color: string; bgColor: string }> = {
   PENDING: { label: "Pending Review", color: "text-yellow-600", bgColor: "bg-yellow-50 dark:bg-yellow-900/20" },
-  APPROVED: { label: "Approved", color: "text-green-600", bgColor: "bg-green-50 dark:bg-green-900/20" },
-  SUSPENDED: { label: "Suspended", color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-900/20" },
-  REJECTED: { label: "Rejected", color: "text-gray-600", bgColor: "bg-gray-50 dark:bg-gray-900/20" },
+  APPROVED: { label: "Approved", color: "text-success", bgColor: "bg-green-50 dark:bg-green-900/20" },
+  SUSPENDED: { label: "Suspended", color: "text-destructive", bgColor: "bg-red-50 dark:bg-red-900/20" },
+  REJECTED: { label: "Rejected", color: "text-muted-foreground", bgColor: "bg-card dark:bg-background/20" },
 };
 
 export default function AdminVendorDetailPage() {
@@ -161,14 +161,14 @@ export default function AdminVendorDetailPage() {
             </div>
             <div className="bg-card rounded-xl border border-border p-4">
               <div className="flex items-center gap-2 mb-2">
-                <ShoppingBag className="w-5 h-5 text-blue-600" />
+                <ShoppingBag className="w-5 h-5 text-primary" />
                 <span className="text-sm text-muted-foreground">Orders</span>
               </div>
               <p className="text-2xl font-bold text-foreground">{earningsSummary?.orderCount || 0}</p>
             </div>
             <div className="bg-card rounded-xl border border-border p-4">
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign className="w-5 h-5 text-green-600" />
+                <DollarSign className="w-5 h-5 text-success" />
                 <span className="text-sm text-muted-foreground">Total Sales</span>
               </div>
               <p className="text-2xl font-bold text-foreground">
@@ -198,7 +198,7 @@ export default function AdminVendorDetailPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Available</p>
-                <p className="text-xl font-bold text-green-600">
+                <p className="text-xl font-bold text-success">
                   {formatCurrency(earningsSummary?.availableBalance || 0)}
                 </p>
               </div>
@@ -210,7 +210,7 @@ export default function AdminVendorDetailPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Processing</p>
-                <p className="text-xl font-bold text-blue-600">
+                <p className="text-xl font-bold text-primary">
                   {formatCurrency(earningsSummary?.processingEarnings || 0)}
                 </p>
               </div>
@@ -252,8 +252,8 @@ export default function AdminVendorDetailPage() {
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         product.status === "ACTIVE"
-                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                          : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"
+                          ? "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                          : "bg-muted text-foreground dark:bg-background/30 dark:text-muted-foreground"
                       }`}
                     >
                       {product.status}
@@ -289,12 +289,12 @@ export default function AdminVendorDetailPage() {
                       <span
                         className={`text-xs font-medium ${
                           payout.status === "COMPLETED"
-                            ? "text-green-600"
+                            ? "text-success"
                             : payout.status === "PENDING"
                             ? "text-yellow-600"
                             : payout.status === "FAILED"
-                            ? "text-red-600"
-                            : "text-blue-600"
+                            ? "text-destructive"
+                            : "text-primary"
                         }`}
                       >
                         {payout.status}
@@ -423,7 +423,7 @@ export default function AdminVendorDetailPage() {
               </div>
               {vendor.reviewedAt && vendor.status === "APPROVED" && (
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <CheckCircle className="w-4 h-4 text-success" />
                   <div>
                     <p className="text-muted-foreground">Approved</p>
                     <p className="text-foreground">{formatDate(vendor.reviewedAt)}</p>
@@ -432,7 +432,7 @@ export default function AdminVendorDetailPage() {
               )}
               {vendor.reviewedAt && vendor.status === "SUSPENDED" && (
                 <div className="flex items-center gap-3">
-                  <AlertTriangle className="w-4 h-4 text-red-600" />
+                  <AlertTriangle className="w-4 h-4 text-destructive" />
                   <div>
                     <p className="text-muted-foreground">Suspended</p>
                     <p className="text-foreground">{formatDate(vendor.reviewedAt)}</p>

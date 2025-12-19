@@ -49,7 +49,7 @@ export default function PurchaseTicketsPage() {
   const hasEnoughCredits = credits && credits.creditsRemaining >= creditCost;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
@@ -61,13 +61,13 @@ export default function PurchaseTicketsPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/organizer/tickets"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Purchase Tickets</h1>
-              <p className="text-gray-600 mt-1">Use your credits to create tickets for your events</p>
+              <h1 className="text-3xl font-bold text-foreground">Purchase Tickets</h1>
+              <p className="text-muted-foreground mt-1">Use your credits to create tickets for your events</p>
             </div>
           </div>
         </div>
@@ -84,17 +84,17 @@ export default function PurchaseTicketsPage() {
               transition={{ duration: 0.5 }}
               className="bg-white rounded-lg shadow-md p-6"
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Select Event & Quantity</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-6">Select Event & Quantity</h2>
 
               {/* Event Selection */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Select Event
                 </label>
                 <select
                   value={selectedEvent}
                   onChange={(e) => setSelectedEvent(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="">Choose an event...</option>
                   {events?.map((event) => (
@@ -107,14 +107,14 @@ export default function PurchaseTicketsPage() {
 
               {/* Ticket Quantity */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Number of Tickets
                 </label>
                 <div className="flex items-center gap-4">
                   <button
                     type="button"
                     onClick={() => setTicketQuantity(Math.max(1, ticketQuantity - 10))}
-                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    className="p-2 bg-muted hover:bg-muted rounded-lg transition-colors"
                   >
                     <Minus className="w-5 h-5" />
                   </button>
@@ -122,25 +122,25 @@ export default function PurchaseTicketsPage() {
                     type="number"
                     value={ticketQuantity}
                     onChange={(e) => setTicketQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="flex-1 px-4 py-2 border border rounded-lg text-center focus:ring-2 focus:ring-primary focus:border-transparent"
                     min="1"
                   />
                   <button
                     type="button"
                     onClick={() => setTicketQuantity(ticketQuantity + 10)}
-                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    className="p-2 bg-muted hover:bg-muted rounded-lg transition-colors"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-muted-foreground mt-2">
                   Quick adjust: ±10 tickets per click
                 </p>
               </div>
 
               {/* Quick Quantity Buttons */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Quick Select
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -152,7 +152,7 @@ export default function PurchaseTicketsPage() {
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         ticketQuantity === qty
                           ? "bg-primary text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          : "bg-muted hover:bg-muted text-foreground"
                       }`}
                     >
                       {qty}
@@ -173,7 +173,7 @@ export default function PurchaseTicketsPage() {
               </button>
 
               {!hasEnoughCredits && (
-                <p className="text-red-600 text-sm mt-2 text-center">
+                <p className="text-destructive text-sm mt-2 text-center">
                   Insufficient credits. You need {creditCost - (credits?.creditsRemaining || 0)} more credits.
                 </p>
               )}
@@ -188,15 +188,15 @@ export default function PurchaseTicketsPage() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="bg-white rounded-lg shadow-md p-6 sticky top-4"
             >
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Purchase Summary</h3>
+              <h3 className="text-xl font-bold text-foreground mb-4">Purchase Summary</h3>
 
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Tickets</span>
+                  <span className="text-muted-foreground">Tickets</span>
                   <span className="font-medium">{ticketQuantity.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Credit Cost</span>
+                  <span className="text-muted-foreground">Credit Cost</span>
                   <span className="font-medium">{creditCost.toLocaleString()}</span>
                 </div>
                 <div className="border-t pt-4">
@@ -212,19 +212,19 @@ export default function PurchaseTicketsPage() {
                 <div className="bg-primary/10 rounded-lg p-4 mb-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Gift className="w-5 h-5 text-primary" />
-                    <h4 className="font-medium text-gray-900">Available Credits</h4>
+                    <h4 className="font-medium text-foreground">Available Credits</h4>
                   </div>
                   <p className="text-3xl font-bold text-primary">
                     {credits.creditsRemaining.toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {credits.creditsRemaining >= creditCost ? (
-                      <span className="flex items-center gap-1 text-green-600">
+                      <span className="flex items-center gap-1 text-success">
                         <Check className="w-4 h-4" />
                         Sufficient credits
                       </span>
                     ) : (
-                      <span className="text-red-600">
+                      <span className="text-destructive">
                         Need {(creditCost - credits.creditsRemaining).toLocaleString()} more
                       </span>
                     )}
@@ -235,7 +235,7 @@ export default function PurchaseTicketsPage() {
               {/* Need More Credits */}
               <Link
                 href="/organizer/credits"
-                className="block w-full text-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                className="block w-full text-center px-4 py-2 bg-muted hover:bg-muted text-foreground rounded-lg transition-colors"
               >
                 Purchase More Credits
               </Link>

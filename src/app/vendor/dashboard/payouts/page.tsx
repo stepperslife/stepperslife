@@ -24,7 +24,7 @@ const STATUS_CONFIG: Record<PayoutStatus, { label: string; color: string; icon: 
   PENDING: { label: "Pending Review", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
   APPROVED: { label: "Approved", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", icon: CheckCircle },
   PROCESSING: { label: "Processing", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300", icon: Loader2 },
-  COMPLETED: { label: "Completed", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
+  COMPLETED: { label: "Completed", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
   FAILED: { label: "Failed", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: XCircle },
 };
 
@@ -143,8 +143,8 @@ export default function VendorPayoutsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <Banknote className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Banknote className="w-6 h-6 text-success" />
             </div>
           </div>
           <p className="text-3xl font-bold text-foreground">{formatCurrency(availableBalance)}</p>
@@ -193,7 +193,7 @@ export default function VendorPayoutsPage() {
       {hasPendingPayout && (
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6">
           <div className="flex items-start gap-3">
-            <Clock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium text-blue-800 dark:text-blue-200">
                 Payout in progress

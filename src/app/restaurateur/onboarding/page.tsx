@@ -190,14 +190,14 @@ export default function RestaurantOnboardingPage() {
                   <div
                     className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
                       step.isComplete
-                        ? "bg-green-100 dark:bg-green-900/30"
+                        ? "bg-success/20 dark:bg-green-900/30"
                         : canStart
                           ? "bg-orange-100 dark:bg-orange-900/30"
                           : "bg-muted"
                     }`}
                   >
                     {step.isComplete ? (
-                      <CheckCircle2 className="w-6 h-6 text-green-600" />
+                      <CheckCircle2 className="w-6 h-6 text-success" />
                     ) : (
                       <Icon
                         className={`w-6 h-6 ${
@@ -215,7 +215,7 @@ export default function RestaurantOnboardingPage() {
 
                   {/* Action */}
                   {step.isComplete ? (
-                    <span className="flex items-center gap-1 text-sm text-green-600">
+                    <span className="flex items-center gap-1 text-sm text-success">
                       <Check className="w-4 h-4" />
                       Complete
                     </span>
@@ -241,7 +241,7 @@ export default function RestaurantOnboardingPage() {
         {/* Completion Message */}
         {isComplete && (
           <div className="mt-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6 text-center">
-            <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-4" />
+            <CheckCircle2 className="w-12 h-12 text-success mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-foreground mb-2">
               You&apos;re All Set!
             </h3>

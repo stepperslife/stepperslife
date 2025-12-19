@@ -89,14 +89,14 @@ export default function ResetPasswordPage() {
         <PublicHeader showCreateButton={false} />
         <div className="min-h-screen flex items-center justify-center bg-background px-4">
           <div className="w-full max-w-md">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <div className="bg-white dark:bg-card rounded-2xl shadow-xl p-8 text-center">
+              <div className="w-16 h-16 bg-success/20 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-success dark:text-success" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-foreground dark:text-white mb-2">
                 Password Reset Complete!
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-muted-foreground dark:text-muted-foreground mb-6">
                 Your password has been successfully reset. Redirecting to login...
               </p>
             </div>
@@ -111,12 +111,12 @@ export default function ResetPasswordPage() {
       <PublicHeader showCreateButton={false} />
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+          <div className="bg-white dark:bg-card rounded-2xl shadow-xl p-8">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-foreground dark:text-white mb-2">
                 Create New Password
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-muted-foreground dark:text-muted-foreground">
                 Enter a new password for your account
               </p>
             </div>
@@ -125,7 +125,7 @@ export default function ResetPasswordPage() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
                 >
                   New Password
                 </label>
@@ -136,13 +136,13 @@ export default function ResetPasswordPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 pr-12 rounded-lg border border dark:border bg-white dark:bg-card text-foreground dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     placeholder="Enter new password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground transition-colors"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -153,7 +153,7 @@ export default function ResetPasswordPage() {
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
                 >
                   Confirm Password
                 </label>
@@ -164,13 +164,13 @@ export default function ResetPasswordPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 pr-12 rounded-lg border border dark:border bg-white dark:bg-card text-foreground dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     placeholder="Confirm new password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground transition-colors"
                     aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   >
                     {showConfirmPassword ? (
@@ -185,45 +185,45 @@ export default function ResetPasswordPage() {
               {/* Password strength indicator */}
               {password && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <p className="text-sm font-medium text-foreground dark:text-muted-foreground">
                     Password requirements:
                   </p>
                   <ul className="space-y-1 text-sm">
                     <li
-                      className={`flex items-center gap-2 ${hasMinLength ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400"}`}
+                      className={`flex items-center gap-2 ${hasMinLength ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasMinLength ? "bg-green-100 dark:bg-green-900/20" : "bg-gray-100 dark:bg-gray-700"}`}
+                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasMinLength ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
                       >
                         {hasMinLength && <Check className="w-3 h-3" />}
                       </div>
                       At least 8 characters
                     </li>
                     <li
-                      className={`flex items-center gap-2 ${hasUpperCase ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400"}`}
+                      className={`flex items-center gap-2 ${hasUpperCase ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasUpperCase ? "bg-green-100 dark:bg-green-900/20" : "bg-gray-100 dark:bg-gray-700"}`}
+                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasUpperCase ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
                       >
                         {hasUpperCase && <Check className="w-3 h-3" />}
                       </div>
                       One uppercase letter
                     </li>
                     <li
-                      className={`flex items-center gap-2 ${hasLowerCase ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400"}`}
+                      className={`flex items-center gap-2 ${hasLowerCase ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasLowerCase ? "bg-green-100 dark:bg-green-900/20" : "bg-gray-100 dark:bg-gray-700"}`}
+                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasLowerCase ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
                       >
                         {hasLowerCase && <Check className="w-3 h-3" />}
                       </div>
                       One lowercase letter
                     </li>
                     <li
-                      className={`flex items-center gap-2 ${hasNumber ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400"}`}
+                      className={`flex items-center gap-2 ${hasNumber ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasNumber ? "bg-green-100 dark:bg-green-900/20" : "bg-gray-100 dark:bg-gray-700"}`}
+                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasNumber ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
                       >
                         {hasNumber && <Check className="w-3 h-3" />}
                       </div>
@@ -231,10 +231,10 @@ export default function ResetPasswordPage() {
                     </li>
                     {confirmPassword && (
                       <li
-                        className={`flex items-center gap-2 ${passwordsMatch ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400"}`}
+                        className={`flex items-center gap-2 ${passwordsMatch ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                       >
                         <div
-                          className={`w-4 h-4 rounded-full flex items-center justify-center ${passwordsMatch ? "bg-green-100 dark:bg-green-900/20" : "bg-gray-100 dark:bg-gray-700"}`}
+                          className={`w-4 h-4 rounded-full flex items-center justify-center ${passwordsMatch ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
                         >
                           {passwordsMatch && <Check className="w-3 h-3" />}
                         </div>

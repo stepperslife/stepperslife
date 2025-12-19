@@ -75,7 +75,7 @@ export default function CommissionRatePage() {
       <Card className="border-blue-200 bg-blue-50">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <TrendingUp className="h-5 w-5 text-blue-600 mt-0.5" />
+            <TrendingUp className="h-5 w-5 text-primary mt-0.5" />
             <div>
               <h3 className="font-semibold text-blue-900">About Commission Rates</h3>
               <p className="text-sm text-blue-800 mt-1">

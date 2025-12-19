@@ -39,7 +39,7 @@ export default function ActiveEventsPage() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-lg font-semibold">{event.name}</h3>
-                      <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                      <span className="px-2 py-1 text-xs rounded-full bg-success/20 text-green-700">
                         Active
                       </span>
                     </div>
@@ -66,7 +66,7 @@ export default function ActiveEventsPage() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Sold by You</p>
-                      <p className="text-xl font-bold text-green-600">{event.ticketsSold || 0}</p>
+                      <p className="text-xl font-bold text-success">{event.ticketsSold || 0}</p>
                     </div>
                   </div>
 

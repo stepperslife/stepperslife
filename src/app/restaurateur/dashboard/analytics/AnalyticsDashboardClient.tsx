@@ -171,7 +171,7 @@ export default function AnalyticsDashboardClient() {
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                    <ShoppingBag className="w-5 h-5 text-blue-600" />
+                    <ShoppingBag className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{orderStats.totalOrders}</p>
@@ -184,8 +184,8 @@ export default function AnalyticsDashboardClient() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                    <DollarSign className="w-5 h-5 text-green-600" />
+                  <div className="p-2 bg-success/20 dark:bg-green-900/30 rounded-lg">
+                    <DollarSign className="w-5 h-5 text-success" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">${(orderStats.totalRevenue / 100).toFixed(0)}</p>
@@ -235,9 +235,9 @@ export default function AnalyticsDashboardClient() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Completed</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div className="w-32 h-2 bg-muted dark:bg-card rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-green-500 rounded-full"
+                          className="h-full bg-success rounded-full"
                           style={{ width: `${orderStats.totalOrders ? (orderStats.completedOrders / orderStats.totalOrders) * 100 : 0}%` }}
                         />
                       </div>
@@ -247,7 +247,7 @@ export default function AnalyticsDashboardClient() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Pending</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div className="w-32 h-2 bg-muted dark:bg-card rounded-full overflow-hidden">
                         <div
                           className="h-full bg-yellow-500 rounded-full"
                           style={{ width: `${orderStats.totalOrders ? (orderStats.pendingOrders / orderStats.totalOrders) * 100 : 0}%` }}
@@ -259,7 +259,7 @@ export default function AnalyticsDashboardClient() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Cancelled</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div className="w-32 h-2 bg-muted dark:bg-card rounded-full overflow-hidden">
                         <div
                           className="h-full bg-red-500 rounded-full"
                           style={{ width: `${orderStats.totalOrders ? (orderStats.cancelledOrders / orderStats.totalOrders) * 100 : 0}%` }}
@@ -355,7 +355,7 @@ export default function AnalyticsDashboardClient() {
                   >
                     <div
                       className={`w-full rounded-t transition-all ${
-                        hour.hour === peakHour.hour ? "bg-orange-500" : "bg-gray-300 dark:bg-gray-600"
+                        hour.hour === peakHour.hour ? "bg-orange-500" : "bg-muted dark:bg-accent"
                       }`}
                       style={{ height: `${(hour.orders / maxHourlyOrders) * 100}%`, minHeight: hour.orders > 0 ? "2px" : "0" }}
                       title={`${hour.label}: ${hour.orders} orders`}

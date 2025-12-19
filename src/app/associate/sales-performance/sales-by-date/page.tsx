@@ -28,9 +28,9 @@ export default function SalesByDatePage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Best Day</p>
-                <p className="text-2xl font-bold mt-1 text-green-600">0</p>
+                <p className="text-2xl font-bold mt-1 text-success">0</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
+              <TrendingUp className="h-8 w-8 text-success" />
             </div>
             <p className="text-xs text-muted-foreground mt-2">Peak sales day</p>
           </CardContent>
@@ -93,7 +93,7 @@ export default function SalesByDatePage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-green-600">{day.ticketsSold || 0}</p>
+                    <p className="text-2xl font-bold text-success">{day.ticketsSold || 0}</p>
                     <p className="text-xs text-muted-foreground">tickets</p>
                   </div>
                 </div>
@@ -106,7 +106,7 @@ export default function SalesByDatePage() {
       <Card className="border-blue-200 bg-blue-50">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <TrendingUp className="h-5 w-5 text-blue-600 mt-0.5" />
+            <TrendingUp className="h-5 w-5 text-primary mt-0.5" />
             <div>
               <h3 className="font-semibold text-blue-900">Sales Insights</h3>
               <p className="text-sm text-blue-800 mt-1">

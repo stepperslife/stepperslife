@@ -64,8 +64,8 @@ const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; bgColor
   PENDING: { label: "New Order", color: "text-yellow-700", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: Clock, pulse: true },
   CONFIRMED: { label: "Confirmed", color: "text-blue-700", bgColor: "bg-blue-100 dark:bg-blue-900/30", icon: CheckCircle },
   PREPARING: { label: "Preparing", color: "text-orange-700", bgColor: "bg-orange-100 dark:bg-orange-900/30", icon: ChefHat },
-  READY_FOR_PICKUP: { label: "Ready", color: "text-green-700", bgColor: "bg-green-100 dark:bg-green-900/30", icon: Package },
-  COMPLETED: { label: "Completed", color: "text-gray-700", bgColor: "bg-gray-100 dark:bg-gray-800", icon: CheckCircle },
+  READY_FOR_PICKUP: { label: "Ready", color: "text-green-700", bgColor: "bg-success/20 dark:bg-green-900/30", icon: Package },
+  COMPLETED: { label: "Completed", color: "text-foreground", bgColor: "bg-muted dark:bg-card", icon: CheckCircle },
   CANCELLED: { label: "Cancelled", color: "text-red-700", bgColor: "bg-red-100 dark:bg-red-900/30", icon: XCircle },
 };
 
@@ -492,7 +492,7 @@ export default function RestaurateurOrdersClient() {
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-xl">${(order.total / 100).toFixed(2)}</p>
-                        <p className={`text-sm ${order.paymentStatus === "paid" ? "text-green-600" : "text-yellow-600"}`}>
+                        <p className={`text-sm ${order.paymentStatus === "paid" ? "text-success" : "text-yellow-600"}`}>
                           {order.paymentStatus === "paid" ? "Paid" : "Payment Pending"}
                         </p>
                       </div>
@@ -581,7 +581,7 @@ export default function RestaurateurOrdersClient() {
                           <button
                             type="button"
                             onClick={() => handleStatusUpdate(order._id, "CANCELLED")}
-                            className="px-4 py-2 border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            className="px-4 py-2 border border-red-300 text-destructive rounded-lg font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                           >
                             Cancel Order
                           </button>

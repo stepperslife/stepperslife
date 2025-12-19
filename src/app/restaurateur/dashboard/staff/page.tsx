@@ -38,8 +38,8 @@ const ROLE_CONFIG: Record<StaffRole, { label: string; description: string; color
 
 const STATUS_CONFIG: Record<StaffStatus, { label: string; color: string }> = {
   PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" },
-  ACTIVE: { label: "Active", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
-  INACTIVE: { label: "Inactive", color: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300" },
+  ACTIVE: { label: "Active", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
+  INACTIVE: { label: "Inactive", color: "bg-muted text-foreground dark:bg-background/30 dark:text-muted-foreground" },
 };
 
 export default function StaffManagementPage() {
@@ -169,8 +169,8 @@ export default function StaffManagementPage() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Users className="w-5 h-5 text-success" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{activeStaff.length}</p>
@@ -191,8 +191,8 @@ export default function StaffManagementPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-100 dark:bg-gray-900/30 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-gray-600" />
+            <div className="w-10 h-10 bg-muted dark:bg-background/30 rounded-lg flex items-center justify-center">
+              <Users className="w-5 h-5 text-muted-foreground" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{inactiveStaff.length}</p>
@@ -281,7 +281,7 @@ export default function StaffManagementPage() {
                         {member.role === "RESTAURANT_MANAGER" ? (
                           <ShieldCheck className="w-4 h-4 text-primary" />
                         ) : (
-                          <Shield className="w-4 h-4 text-blue-600" />
+                          <Shield className="w-4 h-4 text-primary" />
                         )}
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleConfig.color}`}>
                           {roleConfig.label}
@@ -331,7 +331,7 @@ export default function StaffManagementPage() {
                                   });
                                   setSelectedStaff(null);
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm text-green-600 hover:bg-muted transition-colors"
+                                className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
                               >
                                 Reactivate
                               </button>
@@ -345,7 +345,7 @@ export default function StaffManagementPage() {
                                 });
                                 setSelectedStaff(null);
                               }}
-                              className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-muted transition-colors"
+                              className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
                             >
                               Remove Permanently
                             </button>
@@ -594,7 +594,7 @@ function InviteStaffModal({
                       {role === "RESTAURANT_MANAGER" ? (
                         <ShieldCheck className="w-4 h-4 text-primary" />
                       ) : (
-                        <Shield className="w-4 h-4 text-blue-600" />
+                        <Shield className="w-4 h-4 text-primary" />
                       )}
                       <span className="font-medium text-foreground">{ROLE_CONFIG[role].label}</span>
                     </div>

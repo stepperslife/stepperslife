@@ -36,13 +36,13 @@ function CreateTemplatePageContent() {
 
   // Seating/Template feature is currently disabled
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-card flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
         <div className="mb-4">
-          <Info className="w-16 h-16 text-gray-400 mx-auto" />
+          <Info className="w-16 h-16 text-muted-foreground mx-auto" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Template Creation Coming Soon</h1>
-        <p className="text-gray-600 mb-6">
+        <h1 className="text-2xl font-bold text-foreground mb-2">Template Creation Coming Soon</h1>
+        <p className="text-muted-foreground mb-6">
           The template creation feature is currently being enhanced and will be available soon.
         </p>
         <Link
@@ -61,7 +61,7 @@ export default function CreateTemplatePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-card flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>
       }

@@ -128,7 +128,7 @@ export default function RestaurateurLayout({ children }: { children: React.React
             </Link>
             <Link
               href="/"
-              className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border rounded-lg hover:bg-card transition-colors"
             >
               Go Home
             </Link>

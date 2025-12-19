@@ -52,7 +52,7 @@ export default function ReportsPage() {
       description: "Detailed financial breakdowns and summaries",
       icon: DollarSign,
       href: "/organizer/reports/financial",
-      color: "bg-green-500",
+      color: "bg-success",
       stats: `${totalEvents} events tracked`,
     },
   ];

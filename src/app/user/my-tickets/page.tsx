@@ -180,8 +180,8 @@ export default function MyTicketsPage() {
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
                     {/* QR Code Placeholder */}
-                    <div className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <QrCode className="h-12 w-12 text-gray-400" />
+                    <div className="flex-shrink-0 w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
+                      <QrCode className="h-12 w-12 text-muted-foreground" />
                     </div>
 
                     {/* Ticket Details */}
@@ -209,8 +209,8 @@ export default function MyTicketsPage() {
                         <div className="text-right">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                             ticket.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
+                              ? "bg-success/20 text-green-800"
+                              : "bg-muted text-foreground"
                           }`}>
                             {ticket.status}
                           </span>

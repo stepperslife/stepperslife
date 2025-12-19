@@ -274,16 +274,16 @@ export default function VisualSeatingCanvas({
   return (
     <div
       id="seating-canvas"
-      className="relative bg-white rounded-lg border border-gray-200 overflow-hidden"
+      className="relative bg-white rounded-lg border border overflow-hidden"
     >
       {/* Controls Bar */}
       <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
-        <div className="bg-white rounded-lg shadow border border-gray-300 p-2 flex flex-col gap-2">
+        <div className="bg-white rounded-lg shadow border border p-2 flex flex-col gap-2">
           <button
             type="button"
             onClick={() => setShowGrid(!showGrid)}
             className={`p-2 rounded transition-colors ${
-              showGrid ? "bg-gray-800 text-white" : "bg-white text-gray-700 hover:bg-gray-100"
+              showGrid ? "bg-foreground text-white" : "bg-white text-foreground hover:bg-muted"
             }`}
             title={showGrid ? "Hide Grid" : "Show Grid"}
           >
@@ -294,8 +294,8 @@ export default function VisualSeatingCanvas({
             onClick={() => setShowSectionLabels(!showSectionLabels)}
             className={`p-2 rounded transition-colors ${
               showSectionLabels
-                ? "bg-gray-800 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-100"
+                ? "bg-foreground text-white"
+                : "bg-white text-foreground hover:bg-muted"
             }`}
             title={showSectionLabels ? "Hide Labels" : "Show Labels"}
           >
@@ -303,9 +303,9 @@ export default function VisualSeatingCanvas({
           </button>
         </div>
 
-        <div className="bg-gray-50 border border-gray-300 rounded-lg p-3 text-xs">
-          <p className="text-gray-900 font-semibold mb-1">Quick Tips:</p>
-          <ul className="text-gray-700 space-y-1">
+        <div className="bg-card border border rounded-lg p-3 text-xs">
+          <p className="text-foreground font-semibold mb-1">Quick Tips:</p>
+          <ul className="text-foreground space-y-1">
             <li>• Drag sections to position</li>
             <li>• Drag corners to resize</li>
             <li>• Click rotate button</li>
@@ -315,8 +315,8 @@ export default function VisualSeatingCanvas({
       </div>
 
       {/* Legend */}
-      <div className="absolute top-4 left-4 z-20 bg-white rounded-lg shadow-lg border border-gray-200 p-3">
-        <h4 className="font-semibold text-gray-900 text-sm mb-2">Sections</h4>
+      <div className="absolute top-4 left-4 z-20 bg-white rounded-lg shadow-lg border border p-3">
+        <h4 className="font-semibold text-foreground text-sm mb-2">Sections</h4>
         <div className="space-y-1 max-h-48 overflow-y-auto">
           {sections.map((section) => (
             <button
@@ -325,14 +325,14 @@ export default function VisualSeatingCanvas({
               onClick={() => onSectionSelect(section.id)}
               className={`w-full text-left px-2 py-1.5 rounded text-xs transition-colors flex items-center gap-2 ${
                 selectedSectionId === section.id
-                  ? "bg-gray-800 text-white"
-                  : "hover:bg-gray-100 text-gray-700"
+                  ? "bg-foreground text-white"
+                  : "hover:bg-muted text-foreground"
               }`}
             >
               <div className="w-3 h-3 border-2 flex-shrink-0 border-foreground" />
               <span className="font-medium truncate">{section.name}</span>
               <span
-                className={`ml-auto ${selectedSectionId === section.id ? "text-gray-300" : "text-gray-500"}`}
+                className={`ml-auto ${selectedSectionId === section.id ? "text-muted-foreground" : "text-muted-foreground"}`}
               >
                 {getTotalSeats(section)}
               </span>
@@ -352,30 +352,30 @@ export default function VisualSeatingCanvas({
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
             {/* Zoom Controls */}
-            <div className="absolute bottom-4 right-4 z-20 bg-white rounded-lg shadow-lg border border-gray-200 p-2 flex gap-2">
+            <div className="absolute bottom-4 right-4 z-20 bg-white rounded-lg shadow-lg border border p-2 flex gap-2">
               <button
                 type="button"
                 onClick={() => zoomIn()}
-                className="p-2 hover:bg-gray-100 rounded transition-colors"
+                className="p-2 hover:bg-muted rounded transition-colors"
                 title="Zoom In"
               >
-                <ZoomIn className="w-5 h-5 text-gray-700" />
+                <ZoomIn className="w-5 h-5 text-foreground" />
               </button>
               <button
                 type="button"
                 onClick={() => zoomOut()}
-                className="p-2 hover:bg-gray-100 rounded transition-colors"
+                className="p-2 hover:bg-muted rounded transition-colors"
                 title="Zoom Out"
               >
-                <ZoomOut className="w-5 h-5 text-gray-700" />
+                <ZoomOut className="w-5 h-5 text-foreground" />
               </button>
               <button
                 type="button"
                 onClick={() => resetTransform()}
-                className="p-2 hover:bg-gray-100 rounded transition-colors"
+                className="p-2 hover:bg-muted rounded transition-colors"
                 title="Reset View"
               >
-                <Maximize2 className="w-5 h-5 text-gray-700" />
+                <Maximize2 className="w-5 h-5 text-foreground" />
               </button>
             </div>
 
@@ -385,7 +385,7 @@ export default function VisualSeatingCanvas({
             >
               <div
                 ref={canvasRef}
-                className={`relative w-full h-full ${venueImageUrl ? "" : "bg-gray-50"}`}
+                className={`relative w-full h-full ${venueImageUrl ? "" : "bg-card"}`}
                 style={{
                   backgroundImage: venueImageUrl ? `url(${venueImageUrl})` : "none",
                   backgroundColor: venueImageUrl ? "transparent" : undefined,
@@ -413,10 +413,10 @@ export default function VisualSeatingCanvas({
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="bg-white/95 rounded-lg shadow-lg border-2 border-sky-300 p-8 max-w-md text-center">
                       <GridIcon className="w-16 h-16 text-sky-500 mx-auto mb-4" />
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      <h3 className="text-xl font-bold text-foreground mb-2">
                         {venueImageUrl ? "Ready to Design!" : "Blank Canvas Ready"}
                       </h3>
-                      <p className="text-sm text-gray-600 mb-4">
+                      <p className="text-sm text-muted-foreground mb-4">
                         {venueImageUrl
                           ? "Your venue image is loaded. Now add sections to start designing your seating layout."
                           : "No venue image needed! You can design your seating layout on this blank canvas."}
@@ -445,7 +445,7 @@ export default function VisualSeatingCanvas({
                   return (
                     <motion.div
                       key={section.id}
-                      className={`absolute cursor-move transition-all ${isSelected ? "z-10 border-2 border-solid border-foreground" : "border-2 border-dashed border-gray-400"}`}
+                      className={`absolute cursor-move transition-all ${isSelected ? "z-10 border-2 border-solid border-foreground" : "border-2 border-dashed border-muted-foreground"}`}
                       style={{
                         left: sectionX,
                         top: sectionY,
@@ -462,8 +462,8 @@ export default function VisualSeatingCanvas({
                       {showSectionLabels && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                           <div className="bg-white bg-opacity-90 px-3 py-2 rounded-lg shadow-sm">
-                            <p className="font-bold text-gray-900 text-sm">{section.name}</p>
-                            <p className="text-xs text-gray-600">{getTotalSeats(section)} seats</p>
+                            <p className="font-bold text-foreground text-sm">{section.name}</p>
+                            <p className="text-xs text-muted-foreground">{getTotalSeats(section)} seats</p>
                           </div>
                         </div>
                       )}
@@ -486,7 +486,7 @@ export default function VisualSeatingCanvas({
                           {/* Rotate Button */}
                           <button
                             type="button"
-                            className="absolute -top-10 left-1/2 -translate-x-1/2 p-1.5 bg-gray-700 text-white rounded-full border-2 border-white hover:bg-gray-900 transition-colors"
+                            className="absolute -top-10 left-1/2 -translate-x-1/2 p-1.5 bg-card text-white rounded-full border-2 border-white hover:bg-foreground transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               rotateSection(section.id, sectionRotation);

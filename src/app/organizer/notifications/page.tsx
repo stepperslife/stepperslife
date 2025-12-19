@@ -50,8 +50,8 @@ export default function NotificationsPage() {
   ];
 
   const getNotificationIcon = (type: string, read: boolean) => {
-    const iconClass = read ? "text-gray-400" : "text-primary";
-    const bgClass = read ? "bg-gray-100" : "bg-primary/10";
+    const iconClass = read ? "text-muted-foreground" : "text-primary";
+    const bgClass = read ? "bg-muted" : "bg-primary/10";
 
     switch (type) {
       case "sale":
@@ -78,7 +78,7 @@ export default function NotificationsPage() {
   const unreadCount = mockNotifications.filter((n) => !n.read).length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       <motion.header
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -88,7 +88,7 @@ export default function NotificationsPage() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
                 Notifications
                 {unreadCount > 0 && (
                   <span className="px-3 py-1 bg-primary text-white text-sm font-medium rounded-full">
@@ -96,7 +96,7 @@ export default function NotificationsPage() {
                   </span>
                 )}
               </h1>
-              <p className="text-gray-600 mt-1">Stay updated with your events and sales</p>
+              <p className="text-muted-foreground mt-1">Stay updated with your events and sales</p>
             </div>
             {unreadCount > 0 && (
               <button className="px-4 py-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
@@ -115,11 +115,11 @@ export default function NotificationsPage() {
             transition={{ duration: 0.5 }}
             className="bg-white rounded-lg shadow-md overflow-hidden"
           >
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-border">
               {mockNotifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-6 hover:bg-gray-50 transition-colors ${
+                  className={`p-6 hover:bg-card transition-colors ${
                     !notification.read ? "bg-primary/5" : ""
                   }`}
                 >
@@ -129,16 +129,16 @@ export default function NotificationsPage() {
                       <div className="flex items-center justify-between mb-1">
                         <h3
                           className={`text-sm font-medium ${
-                            notification.read ? "text-gray-900" : "text-gray-900 font-semibold"
+                            notification.read ? "text-foreground" : "text-foreground font-semibold"
                           }`}
                         >
                           {notification.title}
                         </h3>
-                        <span className="text-xs text-gray-500 whitespace-nowrap ml-4">
+                        <span className="text-xs text-muted-foreground whitespace-nowrap ml-4">
                           {notification.time}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600">{notification.message}</p>
+                      <p className="text-sm text-muted-foreground">{notification.message}</p>
                       {!notification.read && (
                         <button className="mt-2 text-xs text-primary hover:underline">
                           Mark as read
@@ -157,9 +157,9 @@ export default function NotificationsPage() {
             transition={{ duration: 0.5 }}
             className="bg-white rounded-lg shadow-md p-12 text-center"
           >
-            <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-medium text-gray-900 mb-2">No notifications yet</h3>
-            <p className="text-gray-600">
+            <Bell className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-medium text-foreground mb-2">No notifications yet</h3>
+            <p className="text-muted-foreground">
               You'll see updates about your events, sales, and payouts here
             </p>
           </motion.div>

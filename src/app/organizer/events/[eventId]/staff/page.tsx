@@ -51,7 +51,7 @@ function HierarchyNode({
             {hasSubSellers && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-1 text-gray-400 hover:text-gray-600"
+                className="mt-1 text-muted-foreground hover:text-muted-foreground"
               >
                 {isExpanded ? "▼" : "▶"}
               </button>
@@ -275,9 +275,9 @@ export default function StaffManagementPage() {
   /*
   if (event.organizerId !== currentUser._id && currentUser.role !== "admin") {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-card flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-          <p className="text-gray-600">You don't have permission to access this page.</p>
+          <p className="text-muted-foreground">You don't have permission to access this page.</p>
           <Link href="/" className="mt-4 inline-block text-primary hover:underline">
             Go to Homepage
           </Link>
@@ -849,8 +849,8 @@ export default function StaffManagementPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b">
-              <h2 className="text-2xl font-bold text-gray-900">Add Staff Member</h2>
-              <p className="text-gray-600 mt-1">
+              <h2 className="text-2xl font-bold text-foreground">Add Staff Member</h2>
+              <p className="text-muted-foreground mt-1">
                 Add a team member to help sell tickets for this event
               </p>
             </div>
@@ -858,7 +858,7 @@ export default function StaffManagementPage() {
             <div className="p-6 space-y-6">
               {/* Role Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Role</label>
+                <label className="block text-sm font-medium text-foreground mb-3">Role</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { value: "STAFF", label: "Door Staff", desc: "Scans tickets at entry" },
@@ -879,26 +879,26 @@ export default function StaffManagementPage() {
                       className={`p-3 border-2 rounded-lg transition-all text-left ${
                         selectedRole === role.value
                           ? "border-primary bg-accent"
-                          : "border-gray-200 hover:border-gray-300"
+                          : "border hover:border"
                       }`}
                     >
-                      <p className="font-semibold text-gray-900 text-sm">{role.label}</p>
-                      <p className="text-xs text-gray-600 mt-1">{role.desc}</p>
+                      <p className="font-semibold text-foreground text-sm">{role.label}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{role.desc}</p>
                     </button>
                   ))}
                 </div>
 
                 {/* Additional Permissions for Team Members */}
                 {selectedRole === "TEAM_MEMBERS" && (
-                  <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="mt-4 p-3 bg-card rounded-lg">
                     <label className="flex items-center space-x-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={canScan}
                         onChange={(e) => setCanScan(e.target.checked)}
-                        className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-ring"
+                        className="w-4 h-4 text-primary rounded border focus:ring-ring"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-foreground">
                         Also allow this seller to scan tickets at entry
                       </span>
                     </label>
@@ -909,7 +909,7 @@ export default function StaffManagementPage() {
               {/* Staff Information */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Full Name *
                   </label>
                   <input
@@ -917,12 +917,12 @@ export default function StaffManagementPage() {
                     value={staffName}
                     onChange={(e) => setStaffName(e.target.value)}
                     placeholder="John Doe"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Email Address *
                   </label>
                   <input
@@ -930,12 +930,12 @@ export default function StaffManagementPage() {
                     value={staffEmail}
                     onChange={(e) => setStaffEmail(e.target.value)}
                     placeholder="john@example.com"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Phone Number (Optional)
                   </label>
                   <input
@@ -943,7 +943,7 @@ export default function StaffManagementPage() {
                     value={staffPhone}
                     onChange={(e) => setStaffPhone(e.target.value)}
                     placeholder="(555) 123-4567"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
               </div>
@@ -951,7 +951,7 @@ export default function StaffManagementPage() {
               {/* Commission Structure (only for TEAM_MEMBERS and ASSOCIATES roles) */}
               {(selectedRole === "TEAM_MEMBERS" || selectedRole === "ASSOCIATES") && (
                 <div className="border-t pt-6">
-                  <h3 className="font-semibold text-gray-900 mb-4">Commission Structure</h3>
+                  <h3 className="font-semibold text-foreground mb-4">Commission Structure</h3>
 
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
@@ -960,12 +960,12 @@ export default function StaffManagementPage() {
                         className={`p-4 border-2 rounded-lg transition-all ${
                           commissionType === "PERCENTAGE"
                             ? "border-primary bg-accent"
-                            : "border-gray-200 hover:border-gray-300"
+                            : "border hover:border"
                         }`}
                       >
-                        <Percent className="w-6 h-6 mx-auto mb-2 text-gray-700" />
-                        <p className="font-semibold text-gray-900">Percentage</p>
-                        <p className="text-xs text-gray-600 mt-1">% of ticket price</p>
+                        <Percent className="w-6 h-6 mx-auto mb-2 text-foreground" />
+                        <p className="font-semibold text-foreground">Percentage</p>
+                        <p className="text-xs text-muted-foreground mt-1">% of ticket price</p>
                       </button>
 
                       <button
@@ -973,24 +973,24 @@ export default function StaffManagementPage() {
                         className={`p-4 border-2 rounded-lg transition-all ${
                           commissionType === "FIXED"
                             ? "border-primary bg-accent"
-                            : "border-gray-200 hover:border-gray-300"
+                            : "border hover:border"
                         }`}
                       >
-                        <DollarSign className="w-6 h-6 mx-auto mb-2 text-gray-700" />
-                        <p className="font-semibold text-gray-900">Fixed</p>
-                        <p className="text-xs text-gray-600 mt-1">$ per ticket</p>
+                        <DollarSign className="w-6 h-6 mx-auto mb-2 text-foreground" />
+                        <p className="font-semibold text-foreground">Fixed</p>
+                        <p className="text-xs text-muted-foreground mt-1">$ per ticket</p>
                       </button>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         {commissionType === "PERCENTAGE"
                           ? "Percentage (%)"
                           : "Amount per Ticket ($)"}
                       </label>
                       <div className="relative">
                         {commissionType === "FIXED" && (
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                             $
                           </span>
                         )}
@@ -1000,12 +1000,12 @@ export default function StaffManagementPage() {
                           value={commissionValue}
                           onChange={(e) => setCommissionValue(e.target.value)}
                           placeholder={commissionType === "PERCENTAGE" ? "10" : "5.00"}
-                          className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                          className={`w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
                             commissionType === "FIXED" ? "pl-8" : ""
                           }`}
                         />
                         {commissionType === "PERCENTAGE" && (
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                             %
                           </span>
                         )}
@@ -1017,10 +1017,10 @@ export default function StaffManagementPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t bg-gray-50 flex items-center justify-end gap-3">
+            <div className="p-6 border-t bg-card flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowAddStaff(false)}
-                className="px-6 py-3 text-gray-700 hover:text-gray-900 font-medium"
+                className="px-6 py-3 text-foreground hover:text-foreground font-medium"
               >
                 Cancel
               </button>
@@ -1040,17 +1040,17 @@ export default function StaffManagementPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b">
-              <h2 className="text-2xl font-bold text-gray-900">Edit Staff Member</h2>
-              <p className="text-gray-600 mt-1">Update {editingStaff.name}'s information</p>
+              <h2 className="text-2xl font-bold text-foreground">Edit Staff Member</h2>
+              <p className="text-muted-foreground mt-1">Update {editingStaff.name}'s information</p>
             </div>
 
             <div className="p-6 space-y-6">
               {/* Role Display (read-only) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
-                <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg">
-                  <span className="font-semibold text-gray-900">{editingStaff.role}</span>
-                  <p className="text-xs text-gray-500 mt-1">
+                <label className="block text-sm font-medium text-foreground mb-2">Role</label>
+                <div className="px-4 py-3 bg-card border border rounded-lg">
+                  <span className="font-semibold text-foreground">{editingStaff.role}</span>
+                  <p className="text-xs text-muted-foreground mt-1">
                     Role cannot be changed after creation
                   </p>
                 </div>
@@ -1059,7 +1059,7 @@ export default function StaffManagementPage() {
               {/* Staff Information */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Full Name *
                   </label>
                   <input
@@ -1067,22 +1067,22 @@ export default function StaffManagementPage() {
                     value={staffName}
                     onChange={(e) => setStaffName(e.target.value)}
                     placeholder="John Doe"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Email Address
                   </label>
-                  <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg">
-                    <span className="text-gray-900">{editingStaff.email}</span>
-                    <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                  <div className="px-4 py-3 bg-card border border rounded-lg">
+                    <span className="text-foreground">{editingStaff.email}</span>
+                    <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Phone Number (Optional)
                   </label>
                   <input
@@ -1090,22 +1090,22 @@ export default function StaffManagementPage() {
                     value={staffPhone}
                     onChange={(e) => setStaffPhone(e.target.value)}
                     placeholder="(555) 123-4567"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
               </div>
 
               {/* Scanning Permission for Team Members */}
               {editingStaff.role === "TEAM_MEMBERS" && (
-                <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="p-3 bg-card rounded-lg">
                   <label className="flex items-center space-x-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={canScan}
                       onChange={(e) => setCanScan(e.target.checked)}
-                      className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-ring"
+                      className="w-4 h-4 text-primary rounded border focus:ring-ring"
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-foreground">
                       Also allow this seller to scan tickets at entry
                     </span>
                   </label>
@@ -1115,7 +1115,7 @@ export default function StaffManagementPage() {
               {/* Commission Structure (only for TEAM_MEMBERS and ASSOCIATES roles) */}
               {(editingStaff.role === "TEAM_MEMBERS" || editingStaff.role === "ASSOCIATES") && (
                 <div className="border-t pt-6">
-                  <h3 className="font-semibold text-gray-900 mb-4">Commission Structure</h3>
+                  <h3 className="font-semibold text-foreground mb-4">Commission Structure</h3>
 
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
@@ -1124,12 +1124,12 @@ export default function StaffManagementPage() {
                         className={`p-4 border-2 rounded-lg transition-all ${
                           commissionType === "PERCENTAGE"
                             ? "border-primary bg-accent"
-                            : "border-gray-200 hover:border-gray-300"
+                            : "border hover:border"
                         }`}
                       >
-                        <Percent className="w-6 h-6 mx-auto mb-2 text-gray-700" />
-                        <p className="font-semibold text-gray-900">Percentage</p>
-                        <p className="text-xs text-gray-600 mt-1">% of ticket price</p>
+                        <Percent className="w-6 h-6 mx-auto mb-2 text-foreground" />
+                        <p className="font-semibold text-foreground">Percentage</p>
+                        <p className="text-xs text-muted-foreground mt-1">% of ticket price</p>
                       </button>
 
                       <button
@@ -1137,24 +1137,24 @@ export default function StaffManagementPage() {
                         className={`p-4 border-2 rounded-lg transition-all ${
                           commissionType === "FIXED"
                             ? "border-primary bg-accent"
-                            : "border-gray-200 hover:border-gray-300"
+                            : "border hover:border"
                         }`}
                       >
-                        <DollarSign className="w-6 h-6 mx-auto mb-2 text-gray-700" />
-                        <p className="font-semibold text-gray-900">Fixed</p>
-                        <p className="text-xs text-gray-600 mt-1">$ per ticket</p>
+                        <DollarSign className="w-6 h-6 mx-auto mb-2 text-foreground" />
+                        <p className="font-semibold text-foreground">Fixed</p>
+                        <p className="text-xs text-muted-foreground mt-1">$ per ticket</p>
                       </button>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         {commissionType === "PERCENTAGE"
                           ? "Percentage (%)"
                           : "Amount per Ticket ($)"}
                       </label>
                       <div className="relative">
                         {commissionType === "FIXED" && (
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                             $
                           </span>
                         )}
@@ -1164,12 +1164,12 @@ export default function StaffManagementPage() {
                           value={commissionValue}
                           onChange={(e) => setCommissionValue(e.target.value)}
                           placeholder={commissionType === "PERCENTAGE" ? "10" : "5.00"}
-                          className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                          className={`w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
                             commissionType === "FIXED" ? "pl-8" : ""
                           }`}
                         />
                         {commissionType === "PERCENTAGE" && (
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                             %
                           </span>
                         )}
@@ -1181,7 +1181,7 @@ export default function StaffManagementPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t bg-gray-50 flex items-center justify-end gap-3">
+            <div className="p-6 border-t bg-card flex items-center justify-end gap-3">
               <button
                 onClick={() => {
                   setShowEditStaff(false);
@@ -1191,7 +1191,7 @@ export default function StaffManagementPage() {
                   setCommissionValue("");
                   setCanScan(false);
                 }}
-                className="px-6 py-3 text-gray-700 hover:text-gray-900 font-medium"
+                className="px-6 py-3 text-foreground hover:text-foreground font-medium"
               >
                 Cancel
               </button>
@@ -1211,8 +1211,8 @@ export default function StaffManagementPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
             <div className="p-6 border-b">
-              <h2 className="text-2xl font-bold text-gray-900">Copy Staff Roster</h2>
-              <p className="text-gray-600 mt-1">
+              <h2 className="text-2xl font-bold text-foreground">Copy Staff Roster</h2>
+              <p className="text-muted-foreground mt-1">
                 Copy staff members from another event to this event
               </p>
             </div>
@@ -1220,13 +1220,13 @@ export default function StaffManagementPage() {
             <div className="p-6 space-y-6">
               {/* Event Selector */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Select Event to Copy From *
                 </label>
                 <select
                   value={selectedSourceEvent}
                   onChange={(e) => setSelectedSourceEvent(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="">-- Select an event --</option>
                   {organizerEvents
@@ -1238,7 +1238,7 @@ export default function StaffManagementPage() {
                       </option>
                     ))}
                 </select>
-                <p className="text-xs text-gray-500 mt-1">Only events you organize are shown</p>
+                <p className="text-xs text-muted-foreground mt-1">Only events you organize are shown</p>
               </div>
 
               {/* Preview */}
@@ -1247,14 +1247,14 @@ export default function StaffManagementPage() {
                   <div className="flex items-start gap-3">
                     <CheckSquare className="w-5 h-5 text-primary mt-0.5" />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">What will be copied?</h3>
-                      <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                      <h3 className="font-semibold text-foreground">What will be copied?</h3>
+                      <ul className="text-sm text-muted-foreground mt-2 space-y-1">
                         <li>• All active staff members from the selected event</li>
                         <li>• Staff roles and commission settings</li>
                         <li>• Parent-child relationships (team members and their associates)</li>
                         <li>• Permissions (scanning, sub-seller assignment)</li>
                       </ul>
-                      <p className="text-sm text-gray-700 mt-3 font-medium">
+                      <p className="text-sm text-foreground mt-3 font-medium">
                         Note: Sales history and commission earned will NOT be copied (starts fresh
                         for this event)
                       </p>
@@ -1264,17 +1264,17 @@ export default function StaffManagementPage() {
               )}
 
               {/* Copy Allocations Checkbox */}
-              <div className="flex items-start gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <div className="flex items-start gap-3 p-4 bg-card border border rounded-lg">
                 <input
                   type="checkbox"
                   id="copyAllocations"
                   checked={copyAllocations}
                   onChange={(e) => setCopyAllocations(e.target.checked)}
-                  className="mt-1 w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  className="mt-1 w-4 h-4 text-primary border rounded focus:ring-primary"
                 />
                 <label htmlFor="copyAllocations" className="flex-1 cursor-pointer">
-                  <div className="font-medium text-gray-900">Copy ticket allocations</div>
-                  <div className="text-sm text-gray-600 mt-1">
+                  <div className="font-medium text-foreground">Copy ticket allocations</div>
+                  <div className="text-sm text-muted-foreground mt-1">
                     If checked, staff members will receive the same ticket allocations as the source
                     event. If unchecked, allocations will start at 0 and you can set them manually.
                   </div>
@@ -1312,21 +1312,21 @@ export default function StaffManagementPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50 border-t">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-card border-t">
               <button
                 onClick={() => {
                   setShowCopyRoster(false);
                   setSelectedSourceEvent("");
                   setCopyAllocations(false);
                 }}
-                className="px-6 py-3 text-gray-700 hover:text-gray-900 font-medium"
+                className="px-6 py-3 text-foreground hover:text-foreground font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCopyRoster}
                 disabled={!selectedSourceEvent}
-                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold disabled:bg-muted-foreground disabled:cursor-not-allowed flex items-center gap-2"
               >
                 <Copy className="w-5 h-5" />
                 Copy Staff Roster
@@ -1341,12 +1341,12 @@ export default function StaffManagementPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
             <div className="p-6 border-b">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-foreground">
                 {bulkAction === "allocations" && "Set Ticket Allocations"}
                 {bulkAction === "commission" && "Set Commission"}
                 {bulkAction === "deactivate" && "Deactivate Staff Members"}
               </h2>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">
                 {bulkAction === "deactivate"
                   ? `Deactivate ${selectedStaff.size} selected staff member(s)`
                   : `Update ${selectedStaff.size} selected staff member(s)`}
@@ -1356,7 +1356,7 @@ export default function StaffManagementPage() {
             <div className="p-6 space-y-6">
               {bulkAction === "allocations" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Ticket Allocation *
                   </label>
                   <input
@@ -1364,10 +1364,10 @@ export default function StaffManagementPage() {
                     value={bulkAllocationValue}
                     onChange={(e) => setBulkAllocationValue(e.target.value)}
                     min="0"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     placeholder="Enter number of tickets"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     This will set the ticket allocation for all selected staff members
                   </p>
                 </div>
@@ -1376,7 +1376,7 @@ export default function StaffManagementPage() {
               {bulkAction === "commission" && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Commission Type *
                     </label>
                     <select
@@ -1384,7 +1384,7 @@ export default function StaffManagementPage() {
                       onChange={(e) =>
                         setBulkCommissionType(e.target.value as "PERCENTAGE" | "FIXED")
                       }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     >
                       <option value="PERCENTAGE">Percentage (%)</option>
                       <option value="FIXED">Fixed Amount ($)</option>
@@ -1392,7 +1392,7 @@ export default function StaffManagementPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Commission Value *
                     </label>
                     <input
@@ -1401,14 +1401,14 @@ export default function StaffManagementPage() {
                       onChange={(e) => setBulkCommissionValue(e.target.value)}
                       min="0"
                       step={bulkCommissionType === "PERCENTAGE" ? "0.1" : "0.01"}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                       placeholder={
                         bulkCommissionType === "PERCENTAGE"
                           ? "Enter percentage (e.g., 10)"
                           : "Enter dollar amount (e.g., 5.00)"
                       }
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {bulkCommissionType === "PERCENTAGE"
                         ? "Percentage of ticket price"
                         : "Fixed dollar amount per ticket sold"}
@@ -1421,7 +1421,7 @@ export default function StaffManagementPage() {
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <div className="flex items-start gap-3">
                     <svg
-                      className="w-5 h-5 text-red-600 mt-0.5"
+                      className="w-5 h-5 text-destructive mt-0.5"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -1451,7 +1451,7 @@ export default function StaffManagementPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50 border-t">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-card border-t">
               <button
                 onClick={() => {
                   setShowBulkActions(false);
@@ -1459,7 +1459,7 @@ export default function StaffManagementPage() {
                   setBulkAllocationValue("");
                   setBulkCommissionValue("");
                 }}
-                className="px-6 py-3 text-gray-700 hover:text-gray-900 font-medium"
+                className="px-6 py-3 text-foreground hover:text-foreground font-medium"
               >
                 Cancel
               </button>

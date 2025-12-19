@@ -141,12 +141,12 @@ export default function Toolbar({ className = "" }: ToolbarProps) {
   };
 
   return (
-    <div className={`bg-white border-2 border-gray-300 rounded-lg p-4 ${className}`}>
-      <h3 className="text-lg font-bold text-gray-900 mb-4">Seating Elements</h3>
+    <div className={`bg-white border-2 border rounded-lg p-4 ${className}`}>
+      <h3 className="text-lg font-bold text-foreground mb-4">Seating Elements</h3>
 
       {/* Tables Section */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+        <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
           <Circle className="w-4 h-4" />
           Tables
         </h4>
@@ -163,13 +163,13 @@ export default function Toolbar({ className = "" }: ToolbarProps) {
                   color: template.color,
                 })
               }
-              className="flex flex-col items-center justify-center p-3 bg-gray-50 border-2 border-gray-200 rounded-lg cursor-move hover:bg-accent hover:border-border transition-all group"
+              className="flex flex-col items-center justify-center p-3 bg-card border-2 border rounded-lg cursor-move hover:bg-accent hover:border-border transition-all group"
             >
-              <div className="text-gray-600 group-hover:text-primary mb-1">{template.icon}</div>
-              <span className="text-xs font-medium text-gray-700 group-hover:text-primary">
+              <div className="text-muted-foreground group-hover:text-primary mb-1">{template.icon}</div>
+              <span className="text-xs font-medium text-foreground group-hover:text-primary">
                 {template.label}
               </span>
-              <span className="text-xs text-gray-500">{template.capacity} seats</span>
+              <span className="text-xs text-muted-foreground">{template.capacity} seats</span>
             </div>
           ))}
         </div>
@@ -177,7 +177,7 @@ export default function Toolbar({ className = "" }: ToolbarProps) {
 
       {/* Row Sections */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+        <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
           <Rows3 className="w-4 h-4" />
           Row Sections
         </h4>
@@ -197,15 +197,15 @@ export default function Toolbar({ className = "" }: ToolbarProps) {
                   color: "#8B5CF6",
                 })
               }
-              className="flex flex-col p-3 bg-gray-50 border-2 border-gray-200 rounded-lg cursor-move hover:bg-accent/50 hover:border-primary/40 transition-all group"
+              className="flex flex-col p-3 bg-card border-2 border rounded-lg cursor-move hover:bg-accent/50 hover:border-primary/40 transition-all group"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium text-gray-700 group-hover:text-primary">
+                <span className="text-xs font-medium text-foreground group-hover:text-primary">
                   {template.label}
                 </span>
-                <Rows3 className="w-4 h-4 text-gray-600 group-hover:text-primary" />
+                <Rows3 className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
               </div>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted-foreground">
                 {template.rowCount} rows × {template.seatsPerRow} seats ={" "}
                 {template.rowCount * template.seatsPerRow} total
               </span>
@@ -216,7 +216,7 @@ export default function Toolbar({ className = "" }: ToolbarProps) {
 
       {/* Special Areas */}
       <div>
-        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+        <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
           <Sparkles className="w-4 h-4" />
           Special Areas
         </h4>
@@ -233,10 +233,10 @@ export default function Toolbar({ className = "" }: ToolbarProps) {
                   rotation: 0,
                 })
               }
-              className="flex flex-col items-center justify-center p-3 bg-gray-50 border-2 border-gray-200 rounded-lg cursor-move hover:bg-pink-50 hover:border-pink-300 transition-all group"
+              className="flex flex-col items-center justify-center p-3 bg-card border-2 border rounded-lg cursor-move hover:bg-pink-50 hover:border-pink-300 transition-all group"
             >
-              <div className="text-gray-600 group-hover:text-pink-600 mb-1">{template.icon}</div>
-              <span className="text-xs font-medium text-gray-700 group-hover:text-pink-700">
+              <div className="text-muted-foreground group-hover:text-pink-600 mb-1">{template.icon}</div>
+              <span className="text-xs font-medium text-foreground group-hover:text-pink-700">
                 {template.label}
               </span>
             </div>

@@ -1030,7 +1030,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               <button
                 type="button"
                 onClick={() => setShowFlyerModal(false)}
-                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+                className="absolute -top-12 right-0 text-white hover:text-muted-foreground transition-colors"
               >
                 <X className="w-8 h-8" />
               </button>

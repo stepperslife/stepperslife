@@ -283,7 +283,7 @@ export default function MyClassesPage() {
           {/* Role Indicator Banner */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-center gap-3">
             <div className="bg-blue-100 p-2 rounded-full">
-              <User className="w-5 h-5 text-blue-600" />
+              <User className="w-5 h-5 text-primary" />
             </div>
             <div>
               <p className="font-medium text-blue-900">Student View</p>
@@ -364,7 +364,7 @@ export default function MyClassesPage() {
                           >
                             {isValid && ticket.ticketCode ? (
                               <div
-                                className="bg-white cursor-pointer hover:bg-gray-50 transition-colors"
+                                className="bg-white cursor-pointer hover:bg-card transition-colors"
                                 onClick={() => setFullscreenTicket({ ticket, event })}
                               >
                                 {/* Status Banner */}
@@ -389,20 +389,20 @@ export default function MyClassesPage() {
                                       marginSize={2}
                                     />
                                   </div>
-                                  <p className="mt-2 font-mono text-sm font-bold tracking-widest text-gray-700">
+                                  <p className="mt-2 font-mono text-sm font-bold tracking-widest text-foreground">
                                     {ticket.ticketCode}
                                   </p>
                                 </div>
 
                                 {/* Enrollment Info */}
-                                <div className="bg-gray-50 px-4 py-3 border-t flex items-center justify-between">
+                                <div className="bg-card px-4 py-3 border-t flex items-center justify-between">
                                   <div className="flex items-center gap-2">
                                     <User className="w-4 h-4 text-muted-foreground" />
                                     <div>
-                                      <p className="font-semibold text-gray-900">
+                                      <p className="font-semibold text-foreground">
                                         {ticket.attendeeName || "Guest"}
                                       </p>
-                                      <p className="text-sm text-gray-500">{ticket.tier?.name || "General"}</p>
+                                      <p className="text-sm text-muted-foreground">{ticket.tier?.name || "General"}</p>
                                     </div>
                                   </div>
                                   <button

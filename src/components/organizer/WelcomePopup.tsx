@@ -30,16 +30,16 @@ export function WelcomePopup({ open, onClose, creditsRemaining }: WelcomePopupPr
             <h3 className="text-3xl font-bold text-primary mb-2">
               {creditsRemaining.toLocaleString()} FREE Tickets!
             </h3>
-            <p className="text-sm text-gray-600">Worth ${creditValue} to help you get started</p>
+            <p className="text-sm text-muted-foreground">Worth ${creditValue} to help you get started</p>
           </div>
 
           {/* What You Get */}
           <div className="space-y-3">
-            <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+            <h4 className="font-semibold text-foreground flex items-center gap-2">
               <Ticket className="w-5 h-5 text-primary" />
               Here's what you can do:
             </h4>
-            <ul className="space-y-2 text-sm text-gray-700">
+            <ul className="space-y-2 text-sm text-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary font-bold mt-0.5">•</span>
                 <span>
@@ -65,11 +65,11 @@ export function WelcomePopup({ open, onClose, creditsRemaining }: WelcomePopupPr
 
           {/* How Credits Work */}
           <div className="bg-accent rounded-lg p-4 border border-primary/30">
-            <h4 className="font-semibold text-gray-900 flex items-center gap-2 mb-2">
+            <h4 className="font-semibold text-foreground flex items-center gap-2 mb-2">
               <DollarSign className="w-5 h-5 text-primary" />
               How Free Tickets Work:
             </h4>
-            <p className="text-sm text-gray-700 leading-relaxed">
+            <p className="text-sm text-foreground leading-relaxed">
               Your free tickets will be automatically applied when you create an event. Once used,
               you can purchase more tickets at just <strong>$0.30 each</strong> to continue hosting
               events with zero transaction fees.
@@ -84,7 +84,7 @@ export function WelcomePopup({ open, onClose, creditsRemaining }: WelcomePopupPr
             Get Started - Create My Event
           </Button>
 
-          <p className="text-xs text-center text-gray-500">
+          <p className="text-xs text-center text-muted-foreground">
             Your free tickets never expire and are ready to use anytime!
           </p>
         </div>

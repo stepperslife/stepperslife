@@ -73,7 +73,7 @@ export default function ScansByEventPage() {
                   </div>
                   <div>
                     <p className="text-muted-foreground">Checked In</p>
-                    <p className="font-semibold text-green-600">{event.scansCount}</p>
+                    <p className="font-semibold text-success">{event.scansCount}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Attendance Rate</p>

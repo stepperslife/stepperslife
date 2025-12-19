@@ -87,24 +87,24 @@ export default function StripeConnectReturnPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-card p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         {/* Loading State */}
         {status === "loading" && (
           <div className="text-center">
             <Loader2 className="w-16 h-16 mx-auto text-primary animate-spin mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Verifying Your Account</h2>
-            <p className="text-gray-600">Please wait while we verify your Stripe account setup...</p>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Verifying Your Account</h2>
+            <p className="text-muted-foreground">Please wait while we verify your Stripe account setup...</p>
           </div>
         )}
 
         {/* Success State */}
         {status === "success" && (
           <div className="text-center">
-            <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">All Set!</h2>
-            <p className="text-gray-600 mb-4">{message}</p>
-            <p className="text-sm text-gray-500">
+            <CheckCircle className="w-16 h-16 mx-auto text-success mb-4" />
+            <h2 className="text-2xl font-bold text-foreground mb-2">All Set!</h2>
+            <p className="text-muted-foreground mb-4">{message}</p>
+            <p className="text-sm text-muted-foreground">
               Redirecting you to settings...
             </p>
           </div>
@@ -113,9 +113,9 @@ export default function StripeConnectReturnPage() {
         {/* Incomplete State */}
         {status === "incomplete" && (
           <div className="text-center">
-            <XCircle className="w-16 h-16 mx-auto text-yellow-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Additional Information Needed</h2>
-            <p className="text-gray-600 mb-4">{message}</p>
+            <XCircle className="w-16 h-16 mx-auto text-warning mb-4" />
+            <h2 className="text-2xl font-bold text-foreground mb-2">Additional Information Needed</h2>
+            <p className="text-muted-foreground mb-4">{message}</p>
 
             {requirements.length > 0 && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left">
@@ -139,7 +139,7 @@ export default function StripeConnectReturnPage() {
               </button>
               <button
                 onClick={handleContinue}
-                className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                className="flex-1 bg-muted text-foreground px-6 py-3 rounded-lg font-semibold hover:bg-muted transition-colors"
               >
                 Do Later
               </button>
@@ -150,9 +150,9 @@ export default function StripeConnectReturnPage() {
         {/* Error State */}
         {status === "error" && (
           <div className="text-center">
-            <XCircle className="w-16 h-16 mx-auto text-red-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Verification Failed</h2>
-            <p className="text-gray-600 mb-6">{message}</p>
+            <XCircle className="w-16 h-16 mx-auto text-destructive mb-4" />
+            <h2 className="text-2xl font-bold text-foreground mb-2">Verification Failed</h2>
+            <p className="text-muted-foreground mb-6">{message}</p>
             <button
               onClick={handleContinue}
               className="w-full bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"

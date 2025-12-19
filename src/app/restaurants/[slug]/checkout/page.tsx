@@ -229,7 +229,7 @@ export default function RestaurantCheckoutPage() {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium mb-1">
-                        Full Name <span className="text-red-500">*</span>
+                        Full Name <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="text"
@@ -243,7 +243,7 @@ export default function RestaurantCheckoutPage() {
 
                     <div>
                       <label className="block text-sm font-medium mb-1">
-                        Email <span className="text-red-500">*</span>
+                        Email <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="email"
@@ -257,7 +257,7 @@ export default function RestaurantCheckoutPage() {
 
                     <div>
                       <label className="block text-sm font-medium mb-1">
-                        Phone <span className="text-red-500">*</span>
+                        Phone <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="tel"

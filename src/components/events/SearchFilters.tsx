@@ -55,7 +55,7 @@ export function SearchFilters({
     <div className="space-y-4">
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
         <Input
           type="text"
           placeholder="Search events by name, description, or location..."
@@ -67,9 +67,9 @@ export function SearchFilters({
           <button
             type="button"
             onClick={clearSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors"
           >
-            <X className="w-4 h-4 text-gray-400" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
         )}
       </div>
@@ -90,7 +90,7 @@ export function SearchFilters({
                 ${
                   isSelected
                     ? "bg-primary text-white shadow-md"
-                    : "bg-white text-gray-700 hover:bg-gray-100 shadow-sm"
+                    : "bg-white text-foreground hover:bg-muted shadow-sm"
                 }
               `}
             >
@@ -109,7 +109,7 @@ export function SearchFilters({
               ${
                 showPastEvents
                   ? "bg-primary text-white shadow-md hover:bg-primary/90"
-                  : "bg-white text-gray-700 hover:bg-gray-100 shadow-sm"
+                  : "bg-white text-foreground hover:bg-muted shadow-sm"
               }
             `}
           >
@@ -120,7 +120,7 @@ export function SearchFilters({
 
       {/* Active Filters Summary */}
       {(searchQuery || selectedCategory) && (
-        <div className="flex items-center gap-2 text-sm text-gray-600">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>Showing results for:</span>
           {searchQuery && (
             <span className="px-2 py-1 bg-accent text-primary rounded">"{searchQuery}"</span>

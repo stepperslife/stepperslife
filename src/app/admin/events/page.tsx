@@ -296,14 +296,14 @@ export default function EventsModerationPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                  <div className="flex items-center gap-3 pt-4 border-t border">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">Change Status:</span>
+                      <span className="text-sm text-muted-foreground">Change Status:</span>
                       <button
                         type="button"
                         onClick={() => handleStatusChange(event._id, "PUBLISHED")}
                         disabled={event.status === "PUBLISHED"}
-                        className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded-lg hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-1 text-sm bg-success/20 text-green-800 rounded-lg hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         Publish
                       </button>
@@ -338,7 +338,7 @@ export default function EventsModerationPage() {
                         <button
                           type="button"
                           onClick={() => handleUnmarkClaimable(event._id)}
-                          className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-1"
+                          className="px-3 py-1 text-sm bg-muted text-foreground rounded-lg hover:bg-muted transition-colors flex items-center gap-1"
                           title="Remove from claimable list"
                         >
                           <Gift className="w-4 h-4" />

@@ -95,17 +95,17 @@ function CreditPurchaseForm({
       {/* Payment Element - supports Card + Cash App Pay */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-3">
-          <CreditCard className="w-5 h-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-900">Payment Details</h3>
+          <CreditCard className="w-5 h-5 text-muted-foreground" />
+          <h3 className="font-semibold text-foreground">Payment Details</h3>
         </div>
-        <div className="border border-gray-300 rounded-lg p-4">
+        <div className="border border rounded-lg p-4">
           <PaymentElement
             options={{
               layout: "tabs",
             }}
           />
         </div>
-        <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+        <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
           <Smartphone className="w-3 h-3" />
           Cash App Pay available for US customers
         </p>
@@ -119,9 +119,9 @@ function CreditPurchaseForm({
       )}
 
       {/* Total */}
-      <div className="bg-gray-50 rounded-lg p-4 mb-6">
+      <div className="bg-card rounded-lg p-4 mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-gray-600">Credits:</span>
+          <span className="text-muted-foreground">Credits:</span>
           <span className="font-semibold">{selectedPackage.credits} tickets</span>
         </div>
         <div className="flex items-center justify-between text-lg font-bold">
@@ -136,7 +136,7 @@ function CreditPurchaseForm({
           type="button"
           onClick={onClose}
           disabled={isProcessing}
-          className="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+          className="px-6 py-2 text-foreground hover:bg-muted rounded-lg transition-colors disabled:opacity-50"
         >
           Cancel
         </button>
@@ -229,8 +229,8 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <ShoppingCart className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Purchase More Credits</h2>
-          <p className="text-gray-600">Choose the package that fits your needs</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Purchase More Credits</h2>
+          <p className="text-muted-foreground">Choose the package that fits your needs</p>
         </div>
 
         {/* Package Selection */}
@@ -243,7 +243,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
               className={`border-2 rounded-lg p-6 hover:shadow-lg transition-all text-center relative ${
                 selectedPackage.credits === pkg.credits
                   ? "border-primary bg-accent"
-                  : "border-gray-200 hover:border-primary"
+                  : "border hover:border-primary"
               }`}
             >
               {pkg.popular && (
@@ -251,10 +251,10 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
                   POPULAR
                 </div>
               )}
-              <p className="text-3xl font-bold text-gray-900 mb-2">{pkg.credits}</p>
-              <p className="text-sm text-gray-600 mb-3">tickets</p>
+              <p className="text-3xl font-bold text-foreground mb-2">{pkg.credits}</p>
+              <p className="text-sm text-muted-foreground mb-3">tickets</p>
               <p className="text-2xl font-bold text-primary mb-2">${pkg.price}</p>
-              <p className="text-xs text-gray-500">$0.30 per ticket</p>
+              <p className="text-xs text-muted-foreground">$0.30 per ticket</p>
               {selectedPackage.credits === pkg.credits && (
                 <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                   <Check className="w-4 h-4 text-white" />
@@ -268,7 +268,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
-            <p className="text-gray-600">Loading payment form...</p>
+            <p className="text-muted-foreground">Loading payment form...</p>
           </div>
         )}
 
@@ -279,7 +279,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
             <button
               type="button"
               onClick={onClose}
-              className="block w-full mt-4 px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="block w-full mt-4 px-6 py-2 text-foreground hover:bg-muted rounded-lg transition-colors"
             >
               Close
             </button>

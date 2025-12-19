@@ -192,18 +192,18 @@ export default function PricingPage() {
                 </div>
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">💡 How It Works:</h3>
-                <ol className="space-y-2 text-gray-700">
+                <h3 className="text-xl font-bold text-foreground mb-2">💡 How It Works:</h3>
+                <ol className="space-y-2 text-foreground">
                   <li className="flex items-start gap-2">
-                    <span className="font-bold text-blue-600">1.</span>
+                    <span className="font-bold text-primary">1.</span>
                     <span><strong>Create your event</strong> - 100% FREE to set up, no payment required</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="font-bold text-blue-600">2.</span>
+                    <span className="font-bold text-primary">2.</span>
                     <span><strong>Add tickets and details</strong> - Configure everything how you want it</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="font-bold text-blue-600">3.</span>
+                    <span className="font-bold text-primary">3.</span>
                     <span><strong>Choose your payment option</strong> - Select PREPAY or CREDIT CARD model when ready to publish</span>
                   </li>
                 </ol>
@@ -220,11 +220,11 @@ export default function PricingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <div className="flex items-center gap-2">
-                <Heart className="w-5 h-5 text-red-500" />
+                <Heart className="w-5 h-5 text-destructive" />
                 <span className="font-semibold">Charity Events: 50% off platform fees</span>
               </div>
               <div className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-green-600" />
+                <DollarSign className="w-5 h-5 text-success" />
                 <span className="font-semibold">Low-price events under $20: Automatic 50% discount</span>
               </div>
             </div>

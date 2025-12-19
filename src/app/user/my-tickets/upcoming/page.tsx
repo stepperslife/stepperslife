@@ -75,8 +75,8 @@ export default function UpcomingTicketsPage() {
                 <div className="flex flex-col lg:flex-row gap-6">
                   {/* QR Code */}
                   <div className="flex-shrink-0">
-                    <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <QrCode className="h-16 w-16 text-gray-400" />
+                    <div className="w-32 h-32 bg-muted rounded-lg flex items-center justify-center">
+                      <QrCode className="h-16 w-16 text-muted-foreground" />
                     </div>
                     <Button className="w-full mt-2" size="sm">
                       <QrCode className="h-4 w-4 mr-2" />
@@ -89,13 +89,13 @@ export default function UpcomingTicketsPage() {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                          <span className="px-2 py-1 bg-success/20 text-green-800 text-xs font-medium rounded">
                             {getDaysUntil(ticket.eventDate)}
                           </span>
                         </div>
                         <h3 className="text-2xl font-bold">{ticket.eventName}</h3>
                       </div>
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-success/20 text-green-800">
                         Active
                       </span>
                     </div>

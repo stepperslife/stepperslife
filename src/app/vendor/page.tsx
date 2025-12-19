@@ -97,7 +97,7 @@ export default function VendorLandingPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/vendor/apply"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary rounded-lg font-semibold text-lg hover:bg-muted transition-colors"
                 >
                   Apply to Sell
                   <ArrowRight className="h-5 w-5" />

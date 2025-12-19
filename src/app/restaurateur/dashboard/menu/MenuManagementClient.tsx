@@ -370,7 +370,7 @@ export default function MenuManagementClient() {
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-2xl font-bold text-success">
                   {menuItems.filter((i) => i.isAvailable).length}
                 </p>
                 <p className="text-sm text-muted-foreground">Available</p>
@@ -378,7 +378,7 @@ export default function MenuManagementClient() {
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-2xl font-bold text-destructive">
                   {menuItems.filter((i) => !i.isAvailable).length}
                 </p>
                 <p className="text-sm text-muted-foreground">Hidden</p>
@@ -419,7 +419,7 @@ export default function MenuManagementClient() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="text-red-500 hover:text-red-600"
+                        className="text-destructive hover:text-destructive"
                         onClick={() => handleDeleteCategory(category._id)}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -437,8 +437,8 @@ export default function MenuManagementClient() {
                             key={item._id}
                             className={`flex items-center justify-between p-3 rounded-lg border ${
                               item.isAvailable
-                                ? "bg-white dark:bg-gray-800"
-                                : "bg-gray-100 dark:bg-gray-900 opacity-60"
+                                ? "bg-white dark:bg-card"
+                                : "bg-muted dark:bg-background opacity-60"
                             }`}
                           >
                             <div className="flex items-center gap-3">
@@ -470,9 +470,9 @@ export default function MenuManagementClient() {
                                 title={item.isAvailable ? "Hide item" : "Show item"}
                               >
                                 {item.isAvailable ? (
-                                  <Eye className="w-4 h-4 text-green-600" />
+                                  <Eye className="w-4 h-4 text-success" />
                                 ) : (
-                                  <EyeOff className="w-4 h-4 text-red-600" />
+                                  <EyeOff className="w-4 h-4 text-destructive" />
                                 )}
                               </Button>
                               <Button
@@ -485,7 +485,7 @@ export default function MenuManagementClient() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="text-red-500 hover:text-red-600"
+                                className="text-destructive hover:text-destructive"
                                 onClick={() => handleDeleteItem(item._id)}
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -516,8 +516,8 @@ export default function MenuManagementClient() {
                         key={item._id}
                         className={`flex items-center justify-between p-3 rounded-lg border ${
                           item.isAvailable
-                            ? "bg-white dark:bg-gray-800"
-                            : "bg-gray-100 dark:bg-gray-900 opacity-60"
+                            ? "bg-white dark:bg-card"
+                            : "bg-muted dark:bg-background opacity-60"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -548,9 +548,9 @@ export default function MenuManagementClient() {
                             onClick={() => handleToggleAvailability(item._id)}
                           >
                             {item.isAvailable ? (
-                              <Eye className="w-4 h-4 text-green-600" />
+                              <Eye className="w-4 h-4 text-success" />
                             ) : (
-                              <EyeOff className="w-4 h-4 text-red-600" />
+                              <EyeOff className="w-4 h-4 text-destructive" />
                             )}
                           </Button>
                           <Button
@@ -563,7 +563,7 @@ export default function MenuManagementClient() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="text-red-500 hover:text-red-600"
+                            className="text-destructive hover:text-destructive"
                             onClick={() => handleDeleteItem(item._id)}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -637,7 +637,7 @@ export default function MenuManagementClient() {
                 </div>
 
                 {error && (
-                  <p className="text-red-500 text-sm">{error}</p>
+                  <p className="text-destructive text-sm">{error}</p>
                 )}
 
                 <div className="flex gap-3 pt-2">
@@ -738,7 +738,7 @@ export default function MenuManagementClient() {
                 </div>
 
                 {error && (
-                  <p className="text-red-500 text-sm">{error}</p>
+                  <p className="text-destructive text-sm">{error}</p>
                 )}
 
                 <div className="flex gap-3 pt-2">

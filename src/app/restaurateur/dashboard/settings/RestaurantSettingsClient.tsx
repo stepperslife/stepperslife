@@ -349,7 +349,7 @@ export default function RestaurantSettingsClient() {
                     <button
                       type="button"
                       onClick={() => handleRemoveCuisine(cuisine)}
-                      className="ml-1 hover:text-red-600"
+                      className="ml-1 hover:text-destructive"
                     >
                       ×
                     </button>

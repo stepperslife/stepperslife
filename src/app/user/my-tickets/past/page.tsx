@@ -79,7 +79,7 @@ export default function PastTicketsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center gap-4">
                   {/* Date Badge */}
-                  <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                  <div className="flex-shrink-0 w-16 h-16 bg-muted rounded-lg flex flex-col items-center justify-center">
                     <div className="text-xl font-bold">
                       {new Date(ticket.eventDate).getDate()}
                     </div>
@@ -107,7 +107,7 @@ export default function PastTicketsPage() {
                             <span className="truncate">{ticket.location}</span>
                           </div>
                           {ticket.scanned && (
-                            <div className="flex items-center gap-1 text-green-600">
+                            <div className="flex items-center gap-1 text-success">
                               <CheckCircle className="h-3 w-3" />
                               <span>Attended</span>
                             </div>

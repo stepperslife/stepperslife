@@ -11,8 +11,8 @@ export default function LeaderboardPage() {
   const leaderboard: any[] = [];
 
   const getRankIcon = (rank: number) => {
-    if (rank === 1) return <Trophy className="h-6 w-6 text-yellow-500" />;
-    if (rank === 2) return <Medal className="h-6 w-6 text-gray-400" />;
+    if (rank === 1) return <Trophy className="h-6 w-6 text-warning" />;
+    if (rank === 2) return <Medal className="h-6 w-6 text-muted-foreground" />;
     if (rank === 3) return <Medal className="h-6 w-6 text-orange-600" />;
     return <div className="w-6 h-6 flex items-center justify-center font-bold">{rank}</div>;
   };
@@ -51,7 +51,7 @@ export default function LeaderboardPage() {
                     <p className="text-2xl font-bold">{member.sales}</p>
                     <p className="text-sm text-muted-foreground">tickets</p>
                   </div>
-                  <TrendingUp className="h-5 w-5 text-green-600" />
+                  <TrendingUp className="h-5 w-5 text-success" />
                 </div>
               </CardContent>
             </Card>

@@ -116,10 +116,10 @@ export default function MyTeamMemberPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Ticket className="h-5 w-5 text-green-600" />
+                    <Ticket className="h-5 w-5 text-success" />
                     <span className="text-sm text-muted-foreground">Tickets Sold</span>
                   </div>
-                  <span className="font-semibold text-green-600">0</span>
+                  <span className="font-semibold text-success">0</span>
                 </div>
               </div>
             </CardContent>
@@ -130,7 +130,7 @@ export default function MyTeamMemberPage() {
       <Card className="border-blue-200 bg-blue-50">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <User className="h-5 w-5 text-blue-600 mt-0.5" />
+            <User className="h-5 w-5 text-primary mt-0.5" />
             <div>
               <h3 className="font-semibold text-blue-900">About Team Members</h3>
               <p className="text-sm text-blue-800 mt-1">

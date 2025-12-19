@@ -109,14 +109,14 @@ export default function RegisterSalePage() {
               </div>
 
               <h3 className="text-lg font-bold text-foreground mb-3">Customer Activation Codes</h3>
-              <p className="text-sm text-gray-700 mb-4">
+              <p className="text-sm text-foreground mb-4">
                 Write these codes on the receipt or text them to the customer:
               </p>
 
               <div className="space-y-3">
                 {successData.activationCodes.map((code: string, index: number) => (
                   <div key={index} className="bg-white rounded-lg p-4 border-2 border-border">
-                    <div className="text-xs text-gray-600 mb-1">
+                    <div className="text-xs text-muted-foreground mb-1">
                       Ticket {index + 1} of {successData.activationCodes.length}
                     </div>
                     <div className="text-5xl font-bold tracking-widest text-primary font-mono">
@@ -127,10 +127,10 @@ export default function RegisterSalePage() {
               </div>
 
               <div className="mt-4 bg-white rounded-lg p-4 text-left">
-                <p className="text-sm font-semibold text-gray-900 mb-2">
+                <p className="text-sm font-semibold text-foreground mb-2">
                   Instructions for Customer:
                 </p>
-                <ol className="text-sm text-gray-700 space-y-1 list-decimal list-inside">
+                <ol className="text-sm text-foreground space-y-1 list-decimal list-inside">
                   <li>
                     Visit{" "}
                     <span className="font-mono font-semibold text-primary">
@@ -141,7 +141,7 @@ export default function RegisterSalePage() {
                   <li>Provide your email address</li>
                   <li>Receive your official QR code ticket via email</li>
                 </ol>
-                <div className="mt-3 p-2 bg-gray-50 rounded text-xs text-gray-600">
+                <div className="mt-3 p-2 bg-card rounded text-xs text-muted-foreground">
                   <strong>Note:</strong> Each code can only be used once. The customer will receive
                   their permanent QR ticket after activation.
                 </div>

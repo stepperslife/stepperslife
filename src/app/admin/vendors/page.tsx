@@ -28,9 +28,9 @@ type VendorTier = "BASIC" | "VERIFIED" | "PREMIUM";
 
 const STATUS_CONFIG: Record<VendorStatus, { label: string; color: string; icon: typeof Clock }> = {
   PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
-  APPROVED: { label: "Approved", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
+  APPROVED: { label: "Approved", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
   SUSPENDED: { label: "Suspended", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: AlertTriangle },
-  REJECTED: { label: "Rejected", color: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300", icon: XCircle },
+  REJECTED: { label: "Rejected", color: "bg-muted text-foreground dark:bg-background/30 dark:text-muted-foreground", icon: XCircle },
 };
 
 export default function AdminVendorsPage() {
@@ -179,8 +179,8 @@ export default function AdminVendorsPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-success" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.approved}</p>
@@ -191,7 +191,7 @@ export default function AdminVendorsPage() {
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
+              <AlertTriangle className="w-5 h-5 text-destructive" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.suspended}</p>
@@ -205,7 +205,7 @@ export default function AdminVendorsPage() {
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-blue-600" />
+              <DollarSign className="w-5 h-5 text-primary" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.pendingPayouts}</p>
@@ -355,7 +355,7 @@ export default function AdminVendorsPage() {
                                         });
                                         setSelectedVendor(null);
                                       }}
-                                      className="w-full px-4 py-2 text-left text-sm text-green-600 hover:bg-muted transition-colors"
+                                      className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
                                     >
                                       Approve
                                     </button>
@@ -369,7 +369,7 @@ export default function AdminVendorsPage() {
                                         });
                                         setSelectedVendor(null);
                                       }}
-                                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-muted transition-colors"
+                                      className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
                                     >
                                       Reject
                                     </button>
@@ -404,7 +404,7 @@ export default function AdminVendorsPage() {
                                         });
                                         setSelectedVendor(null);
                                       }}
-                                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-muted transition-colors"
+                                      className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
                                     >
                                       Suspend
                                     </button>
@@ -421,7 +421,7 @@ export default function AdminVendorsPage() {
                                       });
                                       setSelectedVendor(null);
                                     }}
-                                    className="w-full px-4 py-2 text-left text-sm text-green-600 hover:bg-muted transition-colors"
+                                    className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
                                   >
                                     Reactivate
                                   </button>

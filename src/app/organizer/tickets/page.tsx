@@ -211,54 +211,54 @@ export default function TicketsPage() {
           {events && events.length > 0 ? (
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-card">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Event
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Total Tickets
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Sold
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Available
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Revenue
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-border">
                     {events.slice(0, 10).map((event) => {
                       const available = (event.totalTickets || 0) - (event.ticketsSold || 0);
                       return (
-                        <tr key={event._id} className="hover:bg-gray-50">
+                        <tr key={event._id} className="hover:bg-card">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <Calendar className="w-5 h-5 text-gray-400 mr-3" />
+                              <Calendar className="w-5 h-5 text-muted-foreground mr-3" />
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-foreground">
                                   {event.name}
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-muted-foreground">
                                   {event.eventType || "Event"}
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                             {(event.totalTickets || 0).toLocaleString()}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                             {(event.ticketsSold || 0).toLocaleString()}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                             {available.toLocaleString()}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                             ${(event.totalRevenue || 0).toLocaleString()}
                           </td>
                         </tr>
@@ -270,9 +270,9 @@ export default function TicketsPage() {
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-md p-12 text-center">
-              <Ticket className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-900 mb-2">No events yet</h3>
-              <p className="text-gray-600 mb-6">
+              <Ticket className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-foreground mb-2">No events yet</h3>
+              <p className="text-muted-foreground mb-6">
                 Create your first event to start selling tickets
               </p>
               <Link

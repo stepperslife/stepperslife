@@ -125,7 +125,7 @@ export default function AnalyticsPage() {
       {/* Event Breakdown */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
             <BarChart3 className="w-5 h-5" />
             Event Performance
           </h2>
@@ -137,7 +137,7 @@ export default function AnalyticsPage() {
               <Link
                 key={event._id}
                 href={`/organizer/events/${event._id}`}
-                className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="block p-4 border border rounded-lg hover:bg-card transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">

@@ -87,9 +87,9 @@ export default function SearchTicketPage() {
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 {searchResult.status === "valid" ? (
-                  <CheckCircle className="h-12 w-12 text-green-600" />
+                  <CheckCircle className="h-12 w-12 text-success" />
                 ) : (
-                  <XCircle className="h-12 w-12 text-red-600" />
+                  <XCircle className="h-12 w-12 text-destructive" />
                 )}
               </div>
               <div className="flex-1">

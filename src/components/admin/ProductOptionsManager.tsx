@@ -168,8 +168,8 @@ export default function ProductOptionsManager({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Product Options</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="text-lg font-semibold text-foreground">Product Options</h3>
+          <p className="text-sm text-muted-foreground">
             Add customization options like gift wrapping, engraving, or special requests
           </p>
         </div>
@@ -217,10 +217,10 @@ export default function ProductOptionsManager({
 
       {/* Empty State */}
       {options.length === 0 && !isAddingOption && (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-          <Square className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No product options yet</h3>
-          <p className="text-gray-600 mb-6">
+        <div className="border-2 border-dashed border rounded-lg p-12 text-center">
+          <Square className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-foreground mb-2">No product options yet</h3>
+          <p className="text-muted-foreground mb-6">
             Add options to let customers customize their purchase
           </p>
           <button
@@ -275,29 +275,29 @@ function OptionCard({
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
+    <div className="border border rounded-lg bg-white overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors">
+      <div className="flex items-center gap-3 p-4 hover:bg-card transition-colors">
         <button
-          type="button" className="cursor-grab hover:bg-gray-200 rounded p-1">
-          <GripVertical className="w-5 h-5 text-gray-400" />
+          type="button" className="cursor-grab hover:bg-muted rounded p-1">
+          <GripVertical className="w-5 h-5 text-muted-foreground" />
         </button>
 
         <Icon className="w-5 h-5 text-primary" />
 
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-gray-900">{option.name}</h4>
+            <h4 className="font-semibold text-foreground">{option.name}</h4>
             {option.required && (
               <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">
                 Required
               </span>
             )}
-            <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+            <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full">
               {typeInfo.label}
             </span>
           </div>
-          {option.description && <p className="text-sm text-gray-600 mt-1">{option.description}</p>}
+          {option.description && <p className="text-sm text-muted-foreground mt-1">{option.description}</p>}
         </div>
 
         <div className="flex items-center gap-2">
@@ -311,19 +311,19 @@ function OptionCard({
           <button
             type="button"
             onClick={onDelete}
-            className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
+            className="px-3 py-1 text-sm text-destructive hover:bg-red-50 rounded transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
           <button
             type="button"
             onClick={onToggleExpand}
-            className="p-1 hover:bg-gray-200 rounded transition-colors"
+            className="p-1 hover:bg-muted rounded transition-colors"
           >
             {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-gray-600" />
+              <ChevronUp className="w-5 h-5 text-muted-foreground" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-gray-600" />
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
             )}
           </button>
         </div>
@@ -331,12 +331,12 @@ function OptionCard({
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="border-t border-gray-200 p-4 bg-gray-50 space-y-3">
+        <div className="border-t border p-4 bg-card space-y-3">
           {/* Price Modifier */}
           {option.priceModifier !== undefined && (
             <div className="text-sm">
-              <span className="font-medium text-gray-700">Price: </span>
-              <span className="text-gray-900">
+              <span className="font-medium text-foreground">Price: </span>
+              <span className="text-foreground">
                 {option.priceModifier >= 0 ? "+" : ""}${(option.priceModifier / 100).toFixed(2)}
               </span>
             </div>
@@ -345,12 +345,12 @@ function OptionCard({
           {/* Choices */}
           {typeInfo.hasChoices && option.choices && option.choices.length > 0 && (
             <div>
-              <h5 className="font-medium text-gray-700 mb-2">Choices:</h5>
+              <h5 className="font-medium text-foreground mb-2">Choices:</h5>
               <div className="space-y-2">
                 {option.choices.map((choice) => (
                   <div
                     key={choice.id}
-                    className="flex items-center justify-between bg-white p-2 rounded border border-gray-200"
+                    className="flex items-center justify-between bg-white p-2 rounded border border"
                   >
                     <div className="flex items-center gap-2">
                       {choice.image && (
@@ -360,14 +360,14 @@ function OptionCard({
                           className="w-8 h-8 object-cover rounded"
                         />
                       )}
-                      <span className="text-sm text-gray-900">{choice.label}</span>
+                      <span className="text-sm text-foreground">{choice.label}</span>
                       {choice.default && (
                         <span className="px-2 py-0.5 bg-accent text-primary text-xs rounded-full">
                           Default
                         </span>
                       )}
                     </div>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-muted-foreground">
                       {choice.priceModifier >= 0 ? "+" : ""}$
                       {(choice.priceModifier / 100).toFixed(2)}
                     </span>
@@ -383,18 +383,18 @@ function OptionCard({
             option.minValue !== undefined ||
             option.maxValue !== undefined) && (
             <div className="text-sm">
-              <span className="font-medium text-gray-700">Validation: </span>
+              <span className="font-medium text-foreground">Validation: </span>
               {option.minLength !== undefined && (
-                <span className="text-gray-900">Min length: {option.minLength} </span>
+                <span className="text-foreground">Min length: {option.minLength} </span>
               )}
               {option.maxLength !== undefined && (
-                <span className="text-gray-900">Max length: {option.maxLength} </span>
+                <span className="text-foreground">Max length: {option.maxLength} </span>
               )}
               {option.minValue !== undefined && (
-                <span className="text-gray-900">Min value: {option.minValue} </span>
+                <span className="text-foreground">Min value: {option.minValue} </span>
               )}
               {option.maxValue !== undefined && (
-                <span className="text-gray-900">Max value: {option.maxValue}</span>
+                <span className="text-foreground">Max value: {option.maxValue}</span>
               )}
             </div>
           )}
@@ -402,8 +402,8 @@ function OptionCard({
           {/* Placeholder */}
           {option.placeholder && (
             <div className="text-sm">
-              <span className="font-medium text-gray-700">Placeholder: </span>
-              <span className="text-gray-600 italic">{option.placeholder}</span>
+              <span className="font-medium text-foreground">Placeholder: </span>
+              <span className="text-muted-foreground italic">{option.placeholder}</span>
             </div>
           )}
         </div>
@@ -514,12 +514,12 @@ function AddOptionForm({
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg bg-white p-6">
-      <h4 className="text-lg font-semibold text-gray-900 mb-4">Add New Option</h4>
+    <div className="border border rounded-lg bg-white p-6">
+      <h4 className="text-lg font-semibold text-foreground mb-4">Add New Option</h4>
       <div className="space-y-4">
         {/* Option Type Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Option Type *</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Option Type *</label>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
             {(Object.keys(OPTION_TYPE_INFO) as OptionType[]).map((type) => {
               const info = OPTION_TYPE_INFO[type];
@@ -532,7 +532,7 @@ function AddOptionForm({
                   className={`flex flex-col items-center gap-2 p-3 border-2 rounded-lg transition-all ${
                     formData.type === type
                       ? "border-primary bg-primary/5"
-                      : "border-gray-200 hover:border-gray-300"
+                      : "border hover:border"
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -545,20 +545,20 @@ function AddOptionForm({
 
         {/* Option Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Option Name *</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Option Name *</label>
           <input
             type="text"
             required
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="e.g., Gift Wrapping, Engraving Text, Special Instructions"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Description (optional)
           </label>
           <textarea
@@ -566,7 +566,7 @@ function AddOptionForm({
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="Help text to guide customers"
             rows={2}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
@@ -577,9 +577,9 @@ function AddOptionForm({
             id="required"
             checked={formData.required}
             onChange={(e) => setFormData({ ...formData, required: e.target.checked })}
-            className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+            className="w-4 h-4 text-primary border rounded focus:ring-primary"
           />
-          <label htmlFor="required" className="text-sm font-medium text-gray-700">
+          <label htmlFor="required" className="text-sm font-medium text-foreground">
             Required field
           </label>
         </div>
@@ -588,7 +588,7 @@ function AddOptionForm({
         {typeInfo.hasChoices && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">Choices *</label>
+              <label className="block text-sm font-medium text-foreground">Choices *</label>
               <button
                 type="button"
                 onClick={addChoice}
@@ -607,10 +607,10 @@ function AddOptionForm({
                     value={choice.label}
                     onChange={(e) => updateChoice(index, "label", e.target.value)}
                     placeholder="Choice label"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                   <div className="flex items-center gap-1">
-                    <span className="text-sm text-gray-600">$</span>
+                    <span className="text-sm text-muted-foreground">$</span>
                     <input
                       type="number"
                       step="0.01"
@@ -623,13 +623,13 @@ function AddOptionForm({
                         )
                       }
                       placeholder="0.00"
-                      className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-24 px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => removeChoice(index)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                    className="p-2 text-destructive hover:bg-red-50 rounded transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -642,11 +642,11 @@ function AddOptionForm({
         {/* Price Modifier (for non-choice types) */}
         {!typeInfo.hasChoices && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Price Modifier (optional)
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-gray-600">$</span>
+              <span className="text-muted-foreground">$</span>
               <input
                 type="number"
                 step="0.01"
@@ -658,9 +658,9 @@ function AddOptionForm({
                   })
                 }
                 placeholder="0.00"
-                className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-32 px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
-              <span className="text-sm text-gray-600">Additional fee for this option</span>
+              <span className="text-sm text-muted-foreground">Additional fee for this option</span>
             </div>
           </div>
         )}
@@ -668,7 +668,7 @@ function AddOptionForm({
         {/* Placeholder (for text types) */}
         {(formData.type === "text" || formData.type === "textarea") && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Placeholder Text (optional)
             </label>
             <input
@@ -676,7 +676,7 @@ function AddOptionForm({
               value={formData.placeholder}
               onChange={(e) => setFormData({ ...formData, placeholder: e.target.value })}
               placeholder="e.g., Enter your message here..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
         )}
@@ -685,7 +685,7 @@ function AddOptionForm({
         {(formData.type === "text" || formData.type === "textarea") && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Min Length (optional)
               </label>
               <input
@@ -698,11 +698,11 @@ function AddOptionForm({
                     minLength: e.target.value ? parseInt(e.target.value) : undefined,
                   })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Max Length (optional)
               </label>
               <input
@@ -715,7 +715,7 @@ function AddOptionForm({
                     maxLength: e.target.value ? parseInt(e.target.value) : undefined,
                   })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
           </div>
@@ -724,7 +724,7 @@ function AddOptionForm({
         {formData.type === "number" && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Min Value (optional)
               </label>
               <input
@@ -736,11 +736,11 @@ function AddOptionForm({
                     minValue: e.target.value ? parseFloat(e.target.value) : undefined,
                   })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Max Value (optional)
               </label>
               <input
@@ -752,14 +752,14 @@ function AddOptionForm({
                     maxValue: e.target.value ? parseFloat(e.target.value) : undefined,
                   })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
           </div>
         )}
 
         {/* Form Actions */}
-        <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+        <div className="flex items-center gap-3 pt-4 border-t border">
           <button
             type="button"
             onClick={handleSubmit}
@@ -771,7 +771,7 @@ function AddOptionForm({
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-6 py-3 border border text-foreground rounded-lg hover:bg-card transition-colors"
           >
             Cancel
           </button>
@@ -884,30 +884,30 @@ function EditOptionForm({
 
   return (
     <div className="border border-primary rounded-lg bg-white p-6">
-      <h4 className="text-lg font-semibold text-gray-900 mb-4">Edit Option: {option.name}</h4>
+      <h4 className="text-lg font-semibold text-foreground mb-4">Edit Option: {option.name}</h4>
       <div className="space-y-4">
         {/* Option Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Option Name *</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Option Name *</label>
           <input
             type="text"
             required
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Description (optional)
           </label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             rows={2}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
@@ -918,9 +918,9 @@ function EditOptionForm({
             id="edit-required"
             checked={formData.required}
             onChange={(e) => setFormData({ ...formData, required: e.target.checked })}
-            className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+            className="w-4 h-4 text-primary border rounded focus:ring-primary"
           />
-          <label htmlFor="edit-required" className="text-sm font-medium text-gray-700">
+          <label htmlFor="edit-required" className="text-sm font-medium text-foreground">
             Required field
           </label>
         </div>
@@ -929,7 +929,7 @@ function EditOptionForm({
         {typeInfo.hasChoices && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">Choices *</label>
+              <label className="block text-sm font-medium text-foreground">Choices *</label>
               <button
                 type="button"
                 onClick={addChoice}
@@ -948,10 +948,10 @@ function EditOptionForm({
                     value={choice.label}
                     onChange={(e) => updateChoice(index, "label", e.target.value)}
                     placeholder="Choice label"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                   <div className="flex items-center gap-1">
-                    <span className="text-sm text-gray-600">$</span>
+                    <span className="text-sm text-muted-foreground">$</span>
                     <input
                       type="number"
                       step="0.01"
@@ -964,13 +964,13 @@ function EditOptionForm({
                         )
                       }
                       placeholder="0.00"
-                      className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-24 px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => removeChoice(index)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                    className="p-2 text-destructive hover:bg-red-50 rounded transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -983,11 +983,11 @@ function EditOptionForm({
         {/* Price Modifier (for non-choice types) */}
         {!typeInfo.hasChoices && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Price Modifier (optional)
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-gray-600">$</span>
+              <span className="text-muted-foreground">$</span>
               <input
                 type="number"
                 step="0.01"
@@ -999,7 +999,7 @@ function EditOptionForm({
                   })
                 }
                 placeholder="0.00"
-                className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-32 px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
           </div>
@@ -1008,14 +1008,14 @@ function EditOptionForm({
         {/* Placeholder (for text types) */}
         {(option.type === "text" || option.type === "textarea") && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Placeholder Text (optional)
             </label>
             <input
               type="text"
               value={formData.placeholder}
               onChange={(e) => setFormData({ ...formData, placeholder: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
         )}
@@ -1024,7 +1024,7 @@ function EditOptionForm({
         {(option.type === "text" || option.type === "textarea") && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Min Length (optional)
               </label>
               <input
@@ -1037,11 +1037,11 @@ function EditOptionForm({
                     minLength: e.target.value ? parseInt(e.target.value) : undefined,
                   })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Max Length (optional)
               </label>
               <input
@@ -1054,7 +1054,7 @@ function EditOptionForm({
                     maxLength: e.target.value ? parseInt(e.target.value) : undefined,
                   })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
           </div>
@@ -1063,7 +1063,7 @@ function EditOptionForm({
         {option.type === "number" && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Min Value (optional)
               </label>
               <input
@@ -1075,11 +1075,11 @@ function EditOptionForm({
                     minValue: e.target.value ? parseFloat(e.target.value) : undefined,
                   })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Max Value (optional)
               </label>
               <input
@@ -1091,14 +1091,14 @@ function EditOptionForm({
                     maxValue: e.target.value ? parseFloat(e.target.value) : undefined,
                   })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
           </div>
         )}
 
         {/* Form Actions */}
-        <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+        <div className="flex items-center gap-3 pt-4 border-t border">
           <button
             type="button"
             onClick={handleSubmit}
@@ -1110,7 +1110,7 @@ function EditOptionForm({
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-6 py-3 border border text-foreground rounded-lg hover:bg-card transition-colors"
           >
             Cancel
           </button>

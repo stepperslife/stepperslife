@@ -48,9 +48,9 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
         <RestaurantsSubNav />
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
-            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg mb-6" />
-            <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
-            <div className="h-4 w-96 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-64 bg-muted dark:bg-card rounded-lg mb-6" />
+            <div className="h-8 w-48 bg-muted dark:bg-card rounded mb-4" />
+            <div className="h-4 w-96 bg-muted dark:bg-card rounded" />
           </div>
         </div>
         <PublicFooter />
@@ -146,19 +146,19 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                 {reviewStats && reviewStats.totalReviews > 0 && (
                   <div className="flex items-center gap-2 mt-2">
                     <StarRating rating={reviewStats.averageRating} size="md" showValue />
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                    <span className="text-sm text-muted-foreground dark:text-muted-foreground">
                       ({reviewStats.totalReviews} {reviewStats.totalReviews === 1 ? "review" : "reviews"})
                     </span>
                   </div>
                 )}
                 {restaurant.cuisine && restaurant.cuisine.length > 0 && (
-                  <p className="text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-muted-foreground dark:text-muted-foreground mt-1">
                     {restaurant.cuisine.join(" • ")}
                   </p>
                 )}
               </div>
               {restaurant.acceptingOrders ? (
-                <span className="px-3 py-1 text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
+                <span className="px-3 py-1 text-sm font-medium bg-success/20 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
                   Accepting Orders
                 </span>
               ) : (
@@ -168,7 +168,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
               )}
             </div>
 
-            <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex flex-wrap gap-4 mt-4 text-sm text-muted-foreground dark:text-muted-foreground">
               <span className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
                 {restaurant.address}, {restaurant.city}, {restaurant.state} {restaurant.zipCode}
@@ -184,12 +184,12 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
             </div>
 
             {restaurant.description && (
-              <p className="mt-4 text-gray-700 dark:text-gray-300">{restaurant.description}</p>
+              <p className="mt-4 text-foreground dark:text-muted-foreground">{restaurant.description}</p>
             )}
 
             {/* Operating Hours */}
             {restaurant.operatingHours && (
-              <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="mt-6 p-4 bg-card dark:bg-card rounded-lg">
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
                   <Clock className="h-4 w-4" />
                   Operating Hours
@@ -218,13 +218,13 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
 
             {menuItems === undefined ? (
               <div className="animate-pulse space-y-4">
-                <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
-                <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
-                <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+                <div className="h-20 bg-muted dark:bg-card rounded-lg" />
+                <div className="h-20 bg-muted dark:bg-card rounded-lg" />
+                <div className="h-20 bg-muted dark:bg-card rounded-lg" />
               </div>
             ) : !menuItems || menuItems.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <p className="text-gray-500">No menu items available yet</p>
+              <div className="text-center py-12 bg-card dark:bg-card rounded-lg">
+                <p className="text-muted-foreground">No menu items available yet</p>
               </div>
             ) : (
               <div className="space-y-8">
@@ -235,7 +235,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                       {itemsByCategory?.[category._id]?.filter(item => item.isAvailable).map((item) => (
                         <div
                           key={item._id}
-                          className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
+                          className="flex items-center gap-4 p-4 bg-white dark:bg-card rounded-lg shadow"
                         >
                           {/* Menu Item Image */}
                           {item.imageUrl ? (
@@ -245,14 +245,14 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                               className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
                             />
                           ) : (
-                            <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0 flex items-center justify-center">
-                              <Utensils className="h-8 w-8 text-gray-400" />
+                            <div className="w-24 h-24 bg-muted dark:bg-card rounded-lg flex-shrink-0 flex items-center justify-center">
+                              <Utensils className="h-8 w-8 text-muted-foreground" />
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
                             <h4 className="font-medium">{item.name}</h4>
                             {item.description && (
-                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                              <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1 line-clamp-2">
                                 {item.description}
                               </p>
                             )}
@@ -284,7 +284,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                       {itemsByCategory?.["uncategorized"]?.filter(item => item.isAvailable).map((item) => (
                         <div
                           key={item._id}
-                          className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
+                          className="flex items-center gap-4 p-4 bg-white dark:bg-card rounded-lg shadow"
                         >
                           {/* Menu Item Image */}
                           {item.imageUrl ? (
@@ -294,14 +294,14 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                               className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
                             />
                           ) : (
-                            <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0 flex items-center justify-center">
-                              <Utensils className="h-8 w-8 text-gray-400" />
+                            <div className="w-24 h-24 bg-muted dark:bg-card rounded-lg flex-shrink-0 flex items-center justify-center">
+                              <Utensils className="h-8 w-8 text-muted-foreground" />
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
                             <h4 className="font-medium">{item.name}</h4>
                             {item.description && (
-                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                              <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1 line-clamp-2">
                                 {item.description}
                               </p>
                             )}
@@ -329,7 +329,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
           </div>
 
           {/* Reviews Section */}
-          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <div className="mt-12 pt-8 border-t border dark:border">
             <h2 className="text-2xl font-bold mb-6">Reviews & Ratings</h2>
             <RestaurantReviews
               restaurantId={restaurant._id}
@@ -367,14 +367,14 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && setShowCart(false)}
             />
-            <div className="relative w-full max-w-md bg-white dark:bg-gray-900 h-full overflow-y-auto">
+            <div className="relative w-full max-w-md bg-white dark:bg-background h-full overflow-y-auto">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 id="cart-title" className="text-xl font-bold">Your Order</h2>
                   <button
                     type="button"
                     onClick={() => setShowCart(false)}
-                    className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground rounded-lg hover:bg-muted dark:hover:bg-accent"
                     aria-label="Close cart"
                   >
                     <span className="text-xl">✕</span>
@@ -382,7 +382,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                 </div>
 
                 {cartItems.length === 0 ? (
-                  <p className="text-gray-500">Your cart is empty</p>
+                  <p className="text-muted-foreground">Your cart is empty</p>
                 ) : (
                   <>
                     <div className="space-y-4">
@@ -390,7 +390,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                         <div key={item.menuItemId} className="flex items-center justify-between">
                           <div>
                             <p className="font-medium">{item.name}</p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-muted-foreground">
                               ${(item.price / 100).toFixed(2)} each
                             </p>
                           </div>
@@ -398,7 +398,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             <button
                               type="button"
                               onClick={() => removeFromCart(item.menuItemId)}
-                              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+                              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-muted dark:bg-card rounded-lg hover:bg-muted dark:hover:bg-muted"
                               aria-label={`Remove one ${item.name} from cart`}
                             >
                               <Minus className="h-5 w-5" />
@@ -407,7 +407,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             <button
                               type="button"
                               onClick={() => addToCart({ _id: item.menuItemId, name: item.name, price: item.price })}
-                              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+                              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-muted dark:bg-card rounded-lg hover:bg-muted dark:hover:bg-muted"
                               aria-label={`Add one more ${item.name} to cart`}
                             >
                               <Plus className="h-5 w-5" />

@@ -42,7 +42,7 @@ export default function LinkPerformancePage() {
                 <p className="text-sm font-medium text-muted-foreground">Conversions</p>
                 <p className="text-2xl font-bold mt-1">0</p>
               </div>
-              <ShoppingCart className="h-8 w-8 text-green-600" />
+              <ShoppingCart className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -54,7 +54,7 @@ export default function LinkPerformancePage() {
                 <p className="text-sm font-medium text-muted-foreground">Revenue</p>
                 <p className="text-2xl font-bold mt-1">$0</p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>

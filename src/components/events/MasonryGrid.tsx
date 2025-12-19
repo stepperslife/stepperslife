@@ -10,8 +10,8 @@ export function MasonryGrid({ events }: MasonryGridProps) {
   if (events.length === 0) {
     return (
       <div className="text-center py-16">
-        <p className="text-gray-500 text-lg">No events found</p>
-        <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filters</p>
+        <p className="text-muted-foreground text-lg">No events found</p>
+        <p className="text-muted-foreground text-sm mt-2">Try adjusting your search or filters</p>
       </div>
     );
   }

@@ -45,7 +45,7 @@ export default function TicketHistoryPage() {
     switch (status) {
       case "completed":
         return (
-          <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+          <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-success/20 text-green-800">
             <CheckCircle className="h-3 w-3" />
             Completed
           </span>
@@ -66,7 +66,7 @@ export default function TicketHistoryPage() {
         );
       default:
         return (
-          <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+          <span className="px-2 py-1 text-xs font-medium rounded-full bg-muted text-foreground">
             {status}
           </span>
         );

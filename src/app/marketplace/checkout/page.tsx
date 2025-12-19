@@ -254,7 +254,7 @@ export default function CheckoutPage() {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-1">
-                        Full Name <span className="text-red-500">*</span>
+                        Full Name <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="text"
@@ -268,7 +268,7 @@ export default function CheckoutPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                          Email <span className="text-red-500">*</span>
+                          Email <span className="text-destructive">*</span>
                         </label>
                         <input
                           type="email"
@@ -348,7 +348,7 @@ export default function CheckoutPage() {
                           Pick up from vendor location
                         </p>
                       </div>
-                      <span className="font-semibold text-green-600">Free</span>
+                      <span className="font-semibold text-success">Free</span>
                     </label>
                   </div>
                 </div>
@@ -362,7 +362,7 @@ export default function CheckoutPage() {
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                          Street Address <span className="text-red-500">*</span>
+                          Street Address <span className="text-destructive">*</span>
                         </label>
                         <input
                           type="text"
@@ -388,7 +388,7 @@ export default function CheckoutPage() {
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <div className="col-span-2 sm:col-span-1">
                           <label className="block text-sm font-medium text-foreground mb-1">
-                            City <span className="text-red-500">*</span>
+                            City <span className="text-destructive">*</span>
                           </label>
                           <input
                             type="text"
@@ -401,7 +401,7 @@ export default function CheckoutPage() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-foreground mb-1">
-                            State <span className="text-red-500">*</span>
+                            State <span className="text-destructive">*</span>
                           </label>
                           <input
                             type="text"
@@ -414,7 +414,7 @@ export default function CheckoutPage() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-foreground mb-1">
-                            ZIP Code <span className="text-red-500">*</span>
+                            ZIP Code <span className="text-destructive">*</span>
                           </label>
                           <input
                             type="text"
@@ -492,7 +492,7 @@ export default function CheckoutPage() {
                 {validationErrors.length > 0 && (
                   <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-medium text-red-800 dark:text-red-200 mb-2">
                           Some items in your cart have issues:
@@ -502,7 +502,7 @@ export default function CheckoutPage() {
                             <li key={i}>{err}</li>
                           ))}
                         </ul>
-                        <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                        <p className="text-sm text-destructive dark:text-red-400 mt-2">
                           Please remove or update these items to continue.
                         </p>
                       </div>
@@ -602,7 +602,7 @@ export default function CheckoutPage() {
                       <span>Shipping</span>
                       <span>
                         {shippingMethod === "PICKUP" ? (
-                          <span className="text-green-600">Free</span>
+                          <span className="text-success">Free</span>
                         ) : (
                           `$${(estimatedShipping / 100).toFixed(2)}`
                         )}

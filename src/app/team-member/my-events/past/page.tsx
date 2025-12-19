@@ -44,7 +44,7 @@ export default function PastEventsPage() {
             <Card key={event.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                  <div className="flex-shrink-0 w-16 h-16 bg-muted rounded-lg flex flex-col items-center justify-center">
                     <div className="text-xl font-bold">{new Date(event.date).getDate()}</div>
                     <div className="text-xs text-muted-foreground uppercase">
                       {new Date(event.date).toLocaleString("en-US", { month: "short" })}
@@ -58,7 +58,7 @@ export default function PastEventsPage() {
                         <MapPin className="h-3 w-3" />
                         {event.location}
                       </div>
-                      <div className="flex items-center gap-1 text-green-600">
+                      <div className="flex items-center gap-1 text-success">
                         <CheckCircle className="h-3 w-3" />
                         {event.soldTickets} tickets sold
                       </div>

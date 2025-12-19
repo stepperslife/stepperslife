@@ -208,11 +208,11 @@ export function getRoleColor(role: AllRoles): string {
     case "STAFF":
       return "bg-sky-500 text-white";
     case "TEAM_MEMBERS":
-      return "bg-green-500 text-white";
+      return "bg-success text-white";
     case "ASSOCIATES":
       return "bg-orange-500 text-white";
     default:
-      return "bg-gray-500 text-white";
+      return "bg-card0 text-white";
   }
 }
 

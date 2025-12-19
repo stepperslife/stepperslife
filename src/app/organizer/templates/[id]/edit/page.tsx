@@ -82,10 +82,10 @@ export default function EditTemplatePage() {
   // Loading state
   if (template === undefined) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-card flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Loading template...</p>
+          <p className="text-muted-foreground font-medium">Loading template...</p>
         </div>
       </div>
     );
@@ -94,9 +94,9 @@ export default function EditTemplatePage() {
   // Error state
   if (template === null) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-card flex items-center justify-center">
         <div className="text-center max-w-md">
-          <div className="text-red-600 mb-4">
+          <div className="text-destructive mb-4">
             <svg
               className="w-16 h-16 mx-auto"
               fill="none"
@@ -111,8 +111,8 @@ export default function EditTemplatePage() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Template Not Found</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Template Not Found</h1>
+          <p className="text-muted-foreground mb-6">
             The template you're looking for doesn't exist or you don't have permission to edit it.
           </p>
           <Link
@@ -130,30 +130,30 @@ export default function EditTemplatePage() {
   // Wait for conversion to complete
   if (!isConverted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-card flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Preparing editor...</p>
+          <p className="text-muted-foreground font-medium">Preparing editor...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       {/* Header */}
-      <div className="bg-white border-b-2 border-gray-300 px-6 py-4">
+      <div className="bg-white border-b-2 border px-6 py-4">
         <div className="max-w-7xl mx-auto">
           <Link
             href="/organizer/templates"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-3"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-3"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Templates
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Edit Template: {template.name}</h1>
-            <p className="text-gray-600 mt-1">{template.description}</p>
+            <h1 className="text-2xl font-bold text-foreground">Edit Template: {template.name}</h1>
+            <p className="text-muted-foreground mt-1">{template.description}</p>
           </div>
         </div>
       </div>

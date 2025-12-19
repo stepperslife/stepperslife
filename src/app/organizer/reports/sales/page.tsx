@@ -30,7 +30,7 @@ export default function SalesReportsPage() {
   const totalTicketsSold = events?.reduce((sum, e) => sum + (e.ticketsSold || 0), 0) || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       <motion.header
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -41,13 +41,13 @@ export default function SalesReportsPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/organizer/reports"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Sales Reports</h1>
-              <p className="text-gray-600 mt-1">Analyze your ticket sales performance</p>
+              <h1 className="text-3xl font-bold text-foreground">Sales Reports</h1>
+              <p className="text-muted-foreground mt-1">Analyze your ticket sales performance</p>
             </div>
           </div>
         </div>
@@ -60,19 +60,19 @@ export default function SalesReportsPage() {
           transition={{ duration: 0.5 }}
           className="bg-white rounded-lg shadow-md p-8 text-center"
         >
-          <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-medium text-gray-900 mb-2">Sales Reports Coming Soon</h3>
-          <p className="text-gray-600 mb-6">
+          <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-medium text-foreground mb-2">Sales Reports Coming Soon</h3>
+          <p className="text-muted-foreground mb-6">
             Detailed sales analytics and charts will be available here
           </p>
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
             <div className="bg-blue-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">${totalRevenue.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Total Revenue</p>
+              <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
             </div>
             <div className="bg-green-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">Tickets Sold</p>
-              <p className="text-2xl font-bold text-gray-900">{totalTicketsSold.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Tickets Sold</p>
+              <p className="text-2xl font-bold text-foreground">{totalTicketsSold.toLocaleString()}</p>
             </div>
           </div>
         </motion.div>

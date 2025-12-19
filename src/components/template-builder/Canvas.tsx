@@ -159,9 +159,9 @@ export default function Canvas({
   };
 
   return (
-    <div className="relative w-full h-full bg-gray-50 border-2 border-gray-300 rounded-lg overflow-hidden">
+    <div className="relative w-full h-full bg-card border-2 border rounded-lg overflow-hidden">
       {/* Zoom controls */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 bg-white rounded-lg shadow-lg border border-gray-300 p-2">
+      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 bg-white rounded-lg shadow-lg border border p-2">
         <button
           type="button"
           onClick={handleZoomIn}
@@ -174,7 +174,7 @@ export default function Canvas({
         <button
           type="button"
           onClick={handleZoomReset}
-          className="px-3 py-1 bg-gray-50 text-gray-700 rounded hover:bg-gray-100 transition-colors text-xs font-medium"
+          className="px-3 py-1 bg-card text-foreground rounded hover:bg-muted transition-colors text-xs font-medium"
           title="Reset Zoom"
         >
           {Math.round(zoom * 100)}%
@@ -233,7 +233,7 @@ export default function Canvas({
           {/* Empty state */}
           {items.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-gray-400">
+              <div className="text-center text-muted-foreground">
                 <svg
                   className="w-16 h-16 mx-auto mb-4"
                   fill="none"

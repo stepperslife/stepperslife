@@ -97,8 +97,8 @@ export default function OrderConfirmationPage() {
         <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Success Header */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-12 h-12 text-green-600" />
+            <div className="w-20 h-20 bg-success/20 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-12 h-12 text-success" />
             </div>
             <h1 className="text-3xl font-bold text-foreground mb-2">
               Order Placed Successfully!
@@ -175,7 +175,7 @@ export default function OrderConfirmationPage() {
                   <span className="text-muted-foreground">Shipping</span>
                   <span className="text-foreground">
                     {order.shippingCost === 0 ? (
-                      <span className="text-green-600">Free</span>
+                      <span className="text-success">Free</span>
                     ) : (
                       `$${(order.shippingCost / 100).toFixed(2)}`
                     )}

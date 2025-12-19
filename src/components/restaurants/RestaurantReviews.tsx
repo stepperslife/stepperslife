@@ -56,16 +56,16 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
   return (
     <div className="space-y-6">
       {/* Rating Summary */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+      <div className="bg-white dark:bg-card rounded-lg p-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           {/* Overall Rating */}
           <div className="flex items-center gap-4">
             <div className="text-center">
-              <div className="text-5xl font-bold text-gray-900 dark:text-white">
+              <div className="text-5xl font-bold text-foreground dark:text-white">
                 {stats?.averageRating?.toFixed(1) || "0.0"}
               </div>
               <StarRating rating={stats?.averageRating || 0} size="md" />
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {stats?.totalReviews || 0} {stats?.totalReviews === 1 ? "review" : "reviews"}
               </p>
             </div>
@@ -77,14 +77,14 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
                 const percentage = stats?.totalReviews ? (count / stats.totalReviews) * 100 : 0;
                 return (
                   <div key={stars} className="flex items-center gap-2 text-sm">
-                    <span className="w-8 text-gray-600 dark:text-gray-400">{stars}★</span>
-                    <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <span className="w-8 text-muted-foreground dark:text-muted-foreground">{stars}★</span>
+                    <div className="flex-1 h-2 bg-muted dark:bg-card rounded-full overflow-hidden">
                       <div
                         className="h-full bg-yellow-500 rounded-full transition-all"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
-                    <span className="w-8 text-gray-500 text-xs">{count}</span>
+                    <span className="w-8 text-muted-foreground text-xs">{count}</span>
                   </div>
                 );
               })}
@@ -119,9 +119,9 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
         <h3 className="text-xl font-semibold">Customer Reviews</h3>
 
         {!reviews || reviews.length === 0 ? (
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center">
-            <MessageSquare className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <div className="bg-card dark:bg-card rounded-lg p-8 text-center">
+            <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground dark:text-muted-foreground mb-4">
               No reviews yet. Be the first to share your experience!
             </p>
             <Button
@@ -136,7 +136,7 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
             {displayedReviews?.map((review) => (
               <div
                 key={review._id}
-                className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm"
+                className="bg-white dark:bg-card rounded-lg p-6 shadow-sm"
               >
                 {/* Review Header */}
                 <div className="flex items-start justify-between mb-3">
@@ -148,23 +148,23 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                        <User className="h-5 w-5 text-gray-500" />
+                      <div className="w-10 h-10 rounded-full bg-muted dark:bg-card flex items-center justify-center">
+                        <User className="h-5 w-5 text-muted-foreground" />
                       </div>
                     )}
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900 dark:text-white">
+                        <span className="font-medium text-foreground dark:text-white">
                           {review.customerName}
                         </span>
                         {review.isVerifiedPurchase && (
-                          <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                          <span className="flex items-center gap-1 text-xs text-success dark:text-success">
                             <CheckCircle className="h-3 w-3" />
                             Verified
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-500">{formatDate(review.createdAt)}</p>
+                      <p className="text-sm text-muted-foreground">{formatDate(review.createdAt)}</p>
                     </div>
                   </div>
                   <StarRating rating={review.rating} size="sm" />
@@ -172,14 +172,14 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
 
                 {/* Review Title */}
                 {review.title && (
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  <h4 className="font-semibold text-foreground dark:text-white mb-2">
                     {review.title}
                   </h4>
                 )}
 
                 {/* Review Text */}
                 {review.reviewText && (
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">{review.reviewText}</p>
+                  <p className="text-foreground dark:text-muted-foreground mb-4">{review.reviewText}</p>
                 )}
 
                 {/* Restaurant Response */}
@@ -188,11 +188,11 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
                     <p className="text-sm font-medium text-orange-700 dark:text-orange-400 mb-1">
                       Restaurant Response
                     </p>
-                    <p className="text-gray-700 dark:text-gray-300 text-sm">
+                    <p className="text-foreground dark:text-muted-foreground text-sm">
                       {review.restaurantResponse}
                     </p>
                     {review.restaurantResponseAt && (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {formatDate(review.restaurantResponseAt)}
                       </p>
                     )}
@@ -200,12 +200,12 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
                 )}
 
                 {/* Review Actions */}
-                <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-4 mt-4 pt-4 border-t border dark:border">
                   <button
                     type="button"
                     onClick={() => handleVoteHelpful(review._id)}
                     disabled={!userId}
-                    className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ThumbsUp className="h-4 w-4" />
                     Helpful ({review.helpfulCount})
@@ -214,7 +214,7 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
                     type="button"
                     onClick={() => handleReport(review._id)}
                     disabled={!userId}
-                    className="flex items-center gap-1 text-sm text-gray-400 hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Flag className="h-4 w-4" />
                     Report

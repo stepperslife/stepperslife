@@ -216,9 +216,9 @@ export default function EditEventPage() {
   /*
   if (event.organizerId !== currentUser._id && currentUser.role !== "admin") {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-card flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-          <p className="text-gray-600">You don't have permission to edit this event.</p>
+          <p className="text-muted-foreground">You don't have permission to edit this event.</p>
           <Link href="/organizer/events" className="mt-4 inline-block text-primary hover:underline">
             Back to Events
           </Link>

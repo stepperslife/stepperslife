@@ -58,8 +58,8 @@ const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; bgColor
   PENDING: { label: "Order Placed", color: "text-yellow-700 dark:text-yellow-300", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: Clock },
   CONFIRMED: { label: "Confirmed", color: "text-blue-700 dark:text-blue-300", bgColor: "bg-blue-100 dark:bg-blue-900/30", icon: CheckCircle },
   PREPARING: { label: "Preparing", color: "text-orange-700 dark:text-orange-300", bgColor: "bg-orange-100 dark:bg-orange-900/30", icon: ChefHat },
-  READY_FOR_PICKUP: { label: "Ready for Pickup", color: "text-green-700 dark:text-green-300", bgColor: "bg-green-100 dark:bg-green-900/30", icon: Package },
-  COMPLETED: { label: "Completed", color: "text-gray-700 dark:text-gray-300", bgColor: "bg-gray-100 dark:bg-gray-800", icon: CheckCircle },
+  READY_FOR_PICKUP: { label: "Ready for Pickup", color: "text-green-700 dark:text-green-300", bgColor: "bg-success/20 dark:bg-green-900/30", icon: Package },
+  COMPLETED: { label: "Completed", color: "text-foreground dark:text-muted-foreground", bgColor: "bg-muted dark:bg-card", icon: CheckCircle },
   CANCELLED: { label: "Cancelled", color: "text-red-700 dark:text-red-300", bgColor: "bg-red-100 dark:bg-red-900/30", icon: XCircle },
 };
 
@@ -328,7 +328,7 @@ export default function MyFoodOrdersPage() {
                         </div>
                         <div className="mt-1">
                           Payment: {order.paymentStatus === "paid" ? (
-                            <span className="text-green-600 font-medium">Paid</span>
+                            <span className="text-success font-medium">Paid</span>
                           ) : (
                             <span className="text-yellow-600 font-medium">Pay at Pickup</span>
                           )}

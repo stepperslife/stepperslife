@@ -231,7 +231,7 @@ export default function TicketTiersPage() {
   const tiers = ticketTiersData || [];
 
   return (
-    <div className="min-h-screen bg-muted dark:bg-gray-900">
+    <div className="min-h-screen bg-muted dark:bg-background">
       {/* First Event Congratulations Modal */}
       <FirstEventCongratsModal
         isOpen={showCongratsModal}
@@ -240,11 +240,11 @@ export default function TicketTiersPage() {
       />
 
       {/* Header */}
-      <header className="bg-card dark:bg-gray-800 shadow-sm border-b border-border dark:border-gray-700">
+      <header className="bg-card dark:bg-card shadow-sm border-b border-border dark:border">
         <div className="container mx-auto px-4 py-6">
           <Link
             href={`/organizer/events`}
-            className="inline-flex items-center gap-2 text-muted-foreground dark:text-gray-400 hover:text-foreground dark:hover:text-gray-200 mb-4"
+            className="inline-flex items-center gap-2 text-muted-foreground dark:text-muted-foreground hover:text-foreground dark:hover:text-foreground mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Events
@@ -253,7 +253,7 @@ export default function TicketTiersPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground dark:text-white">Ticket Tiers</h1>
-              <p className="text-muted-foreground dark:text-gray-400 mt-1">{event.name}</p>
+              <p className="text-muted-foreground dark:text-muted-foreground mt-1">{event.name}</p>
             </div>
             <button
               onClick={handleOpenAddTier}
@@ -268,7 +268,7 @@ export default function TicketTiersPage() {
 
       {/* Capacity Progress Banner */}
       {event.capacity && event.capacity > 0 && tiers.length > 0 && (
-        <div className="bg-card dark:bg-gray-800 border-b border-border dark:border-gray-700">
+        <div className="bg-card dark:bg-card border-b border-border dark:border">
           <div className="container mx-auto px-4 py-6">
             <CapacityProgressBar
               capacity={event.capacity}
@@ -309,14 +309,14 @@ export default function TicketTiersPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {tiers.length === 0 ? (
-          <div className="bg-card dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
+          <div className="bg-card dark:bg-card rounded-lg shadow-md p-12 text-center">
             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
               <Ticket className="w-8 h-8 text-primary" />
             </div>
             <h3 className="text-xl font-bold text-foreground dark:text-white mb-2">
               No ticket tiers yet
             </h3>
-            <p className="text-muted-foreground dark:text-gray-400 mb-6">
+            <p className="text-muted-foreground dark:text-muted-foreground mb-6">
               Create ticket tiers to start selling tickets for this event
             </p>
             <button
@@ -345,7 +345,7 @@ export default function TicketTiersPage() {
               return (
                 <div
                   key={tier._id}
-                  className="bg-card dark:bg-gray-800 rounded-lg shadow-md border border-border dark:border-gray-700 p-6 hover:shadow-lg transition-shadow"
+                  className="bg-card dark:bg-card rounded-lg shadow-md border border-border dark:border p-6 hover:shadow-lg transition-shadow"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -364,7 +364,7 @@ export default function TicketTiersPage() {
                           </span>
                         )}
                         {!soldOut && saleEnded && (
-                          <span className="px-3 py-1 text-xs font-semibold bg-muted dark:bg-gray-700 text-foreground dark:text-gray-300 rounded-full">
+                          <span className="px-3 py-1 text-xs font-semibold bg-muted dark:bg-card text-foreground dark:text-muted-foreground rounded-full">
                             ENDED
                           </span>
                         )}
@@ -376,19 +376,19 @@ export default function TicketTiersPage() {
                       </div>
 
                       {tier.description && (
-                        <p className="text-muted-foreground dark:text-gray-400 mb-4">{tier.description}</p>
+                        <p className="text-muted-foreground dark:text-muted-foreground mb-4">{tier.description}</p>
                       )}
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400 mb-1">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground mb-1">
                             <DollarSign className="w-4 h-4" />
                             Price
                           </div>
                           <p className="text-lg font-bold text-foreground dark:text-white">
                             ${(tier.price / 100).toFixed(2)}
                             {tier.isTablePackage && tier.tableCapacity && (
-                              <span className="text-sm text-muted-foreground dark:text-gray-400 ml-1">
+                              <span className="text-sm text-muted-foreground dark:text-muted-foreground ml-1">
                                 ({qty} × {tier.tableCapacity} seats)
                               </span>
                             )}
@@ -396,7 +396,7 @@ export default function TicketTiersPage() {
                         </div>
 
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400 mb-1">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground mb-1">
                             <Users className="w-4 h-4" />
                             {tier.isTablePackage ? "Total Seats" : "Tickets"}
                           </div>
@@ -407,7 +407,7 @@ export default function TicketTiersPage() {
 
                         {tier.saleStart && (
                           <div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400 mb-1">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground mb-1">
                               <Calendar className="w-4 h-4" />
                               Sale Start
                             </div>
@@ -419,7 +419,7 @@ export default function TicketTiersPage() {
 
                         {tier.saleEnd && (
                           <div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400 mb-1">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground mb-1">
                               <Calendar className="w-4 h-4" />
                               Sale End
                             </div>
@@ -458,12 +458,12 @@ export default function TicketTiersPage() {
       {/* Add Ticket Tier Modal */}
       {showAddTier && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-card dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-border dark:border-gray-700">
+          <div className="bg-card dark:bg-card rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border dark:border">
               <h2 className="text-2xl font-bold text-foreground dark:text-white">
                 Create Ticket Tier
               </h2>
-              <p className="text-muted-foreground dark:text-gray-400 mt-1">
+              <p className="text-muted-foreground dark:text-muted-foreground mt-1">
                 Configure your ticket type with flexible options
               </p>
             </div>
@@ -477,13 +477,13 @@ export default function TicketTiersPage() {
               />
             </div>
 
-            <div className="p-6 border-t border-border dark:border-gray-700 bg-muted dark:bg-gray-900 flex items-center justify-end gap-3">
+            <div className="p-6 border-t border-border dark:border bg-muted dark:bg-background flex items-center justify-end gap-3">
               <button
                 onClick={() => {
                   setShowAddTier(false);
                   setNewTiers([]);
                 }}
-                className="px-6 py-3 text-foreground dark:text-gray-300 hover:text-foreground dark:hover:text-white font-medium"
+                className="px-6 py-3 text-foreground dark:text-muted-foreground hover:text-foreground dark:hover:text-white font-medium"
               >
                 Cancel
               </button>
@@ -501,10 +501,10 @@ export default function TicketTiersPage() {
       {/* Edit Ticket Tier Modal */}
       {showEditTier && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-card dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-border dark:border-gray-700">
+          <div className="bg-card dark:bg-card rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border dark:border">
               <h2 className="text-2xl font-bold text-foreground dark:text-white">Edit Ticket Tier</h2>
-              <p className="text-muted-foreground dark:text-gray-400 mt-1">
+              <p className="text-muted-foreground dark:text-muted-foreground mt-1">
                 Update ticket details and configuration
               </p>
             </div>
@@ -518,14 +518,14 @@ export default function TicketTiersPage() {
               />
             </div>
 
-            <div className="p-6 border-t border-border dark:border-gray-700 bg-muted dark:bg-gray-900 flex items-center justify-end gap-3">
+            <div className="p-6 border-t border-border dark:border bg-muted dark:bg-background flex items-center justify-end gap-3">
               <button
                 onClick={() => {
                   setShowEditTier(false);
                   setEditingTier(null);
                   setEditTierData([]);
                 }}
-                className="px-6 py-3 text-foreground dark:text-gray-300 hover:text-foreground dark:hover:text-white font-medium"
+                className="px-6 py-3 text-foreground dark:text-muted-foreground hover:text-foreground dark:hover:text-white font-medium"
               >
                 Cancel
               </button>

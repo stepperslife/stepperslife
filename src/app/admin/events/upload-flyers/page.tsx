@@ -676,9 +676,9 @@ export default function BulkFlyerUploadPage() {
                           {/* End Date & Time (for multi-day events) */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 End Date{" "}
-                                <span className="text-gray-500 font-normal text-xs">
+                                <span className="text-muted-foreground font-normal text-xs">
                                   (if multi-day)
                                 </span>
                               </label>
@@ -690,14 +690,14 @@ export default function BulkFlyerUploadPage() {
                                   updateField(flyer._id, "eventEndDate", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                                 placeholder="e.g. Sunday, December 29, 2025"
                               />
                             </div>
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 End Time{" "}
-                                <span className="text-gray-500 font-normal text-xs">
+                                <span className="text-muted-foreground font-normal text-xs">
                                   (optional)
                                 </span>
                               </label>
@@ -709,7 +709,7 @@ export default function BulkFlyerUploadPage() {
                                   updateField(flyer._id, "eventEndTime", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                                 placeholder="e.g. 2:00 AM"
                               />
                             </div>
@@ -740,7 +740,7 @@ export default function BulkFlyerUploadPage() {
 
                           {/* Address */}
                           <div>
-                            <label className="text-sm font-semibold text-gray-700 block mb-2">
+                            <label className="text-sm font-semibold text-foreground block mb-2">
                               Address
                             </label>
                             <input
@@ -750,14 +750,14 @@ export default function BulkFlyerUploadPage() {
                                 isEditing && updateField(flyer._id, "address", e.target.value)
                               }
                               disabled={!isEditing}
-                              className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                              className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                             />
                           </div>
 
                           {/* City, State, Zip */}
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 City
                               </label>
                               <input
@@ -767,11 +767,11 @@ export default function BulkFlyerUploadPage() {
                                   isEditing && updateField(flyer._id, "city", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                               />
                             </div>
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 State
                               </label>
                               <input
@@ -781,11 +781,11 @@ export default function BulkFlyerUploadPage() {
                                   isEditing && updateField(flyer._id, "state", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                               />
                             </div>
                             <div className="col-span-2 md:col-span-1">
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 Zip Code
                               </label>
                               <input
@@ -795,14 +795,14 @@ export default function BulkFlyerUploadPage() {
                                   isEditing && updateField(flyer._id, "zipCode", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                               />
                             </div>
                           </div>
 
                           {/* Description */}
                           <div>
-                            <label className="text-sm font-semibold text-gray-700 block mb-2">
+                            <label className="text-sm font-semibold text-foreground block mb-2">
                               Description
                             </label>
                             <textarea
@@ -812,13 +812,13 @@ export default function BulkFlyerUploadPage() {
                               }
                               disabled={!isEditing}
                               rows={5}
-                              className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                              className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                             />
                           </div>
 
                           {/* Additional Info Section Header */}
-                          <div className="pt-4 border-t-2 border-gray-200">
-                            <h3 className="text-lg font-bold text-gray-800 mb-4">
+                          <div className="pt-4 border-t-2 border">
+                            <h3 className="text-lg font-bold text-foreground mb-4">
                               Additional Information
                             </h3>
                           </div>
@@ -826,7 +826,7 @@ export default function BulkFlyerUploadPage() {
                           {/* Organizer & Contact */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 Host/Organizer
                               </label>
                               <input
@@ -837,11 +837,11 @@ export default function BulkFlyerUploadPage() {
                                   updateField(flyer._id, "hostOrganizer", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                               />
                             </div>
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 Contact Info
                               </label>
                               <input
@@ -851,7 +851,7 @@ export default function BulkFlyerUploadPage() {
                                   isEditing && updateField(flyer._id, "contactInfo", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                               />
                             </div>
                           </div>
@@ -859,7 +859,7 @@ export default function BulkFlyerUploadPage() {
                           {/* Ticket Price & Age Restriction */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 Ticket Price
                               </label>
                               <input
@@ -869,11 +869,11 @@ export default function BulkFlyerUploadPage() {
                                   isEditing && updateField(flyer._id, "ticketPrice", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                               />
                             </div>
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 Age Restriction
                               </label>
                               <input
@@ -884,7 +884,7 @@ export default function BulkFlyerUploadPage() {
                                   updateField(flyer._id, "ageRestriction", e.target.value)
                                 }
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-700 focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
+                                className="w-full px-4 py-3 text-base border-2 border rounded-lg disabled:bg-card disabled:text-foreground focus:border-primary focus:ring-2 focus:ring-blue-200 transition-all"
                               />
                             </div>
                           </div>
@@ -892,7 +892,7 @@ export default function BulkFlyerUploadPage() {
                           {/* Categories */}
                           {data?.categories && (
                             <div>
-                              <label className="text-sm font-semibold text-gray-700 block mb-2">
+                              <label className="text-sm font-semibold text-foreground block mb-2">
                                 Categories
                               </label>
                               <div className="flex flex-wrap gap-2">

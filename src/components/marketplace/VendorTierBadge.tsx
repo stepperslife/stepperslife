@@ -33,7 +33,7 @@ const TIER_CONFIG: Record<
     icon: BadgeCheck,
     label: "Verified",
     tooltip: "Verified seller with priority support",
-    className: "text-blue-500",
+    className: "text-primary",
     bgClassName: "bg-blue-50 dark:bg-blue-900/20",
   },
   PREMIUM: {

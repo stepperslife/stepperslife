@@ -184,14 +184,14 @@ export default function VariantsManager({
     <div className="space-y-6">
       {/* Variant Generator */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
           <Package className="w-5 h-5" />
           Generate Variant Combinations
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Colors (comma-separated)
             </label>
             <input
@@ -199,13 +199,13 @@ export default function VariantsManager({
               value={colors}
               onChange={(e) => setColors(e.target.value)}
               placeholder="Red, Blue, Green, Black"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
-            <p className="text-xs text-gray-500 mt-1">Example: Red, Blue, Green</p>
+            <p className="text-xs text-muted-foreground mt-1">Example: Red, Blue, Green</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Sizes (comma-separated)
             </label>
             <input
@@ -213,9 +213,9 @@ export default function VariantsManager({
               value={sizes}
               onChange={(e) => setSizes(e.target.value)}
               placeholder="S, M, L, XL"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
-            <p className="text-xs text-gray-500 mt-1">Example: S, M, L, XL</p>
+            <p className="text-xs text-muted-foreground mt-1">Example: S, M, L, XL</p>
           </div>
         </div>
 
@@ -239,7 +239,7 @@ export default function VariantsManager({
         </button>
 
         {colors.trim() && sizes.trim() && (
-          <p className="text-sm text-gray-600 mt-3">
+          <p className="text-sm text-muted-foreground mt-3">
             Will generate {colors.split(",").filter(Boolean).length} ×{" "}
             {sizes.split(",").filter(Boolean).length} ={" "}
             {colors.split(",").filter(Boolean).length * sizes.split(",").filter(Boolean).length}{" "}
@@ -251,42 +251,42 @@ export default function VariantsManager({
       {/* Variants Table */}
       {variants.length > 0 && (
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900">
+          <div className="p-4 border-b border">
+            <h3 className="text-lg font-bold text-foreground">
               Product Variants ({variants.length})
             </h3>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Manage pricing, inventory, and images for each variant
             </p>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-card border-b border">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Image
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Variant
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Price
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     SKU
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Inventory
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-border">
                 {variants.map((variant) => (
-                  <tr key={variant.id} className="hover:bg-gray-50">
+                  <tr key={variant.id} className="hover:bg-card">
                     {/* Image */}
                     <td className="px-4 py-3">
                       <div className="relative w-16 h-16">
@@ -299,8 +299,8 @@ export default function VariantsManager({
                             unoptimized
                           />
                         ) : (
-                          <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <Package className="w-6 h-6 text-gray-400" />
+                          <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+                            <Package className="w-6 h-6 text-muted-foreground" />
                           </div>
                         )}
                         <label className="absolute inset-0 cursor-pointer hover:bg-black hover:bg-opacity-20 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
@@ -320,8 +320,8 @@ export default function VariantsManager({
 
                     {/* Variant Name */}
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900">{variant.name}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="font-medium text-foreground">{variant.name}</div>
+                      <div className="text-sm text-muted-foreground">
                         {variant.options.color && `Color: ${variant.options.color}`}
                         {variant.options.color && variant.options.size && " • "}
                         {variant.options.size && `Size: ${variant.options.size}`}
@@ -342,10 +342,10 @@ export default function VariantsManager({
                               Math.round(parseFloat(e.target.value) * 100)
                             )
                           }
-                          className="w-24 px-2 py-1 border border-gray-300 rounded text-sm"
+                          className="w-24 px-2 py-1 border border rounded text-sm"
                         />
                       ) : (
-                        <span className="text-gray-900">${(variant.price / 100).toFixed(2)}</span>
+                        <span className="text-foreground">${(variant.price / 100).toFixed(2)}</span>
                       )}
                     </td>
 
@@ -356,10 +356,10 @@ export default function VariantsManager({
                           type="text"
                           value={editedValues[variant.id]?.sku ?? variant.sku ?? ""}
                           onChange={(e) => updateEditedValue(variant.id, "sku", e.target.value)}
-                          className="w-32 px-2 py-1 border border-gray-300 rounded text-sm"
+                          className="w-32 px-2 py-1 border border rounded text-sm"
                         />
                       ) : (
-                        <span className="text-gray-600 text-sm">{variant.sku || "—"}</span>
+                        <span className="text-muted-foreground text-sm">{variant.sku || "—"}</span>
                       )}
                     </td>
 
@@ -378,10 +378,10 @@ export default function VariantsManager({
                               parseInt(e.target.value)
                             )
                           }
-                          className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                          className="w-20 px-2 py-1 border border rounded text-sm"
                         />
                       ) : (
-                        <span className="text-gray-900">{variant.inventoryQuantity}</span>
+                        <span className="text-foreground">{variant.inventoryQuantity}</span>
                       )}
                     </td>
 
@@ -393,7 +393,7 @@ export default function VariantsManager({
                             <button
                               type="button"
                               onClick={() => handleUpdateVariant(variant.id)}
-                              className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors"
+                              className="p-1 text-success hover:bg-green-50 rounded transition-colors"
                               title="Save changes"
                             >
                               <Save className="w-4 h-4" />
@@ -401,7 +401,7 @@ export default function VariantsManager({
                             <button
                               type="button"
                               onClick={() => setEditingVariant(null)}
-                              className="p-1 text-gray-600 hover:bg-gray-50 rounded transition-colors"
+                              className="p-1 text-muted-foreground hover:bg-card rounded transition-colors"
                               title="Cancel"
                             >
                               ×
@@ -419,7 +419,7 @@ export default function VariantsManager({
                             <button
                               type="button"
                               onClick={() => handleDeleteVariant(variant.id, variant.name)}
-                              className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                              className="p-1 text-destructive hover:bg-red-50 rounded transition-colors"
                               title="Delete variant"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -437,10 +437,10 @@ export default function VariantsManager({
       )}
 
       {variants.length === 0 && (
-        <div className="bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
-          <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600">No variants yet</p>
-          <p className="text-sm text-gray-500 mt-1">
+        <div className="bg-card rounded-lg border-2 border-dashed border p-8 text-center">
+          <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">No variants yet</p>
+          <p className="text-sm text-muted-foreground mt-1">
             Use the generator above to create variant combinations
           </p>
         </div>

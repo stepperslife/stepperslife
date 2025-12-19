@@ -24,7 +24,7 @@ export default function TestConnectionPage() {
   }, [events]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-card p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Convex Connection Test</h1>
 
@@ -33,7 +33,7 @@ export default function TestConnectionPage() {
           <p className="text-lg mb-4">
             Status: <span className="font-mono font-bold">{connectionStatus}</span>
           </p>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Convex URL: <span className="font-mono">{process.env.NEXT_PUBLIC_CONVEX_URL}</span>
           </p>
         </div>
@@ -46,10 +46,10 @@ export default function TestConnectionPage() {
               <span>Waiting for query to complete...</span>
             </div>
           ) : events === null ? (
-            <p className="text-red-600">Query returned null</p>
+            <p className="text-destructive">Query returned null</p>
           ) : Array.isArray(events) ? (
             <div>
-              <p className="text-green-600 font-semibold mb-4">✅ Query successful!</p>
+              <p className="text-success font-semibold mb-4">✅ Query successful!</p>
               <p className="mb-2">Found {events.length} events:</p>
               <ul className="list-disc list-inside space-y-1">
                 {events.map((event: any) => (
@@ -64,7 +64,7 @@ export default function TestConnectionPage() {
           )}
         </div>
 
-        <div className="bg-gray-800 text-gray-100 rounded-lg shadow p-6 mt-6 font-mono text-sm">
+        <div className="bg-foreground text-foreground rounded-lg shadow p-6 mt-6 font-mono text-sm">
           <h2 className="text-lg font-semibold mb-3">Debug Info</h2>
           <p>Check browser console for detailed logs</p>
           <p className="mt-2">Server logs at terminal</p>

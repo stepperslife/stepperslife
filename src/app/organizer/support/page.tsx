@@ -51,7 +51,7 @@ export default function SupportPage() {
       description: "Send us an email at support@stepperslife.com",
       icon: Mail,
       href: "mailto:support@stepperslife.com",
-      color: "bg-green-500",
+      color: "bg-success",
     },
   ];
 
@@ -79,7 +79,7 @@ export default function SupportPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       <motion.header
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -88,8 +88,8 @@ export default function SupportPage() {
       >
         <div className="container mx-auto px-4 py-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Support & Help</h1>
-            <p className="text-gray-600 mt-1">We're here to help you succeed</p>
+            <h1 className="text-3xl font-bold text-foreground">Support & Help</h1>
+            <p className="text-muted-foreground mt-1">We're here to help you succeed</p>
           </div>
         </div>
       </motion.header>
@@ -113,11 +113,11 @@ export default function SupportPage() {
               <div className={`${option.color} p-3 rounded-lg text-white w-fit mb-4`}>
                 <option.icon className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <h3 className="text-xl font-bold text-foreground mb-2 flex items-center gap-2">
                 {option.title}
                 {option.href.startsWith("http") && <ExternalLink className="w-4 h-4" />}
               </h3>
-              <p className="text-gray-600">{option.description}</p>
+              <p className="text-muted-foreground">{option.description}</p>
             </a>
           ))}
         </motion.div>
@@ -132,19 +132,19 @@ export default function SupportPage() {
           >
             <div className="flex items-center gap-2 mb-4">
               <MessageCircle className="w-6 h-6 text-primary" />
-              <h2 className="text-2xl font-bold text-gray-900">Send us a message</h2>
+              <h2 className="text-2xl font-bold text-foreground">Send us a message</h2>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               Have a question or need help? Send us a message and we'll respond within 24 hours.
             </p>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Your Message</label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   rows={6}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="Describe your issue or question..."
                   required
                 />
@@ -168,13 +168,13 @@ export default function SupportPage() {
           >
             <div className="flex items-center gap-2 mb-4">
               <HelpCircle className="w-6 h-6 text-primary" />
-              <h2 className="text-2xl font-bold text-gray-900">Frequently Asked Questions</h2>
+              <h2 className="text-2xl font-bold text-foreground">Frequently Asked Questions</h2>
             </div>
             <div className="space-y-6">
               {faqs.map((faq, index) => (
                 <div key={index}>
-                  <h3 className="font-medium text-gray-900 mb-2">{faq.question}</h3>
-                  <p className="text-sm text-gray-600">{faq.answer}</p>
+                  <h3 className="font-medium text-foreground mb-2">{faq.question}</h3>
+                  <p className="text-sm text-muted-foreground">{faq.answer}</p>
                 </div>
               ))}
             </div>

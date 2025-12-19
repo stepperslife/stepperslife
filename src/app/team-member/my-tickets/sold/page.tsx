@@ -30,7 +30,7 @@ export default function SoldTicketsPage() {
                 <p className="text-sm font-medium text-muted-foreground">Total Sold</p>
                 <p className="text-2xl font-bold mt-1">0</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -42,7 +42,7 @@ export default function SoldTicketsPage() {
                 <p className="text-sm font-medium text-muted-foreground">Revenue</p>
                 <p className="text-2xl font-bold mt-1">$0</p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -88,7 +88,7 @@ export default function SoldTicketsPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-green-600">{sale.quantity} tickets</p>
+                    <p className="font-bold text-success">{sale.quantity} tickets</p>
                     <p className="text-sm text-muted-foreground">${sale.amount}</p>
                   </div>
                 </div>

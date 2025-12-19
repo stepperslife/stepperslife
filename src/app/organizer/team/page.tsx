@@ -209,7 +209,7 @@ export default function DefaultTeamPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-border">
                 {globalStaff.map((staff) => (
                   <tr key={staff._id} className="hover:bg-muted">
                     <td className="px-6 py-4 whitespace-nowrap">

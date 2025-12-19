@@ -99,7 +99,7 @@ export function PendingInvitations({ variant = "full", onAccept }: PendingInvita
                 <button
                   onClick={() => handleAccept(invitation._id, invitation.restaurant?.name || "Restaurant")}
                   disabled={processingId === invitation._id}
-                  className="p-1.5 bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors disabled:opacity-50"
+                  className="p-1.5 bg-success/20 text-green-700 rounded hover:bg-green-200 transition-colors disabled:opacity-50"
                 >
                   <Check className="w-4 h-4" />
                 </button>
@@ -147,13 +147,13 @@ export function PendingInvitations({ variant = "full", onAccept }: PendingInvita
                   {invitation.role === "RESTAURANT_MANAGER" ? (
                     <ShieldCheck className="w-4 h-4 text-primary" />
                   ) : (
-                    <Shield className="w-4 h-4 text-blue-600" />
+                    <Shield className="w-4 h-4 text-primary" />
                   )}
                   <span
                     className={`text-sm ${
                       invitation.role === "RESTAURANT_MANAGER"
                         ? "text-primary"
-                        : "text-blue-600"
+                        : "text-primary"
                     }`}
                   >
                     {invitation.role === "RESTAURANT_MANAGER" ? "Manager" : "Staff"}

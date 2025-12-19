@@ -49,14 +49,14 @@ export default function VendorDashboardPage() {
       value: vendor.totalProducts || 0,
       icon: Package,
       href: "/vendor/dashboard/products",
-      color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600",
+      color: "bg-blue-100 dark:bg-blue-900/30 text-primary",
     },
     {
       name: "Total Sales",
       value: `$${((vendor.totalSales || 0) / 100).toFixed(2)}`,
       icon: ShoppingCart,
       href: "/vendor/dashboard/orders",
-      color: "bg-green-100 dark:bg-green-900/30 text-green-600",
+      color: "bg-success/20 dark:bg-green-900/30 text-success",
     },
     {
       name: "Available Balance",
@@ -175,7 +175,7 @@ export default function VendorDashboardPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-green-600">
+                    <p className="font-medium text-success">
                       +${(earning.netAmount / 100).toFixed(2)}
                     </p>
                     <p className="text-xs text-muted-foreground">{earning.status}</p>
@@ -206,13 +206,13 @@ export default function VendorDashboardPage() {
             </div>
             <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <p className="text-sm text-muted-foreground">Available</p>
-              <p className="text-xl font-bold text-green-600">
+              <p className="text-xl font-bold text-success">
                 ${(earningsSummary.availableBalance / 100).toFixed(2)}
               </p>
             </div>
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <p className="text-sm text-muted-foreground">Processing</p>
-              <p className="text-xl font-bold text-blue-600">
+              <p className="text-xl font-bold text-primary">
                 ${(earningsSummary.processingEarnings / 100).toFixed(2)}
               </p>
             </div>

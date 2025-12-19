@@ -28,7 +28,7 @@ export default function AttendeeReportsPage() {
   const totalTicketsSold = events?.reduce((sum, e) => sum + (e.ticketsSold || 0), 0) || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       <motion.header
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -39,13 +39,13 @@ export default function AttendeeReportsPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/organizer/reports"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Attendee Reports</h1>
-              <p className="text-gray-600 mt-1">View attendee demographics and participation</p>
+              <h1 className="text-3xl font-bold text-foreground">Attendee Reports</h1>
+              <p className="text-muted-foreground mt-1">View attendee demographics and participation</p>
             </div>
           </div>
         </div>
@@ -58,14 +58,14 @@ export default function AttendeeReportsPage() {
           transition={{ duration: 0.5 }}
           className="bg-white rounded-lg shadow-md p-8 text-center"
         >
-          <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-medium text-gray-900 mb-2">Attendee Reports Coming Soon</h3>
-          <p className="text-gray-600 mb-6">
+          <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-medium text-foreground mb-2">Attendee Reports Coming Soon</h3>
+          <p className="text-muted-foreground mb-6">
             Detailed attendee analytics and demographics will be available here
           </p>
           <div className="bg-sky-50 rounded-lg p-4 max-w-md mx-auto">
-            <p className="text-sm text-gray-600">Total Attendees</p>
-            <p className="text-2xl font-bold text-gray-900">{totalTicketsSold.toLocaleString()}</p>
+            <p className="text-sm text-muted-foreground">Total Attendees</p>
+            <p className="text-2xl font-bold text-foreground">{totalTicketsSold.toLocaleString()}</p>
           </div>
         </motion.div>
       </main>

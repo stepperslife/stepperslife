@@ -52,7 +52,7 @@ export default function TransactionsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       <motion.header
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -63,13 +63,13 @@ export default function TransactionsPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/organizer/earnings"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Transaction History</h1>
-              <p className="text-gray-600 mt-1">Detailed view of all your transactions</p>
+              <h1 className="text-3xl font-bold text-foreground">Transaction History</h1>
+              <p className="text-muted-foreground mt-1">Detailed view of all your transactions</p>
             </div>
           </div>
         </div>
@@ -83,13 +83,13 @@ export default function TransactionsPage() {
           className="mb-6"
         >
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search transactions..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
         </motion.div>
@@ -102,39 +102,39 @@ export default function TransactionsPage() {
         >
           {filteredTransactions.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-border">
+                <thead className="bg-card">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                       Event
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                       Amount
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-border">
                   {filteredTransactions.slice(0, 50).map((transaction) => (
-                    <tr key={transaction.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <tr key={transaction.id} className="hover:bg-card">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                         {new Date(transaction.date).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-6 py-4 text-sm text-foreground">
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-gray-400" />
+                          <Calendar className="w-4 h-4 text-muted-foreground" />
                           {transaction.eventTitle}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         {transaction.type}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-success">
                         +${transaction.amount.toFixed(2)}
                       </td>
                     </tr>
@@ -144,9 +144,9 @@ export default function TransactionsPage() {
             </div>
           ) : (
             <div className="p-12 text-center">
-              <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-900 mb-2">No transactions found</h3>
-              <p className="text-gray-600">
+              <TrendingUp className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-foreground mb-2">No transactions found</h3>
+              <p className="text-muted-foreground">
                 {searchQuery ? "Try adjusting your search" : "Transactions will appear here when you make sales"}
               </p>
             </div>

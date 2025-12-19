@@ -242,7 +242,7 @@ export default function HoursManagementClient() {
                   type="button"
                   onClick={handleToggleAccepting}
                   className={`relative w-14 h-7 rounded-full transition-colors ${
-                    restaurant.acceptingOrders ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
+                    restaurant.acceptingOrders ? "bg-success" : "bg-muted dark:bg-accent"
                   }`}
                 >
                   <div
@@ -283,8 +283,8 @@ export default function HoursManagementClient() {
                       key={day.key}
                       className={`flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-lg ${
                         dayHours.closed
-                          ? "bg-gray-100 dark:bg-gray-800"
-                          : "bg-white dark:bg-gray-900 border"
+                          ? "bg-muted dark:bg-card"
+                          : "bg-white dark:bg-background border"
                       }`}
                     >
                       <div className="w-24 font-medium">{day.label}</div>
@@ -295,7 +295,7 @@ export default function HoursManagementClient() {
                             type="checkbox"
                             checked={dayHours.closed}
                             onChange={(e) => handleDayChange(day.key, "closed", e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-300"
+                            className="w-4 h-4 rounded border"
                           />
                           <span className="text-sm text-muted-foreground">Closed</span>
                         </label>

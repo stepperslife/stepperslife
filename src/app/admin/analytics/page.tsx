@@ -282,16 +282,16 @@ export default function PlatformAnalyticsPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Rank
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Event Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Organizer
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Tickets Sold
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Revenue
                 </th>
               </tr>

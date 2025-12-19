@@ -49,7 +49,7 @@ export function StarRating({
             >
               {/* Background (empty) star */}
               <Star
-                className={`${sizeClasses[size]} text-gray-300 dark:text-gray-600`}
+                className={`${sizeClasses[size]} text-muted-foreground dark:text-muted-foreground`}
                 fill="currentColor"
               />
               {/* Filled star overlay */}
@@ -59,7 +59,7 @@ export function StarRating({
                   style={{ width: filled ? "100%" : partialWidth }}
                 >
                   <Star
-                    className={`${sizeClasses[size]} text-yellow-500`}
+                    className={`${sizeClasses[size]} text-warning`}
                     fill="currentColor"
                   />
                 </div>
@@ -69,7 +69,7 @@ export function StarRating({
         })}
       </div>
       {showValue && (
-        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 ml-1">
+        <span className="text-sm font-medium text-muted-foreground dark:text-muted-foreground ml-1">
           {rating.toFixed(1)}
         </span>
       )}

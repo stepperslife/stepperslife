@@ -78,7 +78,7 @@ export default function EarningsPage() {
       description: "See detailed transaction history",
       icon: TrendingUp,
       href: "/organizer/earnings/transactions",
-      color: "bg-green-500",
+      color: "bg-success",
     },
     {
       title: "Payment Setup",
@@ -159,7 +159,7 @@ export default function EarningsPage() {
               <div className="flex flex-col gap-3">
                 <Link
                   href="/organizer/earnings/payouts"
-                  className="px-6 py-3 bg-white text-green-600 rounded-lg hover:bg-gray-100 transition-colors font-medium text-center"
+                  className="px-6 py-3 bg-white text-success rounded-lg hover:bg-muted transition-colors font-medium text-center"
                 >
                   View Payout Details
                 </Link>
@@ -225,7 +225,7 @@ export default function EarningsPage() {
 
           {events && events.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
+              <table className="min-w-full divide-y divide-border">
                 <thead className="bg-muted">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -242,7 +242,7 @@ export default function EarningsPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-border">
                   {events.slice(0, 10).map((event) => {
                     const revenue = 0; // TODO: Calculate from orders
                     const ticketsSold = event.ticketsSold || 0;

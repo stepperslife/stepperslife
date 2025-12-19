@@ -10,7 +10,7 @@ export function GridView({ events }: GridViewProps) {
   if (events.length === 0) {
     return (
       <div className="text-center py-16">
-        <p className="text-gray-500">No events found</p>
+        <p className="text-muted-foreground">No events found</p>
       </div>
     );
   }

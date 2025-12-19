@@ -81,7 +81,7 @@ export default function StaffNotificationsPage() {
                 <div className="flex gap-4">
                   {/* Icon */}
                   <div className="flex-shrink-0 mt-1">
-                    <div className="p-2 bg-gray-100 rounded-full">
+                    <div className="p-2 bg-muted rounded-full">
                       {getNotificationIcon(notification.type)}
                     </div>
                   </div>
@@ -109,7 +109,7 @@ export default function StaffNotificationsPage() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="text-red-500 hover:text-red-600"
+                          className="text-destructive hover:text-destructive"
                           title="Delete"
                         >
                           <Trash2 className="h-4 w-4" />

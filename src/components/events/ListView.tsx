@@ -13,7 +13,7 @@ export function ListView({ events }: ListViewProps) {
   if (events.length === 0) {
     return (
       <div className="text-center py-16">
-        <p className="text-gray-500">No events found</p>
+        <p className="text-muted-foreground">No events found</p>
       </div>
     );
   }
@@ -24,11 +24,11 @@ export function ListView({ events }: ListViewProps) {
         <Link
           key={event._id}
           href={`/events/${event._id}`}
-          className="block bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+          className="block bg-white rounded-lg shadow-sm border border hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
         >
           <div className="flex flex-col sm:flex-row">
             {/* Event Image */}
-            <div className="relative sm:w-64 h-48 sm:h-auto bg-gray-200 flex-shrink-0">
+            <div className="relative sm:w-64 h-48 sm:h-auto bg-muted flex-shrink-0">
               {event.imageUrl ? (
                 <Image
                   src={event.imageUrl}
@@ -49,7 +49,7 @@ export function ListView({ events }: ListViewProps) {
             <div className="flex-1 p-6">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-primary transition-colors">
+                  <h3 className="text-xl font-bold text-foreground mb-2 hover:text-primary transition-colors">
                     {event.name}
                   </h3>
 
@@ -59,21 +59,21 @@ export function ListView({ events }: ListViewProps) {
                   </span>
                 </div>
 
-                <ChevronRight className="w-6 h-6 text-gray-400 ml-4 flex-shrink-0" />
+                <ChevronRight className="w-6 h-6 text-muted-foreground ml-4 flex-shrink-0" />
               </div>
 
               {/* Description Preview */}
-              <p className="text-gray-600 text-sm mb-4 line-clamp-2">{event.description}</p>
+              <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{event.description}</p>
 
               {/* Meta Info */}
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Calendar className="w-4 h-4 flex-shrink-0" />
                   <span>{formatEventDateTime(event.startDate, event.timezone)}</span>
                 </div>
 
                 {event.location && (event.location.city || event.location.state) && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="w-4 h-4 flex-shrink-0" />
                     <span>
                       {event.location.venueName && `${event.location.venueName}, `}
@@ -85,7 +85,7 @@ export function ListView({ events }: ListViewProps) {
                 )}
 
                 {event.ticketsVisible && (
-                  <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
+                  <div className="flex items-center gap-2 text-sm text-success font-medium">
                     <Ticket className="w-4 h-4" />
                     <span>Tickets Available</span>
                   </div>
@@ -98,13 +98,13 @@ export function ListView({ events }: ListViewProps) {
                   {event.categories.slice(0, 3).map((category: string) => (
                     <span
                       key={category}
-                      className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full"
+                      className="px-2 py-1 text-xs bg-muted text-foreground rounded-full"
                     >
                       {category}
                     </span>
                   ))}
                   {event.categories.length > 3 && (
-                    <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                    <span className="px-2 py-1 text-xs bg-muted text-foreground rounded-full">
                       +{event.categories.length - 3} more
                     </span>
                   )}

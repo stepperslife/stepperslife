@@ -32,9 +32,9 @@ export default function CheckoutError({
         <div className="mb-6">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
             {isPaymentError ? (
-              <CreditCard className="w-8 h-8 text-red-500" />
+              <CreditCard className="w-8 h-8 text-destructive" />
             ) : (
-              <AlertTriangle className="w-8 h-8 text-red-500" />
+              <AlertTriangle className="w-8 h-8 text-destructive" />
             )}
           </div>
         </div>
@@ -55,7 +55,7 @@ export default function CheckoutError({
               {error.message}
             </p>
             {error.digest && (
-              <p className="text-xs font-mono text-red-600 mt-1">
+              <p className="text-xs font-mono text-destructive mt-1">
                 Error ID: {error.digest}
               </p>
             )}

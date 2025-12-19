@@ -339,7 +339,7 @@ export default function TestSetupPage() {
 
           {stats?.restaurantExists || getRestaurantBySlug ? (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-green-600">
+              <div className="flex items-center gap-2 text-success">
                 <CheckCircle2 className="w-5 h-5" />
                 <span className="font-medium">{stats?.restaurantName || getRestaurantBySlug?.name}</span>
                 <span className="text-sm text-muted-foreground">({stats?.restaurantId || getRestaurantBySlug?._id})</span>
@@ -352,11 +352,11 @@ export default function TestSetupPage() {
                     <span className="text-sm">Restaurant</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${(stats?.isActive || getRestaurantBySlug?.isActive) ? "bg-green-500" : "bg-yellow-500"}`} />
+                    <span className={`w-2 h-2 rounded-full ${(stats?.isActive || getRestaurantBySlug?.isActive) ? "bg-success" : "bg-yellow-500"}`} />
                     <span className="font-medium">{(stats?.isActive || getRestaurantBySlug?.isActive) ? "Active" : "Pending"}</span>
                   </div>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className={`w-2 h-2 rounded-full ${(stats?.acceptingOrders || getRestaurantBySlug?.acceptingOrders) ? "bg-green-500" : "bg-red-500"}`} />
+                    <span className={`w-2 h-2 rounded-full ${(stats?.acceptingOrders || getRestaurantBySlug?.acceptingOrders) ? "bg-success" : "bg-red-500"}`} />
                     <span className="text-sm text-muted-foreground">
                       {(stats?.acceptingOrders || getRestaurantBySlug?.acceptingOrders) ? "Accepting Orders" : "Not Accepting"}
                     </span>
@@ -456,12 +456,12 @@ export default function TestSetupPage() {
               <div className="flex items-center gap-2">
                 {result.success ? (
                   <>
-                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    <CheckCircle2 className="w-5 h-5 text-success" />
                     <span className="font-medium text-green-800 dark:text-green-200">Setup Completed</span>
                   </>
                 ) : (
                   <>
-                    <XCircle className="w-5 h-5 text-red-600" />
+                    <XCircle className="w-5 h-5 text-destructive" />
                     <span className="font-medium text-red-800 dark:text-red-200">Setup Failed</span>
                   </>
                 )}
@@ -486,7 +486,7 @@ export default function TestSetupPage() {
                   <div
                     key={i}
                     className={`py-1 ${
-                      step.startsWith("✓") ? "text-green-600" :
+                      step.startsWith("✓") ? "text-success" :
                       step.startsWith("⚠") ? "text-yellow-600" :
                       "text-foreground"
                     }`}
@@ -500,7 +500,7 @@ export default function TestSetupPage() {
             {/* Errors */}
             {result.errors.length > 0 && (
               <div className="p-4 border-t border-border">
-                <h3 className="font-medium text-red-600 mb-3">Errors ({result.errors.length})</h3>
+                <h3 className="font-medium text-destructive mb-3">Errors ({result.errors.length})</h3>
                 <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
                   {result.errors.map((error, i) => (
                     <div key={i} className="text-red-800 dark:text-red-200 text-sm py-1">

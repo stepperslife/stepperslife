@@ -116,7 +116,7 @@ export default function MarketplacePricingPage() {
               onClick={() => setBillingPeriod("monthly")}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
                 billingPeriod === "monthly"
-                  ? "bg-white dark:bg-gray-800 text-foreground shadow-sm"
+                  ? "bg-white dark:bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -126,12 +126,12 @@ export default function MarketplacePricingPage() {
               onClick={() => setBillingPeriod("annual")}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${
                 billingPeriod === "annual"
-                  ? "bg-white dark:bg-gray-800 text-foreground shadow-sm"
+                  ? "bg-white dark:bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Annual
-              <span className="text-xs bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">
+              <span className="text-xs bg-success/20 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">
                 Save 20%
               </span>
             </button>
@@ -179,7 +179,7 @@ export default function MarketplacePricingPage() {
                       </p>
                     )}
                     {tier.price === 0 && (
-                      <p className="text-sm text-green-600 dark:text-green-400 mt-1">
+                      <p className="text-sm text-success dark:text-success mt-1">
                         Free forever
                       </p>
                     )}
@@ -210,7 +210,7 @@ export default function MarketplacePricingPage() {
                     <p className="text-sm font-semibold text-foreground">What's included:</p>
                     {tier.features.map((feature, idx) => (
                       <div key={idx} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                        <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                         <span className="text-sm text-muted-foreground">{feature}</span>
                       </div>
                     ))}

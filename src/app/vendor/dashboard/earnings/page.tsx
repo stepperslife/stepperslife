@@ -20,7 +20,7 @@ type EarningStatus = "PENDING" | "AVAILABLE" | "PROCESSING" | "PAID" | "REFUNDED
 
 const STATUS_CONFIG: Record<EarningStatus, { label: string; color: string }> = {
   PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" },
-  AVAILABLE: { label: "Available", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
+  AVAILABLE: { label: "Available", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
   PROCESSING: { label: "Processing", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" },
   PAID: { label: "Paid", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300" },
   REFUNDED: { label: "Refunded", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
@@ -85,8 +85,8 @@ export default function VendorEarningsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-6 h-6 text-success" />
             </div>
           </div>
           <p className="text-3xl font-bold text-foreground">
@@ -122,7 +122,7 @@ export default function VendorEarningsPage() {
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-blue-600" />
+              <CheckCircle className="w-6 h-6 text-primary" />
             </div>
           </div>
           <p className="text-3xl font-bold text-foreground">
@@ -227,7 +227,7 @@ export default function VendorEarningsPage() {
                       <td className="p-4 text-sm text-muted-foreground">
                         -{formatCurrency(earning.commissionAmount)} ({earning.commissionRate}%)
                       </td>
-                      <td className="p-4 text-sm font-bold text-green-600">
+                      <td className="p-4 text-sm font-bold text-success">
                         {formatCurrency(earning.netAmount)}
                       </td>
                       <td className="p-4">

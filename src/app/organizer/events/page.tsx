@@ -235,9 +235,9 @@ export default function OrganizerEventsPage() {
   // TESTING MODE: Skip auth check
   // if (!currentUser) {
   //   return (
-  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+  //     <div className="min-h-screen bg-card flex items-center justify-center p-4">
   //       <div className="bg-white rounded-lg shadow-md p-8 max-w-md text-center">
-  //         <p className="text-gray-600 mb-4">Please sign in to access your organizer dashboard.</p>
+  //         <p className="text-muted-foreground mb-4">Please sign in to access your organizer dashboard.</p>
   //         <Link href="/login" className="text-primary hover:underline font-medium">
   //           Sign In
   //         </Link>
@@ -331,7 +331,7 @@ export default function OrganizerEventsPage() {
                   <button
                     type="button"
                     onClick={() => setShowWelcomeBanner(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 p-1"
+                    className="text-muted-foreground hover:text-muted-foreground transition-colors flex-shrink-0 p-1"
                     aria-label="Close welcome banner"
                   >
                     <X className="w-4 h-4 md:w-5 md:h-5" />
@@ -427,7 +427,7 @@ export default function OrganizerEventsPage() {
                     </p>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500">Tickets created across all events</p>
+                <p className="text-xs text-muted-foreground">Tickets created across all events</p>
               </div>
 
               <div className="bg-white rounded-lg shadow-sm border p-4 md:p-6">
@@ -442,7 +442,7 @@ export default function OrganizerEventsPage() {
                     </p>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500">Successful ticket sales</p>
+                <p className="text-xs text-muted-foreground">Successful ticket sales</p>
               </div>
 
               <div className="bg-white rounded-lg shadow-sm border p-4 md:p-6">
@@ -457,7 +457,7 @@ export default function OrganizerEventsPage() {
                     </p>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500">Events with ticket tiers</p>
+                <p className="text-xs text-muted-foreground">Events with ticket tiers</p>
               </div>
             </motion.div>
           </div>
@@ -502,7 +502,7 @@ export default function OrganizerEventsPage() {
               <button
                 type="button"
                 onClick={() => setDeleteResult(null)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-muted-foreground"
               >
                 ✕
               </button>
@@ -613,7 +613,7 @@ export default function OrganizerEventsPage() {
                         type="checkbox"
                         checked={selectedEvents.has(event._id)}
                         onChange={() => toggleEventSelection(event._id)}
-                        className="w-4 h-4 md:w-5 md:h-5 text-primary bg-white border-2 border-gray-300 rounded focus:ring-2 focus:ring-ring cursor-pointer"
+                        className="w-4 h-4 md:w-5 md:h-5 text-primary bg-white border-2 border rounded focus:ring-2 focus:ring-ring cursor-pointer"
                         onClick={(e) => e.stopPropagation()}
                       />
                     </div>
@@ -736,7 +736,7 @@ export default function OrganizerEventsPage() {
                         {/* View Public - Desktop Only */}
                         <Link
                           href={`/events/${event._id}`}
-                          className="hidden md:flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                          className="hidden md:flex items-center gap-2 px-4 py-2 text-sm border border rounded-lg hover:bg-card transition-colors"
                         >
                           <Calendar className="w-4 h-4" />
                           View Public
@@ -759,7 +759,7 @@ export default function OrganizerEventsPage() {
                           <>
                             <Link
                               href={`/organizer/events/${event._id}/staff`}
-                              className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                              className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm border border rounded-lg hover:bg-card transition-colors"
                             >
                               <Users className="w-4 h-4" />
                               Staff
@@ -780,7 +780,7 @@ export default function OrganizerEventsPage() {
                             </Link>
                             <Link
                               href={`/organizer/events/${event._id}`}
-                              className="hidden md:flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                              className="hidden md:flex items-center gap-2 px-4 py-2 text-sm border border rounded-lg hover:bg-card transition-colors"
                             >
                               <BarChart3 className="w-4 h-4" />
                               Dashboard

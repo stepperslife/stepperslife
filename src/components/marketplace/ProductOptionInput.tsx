@@ -173,7 +173,7 @@ export default function ProductOptionInput({ option, value, onChange }: ProductO
       <div>
         <label className="block text-sm font-medium text-foreground">
           {option.name}
-          {option.required && <span className="text-red-600 ml-1">*</span>}
+          {option.required && <span className="text-destructive ml-1">*</span>}
         </label>
         {option.description && <p className="text-sm text-muted-foreground mt-1">{option.description}</p>}
       </div>

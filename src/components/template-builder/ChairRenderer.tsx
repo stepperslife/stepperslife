@@ -37,8 +37,8 @@ export default function ChairRenderer({
         className={`w-full h-full rounded border-2 transition-all ${
           isSelected
             ? "ring-2 ring-yellow-400 border-yellow-400 shadow-lg"
-            : "border-gray-400 shadow-sm"
-        } ${chairColor ? "" : "bg-gray-200"}`}
+            : "border-muted-foreground shadow-sm"
+        } ${chairColor ? "" : "bg-muted"}`}
         style={{
           backgroundColor: chairColor,
         }}
@@ -47,7 +47,7 @@ export default function ChairRenderer({
       {/* Seat number (shown on hover or selection) */}
       {showSeatNumber && (
         <div
-          className="absolute top-1/2 left-1/2 text-[8px] font-bold text-gray-700 pointer-events-none"
+          className="absolute top-1/2 left-1/2 text-[8px] font-bold text-foreground pointer-events-none"
           style={{
             transform: `translate(-50%, -50%) rotate(-${chair.rotation}deg)`,
           }}

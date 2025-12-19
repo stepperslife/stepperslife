@@ -65,14 +65,14 @@ export default function StripeConnectRefreshPage() {
   }, [convex, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-card p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         {status === "loading" && (
           <div className="text-center">
             <Loader2 className="w-16 h-16 mx-auto text-primary animate-spin mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Resuming Setup</h2>
-            <p className="text-gray-600">{message}</p>
-            <p className="text-sm text-gray-500 mt-4">
+            <h2 className="text-2xl font-bold text-foreground mb-2">Resuming Setup</h2>
+            <p className="text-muted-foreground">{message}</p>
+            <p className="text-sm text-muted-foreground mt-4">
               You will be redirected to Stripe to continue your account setup...
             </p>
           </div>
@@ -80,10 +80,10 @@ export default function StripeConnectRefreshPage() {
 
         {status === "error" && (
           <div className="text-center">
-            <AlertCircle className="w-16 h-16 mx-auto text-red-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Setup Error</h2>
-            <p className="text-gray-600 mb-4">{message}</p>
-            <p className="text-sm text-gray-500">
+            <AlertCircle className="w-16 h-16 mx-auto text-destructive mb-4" />
+            <h2 className="text-2xl font-bold text-foreground mb-2">Setup Error</h2>
+            <p className="text-muted-foreground mb-4">{message}</p>
+            <p className="text-sm text-muted-foreground">
               If you continue to see this error, please contact support.
             </p>
           </div>

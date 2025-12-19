@@ -64,8 +64,8 @@ export default function OrderConfirmationPage() {
         <div className="container mx-auto px-4 py-8 max-w-2xl">
           {/* Success Message */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
-              <CheckCircle className="h-10 w-10 text-green-600" />
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-success/20 dark:bg-green-900/30 rounded-full mb-4">
+              <CheckCircle className="h-10 w-10 text-success" />
             </div>
             <h1 className="text-3xl font-bold mb-2">Order Placed!</h1>
             <p className="text-muted-foreground">

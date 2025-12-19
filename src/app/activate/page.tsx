@@ -216,7 +216,7 @@ export default function ActivatePage() {
           <button
             type="submit"
             disabled={loading || activationCode.length !== 4 || !email}
-            className="w-full bg-primary text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-primary/90 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+            className="w-full bg-primary text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-primary/90 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:bg-muted-foreground disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -234,7 +234,7 @@ export default function ActivatePage() {
 
         {/* Help Text */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Lost your activation code?{" "}
             <a href="/help" className="text-primary hover:text-primary font-medium">
               Contact Support

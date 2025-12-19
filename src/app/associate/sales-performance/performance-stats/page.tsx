@@ -116,8 +116,8 @@ export default function PerformanceStatsPage() {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                <Award className="h-5 w-5 text-gray-400" />
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                <Award className="h-5 w-5 text-muted-foreground" />
               </div>
               <div className="flex-1">
                 <p className="font-semibold">First Sale</p>
@@ -127,8 +127,8 @@ export default function PerformanceStatsPage() {
             </div>
 
             <div className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                <Award className="h-5 w-5 text-gray-400" />
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                <Award className="h-5 w-5 text-muted-foreground" />
               </div>
               <div className="flex-1">
                 <p className="font-semibold">10 Ticket Milestone</p>
@@ -138,8 +138,8 @@ export default function PerformanceStatsPage() {
             </div>
 
             <div className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                <Award className="h-5 w-5 text-gray-400" />
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                <Award className="h-5 w-5 text-muted-foreground" />
               </div>
               <div className="flex-1">
                 <p className="font-semibold">50 Ticket Achiever</p>
@@ -149,8 +149,8 @@ export default function PerformanceStatsPage() {
             </div>
 
             <div className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                <Award className="h-5 w-5 text-gray-400" />
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                <Award className="h-5 w-5 text-muted-foreground" />
               </div>
               <div className="flex-1">
                 <p className="font-semibold">100 Ticket Champion</p>

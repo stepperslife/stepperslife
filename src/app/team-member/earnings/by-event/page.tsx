@@ -40,7 +40,7 @@ export default function EarningsByEventPage() {
                     <p className="text-sm text-muted-foreground">{event.date}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold text-green-600">${event.earnings}</p>
+                    <p className="text-xl font-bold text-success">${event.earnings}</p>
                     <p className="text-sm text-muted-foreground">{event.ticketsSold} tickets</p>
                   </div>
                 </div>

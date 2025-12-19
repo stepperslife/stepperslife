@@ -51,7 +51,7 @@ export default function PayoutsPage() {
     switch (status) {
       case "completed":
         return (
-          <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 flex items-center gap-1 w-fit">
+          <span className="px-2 py-1 text-xs font-medium rounded-full bg-success/20 text-green-800 flex items-center gap-1 w-fit">
             <CheckCircle className="w-3 h-3" />
             Completed
           </span>
@@ -76,7 +76,7 @@ export default function PayoutsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       <motion.header
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -87,13 +87,13 @@ export default function PayoutsPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/organizer/earnings"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Payout History</h1>
-              <p className="text-gray-600 mt-1">View all your past and upcoming payouts</p>
+              <h1 className="text-3xl font-bold text-foreground">Payout History</h1>
+              <p className="text-muted-foreground mt-1">View all your past and upcoming payouts</p>
             </div>
           </div>
         </div>
@@ -107,33 +107,33 @@ export default function PayoutsPage() {
           className="bg-white rounded-lg shadow-md overflow-hidden"
         >
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-card">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Method
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Status
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-border">
                 {mockPayouts.map((payout) => (
-                  <tr key={payout.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <tr key={payout.id} className="hover:bg-card">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {new Date(payout.date).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                       ${payout.amount.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {payout.method}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(payout.status)}</td>

@@ -297,7 +297,7 @@ function NotificationSettings() {
 
       {/* Email Notifications */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-900">Email Notifications</h3>
+        <h3 className="font-semibold text-foreground">Email Notifications</h3>
 
         <div className="bg-accent border border-border rounded-lg p-4 flex gap-3">
           <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />

@@ -32,7 +32,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
   return (
     <Link
       href={`/restaurants/${restaurant.slug}`}
-      className="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+      className="group bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
     >
       <div className="relative h-48 overflow-hidden">
         {restaurant.coverImageUrl ? (
@@ -60,11 +60,11 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
         {/* Status Badge */}
         <div className="absolute top-4 right-4">
           {restaurant.acceptingOrders ? (
-            <span className="px-3 py-1 text-xs font-semibold bg-green-500 text-white rounded-full shadow-lg">
+            <span className="px-3 py-1 text-xs font-semibold bg-success text-white rounded-full shadow-lg">
               Open for Orders
             </span>
           ) : (
-            <span className="px-3 py-1 text-xs font-semibold bg-gray-500 text-white rounded-full shadow-lg">
+            <span className="px-3 py-1 text-xs font-semibold bg-card0 text-white rounded-full shadow-lg">
               Currently Closed
             </span>
           )}
@@ -88,7 +88,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
       </div>
 
       <div className="p-5">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+        <h3 className="text-lg font-bold text-foreground dark:text-white mb-1">
           {restaurant.name}
         </h3>
 
@@ -96,7 +96,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
         {reviewStats && reviewStats.totalReviews > 0 && (
           <div className="flex items-center gap-2 mb-2">
             <StarRating rating={reviewStats.averageRating} size="sm" />
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-muted-foreground dark:text-muted-foreground">
               {reviewStats.averageRating.toFixed(1)} ({reviewStats.totalReviews})
             </span>
           </div>
@@ -108,7 +108,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
           </p>
         )}
 
-        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex items-center justify-between text-sm text-muted-foreground dark:text-muted-foreground">
           <span className="flex items-center gap-1">
             <MapPin className="h-4 w-4" />
             {restaurant.city}, {restaurant.state}

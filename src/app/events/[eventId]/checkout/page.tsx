@@ -853,7 +853,7 @@ export default function CheckoutPage() {
                     seatingChart &&
                     seatingChart.sections.length > 0 && (
                       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                        <h3 className="font-semibold text-gray-900 mb-4">Select Your Seats</h3>
+                        <h3 className="font-semibold text-foreground mb-4">Select Your Seats</h3>
                         {(seatingChart as any).seatingStyle === "TABLE_BASED" ? (
                           <InteractiveSeatingChart
                             eventId={eventId}
@@ -875,13 +875,13 @@ export default function CheckoutPage() {
                 </>
               ) : (
                 <div className="bg-white rounded-lg shadow-md p-6">
-                  <h3 className="font-semibold text-gray-900 mb-4">Payment Method</h3>
+                  <h3 className="font-semibold text-foreground mb-4">Payment Method</h3>
 
                   {/* Payment Model Info */}
                   {paymentModel === "PREPAY" ? (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                       <div className="flex items-start gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="text-sm font-semibold text-green-900">No Additional Fees</p>
                           <p className="text-xs text-green-700 mt-1">
@@ -902,7 +902,7 @@ export default function CheckoutPage() {
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "card"
                             ? "border-primary bg-accent text-foreground font-semibold"
-                            : "border-gray-200 hover:border-gray-300"
+                            : "border hover:border"
                         }`}
                       >
                         Card / Cash App Pay
@@ -914,7 +914,7 @@ export default function CheckoutPage() {
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "paypal"
                             ? "border-[#0070BA] bg-blue-50 text-[#003087] font-semibold"
-                            : "border-gray-200 hover:border-gray-300"
+                            : "border hover:border"
                         }`}
                       >
                         PayPal
@@ -926,7 +926,7 @@ export default function CheckoutPage() {
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "cash"
                             ? "border-green-600 bg-green-50 text-green-900 font-semibold"
-                            : "border-gray-200 hover:border-gray-300"
+                            : "border hover:border"
                         }`}
                       >
                         Cash In-Person
@@ -990,7 +990,7 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => setShowPayment(false)}
-                        className="w-full px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="w-full px-6 py-3 border border rounded-lg hover:bg-card transition-colors"
                       >
                         Back
                       </button>
@@ -1041,7 +1041,7 @@ export default function CheckoutPage() {
                         <button
                           type="button"
                           onClick={() => setShowPayment(false)}
-                          className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                          className="px-6 py-3 border border rounded-lg hover:bg-card transition-colors"
                         >
                           Back
                         </button>
@@ -1067,14 +1067,14 @@ export default function CheckoutPage() {
                   transition={{ duration: 0.3, delay: 0.3 }}
                   className="bg-white rounded-lg shadow-md p-6"
                 >
-                  <h3 className="font-semibold text-gray-900 mb-4">Quantity</h3>
+                  <h3 className="font-semibold text-foreground mb-4">Quantity</h3>
                   <input
                     type="number"
                     min="1"
                     max="10"
                     value={quantity}
                     onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                   />
                 </motion.div>
               )}
@@ -1087,7 +1087,7 @@ export default function CheckoutPage() {
                   transition={{ duration: 0.3, delay: 0.35 }}
                   className="bg-white rounded-lg shadow-md p-6"
                 >
-                  <h3 className="font-semibold text-gray-900 mb-4">Your Information</h3>
+                  <h3 className="font-semibold text-foreground mb-4">Your Information</h3>
 
                   {/* Cash payment login notice */}
                   {paymentMethod === "cash" && !currentUser && (
@@ -1112,8 +1112,8 @@ export default function CheckoutPage() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name <span className="text-red-500">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Full Name <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="text"
@@ -1121,13 +1121,13 @@ export default function CheckoutPage() {
                         onChange={(e) => setBuyerName(e.target.value)}
                         placeholder="John Doe"
                         data-testid="buyer-name"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                        className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-muted-foreground"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address <span className="text-red-500">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Email Address <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="email"
@@ -1135,7 +1135,7 @@ export default function CheckoutPage() {
                         onChange={(e) => setBuyerEmail(e.target.value)}
                         placeholder="john@example.com"
                         data-testid="buyer-email"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                        className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-muted-foreground"
                         required
                       />
                     </div>
@@ -1151,10 +1151,10 @@ export default function CheckoutPage() {
                   transition={{ duration: 0.3, delay: 0.35 }}
                   className="bg-white rounded-lg shadow-md p-6"
                 >
-                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                     <Tag className="w-5 h-5" />
                     Discount Code
-                    <span className="text-xs font-normal text-gray-500">(optional)</span>
+                    <span className="text-xs font-normal text-muted-foreground">(optional)</span>
                   </h3>
 
                   {/* Applied Discount Display */}
@@ -1176,7 +1176,7 @@ export default function CheckoutPage() {
                         <button
                           type="button"
                           onClick={handleRemoveDiscount}
-                          className="p-2 text-green-700 hover:bg-green-100 rounded-lg transition-colors"
+                          className="p-2 text-green-700 hover:bg-success/20 rounded-lg transition-colors"
                           title="Remove discount"
                         >
                           <X className="w-5 h-5" />
@@ -1202,7 +1202,7 @@ export default function CheckoutPage() {
                           }}
                           placeholder="Have a code? Enter it here"
                           data-testid="discount-code-input"
-                          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder:text-gray-400 uppercase"
+                          className="flex-1 px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-muted-foreground uppercase"
                         />
                         <button
                           type="button"
@@ -1219,7 +1219,7 @@ export default function CheckoutPage() {
                         <motion.p
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="text-sm text-red-600 mt-2 flex items-center gap-1"
+                          className="text-sm text-destructive mt-2 flex items-center gap-1"
                         >
                           {discountError}
                         </motion.p>
@@ -1236,7 +1236,7 @@ export default function CheckoutPage() {
                 transition={{ duration: 0.3, delay: 0.4 }}
                 className="bg-white rounded-lg shadow-md p-6"
               >
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                   <Ticket className="w-5 h-5" />
                   Order Summary
                 </h3>
@@ -1247,7 +1247,7 @@ export default function CheckoutPage() {
                       {purchaseType === "bundle" && selectedBundle ? (
                         <>
                           <div className="flex-1">
-                            <span className="text-gray-900 font-medium">{selectedBundle.name}</span>
+                            <span className="text-foreground font-medium">{selectedBundle.name}</span>
                             <div className="flex flex-wrap gap-1 mt-1">
                               {selectedBundle.includedTiers.map((includedTier: any) => (
                                 <span
@@ -1258,13 +1258,13 @@ export default function CheckoutPage() {
                                 </span>
                               ))}
                             </div>
-                            <span className="text-xs text-gray-500">Quantity: {quantity}</span>
+                            <span className="text-xs text-muted-foreground">Quantity: {quantity}</span>
                           </div>
                           <span className="font-medium ml-2">${(subtotal / 100).toFixed(2)}</span>
                         </>
                       ) : (
                         <>
-                          <span className="text-gray-600">
+                          <span className="text-muted-foreground">
                             {selectedTier?.name} x {quantity}
                           </span>
                           <span className="font-medium">${(subtotal / 100).toFixed(2)}</span>
@@ -1285,19 +1285,19 @@ export default function CheckoutPage() {
                     )}
 
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Platform Fee</span>
+                      <span className="text-muted-foreground">Platform Fee</span>
                       <span className="font-medium">${(platformFee / 100).toFixed(2)}</span>
                     </div>
 
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Processing Fee</span>
+                      <span className="text-muted-foreground">Processing Fee</span>
                       <span className="font-medium">${(processingFee / 100).toFixed(2)}</span>
                     </div>
 
                     <div className="border-t pt-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-gray-900">Total</span>
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-lg font-bold text-foreground">Total</span>
+                        <span className="text-2xl font-bold text-foreground">
                           ${(total / 100).toFixed(2)}
                         </span>
                       </div>
@@ -1319,7 +1319,7 @@ export default function CheckoutPage() {
                         className={`w-full px-6 py-4 rounded-lg font-semibold transition-all ${
                           buyerEmail && buyerName
                             ? "bg-primary text-white hover:bg-primary/90 shadow-md hover:shadow-lg"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-muted text-muted-foreground cursor-not-allowed"
                         }`}
                       >
                         Continue to Payment
@@ -1327,7 +1327,7 @@ export default function CheckoutPage() {
                     )}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">Select a ticket type to continue</p>
+                  <p className="text-muted-foreground text-sm">Select a ticket type to continue</p>
                 )}
               </motion.div>
             </motion.div>

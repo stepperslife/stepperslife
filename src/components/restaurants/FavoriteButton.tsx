@@ -82,8 +82,8 @@ export function FavoriteButton({
         rounded-full
         transition-all duration-200
         ${isFavorited
-          ? "bg-red-50 dark:bg-red-900/30 text-red-500"
-          : "bg-white/80 dark:bg-gray-800/80 text-gray-400 hover:text-red-500"
+          ? "bg-red-50 dark:bg-red-900/30 text-destructive"
+          : "bg-white/80 dark:bg-card/80 text-muted-foreground hover:text-destructive"
         }
         hover:scale-110
         ${isAnimating ? "scale-125" : ""}

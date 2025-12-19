@@ -97,12 +97,12 @@ export default function LoginPage() {
       <PublicHeader showCreateButton={false} />
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="w-full max-w-md">
-          <div data-testid="login-form-container" className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+          <div data-testid="login-form-container" className="bg-white dark:bg-card rounded-2xl shadow-xl p-8">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-foreground dark:text-white mb-2">
                 Welcome Back
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">Sign in to your account</p>
+              <p className="text-muted-foreground dark:text-muted-foreground">Sign in to your account</p>
             </div>
 
             {/* Error and Success Messages */}
@@ -126,7 +126,7 @@ export default function LoginPage() {
                   window.location.href = `/api/auth/google?callbackUrl=${callbackUrl}`;
                 }}
                 data-testid="google-login-button"
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-medium text-gray-900 dark:text-white shadow-sm"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-card border-2 border dark:border rounded-lg hover:bg-card dark:hover:bg-muted transition-colors font-medium text-foreground dark:text-white shadow-sm"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -152,10 +152,10 @@ export default function LoginPage() {
               {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                  <div className="w-full border-t border dark:border"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                  <span className="px-2 bg-white dark:bg-card text-muted-foreground dark:text-muted-foreground">
                     or
                   </span>
                 </div>
@@ -166,7 +166,7 @@ export default function LoginPage() {
                 <div>
                   <label
                     htmlFor="magic-email"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
                   >
                     Email Address
                   </label>
@@ -176,7 +176,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     data-testid="email-input"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border dark:border bg-white dark:bg-card text-foreground dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -198,29 +198,29 @@ export default function LoginPage() {
               </div>
 
               {/* 3. Traditional Login - Dropdown/Collapsible */}
-              <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+              <div className="border border dark:border rounded-lg overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setShowTraditionalLogin(!showTraditionalLogin)}
                   data-testid="password-login-toggle"
-                  className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 bg-card dark:bg-card hover:bg-muted dark:hover:bg-muted transition-colors"
                 >
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span className="text-sm font-medium text-foreground dark:text-muted-foreground">
                     Sign in with password
                   </span>
                   {showTraditionalLogin ? (
-                    <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    <ChevronUp className="w-5 h-5 text-muted-foreground dark:text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    <ChevronDown className="w-5 h-5 text-muted-foreground dark:text-muted-foreground" />
                   )}
                 </button>
 
                 {showTraditionalLogin && (
-                  <form onSubmit={handleSubmit} data-testid="password-login-form" className="p-4 space-y-4 bg-white dark:bg-gray-800">
+                  <form onSubmit={handleSubmit} data-testid="password-login-form" className="p-4 space-y-4 bg-white dark:bg-card">
                     <div>
                       <label
                         htmlFor="email"
-                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                        className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
                       >
                         Email Address
                       </label>
@@ -231,7 +231,7 @@ export default function LoginPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         data-testid="login-email"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 rounded-lg border border dark:border bg-white dark:bg-card text-foreground dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                         placeholder="you@example.com"
                       />
                     </div>
@@ -239,7 +239,7 @@ export default function LoginPage() {
                     <div>
                       <label
                         htmlFor="password"
-                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                        className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
                       >
                         Password
                       </label>
@@ -251,14 +251,14 @@ export default function LoginPage() {
                           onChange={(e) => setPassword(e.target.value)}
                           required
                           data-testid="login-password"
-                          className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                          className="w-full px-4 py-3 pr-12 rounded-lg border border dark:border bg-white dark:bg-card text-foreground dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                           placeholder="Enter your password"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
                           data-testid="toggle-password-visibility"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground transition-colors"
                           aria-label={showPassword ? "Hide password" : "Show password"}
                         >
                           {showPassword ? (
@@ -297,10 +297,10 @@ export default function LoginPage() {
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                  <div className="w-full border-t border dark:border"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                  <span className="px-2 bg-white dark:bg-card text-muted-foreground dark:text-muted-foreground">
                     Don't have an account?
                   </span>
                 </div>

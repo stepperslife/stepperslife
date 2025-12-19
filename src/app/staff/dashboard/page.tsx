@@ -169,7 +169,7 @@ export default function StaffDashboardPage() {
                             className={`px-3 py-1 text-xs font-bold rounded-full ${
                               position.role === "STAFF"
                                 ? "bg-primary text-white"
-                                : "bg-gray-600 text-white"
+                                : "bg-muted-foreground text-white"
                             }`}
                           >
                             {position.role === "STAFF" ? "🎫 STAFF" : position.role === "TEAM_MEMBERS" ? "👥 TEAM" : "🤝 ASSOCIATES"}
@@ -284,7 +284,7 @@ export default function StaffDashboardPage() {
                   {/* Referral Code Section */}
                   {position.referralCode && (
                     <div className="p-6">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                         <Share2 className="w-4 h-4" />
                         Your Referral Code
                       </h4>

@@ -383,7 +383,7 @@ export default function StaffTransfersPage() {
                       <div className="flex items-center justify-between gap-2 w-full">
                         <div>
                           <div className="font-medium">{staff.name}</div>
-                          <div className="text-xs text-gray-500">{staff.email}</div>
+                          <div className="text-xs text-muted-foreground">{staff.email}</div>
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge

@@ -29,15 +29,15 @@ const statusConfig: Record<FulfillmentStatus, { label: string; color: string; ic
   PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: Clock },
   PROCESSING: { label: "Processing", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: Package },
   SHIPPED: { label: "Shipped", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400", icon: Truck },
-  DELIVERED: { label: "Delivered", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: CheckCircle },
+  DELIVERED: { label: "Delivered", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-success", icon: CheckCircle },
   CANCELLED: { label: "Cancelled", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: XCircle },
 };
 
 const paymentStatusConfig: Record<PaymentStatus, { label: string; color: string }> = {
   PENDING: { label: "Payment Pending", color: "text-yellow-600 dark:text-yellow-400" },
-  PAID: { label: "Paid", color: "text-green-600 dark:text-green-400" },
-  FAILED: { label: "Payment Failed", color: "text-red-600 dark:text-red-400" },
-  REFUNDED: { label: "Refunded", color: "text-gray-600 dark:text-gray-400" },
+  PAID: { label: "Paid", color: "text-success dark:text-success" },
+  FAILED: { label: "Payment Failed", color: "text-destructive dark:text-red-400" },
+  REFUNDED: { label: "Refunded", color: "text-muted-foreground dark:text-muted-foreground" },
 };
 
 export default function MyOrdersPage() {
@@ -221,7 +221,7 @@ export default function MyOrdersPage() {
                           <span>Shipping</span>
                           <span>
                             {order.shippingCost === 0 ? (
-                              <span className="text-green-600">Free</span>
+                              <span className="text-success">Free</span>
                             ) : (
                               `$${(order.shippingCost / 100).toFixed(2)}`
                             )}

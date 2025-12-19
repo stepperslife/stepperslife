@@ -173,15 +173,15 @@ export function PayPalPayment({
     <div className="space-y-4">
       {isLoading && (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          <span className="ml-2 text-gray-600">Loading PayPal...</span>
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <span className="ml-2 text-muted-foreground">Loading PayPal...</span>
         </div>
       )}
 
       {isProcessing && (
         <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          <span className="ml-2 text-gray-600">Processing payment...</span>
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <span className="ml-2 text-muted-foreground">Processing payment...</span>
         </div>
       )}
 
@@ -190,7 +190,7 @@ export function PayPalPayment({
         className={isLoading ? "hidden" : ""}
       ></div>
 
-      <p className="text-xs text-gray-500 text-center">
+      <p className="text-xs text-muted-foreground text-center">
         Secure payment powered by PayPal
       </p>
     </div>

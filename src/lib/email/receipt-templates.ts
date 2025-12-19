@@ -3,7 +3,7 @@
  *
  * Design principles:
  * - Clean, modern e-commerce design (similar to Amazon, Shopify)
- * - SteppersLife branding with primary color (#D4AF37 gold)
+ * - SteppersLife branding with primary blue (#1e9df1)
  * - Product images prominently displayed
  * - Mobile-responsive tables
  * - Clear call-to-action buttons
@@ -18,17 +18,17 @@ import {
   OrderReceiptItem,
 } from "./types";
 
-// Brand colors
+// Brand colors - synced with site theme
 const BRAND = {
-  primary: "#D4AF37", // Gold
-  primaryDark: "#B8962F",
-  text: "#1a1a1a",
-  textLight: "#666666",
-  border: "#e5e5e5",
-  background: "#f8f8f8",
+  primary: "#1e9df1", // Primary blue
+  primaryDark: "#1a8cd8",
+  text: "#0f1419",
+  textLight: "#72767a",
+  border: "#e1eaef",
+  background: "#f7f8f8",
   white: "#ffffff",
-  success: "#22c55e",
-  warning: "#f59e0b",
+  success: "#00b87a",
+  warning: "#f7b928",
 };
 
 // ============================================================================

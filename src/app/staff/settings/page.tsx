@@ -76,7 +76,7 @@ export default function StaffSettingsPage() {
       <div className="flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full"></div>
-          <p className="text-gray-600">Loading settings...</p>
+          <p className="text-muted-foreground">Loading settings...</p>
         </div>
       </div>
     );
@@ -100,19 +100,19 @@ export default function StaffSettingsPage() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <SettingsIcon className="w-8 h-8 text-primary" />
-          <h1 className="text-3xl font-bold text-gray-900">Staff Settings</h1>
+          <h1 className="text-3xl font-bold text-foreground">Staff Settings</h1>
         </div>
-        <p className="text-gray-600">Manage your payment acceptance and notification preferences</p>
+        <p className="text-muted-foreground">Manage your payment acceptance and notification preferences</p>
       </div>
 
       {/* Event Selector */}
       {staffPositions.length > 1 && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">Select Event:</label>
+          <label className="block text-sm font-medium text-foreground mb-3">Select Event:</label>
           <select
             value={selectedEventId || ""}
             onChange={(e) => setSelectedEventId(e.target.value as Id<"events">)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
+            className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
           >
             {staffPositions.map((pos) => (
               <option key={pos.eventId} value={pos.eventId}>
@@ -127,15 +127,15 @@ export default function StaffSettingsPage() {
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <div className="flex items-center gap-3 mb-4">
           <DollarSign className="w-6 h-6 text-primary" />
-          <h2 className="text-xl font-bold text-gray-900">Payment Settings</h2>
+          <h2 className="text-xl font-bold text-foreground">Payment Settings</h2>
         </div>
 
         <div className="space-y-4">
           {/* Accept Cash In-Person */}
-          <div className="flex items-start justify-between p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-start justify-between p-4 border border rounded-lg">
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-1">Accept Cash In-Person</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-foreground mb-1">Accept Cash In-Person</h3>
+              <p className="text-sm text-muted-foreground">
                 Enable this to receive and approve cash payment requests from customers. You'll be
                 notified when a customer wants to pay cash.
               </p>
@@ -154,7 +154,7 @@ export default function StaffSettingsPage() {
                 onChange={(e) => setAcceptCash(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+              <div className="w-14 h-7 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
             </label>
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function StaffSettingsPage() {
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <div className="flex items-center gap-3 mb-4">
           <Bell className="w-6 h-6 text-primary" />
-          <h2 className="text-xl font-bold text-gray-900">Push Notifications</h2>
+          <h2 className="text-xl font-bold text-foreground">Push Notifications</h2>
         </div>
 
         <div className="bg-accent border border-primary/30 rounded-lg p-4 mb-4">
@@ -176,10 +176,10 @@ export default function StaffSettingsPage() {
 
         <div className="space-y-4">
           {/* Cash Orders */}
-          <div className="flex items-start justify-between p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-start justify-between p-4 border border rounded-lg">
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-1">Cash Payment Requests</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-foreground mb-1">Cash Payment Requests</h3>
+              <p className="text-sm text-muted-foreground">
                 Get notified when a customer creates a cash payment order that needs your approval
               </p>
             </div>
@@ -190,15 +190,15 @@ export default function StaffSettingsPage() {
                 onChange={(e) => setNotifyOnCashOrders(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+              <div className="w-14 h-7 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
             </label>
           </div>
 
           {/* Online Sales */}
-          <div className="flex items-start justify-between p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-start justify-between p-4 border border rounded-lg">
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-1">Online Ticket Sales</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-foreground mb-1">Online Ticket Sales</h3>
+              <p className="text-sm text-muted-foreground">
                 Get notified when someone purchases tickets using your referral link
               </p>
             </div>
@@ -209,7 +209,7 @@ export default function StaffSettingsPage() {
                 onChange={(e) => setNotifyOnOnlineSales(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+              <div className="w-14 h-7 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
             </label>
           </div>
         </div>

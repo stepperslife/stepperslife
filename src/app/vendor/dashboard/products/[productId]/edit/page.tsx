@@ -238,7 +238,7 @@ export default function EditProductPage() {
           <h2 className="text-lg font-bold text-red-800 dark:text-red-200 mb-2">
             Access Denied
           </h2>
-          <p className="text-red-600 dark:text-red-300">
+          <p className="text-destructive dark:text-red-300">
             You don't have permission to edit this product.
           </p>
           <Link
@@ -272,7 +272,7 @@ export default function EditProductPage() {
           <button
             type="button"
             onClick={() => setShowDeleteModal(true)}
-            className="px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-destructive hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors flex items-center gap-2"
           >
             <Trash2 className="w-5 h-5" />
             Delete Product

@@ -52,7 +52,7 @@ export default function ManageAssociatesPage() {
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Tickets Sold</p>
-                        <p className="text-xl font-bold text-green-600">{associate.ticketsSold}</p>
+                        <p className="text-xl font-bold text-success">{associate.ticketsSold}</p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Total Sales</p>
@@ -69,7 +69,7 @@ export default function ManageAssociatesPage() {
                     <Button size="icon" variant="outline">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button size="icon" variant="outline" className="text-red-500 hover:text-red-600">
+                    <Button size="icon" variant="outline" className="text-destructive hover:text-destructive">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

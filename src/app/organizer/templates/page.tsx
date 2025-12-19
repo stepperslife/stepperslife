@@ -330,10 +330,10 @@ export default function TemplatesPage() {
               className="bg-white rounded-lg shadow-md p-6"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-600">Total Templates</span>
+                <span className="text-sm font-medium text-muted-foreground">Total Templates</span>
                 <GridIcon className="w-5 h-5 text-primary" />
               </div>
-              <p className="text-3xl font-bold text-gray-900">{allTemplates.length}</p>
+              <p className="text-3xl font-bold text-foreground">{allTemplates.length}</p>
             </motion.div>
 
             <motion.div
@@ -343,10 +343,10 @@ export default function TemplatesPage() {
               className="bg-white rounded-lg shadow-md p-6"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-600">Pre-built</span>
+                <span className="text-sm font-medium text-muted-foreground">Pre-built</span>
                 <Sparkles className="w-5 h-5 text-primary" />
               </div>
-              <p className="text-3xl font-bold text-gray-900">{seatingTemplates.length}</p>
+              <p className="text-3xl font-bold text-foreground">{seatingTemplates.length}</p>
             </motion.div>
 
             <motion.div
@@ -356,10 +356,10 @@ export default function TemplatesPage() {
               className="bg-white rounded-lg shadow-md p-6"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-600">Custom</span>
-                <Users className="w-5 h-5 text-green-600" />
+                <span className="text-sm font-medium text-muted-foreground">Custom</span>
+                <Users className="w-5 h-5 text-success" />
               </div>
-              <p className="text-3xl font-bold text-gray-900">{userTemplates?.length || 0}</p>
+              <p className="text-3xl font-bold text-foreground">{userTemplates?.length || 0}</p>
             </motion.div>
 
             <motion.div
@@ -369,10 +369,10 @@ export default function TemplatesPage() {
               className="bg-white rounded-lg shadow-md p-6"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-600">Categories</span>
+                <span className="text-sm font-medium text-muted-foreground">Categories</span>
                 <Filter className="w-5 h-5 text-orange-600" />
               </div>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-3xl font-bold text-foreground">
                 {Object.keys(templateStats?.byCategory || {}).length}
               </p>
             </motion.div>

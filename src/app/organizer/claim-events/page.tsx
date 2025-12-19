@@ -75,28 +75,28 @@ export default function ClaimEventsPage() {
   const hasActiveFilters = searchTerm || category || dateFrom || dateTo;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Claim Events</h1>
-          <p className="text-gray-600">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Claim Events</h1>
+          <p className="text-muted-foreground">
             Search for events created by administrators and claim ownership to start managing them.
           </p>
         </div>
 
         {/* Search and Filter Bar */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search Input */}
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search by event name, location, or description..."
                   onChange={handleSearchChange}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                  className="w-full pl-10 pr-4 py-2 border border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
                 />
               </div>
             </div>
@@ -108,13 +108,13 @@ export default function ClaimEventsPage() {
               className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors ${
                 showFilters
                   ? "bg-green-50 border-green-500 text-green-700"
-                  : "border-gray-300 hover:bg-gray-50"
+                  : "border hover:bg-card"
               }`}
             >
               <Filter className="w-4 h-4" />
               <span>Filters</span>
               {hasActiveFilters && (
-                <span className="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs">
+                <span className="bg-success text-white px-2 py-0.5 rounded-full text-xs">
                   Active
                 </span>
               )}
@@ -134,17 +134,17 @@ export default function ClaimEventsPage() {
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
               >
-                <div className="pt-4 mt-4 border-t border-gray-200">
+                <div className="pt-4 mt-4 border-t border">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Category Filter */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Category
                       </label>
                       <select
                         value={category || ""}
                         onChange={(e) => setCategory(e.target.value || undefined)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       >
                         <option value="">All Categories</option>
                         {EVENT_CATEGORIES.map((cat) => (
@@ -157,27 +157,27 @@ export default function ClaimEventsPage() {
 
                     {/* Date From Filter */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         From Date
                       </label>
                       <input
                         type="date"
                         value={dateFrom}
                         onChange={(e) => setDateFrom(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
 
                     {/* Date To Filter */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         To Date
                       </label>
                       <input
                         type="date"
                         value={dateTo}
                         onChange={(e) => setDateTo(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
                   </div>
@@ -187,7 +187,7 @@ export default function ClaimEventsPage() {
                     <button
                       type="button"
                       onClick={clearFilters}
-                      className="mt-3 text-sm text-red-600 hover:text-red-700 font-medium"
+                      className="mt-3 text-sm text-destructive hover:text-red-700 font-medium"
                     >
                       Clear all filters
                     </button>
@@ -202,11 +202,11 @@ export default function ClaimEventsPage() {
         <div>
           {/* No search state */}
           {!hasActiveFilters && (
-            <div className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-12">
+            <div className="bg-white rounded-lg border-2 border-dashed border p-12">
               <div className="text-center">
-                <Search className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-4 text-lg font-medium text-gray-900">Start Searching</h3>
-                <p className="mt-2 text-sm text-gray-500">
+                <Search className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-medium text-foreground">Start Searching</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
                   Enter a search term or apply filters to find claimable events
                 </p>
               </div>
@@ -218,18 +218,18 @@ export default function ClaimEventsPage() {
             <div className="bg-white rounded-lg p-12">
               <div className="text-center">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-                <p className="mt-4 text-gray-500">Searching for events...</p>
+                <p className="mt-4 text-muted-foreground">Searching for events...</p>
               </div>
             </div>
           )}
 
           {/* No results state */}
           {hasActiveFilters && searchResults && searchResults.length === 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-12">
+            <div className="bg-white rounded-lg border border p-12">
               <div className="text-center">
-                <Gift className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-4 text-lg font-medium text-gray-900">No Events Found</h3>
-                <p className="mt-2 text-sm text-gray-500">
+                <Gift className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-medium text-foreground">No Events Found</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
                   Try adjusting your search criteria or check back later
                 </p>
               </div>
@@ -239,7 +239,7 @@ export default function ClaimEventsPage() {
           {/* Results grid */}
           {hasActiveFilters && searchResults && searchResults.length > 0 && (
             <div>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 Found {searchResults.length} claimable event{searchResults.length !== 1 ? "s" : ""}
               </p>
 
@@ -250,10 +250,10 @@ export default function ClaimEventsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.05 * index }}
-                    className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
+                    className="bg-white rounded-lg shadow-md border border overflow-hidden hover:shadow-lg transition-shadow"
                   >
                     {/* Event Image */}
-                    <div className="h-48 bg-gray-200">
+                    <div className="h-48 bg-muted">
                       {event.imageUrl ? (
                         <img
                           src={event.imageUrl}
@@ -269,19 +269,19 @@ export default function ClaimEventsPage() {
 
                     {/* Event Details */}
                     <div className="p-4">
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">{event.name}</h3>
+                      <h3 className="text-lg font-bold text-foreground mb-2">{event.name}</h3>
 
                       {/* Event Info */}
                       <div className="space-y-2 mb-4">
                         {event.startDate && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Calendar className="w-4 h-4" />
                             <span>{formatEventDate(event.startDate, event.timezone)}</span>
                           </div>
                         )}
 
                         {event.location && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <MapPin className="w-4 h-4" />
                             <span className="truncate">
                               {typeof event.location === "string"
@@ -303,7 +303,7 @@ export default function ClaimEventsPage() {
                         <div className="space-y-2">
                           {event.claimCode && (
                             <div>
-                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                              <label className="block text-xs font-medium text-foreground mb-1">
                                 Claim Code Required
                               </label>
                               <input
@@ -311,7 +311,7 @@ export default function ClaimEventsPage() {
                                 value={claimCode}
                                 onChange={(e) => setClaimCode(e.target.value)}
                                 placeholder="Enter claim code"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                className="w-full px-3 py-2 border border rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                               />
                             </div>
                           )}
@@ -329,7 +329,7 @@ export default function ClaimEventsPage() {
                                 setClaimingEventId(null);
                                 setClaimCode("");
                               }}
-                              className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                              className="px-4 py-2 text-sm border border rounded-lg hover:bg-card transition-colors"
                             >
                               Cancel
                             </button>

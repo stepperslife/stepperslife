@@ -39,7 +39,7 @@ export default function PastEventsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="text-lg font-semibold">{event.name}</h3>
-                      <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">
+                      <span className="px-2 py-1 text-xs rounded-full bg-muted text-foreground">
                         Completed
                       </span>
                     </div>
@@ -62,11 +62,11 @@ export default function PastEventsPage() {
                   <div className="text-right space-y-2">
                     <div>
                       <p className="text-xs text-muted-foreground">Tickets Sold</p>
-                      <p className="text-xl font-bold text-green-600">{event.ticketsSold || 0}</p>
+                      <p className="text-xl font-bold text-success">{event.ticketsSold || 0}</p>
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Earnings</p>
-                      <p className="text-lg font-semibold text-green-600">${event.earnings || "0.00"}</p>
+                      <p className="text-lg font-semibold text-success">${event.earnings || "0.00"}</p>
                     </div>
                   </div>
                 </div>

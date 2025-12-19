@@ -22,7 +22,7 @@ export default function Error({
       <div className="max-w-md w-full text-center p-8">
         <div className="mb-6">
           <svg
-            className="mx-auto h-16 w-16 text-red-500"
+            className="mx-auto h-16 w-16 text-destructive"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

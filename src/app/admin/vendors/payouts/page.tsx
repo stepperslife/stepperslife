@@ -26,7 +26,7 @@ const STATUS_CONFIG: Record<PayoutStatus, { label: string; color: string }> = {
   PENDING: { label: "Pending Review", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" },
   APPROVED: { label: "Approved", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" },
   PROCESSING: { label: "Processing", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300" },
-  COMPLETED: { label: "Completed", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
+  COMPLETED: { label: "Completed", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
   FAILED: { label: "Failed", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
 };
 
@@ -185,35 +185,35 @@ export default function AdminPayoutsPage() {
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-blue-600" />
+              <CheckCircle className="w-5 h-5 text-primary" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{payoutStats?.approvedCount || 0}</p>
               <p className="text-sm text-muted-foreground">Approved</p>
             </div>
           </div>
-          <p className="mt-2 text-sm text-blue-600 font-medium">
+          <p className="mt-2 text-sm text-primary font-medium">
             {formatCurrency(payoutStats?.approvedAmount || 0)}
           </p>
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-success" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{payoutStats?.completedCount || 0}</p>
               <p className="text-sm text-muted-foreground">Completed</p>
             </div>
           </div>
-          <p className="mt-2 text-sm text-green-600 font-medium">
+          <p className="mt-2 text-sm text-success font-medium">
             {formatCurrency(payoutStats?.completedAmount || 0)}
           </p>
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
-              <XCircle className="w-5 h-5 text-red-600" />
+              <XCircle className="w-5 h-5 text-destructive" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{payoutStats?.failedCount || 0}</p>
@@ -345,7 +345,7 @@ export default function AdminPayoutsPage() {
                                     },
                                   })
                                 }
-                                className="px-3 py-1.5 border border-red-600 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                className="px-3 py-1.5 border border-red-600 text-destructive rounded-lg text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                               >
                                 Reject
                               </button>

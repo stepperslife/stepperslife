@@ -20,9 +20,9 @@ import {
 import toast from "react-hot-toast";
 
 const STATUS_LABELS: Record<"ACTIVE" | "DRAFT" | "ARCHIVED", { label: string; color: string }> = {
-  ACTIVE: { label: "Active", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" },
+  ACTIVE: { label: "Active", color: "bg-success/20 text-green-700 dark:bg-green-900/30 dark:text-green-300" },
   DRAFT: { label: "Draft", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300" },
-  ARCHIVED: { label: "Archived", color: "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300" },
+  ARCHIVED: { label: "Archived", color: "bg-muted text-foreground dark:bg-background/30 dark:text-muted-foreground" },
 } as const;
 
 export default function VendorProductsPage() {
@@ -180,11 +180,11 @@ export default function VendorProductsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <p className={`font-medium ${product.inventoryQuantity <= 5 ? "text-red-600" : "text-foreground"}`}>
+                      <p className={`font-medium ${product.inventoryQuantity <= 5 ? "text-destructive" : "text-foreground"}`}>
                         {product.inventoryQuantity}
                       </p>
                       {product.inventoryQuantity <= 5 && (
-                        <p className="text-xs text-red-600">Low stock</p>
+                        <p className="text-xs text-destructive">Low stock</p>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -212,7 +212,7 @@ export default function VendorProductsPage() {
                         <button
                           type="button"
                           onClick={() => setDeleteProductId(product._id)}
-                          className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          className="p-2 text-muted-foreground hover:text-destructive hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                           title="Delete product"
                         >
                           <Trash2 className="w-4 h-4" />

@@ -58,7 +58,7 @@ export default function EventStatusPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>{event.name}</CardTitle>
-                  <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                  <span className="px-3 py-1 bg-success/20 text-green-800 text-sm font-medium rounded-full">
                     In Progress
                   </span>
                 </div>
@@ -73,7 +73,7 @@ export default function EventStatusPage() {
                       {event.scannedCount}/{event.soldCount} ({((event.scannedCount / event.soldCount) * 100).toFixed(0)}%)
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div className="w-full bg-muted rounded-full h-3">
                     <div
                       className="bg-primary h-3 rounded-full transition-all"
                       style={{ width: `${(event.scannedCount / event.soldCount) * 100}%` }}
@@ -89,8 +89,8 @@ export default function EventStatusPage() {
                     <p className="text-xs text-muted-foreground">Capacity</p>
                   </div>
                   <div className="text-center p-3 border rounded-lg">
-                    <CheckCircle className="h-5 w-5 mx-auto mb-1 text-green-600" />
-                    <p className="text-2xl font-bold text-green-600">{event.scannedCount}</p>
+                    <CheckCircle className="h-5 w-5 mx-auto mb-1 text-success" />
+                    <p className="text-2xl font-bold text-success">{event.scannedCount}</p>
                     <p className="text-xs text-muted-foreground">Checked In</p>
                   </div>
                   <div className="text-center p-3 border rounded-lg">

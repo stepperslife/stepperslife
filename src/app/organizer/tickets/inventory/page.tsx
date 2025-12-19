@@ -51,7 +51,7 @@ export default function TicketInventoryPage() {
   const totalAvailable = totalTickets - totalSold;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
@@ -63,13 +63,13 @@ export default function TicketInventoryPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/organizer/tickets"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Ticket Inventory</h1>
-              <p className="text-gray-600 mt-1">View and manage all your event tickets</p>
+              <h1 className="text-3xl font-bold text-foreground">Ticket Inventory</h1>
+              <p className="text-muted-foreground mt-1">View and manage all your event tickets</p>
             </div>
           </div>
         </div>
@@ -90,18 +90,18 @@ export default function TicketInventoryPage() {
                 <Package className="w-6 h-6" />
               </div>
             </div>
-            <h3 className="text-gray-600 text-sm font-medium mb-1">Total Tickets</h3>
-            <p className="text-3xl font-bold text-gray-900">{totalTickets.toLocaleString()}</p>
+            <h3 className="text-muted-foreground text-sm font-medium mb-1">Total Tickets</h3>
+            <p className="text-3xl font-bold text-foreground">{totalTickets.toLocaleString()}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-green-500 p-3 rounded-lg text-white">
+              <div className="bg-success p-3 rounded-lg text-white">
                 <TrendingUp className="w-6 h-6" />
               </div>
             </div>
-            <h3 className="text-gray-600 text-sm font-medium mb-1">Tickets Sold</h3>
-            <p className="text-3xl font-bold text-gray-900">{totalSold.toLocaleString()}</p>
+            <h3 className="text-muted-foreground text-sm font-medium mb-1">Tickets Sold</h3>
+            <p className="text-3xl font-bold text-foreground">{totalSold.toLocaleString()}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -110,8 +110,8 @@ export default function TicketInventoryPage() {
                 <Ticket className="w-6 h-6" />
               </div>
             </div>
-            <h3 className="text-gray-600 text-sm font-medium mb-1">Available</h3>
-            <p className="text-3xl font-bold text-gray-900">{totalAvailable.toLocaleString()}</p>
+            <h3 className="text-muted-foreground text-sm font-medium mb-1">Available</h3>
+            <p className="text-3xl font-bold text-foreground">{totalAvailable.toLocaleString()}</p>
           </div>
         </motion.div>
 
@@ -123,13 +123,13 @@ export default function TicketInventoryPage() {
           className="mb-6"
         >
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search events..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
         </motion.div>
@@ -143,30 +143,30 @@ export default function TicketInventoryPage() {
         >
           {filteredEvents && filteredEvents.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-border">
+                <thead className="bg-card">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Event
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Total Tickets
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Sold
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Available
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-border">
                   {filteredEvents.map((event) => {
                     const totalTickets = event.totalTickets || 0;
                     const ticketsSold = event.ticketsSold || 0;
@@ -174,10 +174,10 @@ export default function TicketInventoryPage() {
                     const percentSold = totalTickets > 0 ? (ticketsSold / totalTickets) * 100 : 0;
 
                     return (
-                      <tr key={event._id} className="hover:bg-gray-50">
+                      <tr key={event._id} className="hover:bg-card">
                         <td className="px-6 py-4">
                           <div className="flex items-center">
-                            <Calendar className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                            <Calendar className="w-5 h-5 text-muted-foreground mr-3 flex-shrink-0" />
                             <div>
                               <Link
                                 href={`/organizer/events/${event._id}`}
@@ -185,7 +185,7 @@ export default function TicketInventoryPage() {
                               >
                                 {event.name}
                               </Link>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-muted-foreground">
                                 {event.startDate
                                   ? new Date(event.startDate).toLocaleDateString()
                                   : "Date TBD"}
@@ -198,30 +198,30 @@ export default function TicketInventoryPage() {
                             {event.eventType || "Event"}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground font-medium">
                           {totalTickets.toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                           {ticketsSold.toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                           {available.toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-[100px]">
+                            <div className="flex-1 bg-muted rounded-full h-2 max-w-[100px]">
                               <div
                                 className={`h-2 rounded-full ${
                                   percentSold >= 90
                                     ? "bg-red-500"
                                     : percentSold >= 70
                                     ? "bg-yellow-500"
-                                    : "bg-green-500"
+                                    : "bg-success"
                                 }`}
                                 style={{ width: `${Math.min(percentSold, 100)}%` }}
                               ></div>
                             </div>
-                            <span className="text-sm text-gray-600 whitespace-nowrap">
+                            <span className="text-sm text-muted-foreground whitespace-nowrap">
                               {Math.round(percentSold)}%
                             </span>
                           </div>
@@ -234,11 +234,11 @@ export default function TicketInventoryPage() {
             </div>
           ) : (
             <div className="p-12 text-center">
-              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-900 mb-2">
+              <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-foreground mb-2">
                 {searchQuery ? "No events found" : "No tickets yet"}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 {searchQuery
                   ? "Try adjusting your search query"
                   : "Purchase tickets to see them in your inventory"}

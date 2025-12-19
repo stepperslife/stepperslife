@@ -17,11 +17,11 @@ export default function GlobalError({
   return (
     <html lang="en">
       <body>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-card flex items-center justify-center px-4">
           <div className="max-w-md w-full text-center">
             <div className="mb-6">
               <svg
-                className="mx-auto h-20 w-20 text-red-500"
+                className="mx-auto h-20 w-20 text-destructive"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -34,10 +34,10 @@ export default function GlobalError({
                 />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               Something went wrong
             </h1>
-            <p className="text-gray-600 mb-8">
+            <p className="text-muted-foreground mb-8">
               We're sorry, but something unexpected happened. Our team has been notified.
             </p>
             <div className="flex gap-4 justify-center">
@@ -49,7 +49,7 @@ export default function GlobalError({
               </button>
               <button
                 onClick={() => (window.location.href = "/")}
-                className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                className="px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted transition-colors"
               >
                 Go home
               </button>

@@ -173,12 +173,12 @@ export default function CreateProductPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Create New Product</h1>
-          <p className="text-gray-600 mt-1">Add a new product to your store</p>
+          <h1 className="text-3xl font-bold text-foreground">Create New Product</h1>
+          <p className="text-muted-foreground mt-1">Add a new product to your store</p>
         </div>
         <Link
           href="/admin/products"
-          className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 border border rounded-lg hover:bg-card transition-colors"
         >
           <X className="w-4 h-4" />
           Cancel
@@ -189,29 +189,29 @@ export default function CreateProductPage() {
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
         {/* Basic Info */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Basic Information</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Basic Information</h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Product Name *</label>
               <input
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="e.g., SteppersLife T-Shirt"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Description *</label>
               <textarea
                 required
                 rows={4}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Describe your product..."
               />
             </div>
@@ -220,24 +220,24 @@ export default function CreateProductPage() {
 
         {/* Pricing */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Pricing</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Pricing</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price ($) *</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Price ($) *</label>
               <input
                 type="number"
                 step="0.01"
                 required
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="29.99"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Compare at Price ($)
               </label>
               <input
@@ -245,38 +245,38 @@ export default function CreateProductPage() {
                 step="0.01"
                 value={formData.compareAtPrice}
                 onChange={(e) => setFormData({ ...formData, compareAtPrice: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="39.99"
               />
-              <p className="text-xs text-gray-500 mt-1">Show original price (for discounts)</p>
+              <p className="text-xs text-muted-foreground mt-1">Show original price (for discounts)</p>
             </div>
           </div>
         </div>
 
         {/* Inventory */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Inventory</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Inventory</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">SKU</label>
+              <label className="block text-sm font-medium text-foreground mb-2">SKU</label>
               <input
                 type="text"
                 value={formData.sku}
                 onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="TSHIRT-001"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Quantity *</label>
               <input
                 type="number"
                 required
                 value={formData.inventoryQuantity}
                 onChange={(e) => setFormData({ ...formData, inventoryQuantity: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="100"
               />
             </div>
@@ -288,9 +288,9 @@ export default function CreateProductPage() {
                 type="checkbox"
                 checked={formData.trackInventory}
                 onChange={(e) => setFormData({ ...formData, trackInventory: e.target.checked })}
-                className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-ring"
+                className="w-4 h-4 text-primary border rounded focus:ring-ring"
               />
-              <span className="text-sm text-gray-700">Track inventory quantity</span>
+              <span className="text-sm text-foreground">Track inventory quantity</span>
             </label>
 
             <label className="flex items-center gap-2">
@@ -298,9 +298,9 @@ export default function CreateProductPage() {
                 type="checkbox"
                 checked={formData.allowBackorder}
                 onChange={(e) => setFormData({ ...formData, allowBackorder: e.target.checked })}
-                className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-ring"
+                className="w-4 h-4 text-primary border rounded focus:ring-ring"
               />
-              <span className="text-sm text-gray-700">Allow backorders when out of stock</span>
+              <span className="text-sm text-foreground">Allow backorders when out of stock</span>
             </label>
 
             <label className="flex items-center gap-2">
@@ -308,9 +308,9 @@ export default function CreateProductPage() {
                 type="checkbox"
                 checked={formData.hasVariants}
                 onChange={(e) => setFormData({ ...formData, hasVariants: e.target.checked })}
-                className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-ring"
+                className="w-4 h-4 text-primary border rounded focus:ring-ring"
               />
-              <span className="text-sm text-gray-700">
+              <span className="text-sm text-foreground">
                 This product has variants (colors/sizes)
               </span>
             </label>
@@ -328,29 +328,29 @@ export default function CreateProductPage() {
 
         {/* Organization */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Organization</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Organization</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Category</label>
               <input
                 type="text"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Apparel"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Tags (comma separated)
               </label>
               <input
                 type="text"
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="t-shirt, cotton, unisex"
               />
             </div>
@@ -359,13 +359,13 @@ export default function CreateProductPage() {
 
         {/* Images */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Product Images</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Product Images</h2>
 
           <div className="space-y-6">
             {/* Primary Image Drop Zone */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Primary Image <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Primary Image <span className="text-destructive">*</span>
               </label>
 
               {primaryImageUrl ? (
@@ -395,24 +395,24 @@ export default function CreateProductPage() {
                   className={`w-full h-64 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors ${
                     primaryDropzone.isDragActive
                       ? "border-primary bg-accent"
-                      : "border-gray-300 hover:border-primary hover:bg-gray-50"
+                      : "border hover:border-primary hover:bg-card"
                   } ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <input {...primaryDropzone.getInputProps()} />
                   {uploadProgress.primary ? (
                     <div className="text-center">
                       <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
-                      <p className="text-sm text-gray-600">Uploading primary image...</p>
+                      <p className="text-sm text-muted-foreground">Uploading primary image...</p>
                     </div>
                   ) : (
                     <>
-                      <Upload className="w-12 h-12 text-gray-400 mb-4" />
-                      <p className="text-sm text-gray-600 mb-1">
+                      <Upload className="w-12 h-12 text-muted-foreground mb-4" />
+                      <p className="text-sm text-muted-foreground mb-1">
                         {primaryDropzone.isDragActive
                           ? "Drop the image here"
                           : "Drag & drop primary image here, or click to select"}
                       </p>
-                      <p className="text-xs text-gray-500">PNG, JPG, WEBP up to 10MB</p>
+                      <p className="text-xs text-muted-foreground">PNG, JPG, WEBP up to 10MB</p>
                     </>
                   )}
                 </div>
@@ -421,7 +421,7 @@ export default function CreateProductPage() {
 
             {/* Additional Images Drop Zone */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Additional Images
               </label>
 
@@ -431,7 +431,7 @@ export default function CreateProductPage() {
                   {uploadedImages.map((url, index) => (
                     <div
                       key={index}
-                      className="relative w-full aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group"
+                      className="relative w-full aspect-square border-2 border rounded-lg overflow-hidden group"
                     >
                       <Image
                         src={url}
@@ -469,7 +469,7 @@ export default function CreateProductPage() {
                 className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors ${
                   additionalDropzone.isDragActive
                     ? "border-primary bg-accent"
-                    : "border-gray-300 hover:border-primary hover:bg-gray-50"
+                    : "border hover:border-primary hover:bg-card"
                 } ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <input {...additionalDropzone.getInputProps()} />
@@ -477,17 +477,17 @@ export default function CreateProductPage() {
                 Object.keys(uploadProgress).some((k) => k.startsWith("additional-")) ? (
                   <div className="text-center">
                     <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
-                    <p className="text-sm text-gray-600">Uploading images...</p>
+                    <p className="text-sm text-muted-foreground">Uploading images...</p>
                   </div>
                 ) : (
                   <>
-                    <ImageIcon className="w-8 h-8 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600 mb-1">
+                    <ImageIcon className="w-8 h-8 text-muted-foreground mb-2" />
+                    <p className="text-sm text-muted-foreground mb-1">
                       {additionalDropzone.isDragActive
                         ? "Drop the images here"
                         : "Drag & drop additional images, or click to select"}
                     </p>
-                    <p className="text-xs text-gray-500">Upload multiple images at once</p>
+                    <p className="text-xs text-muted-foreground">Upload multiple images at once</p>
                   </>
                 )}
               </div>
@@ -497,7 +497,7 @@ export default function CreateProductPage() {
 
         {/* Shipping */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Shipping</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Shipping</h2>
 
           <div className="space-y-4">
             <label className="flex items-center gap-2">
@@ -505,28 +505,28 @@ export default function CreateProductPage() {
                 type="checkbox"
                 checked={formData.requiresShipping}
                 onChange={(e) => setFormData({ ...formData, requiresShipping: e.target.checked })}
-                className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-ring"
+                className="w-4 h-4 text-primary border rounded focus:ring-ring"
               />
-              <span className="text-sm text-gray-700">This product requires shipping</span>
+              <span className="text-sm text-foreground">This product requires shipping</span>
             </label>
 
             {formData.requiresShipping && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Weight (grams)
                   </label>
                   <input
                     type="number"
                     value={formData.weight}
                     onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Shipping Price ($)
                   </label>
                   <input
@@ -534,10 +534,10 @@ export default function CreateProductPage() {
                     step="0.01"
                     value={formData.shippingPrice}
                     onChange={(e) => setFormData({ ...formData, shippingPrice: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="5.99"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Delivery shipping cost (pickup is free)
                   </p>
                 </div>
@@ -548,14 +548,14 @@ export default function CreateProductPage() {
 
         {/* Status */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Status</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Status</h2>
 
           <select
             value={formData.status}
             onChange={(e) =>
               setFormData({ ...formData, status: e.target.value as typeof formData.status })
             }
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
+            className="w-full px-4 py-2 border border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
           >
             <option value="DRAFT">Draft (not visible to customers)</option>
             <option value="ACTIVE">Active (visible to customers)</option>
@@ -564,10 +564,10 @@ export default function CreateProductPage() {
         </div>
 
         {/* Submit Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border">
           <Link
             href="/admin/products"
-            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border border rounded-lg hover:bg-card transition-colors"
           >
             Cancel
           </Link>

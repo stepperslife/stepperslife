@@ -79,10 +79,10 @@ export default function EventDetailsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Sold</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <TrendingUp className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{eventData.ticketsSold || 0}</div>
+            <div className="text-2xl font-bold text-success">{eventData.ticketsSold || 0}</div>
             <p className="text-xs text-muted-foreground">By you</p>
           </CardContent>
         </Card>
@@ -90,10 +90,10 @@ export default function EventDetailsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Earnings</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
+            <DollarSign className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">${eventData.earnings || "0.00"}</div>
+            <div className="text-2xl font-bold text-success">${eventData.earnings || "0.00"}</div>
             <p className="text-xs text-muted-foreground">Commission</p>
           </CardContent>
         </Card>
@@ -175,11 +175,11 @@ export default function EventDetailsPage() {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Tickets Sold</span>
-              <span className="font-semibold text-green-600">{eventData.ticketsSold || 0}</span>
+              <span className="font-semibold text-success">{eventData.ticketsSold || 0}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Total Earnings</span>
-              <span className="font-semibold text-green-600">${eventData.earnings || "0.00"}</span>
+              <span className="font-semibold text-success">${eventData.earnings || "0.00"}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Commission Rate</span>

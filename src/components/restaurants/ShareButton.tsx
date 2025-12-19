@@ -73,7 +73,7 @@ export function ShareButton({
       name: "Copy Link",
       icon: copied ? Check : Link,
       action: copyToClipboard,
-      className: copied ? "text-green-600" : "",
+      className: copied ? "text-success" : "",
     },
     {
       name: "Facebook",
@@ -103,7 +103,7 @@ export function ShareButton({
         <button
           type="button"
           onClick={handleShare}
-          className={`${sizeClasses[size]} flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform text-gray-600 dark:text-gray-300 hover:text-orange-600`}
+          className={`${sizeClasses[size]} flex items-center justify-center rounded-full bg-white/80 dark:bg-card/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform text-muted-foreground dark:text-muted-foreground hover:text-orange-600`}
           aria-label="Share"
         >
           <Share2 className="w-4 h-4" />
@@ -115,13 +115,13 @@ export function ShareButton({
               className="fixed inset-0 z-40"
               onClick={() => setShowDropdown(false)}
             />
-            <div className="absolute right-0 top-full mt-2 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 min-w-[180px]">
-              <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+            <div className="absolute right-0 top-full mt-2 z-50 bg-white dark:bg-card rounded-lg shadow-xl border border dark:border py-2 min-w-[180px]">
+              <div className="px-3 py-2 border-b border dark:border flex items-center justify-between">
                 <span className="text-sm font-medium">Share</span>
                 <button
                   type="button"
                   onClick={() => setShowDropdown(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-muted-foreground"
                   aria-label="Close share menu"
                 >
                   <X className="w-4 h-4" />
@@ -135,7 +135,7 @@ export function ShareButton({
                       type="button"
                       key={link.name}
                       onClick={link.action}
-                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${link.className || ""}`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted dark:hover:bg-muted ${link.className || ""}`}
                     >
                       <Icon className="w-4 h-4" />
                       {link.name}
@@ -148,7 +148,7 @@ export function ShareButton({
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted dark:hover:bg-muted"
                     onClick={() => setShowDropdown(false)}
                   >
                     <Icon className="w-4 h-4" />
@@ -176,13 +176,13 @@ export function ShareButton({
             className="fixed inset-0 z-40"
             onClick={() => setShowDropdown(false)}
           />
-          <div className="absolute left-0 top-full mt-2 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 min-w-[180px]">
-            <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+          <div className="absolute left-0 top-full mt-2 z-50 bg-white dark:bg-card rounded-lg shadow-xl border border dark:border py-2 min-w-[180px]">
+            <div className="px-3 py-2 border-b border dark:border flex items-center justify-between">
               <span className="text-sm font-medium">Share</span>
               <button
                 type="button"
                 onClick={() => setShowDropdown(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-muted-foreground"
                 aria-label="Close share menu"
               >
                 <X className="w-4 h-4" />
@@ -196,7 +196,7 @@ export function ShareButton({
                     type="button"
                     key={link.name}
                     onClick={link.action}
-                    className={`w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${link.className || ""}`}
+                    className={`w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted dark:hover:bg-muted ${link.className || ""}`}
                   >
                     <Icon className="w-4 h-4" />
                     {link.name}
@@ -209,7 +209,7 @@ export function ShareButton({
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted dark:hover:bg-muted"
                   onClick={() => setShowDropdown(false)}
                 >
                   <Icon className="w-4 h-4" />

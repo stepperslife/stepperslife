@@ -127,7 +127,7 @@ export default function ToolPalette({
             ${
               isActive
                 ? "bg-accent border-2 border-primary text-primary shadow-sm"
-                : "bg-white hover:bg-gray-50 border border-gray-200 text-gray-700"
+                : "bg-white hover:bg-card border border text-foreground"
             }
           `}
           title={`${tool.label} (${tool.shortcut || ""})`}
@@ -152,11 +152,11 @@ export default function ToolPalette({
             exit={{ opacity: 0 }}
             className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 pointer-events-none"
           >
-            <div className="bg-gray-900 text-white px-3 py-1.5 rounded-lg shadow-lg text-xs font-medium whitespace-nowrap">
+            <div className="bg-foreground text-white px-3 py-1.5 rounded-lg shadow-lg text-xs font-medium whitespace-nowrap">
               {tool.label}
               {tool.shortcut && <span className="ml-2 opacity-70">({tool.shortcut})</span>}
               <div className="absolute right-full top-1/2 -translate-y-1/2 mr-[-1px]">
-                <div className="w-2 h-2 bg-gray-900 transform rotate-45" />
+                <div className="w-2 h-2 bg-foreground transform rotate-45" />
               </div>
             </div>
           </motion.div>
@@ -167,20 +167,20 @@ export default function ToolPalette({
 
   return (
     <div
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-gray-50 border-r border-gray-200 shadow-sm flex flex-col py-4 px-2 z-30 ${className}`}
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-card border-r border shadow-sm flex flex-col py-4 px-2 z-30 ${className}`}
       style={{ width: "64px" }}
     >
       {/* Selection Tools */}
       <div className="space-y-2">{selectionTools.map(renderToolButton)}</div>
 
       {/* Divider */}
-      <div className="my-3 h-px bg-gray-300" />
+      <div className="my-3 h-px bg-muted" />
 
       {/* Table Tools */}
       <div className="space-y-2">{tableTools.map(renderToolButton)}</div>
 
       {/* Divider */}
-      <div className="my-3 h-px bg-gray-300" />
+      <div className="my-3 h-px bg-muted" />
 
       {/* Section Tools */}
       <div className="space-y-2">{sectionTools.map(renderToolButton)}</div>
@@ -190,7 +190,7 @@ export default function ToolPalette({
 
       {/* Help text at bottom */}
       <div className="mt-4 px-1">
-        <p className="text-[10px] text-gray-500 text-center leading-tight">
+        <p className="text-[10px] text-muted-foreground text-center leading-tight">
           Press ESC to return to Select
         </p>
       </div>

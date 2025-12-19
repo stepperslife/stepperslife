@@ -26,7 +26,7 @@ export default function PaymentMethodsPage() {
   const hasStripeConnected = false;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       <motion.header
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -36,8 +36,8 @@ export default function PaymentMethodsPage() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Payment Methods</h1>
-              <p className="text-gray-600 mt-1">Manage how you receive payouts</p>
+              <h1 className="text-3xl font-bold text-foreground">Payment Methods</h1>
+              <p className="text-muted-foreground mt-1">Manage how you receive payouts</p>
             </div>
             {hasStripeConnected && (
               <button type="button" className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">
@@ -57,19 +57,19 @@ export default function PaymentMethodsPage() {
             transition={{ duration: 0.5 }}
             className="bg-white rounded-lg shadow-md p-6"
           >
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Your Payment Methods</h2>
+            <h2 className="text-xl font-bold text-foreground mb-4">Your Payment Methods</h2>
             <div className="space-y-4">
-              <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+              <div className="border border rounded-lg p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="bg-blue-100 p-3 rounded-lg">
-                    <CreditCard className="w-6 h-6 text-blue-600" />
+                    <CreditCard className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Bank Account</p>
-                    <p className="text-sm text-gray-500">****1234</p>
+                    <p className="font-medium text-foreground">Bank Account</p>
+                    <p className="text-sm text-muted-foreground">****1234</p>
                   </div>
                 </div>
-                <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full flex items-center gap-1">
+                <span className="px-3 py-1 bg-success/20 text-green-800 text-sm font-medium rounded-full flex items-center gap-1">
                   <Check className="w-4 h-4" />
                   Verified
                 </span>
@@ -83,9 +83,9 @@ export default function PaymentMethodsPage() {
             transition={{ duration: 0.5 }}
             className="bg-white rounded-lg shadow-md p-12 text-center"
           >
-            <Wallet className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-medium text-gray-900 mb-2">Connect Stripe to Get Paid</h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            <Wallet className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-medium text-foreground mb-2">Connect Stripe to Get Paid</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
               Set up your Stripe account to receive payouts from ticket sales. It only takes a few minutes.
             </p>
             <Link

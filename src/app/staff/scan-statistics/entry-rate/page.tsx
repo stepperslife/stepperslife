@@ -59,7 +59,7 @@ export default function EntryRatePage() {
                 <p className="text-sm font-medium text-muted-foreground">Peak Rate</p>
                 <p className="text-2xl font-bold mt-1">0/min</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
+              <TrendingUp className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>

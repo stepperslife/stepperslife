@@ -84,7 +84,7 @@ function CheckoutForm({
         </Alert>
       )}
 
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-white rounded-lg border border p-4">
         <PaymentElement />
       </div>
 
@@ -182,7 +182,7 @@ export function StripeCheckout(props: StripeCheckoutProps) {
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-3" />
-          <p className="text-sm text-gray-600">Initializing secure payment...</p>
+          <p className="text-sm text-muted-foreground">Initializing secure payment...</p>
         </div>
       </div>
     );

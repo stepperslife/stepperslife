@@ -30,7 +30,7 @@ export function SeatingChartSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-lg shadow-sm border border p-6">
         <Skeleton height={32} width="40%" />
         <div className="mt-2">
           <Skeleton height={16} width="60%" />
@@ -40,7 +40,7 @@ export function SeatingChartSkeleton() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div key={i} className="bg-white rounded-lg shadow-sm border border p-6">
             <Skeleton height={40} width={40} className="mb-2 rounded-full" />
             <Skeleton height={20} width="60%" />
             <Skeleton height={32} width="40%" className="mt-2" />
@@ -75,7 +75,7 @@ export function TableLibrarySkeleton() {
     <div className="space-y-4">
       <Skeleton height={24} width="60%" className="mb-4" />
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="bg-white rounded-lg border-2 border-gray-200 p-4">
+        <div key={i} className="bg-white rounded-lg border-2 border p-4">
           <Skeleton height={40} width={40} className="mx-auto mb-2 rounded-full" />
           <Skeleton height={16} width="80%" className="mx-auto mb-1" />
           <Skeleton height={14} width="60%" className="mx-auto" />
@@ -103,10 +103,10 @@ export function LoadingSpinner({
 
 export function FullPageLoader({ message = "Loading..." }: { message?: string }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-card flex items-center justify-center">
       <div className="text-center">
         <LoadingSpinner size="lg" className="mx-auto mb-4" />
-        <p className="text-gray-600 font-medium">{message}</p>
+        <p className="text-muted-foreground font-medium">{message}</p>
       </div>
     </div>
   );

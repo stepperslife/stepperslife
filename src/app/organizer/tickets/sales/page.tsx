@@ -64,7 +64,7 @@ export default function TicketSalesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
@@ -76,13 +76,13 @@ export default function TicketSalesPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/organizer/tickets"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Sales Overview</h1>
-              <p className="text-gray-600 mt-1">Track your ticket sales and revenue performance</p>
+              <h1 className="text-3xl font-bold text-foreground">Sales Overview</h1>
+              <p className="text-muted-foreground mt-1">Track your ticket sales and revenue performance</p>
             </div>
           </div>
         </div>
@@ -99,12 +99,12 @@ export default function TicketSalesPage() {
         >
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-green-500 p-3 rounded-lg text-white">
+              <div className="bg-success p-3 rounded-lg text-white">
                 <DollarSign className="w-6 h-6" />
               </div>
             </div>
-            <h3 className="text-gray-600 text-sm font-medium mb-1">Total Revenue</h3>
-            <p className="text-3xl font-bold text-gray-900">${totalRevenue.toLocaleString()}</p>
+            <h3 className="text-muted-foreground text-sm font-medium mb-1">Total Revenue</h3>
+            <p className="text-3xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -113,8 +113,8 @@ export default function TicketSalesPage() {
                 <ShoppingCart className="w-6 h-6" />
               </div>
             </div>
-            <h3 className="text-gray-600 text-sm font-medium mb-1">Tickets Sold</h3>
-            <p className="text-3xl font-bold text-gray-900">{totalTicketsSold.toLocaleString()}</p>
+            <h3 className="text-muted-foreground text-sm font-medium mb-1">Tickets Sold</h3>
+            <p className="text-3xl font-bold text-foreground">{totalTicketsSold.toLocaleString()}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -123,8 +123,8 @@ export default function TicketSalesPage() {
                 <Calendar className="w-6 h-6" />
               </div>
             </div>
-            <h3 className="text-gray-600 text-sm font-medium mb-1">Total Events</h3>
-            <p className="text-3xl font-bold text-gray-900">{totalEvents.toLocaleString()}</p>
+            <h3 className="text-muted-foreground text-sm font-medium mb-1">Total Events</h3>
+            <p className="text-3xl font-bold text-foreground">{totalEvents.toLocaleString()}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -133,8 +133,8 @@ export default function TicketSalesPage() {
                 <BarChart3 className="w-6 h-6" />
               </div>
             </div>
-            <h3 className="text-gray-600 text-sm font-medium mb-1">Avg Revenue/Event</h3>
-            <p className="text-3xl font-bold text-gray-900">
+            <h3 className="text-muted-foreground text-sm font-medium mb-1">Avg Revenue/Event</h3>
+            <p className="text-3xl font-bold text-foreground">
               ${Math.round(avgRevenuePerEvent).toLocaleString()}
             </p>
           </div>
@@ -149,20 +149,20 @@ export default function TicketSalesPage() {
             className="bg-white rounded-lg shadow-md overflow-hidden"
           >
             <div className="px-6 py-4 border-b">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                 <DollarSign className="w-5 h-5" />
                 Top Revenue Generators
               </h2>
             </div>
             {eventsByRevenue && eventsByRevenue.length > 0 ? (
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-border">
                 {eventsByRevenue.slice(0, 10).map((event, index) => {
                   const revenue = event.totalRevenue || 0;
                   const maxRevenue = eventsByRevenue[0]?.totalRevenue || 1;
                   const percentage = (revenue / maxRevenue) * 100;
 
                   return (
-                    <div key={event._id} className="px-6 py-4 hover:bg-gray-50">
+                    <div key={event._id} className="px-6 py-4 hover:bg-card">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           <span className="flex-shrink-0 w-6 h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-sm font-bold">
@@ -175,20 +175,20 @@ export default function TicketSalesPage() {
                             >
                               {event.name}
                             </Link>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               {(event.ticketsSold || 0).toLocaleString()} tickets sold
                             </p>
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0 ml-4">
-                          <p className="text-sm font-bold text-gray-900">
+                          <p className="text-sm font-bold text-foreground">
                             ${revenue.toLocaleString()}
                           </p>
                         </div>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-muted rounded-full h-2">
                         <div
-                          className="bg-green-500 h-2 rounded-full"
+                          className="bg-success h-2 rounded-full"
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
@@ -198,8 +198,8 @@ export default function TicketSalesPage() {
               </div>
             ) : (
               <div className="p-12 text-center">
-                <DollarSign className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600">No sales data yet</p>
+                <DollarSign className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground">No sales data yet</p>
               </div>
             )}
           </motion.div>
@@ -212,23 +212,23 @@ export default function TicketSalesPage() {
             className="bg-white rounded-lg shadow-md overflow-hidden"
           >
             <div className="px-6 py-4 border-b">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                 <Ticket className="w-5 h-5" />
                 Top Selling Events
               </h2>
             </div>
             {eventsByTickets && eventsByTickets.length > 0 ? (
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-border">
                 {eventsByTickets.slice(0, 10).map((event, index) => {
                   const ticketsSold = event.ticketsSold || 0;
                   const maxTickets = eventsByTickets[0]?.ticketsSold || 1;
                   const percentage = (ticketsSold / maxTickets) * 100;
 
                   return (
-                    <div key={event._id} className="px-6 py-4 hover:bg-gray-50">
+                    <div key={event._id} className="px-6 py-4 hover:bg-card">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <span className="flex-shrink-0 w-6 h-6 bg-blue-500/10 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
+                          <span className="flex-shrink-0 w-6 h-6 bg-blue-500/10 text-primary rounded-full flex items-center justify-center text-sm font-bold">
                             {index + 1}
                           </span>
                           <div className="min-w-0 flex-1">
@@ -238,19 +238,19 @@ export default function TicketSalesPage() {
                             >
                               {event.name}
                             </Link>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               ${(event.totalRevenue || 0).toLocaleString()} revenue
                             </p>
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0 ml-4">
-                          <p className="text-sm font-bold text-gray-900">
+                          <p className="text-sm font-bold text-foreground">
                             {ticketsSold.toLocaleString()}
                           </p>
-                          <p className="text-xs text-gray-500">tickets</p>
+                          <p className="text-xs text-muted-foreground">tickets</p>
                         </div>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-muted rounded-full h-2">
                         <div
                           className="bg-blue-500 h-2 rounded-full"
                           style={{ width: `${percentage}%` }}
@@ -262,8 +262,8 @@ export default function TicketSalesPage() {
               </div>
             ) : (
               <div className="p-12 text-center">
-                <Ticket className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600">No sales data yet</p>
+                <Ticket className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground">No sales data yet</p>
               </div>
             )}
           </motion.div>
@@ -277,7 +277,7 @@ export default function TicketSalesPage() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-8 text-center"
           >
-            <TrendingUp className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+            <TrendingUp className="w-16 h-16 text-primary mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-blue-900 mb-2">Start Selling Tickets</h3>
             <p className="text-blue-700 mb-6 max-w-2xl mx-auto">
               Create your first event and start tracking sales. Our analytics will help you

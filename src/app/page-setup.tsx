@@ -5,7 +5,7 @@ import { Calendar, Plus, Terminal, CheckCircle, XCircle } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-card">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -13,15 +13,15 @@ export default function Home() {
             <Link href="/" className="flex items-center gap-2">
               <Calendar className="w-8 h-8 text-primary" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">SteppersLife Events</h1>
-                <p className="text-sm text-gray-500">Discover amazing stepping events</p>
+                <h1 className="text-2xl font-bold text-foreground">SteppersLife Events</h1>
+                <p className="text-sm text-muted-foreground">Discover amazing stepping events</p>
               </div>
             </Link>
 
             <div className="flex items-center gap-4">
               <Link
                 href="/login"
-                className="text-sm font-medium text-gray-700 hover:text-primary transition-colors"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
               >
                 Sign In
               </Link>
@@ -41,13 +41,13 @@ export default function Home() {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           {/* Setup Status Card */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
+          <div className="bg-white rounded-lg shadow-sm border border p-8 mb-8">
             <div className="flex items-center gap-3 mb-6">
               <Terminal className="w-8 h-8 text-primary" />
-              <h2 className="text-2xl font-bold text-gray-900">Setup Required</h2>
+              <h2 className="text-2xl font-bold text-foreground">Setup Required</h2>
             </div>
 
-            <p className="text-gray-700 mb-6">
+            <p className="text-foreground mb-6">
               The frontend is ready, but the backend needs to be initialized. Complete the Convex
               setup to see the full application.
             </p>
@@ -55,36 +55,36 @@ export default function Home() {
             {/* Status Checklist */}
             <div className="space-y-4 mb-8">
               <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-900">Next.js Server Running</p>
-                  <p className="text-sm text-gray-600">Development server on port 3004</p>
+                  <p className="font-medium text-foreground">Next.js Server Running</p>
+                  <p className="text-sm text-muted-foreground">Development server on port 3004</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-900">Frontend Components Built</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-medium text-foreground">Frontend Components Built</p>
+                  <p className="text-sm text-muted-foreground">
                     Homepage, search, filters, and masonry grid
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-900">Backend Schema Created</p>
-                  <p className="text-sm text-gray-600">10 tables with full relationships</p>
+                  <p className="font-medium text-foreground">Backend Schema Created</p>
+                  <p className="text-sm text-muted-foreground">10 tables with full relationships</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <XCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                <XCircle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-900">Convex Backend Connected</p>
-                  <p className="text-sm text-gray-600">Requires interactive terminal setup</p>
+                  <p className="font-medium text-foreground">Convex Backend Connected</p>
+                  <p className="text-sm text-muted-foreground">Requires interactive terminal setup</p>
                 </div>
               </div>
             </div>
@@ -149,13 +149,13 @@ export default function Home() {
           </div>
 
           {/* What's Built */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">What's Already Built</h3>
+          <div className="bg-white rounded-lg shadow-sm border border p-8">
+            <h3 className="text-xl font-bold text-foreground mb-4">What's Already Built</h3>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Backend (Convex)</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
+                <h4 className="font-semibold text-foreground mb-2">Backend (Convex)</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
                   <li>✓ Complete database schema</li>
                   <li>✓ Credits system (200 free tickets)</li>
                   <li>✓ Dual payment models</li>
@@ -166,8 +166,8 @@ export default function Home() {
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Frontend (Next.js)</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
+                <h4 className="font-semibold text-foreground mb-2">Frontend (Next.js)</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
                   <li>✓ Homepage with masonry grid</li>
                   <li>✓ Search & category filters</li>
                   <li>✓ Event cards</li>
@@ -178,9 +178,9 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h4 className="font-semibold text-gray-900 mb-2">Next Steps After Setup</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
+            <div className="mt-6 pt-6 border-t border">
+              <h4 className="font-semibold text-foreground mb-2">Next Steps After Setup</h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>1. Build Login page (Magic Link UI)</li>
                 <li>2. Build Event Detail page</li>
                 <li>3. Build My Tickets dashboard</li>
@@ -196,10 +196,10 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-white border-t mt-16">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-sm text-gray-500">
+          <div className="text-center text-sm text-muted-foreground">
             <p>&copy; 2025 SteppersLife Events. All rights reserved.</p>
             <p className="mt-2">
-              See <code className="bg-gray-100 px-2 py-1 rounded text-xs">SETUP_GUIDE.md</code> for
+              See <code className="bg-muted px-2 py-1 rounded text-xs">SETUP_GUIDE.md</code> for
               detailed instructions
             </p>
           </div>
