@@ -119,7 +119,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                 className="w-full h-64 object-cover rounded-lg"
               />
             ) : (
-              <div className="w-full h-64 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+              <div className="w-full h-64 bg-gradient-to-br from-sky-500 to-primary rounded-lg flex items-center justify-center">
                 <Utensils className="h-24 w-24 text-white opacity-50" />
               </div>
             )}

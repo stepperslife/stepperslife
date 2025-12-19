@@ -166,7 +166,7 @@ export default function MyFoodOrdersPage() {
       <RestaurantsSubNav />
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <div className="bg-gradient-to-br from-orange-600 to-red-600 py-8">
+        <div className="bg-gradient-to-br from-sky-600 to-primary py-8">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
@@ -223,14 +223,14 @@ export default function MyFoodOrdersPage() {
                 placeholder="Search by order number or item..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as OrderStatus | "ALL")}
-              className="px-4 py-2 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="px-4 py-2 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="ALL">All Statuses</option>
               <option value="PENDING">Order Placed</option>

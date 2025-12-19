@@ -155,7 +155,7 @@ export function ReviewForm({ restaurantId, userId, onSuccess, onCancel }: Review
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Sum up your experience"
           maxLength={100}
-          className="w-full px-4 py-2 rounded-lg border border dark:border bg-white dark:bg-background text-foreground dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full px-4 py-2 rounded-lg border border dark:border bg-white dark:bg-background text-foreground dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </div>
 
@@ -170,7 +170,7 @@ export function ReviewForm({ restaurantId, userId, onSuccess, onCancel }: Review
           placeholder="Tell others about your experience..."
           rows={4}
           maxLength={1000}
-          className="w-full px-4 py-2 rounded-lg border border dark:border bg-white dark:bg-background text-foreground dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+          className="w-full px-4 py-2 rounded-lg border border dark:border bg-white dark:bg-background text-foreground dark:text-white focus:outline-none focus:ring-2 focus:ring-primary resize-none"
         />
         <p className="text-xs text-muted-foreground mt-1">
           {reviewText.length}/1000 characters
