@@ -152,7 +152,7 @@ export const createCashOrder = mutation({
       orderNumber,
       totalCents,
       ticketIds,
-      message: `Your tickets are on hold for 30 minutes. Complete payment with the seller. Order #: ${orderNumber}`,
+      message: `Your tickets are on hold for 30 minutes. Pay the organizer to activate your tickets. Order #: ${orderNumber}`,
     };
   },
 });

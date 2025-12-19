@@ -67,7 +67,7 @@ export default function CheckoutPage() {
   const [buyerEmail, setBuyerEmail] = useState("");
   const [buyerName, setBuyerName] = useState("");
   const [showPayment, setShowPayment] = useState(false);
-  // Default to cash payment - organizer validates with code at door
+  // Default to cash payment - organizer validates with activation code
   const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "cash">("cash");
   const [orderId, setOrderId] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -288,7 +288,7 @@ export default function CheckoutPage() {
     }
 
     // Stripe Connect is only required for CREDIT_CARD model events with online payment
-    // Cash payments don't need Stripe Connect - they're validated by organizer at door
+    // Cash payments don't need Stripe Connect - they're validated by organizer with activation code
 
     // Check if seating chart exists and seats are required (only for individual tickets)
     const requiresSeats =
@@ -1085,7 +1085,7 @@ export default function CheckoutPage() {
                                 });
                               }
                               setIsSuccess(true);
-                              toast.success("Cash order created! Pay at the door to activate tickets.");
+                              toast.success("Cash order created! Pay organizer within 30 minutes to activate tickets.");
                             } catch (error: any) {
                               console.error("Cash order error:", error);
                               toast.error(error.message || "Failed to create cash order");
