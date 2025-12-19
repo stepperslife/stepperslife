@@ -2,6 +2,63 @@ import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 
 /**
+ * Create a test ticket for scanner testing
+ * Creates a VALID ticket that can be scanned
+ */
+export const createTestTicket = mutation({
+  args: {
+    eventId: v.id("events"),
+    attendeeName: v.optional(v.string()),
+    attendeeEmail: v.optional(v.string()),
+    tierName: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Verify event exists
+    const event = await ctx.db.get(args.eventId);
+    if (!event) {
+      throw new Error("Event not found");
+    }
+
+    // Get first ticket tier for this event (or create a placeholder)
+    let ticketTierId = undefined;
+    const tiers = await ctx.db
+      .query("ticketTiers")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+      .first();
+
+    if (tiers) {
+      ticketTierId = tiers._id;
+    }
+
+    // Generate unique ticket code
+    const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
+    const ticketCode = `TKT-TEST-${randomPart}`;
+
+    // Create the test ticket
+    const ticketId = await ctx.db.insert("tickets", {
+      eventId: args.eventId,
+      ticketTierId,
+      ticketCode,
+      status: "VALID",
+      attendeeName: args.attendeeName || "Scanner Test User",
+      attendeeEmail: args.attendeeEmail || "test@stepperslife.com",
+      paymentMethod: "TEST",
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return {
+      success: true,
+      ticketId,
+      ticketCode,
+      eventName: event.name,
+      tierName: tiers?.name || args.tierName || "General Admission",
+      message: `Test ticket created! Scan code: ${ticketCode}`,
+    };
+  },
+});
+
+/**
  * Scan and check-in a ticket
  * Used by staff scanners at event door
  */
@@ -15,7 +72,7 @@ export const scanTicket = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity?.email) {
-      throw new Error("Authentication required. Staff must be signed in to scan tickets.");
+      throw new Error("Authentication required. Please log in to scan tickets.");
     }
 
     const currentUser = await ctx.db

@@ -5,13 +5,16 @@ import { api } from "@/convex/_generated/api";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import QrScanner from "qr-scanner";
-import { QrCode, ArrowLeft, CheckCircle, XCircle, Camera, Clock, Play, Square } from "lucide-react";
+import { QrCode, ArrowLeft, CheckCircle, XCircle, Camera, Clock, Play, Square, LogIn } from "lucide-react";
 import { format } from "date-fns";
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
 
 export default function EventScanningPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.eventId as string;
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
 
   const [lastScanResult, setLastScanResult] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -30,6 +33,46 @@ export default function EventScanningPage() {
     limit: 10,
   });
   const scanTicket = useMutation(api.scanning.mutations.scanTicket);
+
+  // Show login required screen if not authenticated
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-primary flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="inline-block w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-lg">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-primary flex items-center justify-center">
+        <div className="text-center text-white max-w-md px-6">
+          <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <LogIn className="w-10 h-10" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4">Login Required</h1>
+          <p className="text-white/80 mb-8">
+            You must be logged in as a staff member, organizer, or admin to scan tickets.
+          </p>
+          <Link
+            href={`/login?redirect=/scan/${eventId}`}
+            className="inline-block px-8 py-4 bg-white text-primary font-bold rounded-xl hover:bg-white/90 transition-colors"
+          >
+            Log In to Continue
+          </Link>
+          <button
+            onClick={() => router.push("/scan")}
+            className="block w-full mt-4 px-6 py-3 text-white/80 hover:text-white transition-colors"
+          >
+            Back to Event Selection
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const processTicket = async (ticketCode: string) => {
     // Prevent scanning the same code multiple times in a row
