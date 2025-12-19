@@ -473,47 +473,62 @@ export default function ClassesListClient() {
             </motion.div>
           ) : (
             <>
-              <motion.div
-                className="mb-6"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <p data-testid="classes-count" className="text-muted-foreground">
-                  Showing {classes.length} {classes.length === 1 ? "class" : "classes"}
-                </p>
-              </motion.div>
-
-              {/* Masonry Image Gallery */}
-              <div data-testid="classes-grid" className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[0, 1, 2, 3].map((columnIndex) => (
-                  <div key={columnIndex} className="grid gap-4">
-                    {classes
-                      .filter((_, index) => index % 4 === columnIndex)
-                      .map((classItem) => (
-                        <div key={classItem._id}>
-                          <Link
-                            href={`/classes/${classItem._id}`}
-                            data-testid={`class-card-${classItem._id}`}
-                            className="group block"
-                          >
-                            {classItem.imageUrl ? (
-                              <img
-                                src={classItem.imageUrl}
-                                alt={classItem.name}
-                                className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
-                              />
-                            ) : (
-                              <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-                                <BookOpen className="w-16 h-16 text-white opacity-50" />
-                              </div>
-                            )}
-                          </Link>
+              {viewMode === "list" ? (
+                /* List View - Image on left */
+                <div data-testid="classes-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {classes.map((classItem) => (
+                    <Link
+                      key={classItem._id}
+                      href={`/classes/${classItem._id}`}
+                      data-testid={`class-card-${classItem._id}`}
+                      className="group block"
+                    >
+                      {classItem.imageUrl ? (
+                        <img
+                          src={classItem.imageUrl}
+                          alt={classItem.name}
+                          className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
+                        />
+                      ) : (
+                        <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                          <BookOpen className="w-16 h-16 text-white opacity-50" />
                         </div>
-                      ))}
-                  </div>
-                ))}
-              </div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                /* Masonry Image Gallery */
+                <div data-testid="classes-grid" className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[0, 1, 2, 3].map((columnIndex) => (
+                    <div key={columnIndex} className="grid gap-4">
+                      {classes
+                        .filter((_, index) => index % 4 === columnIndex)
+                        .map((classItem) => (
+                          <div key={classItem._id}>
+                            <Link
+                              href={`/classes/${classItem._id}`}
+                              data-testid={`class-card-${classItem._id}`}
+                              className="group block"
+                            >
+                              {classItem.imageUrl ? (
+                                <img
+                                  src={classItem.imageUrl}
+                                  alt={classItem.name}
+                                  className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
+                                />
+                              ) : (
+                                <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                                  <BookOpen className="w-16 h-16 text-white opacity-50" />
+                                </div>
+                              )}
+                            </Link>
+                          </div>
+                        ))}
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>

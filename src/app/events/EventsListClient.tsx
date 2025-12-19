@@ -474,41 +474,50 @@ export default function EventsListClient() {
             </motion.div>
           ) : (
             <>
-              <motion.div
-                className="mb-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                <p data-testid="events-count" className="text-muted-foreground">
-                  Showing {events.length} {events.length === 1 ? "event" : "events"}
-                </p>
-              </motion.div>
-
-              {/* Masonry Image Gallery */}
-              <div data-testid="events-grid" className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[0, 1, 2, 3].map((columnIndex) => (
-                  <div key={columnIndex} className="grid gap-4">
-                    {events
-                      .filter((_, index) => index % 4 === columnIndex)
-                      .map((event) => (
-                        <div key={event._id}>
-                          <Link
-                            href={`/events/${event._id}`}
-                            data-testid={`event-card-${event._id}`}
-                            className="group block"
-                          >
-                            <img
-                              src={event.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
-                              alt={event.name}
-                              className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
-                            />
-                          </Link>
-                        </div>
-                      ))}
-                  </div>
-                ))}
-              </div>
+              {viewMode === "list" ? (
+                /* List View - Image on left */
+                <div data-testid="events-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {events.map((event) => (
+                    <Link
+                      key={event._id}
+                      href={`/events/${event._id}`}
+                      data-testid={`event-card-${event._id}`}
+                      className="group block"
+                    >
+                      <img
+                        src={event.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
+                        alt={event.name}
+                        className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
+                      />
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                /* Masonry Image Gallery */
+                <div data-testid="events-grid" className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[0, 1, 2, 3].map((columnIndex) => (
+                    <div key={columnIndex} className="grid gap-4">
+                      {events
+                        .filter((_, index) => index % 4 === columnIndex)
+                        .map((event) => (
+                          <div key={event._id}>
+                            <Link
+                              href={`/events/${event._id}`}
+                              data-testid={`event-card-${event._id}`}
+                              className="group block"
+                            >
+                              <img
+                                src={event.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
+                                alt={event.name}
+                                className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
+                              />
+                            </Link>
+                          </div>
+                        ))}
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>
