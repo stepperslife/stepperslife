@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar, ChefHat, ShoppingBag, ArrowRight, Sparkles } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -13,6 +14,7 @@ const creatorOptions = [
     href: "/organizer/events/create",
     color: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
     buttonColor: "bg-purple-600 hover:bg-purple-700",
+    image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80",
     features: [
       "1,000 free ticket credits",
       "Sell tickets online",
@@ -27,6 +29,7 @@ const creatorOptions = [
     href: "/restaurateur/apply",
     color: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
     buttonColor: "bg-orange-600 hover:bg-orange-700",
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80",
     features: [
       "Reach event attendees",
       "Online ordering system",
@@ -41,6 +44,7 @@ const creatorOptions = [
     href: "/vendor/apply",
     color: "bg-green-500/10 text-green-600 dark:text-green-400",
     buttonColor: "bg-green-600 hover:bg-green-700",
+    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80",
     features: [
       "Your own storefront",
       "Product management tools",
@@ -78,31 +82,45 @@ export default function CreatePage() {
             {creatorOptions.map((option) => (
               <div
                 key={option.title}
-                className="bg-card border border-border rounded-2xl p-6 flex flex-col hover:shadow-lg transition-shadow"
+                className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col hover:shadow-lg transition-shadow"
               >
-                <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 ${option.color}`}>
-                  <option.icon className="w-7 h-7" />
+                {/* Image */}
+                <div className="relative h-48 w-full">
+                  <Image
+                    src={option.image}
+                    alt={option.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className={`absolute bottom-4 left-4 w-12 h-12 rounded-xl flex items-center justify-center ${option.color} backdrop-blur-sm`}>
+                    <option.icon className="w-6 h-6" />
+                  </div>
                 </div>
 
-                <h2 className="text-xl font-bold text-foreground mb-2">{option.title}</h2>
-                <p className="text-muted-foreground mb-6">{option.description}</p>
+                {/* Content */}
+                <div className="p-6 flex flex-col flex-1">
+                  <h2 className="text-xl font-bold text-foreground mb-2">{option.title}</h2>
+                  <p className="text-muted-foreground mb-6">{option.description}</p>
 
-                <ul className="space-y-2 mb-6 flex-1">
-                  {option.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-foreground">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                  <ul className="space-y-2 mb-6 flex-1">
+                    {option.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-2 text-sm text-foreground">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
 
-                <Link
-                  href={option.href}
-                  className={`flex items-center justify-center gap-2 w-full py-3 rounded-lg text-white font-medium transition-colors ${option.buttonColor}`}
-                >
-                  Get Started
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                  <Link
+                    href={option.href}
+                    className={`flex items-center justify-center gap-2 w-full py-3 rounded-lg text-white font-medium transition-colors ${option.buttonColor}`}
+                  >
+                    Get Started
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
