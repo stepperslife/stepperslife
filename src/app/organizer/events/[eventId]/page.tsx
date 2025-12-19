@@ -78,6 +78,7 @@ export default function EventDashboardPage() {
   const publishEvent = useMutation(api.events.mutations.publishEvent);
   const approveCashOrder = useMutation(api.orders.cashPayments.organizerApproveCashOrder);
   const [approvingOrderId, setApprovingOrderId] = useState<string | null>(null);
+  const [orderFilter, setOrderFilter] = useState<"all" | "pending">("all");
   const statistics = useQuery(
     api.events.queries.getEventStatistics,
     currentUser ? { eventId } : "skip"
@@ -710,12 +711,56 @@ export default function EventDashboardPage() {
         {activeTab === "orders" && (
           <div className="bg-white rounded-lg shadow-md">
             <div className="p-6 border-b border-border">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-foreground">All Orders</h2>
-                <button className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm font-medium">
-                  <Download className="w-4 h-4" />
-                  Export CSV
-                </button>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">Orders</h2>
+                  {orders && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {orders.filter((o: any) => o.status === "PENDING_PAYMENT").length > 0 && (
+                        <span className="text-warning font-medium">
+                          {orders.filter((o: any) => o.status === "PENDING_PAYMENT").length} pending cash payment{orders.filter((o: any) => o.status === "PENDING_PAYMENT").length !== 1 ? "s" : ""}
+                        </span>
+                      )}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  {/* Filter Buttons */}
+                  <div className="flex rounded-lg border border-border overflow-hidden">
+                    <button
+                      onClick={() => setOrderFilter("all")}
+                      className={`px-4 py-2 text-sm font-medium transition-colors ${
+                        orderFilter === "all"
+                          ? "bg-primary text-white"
+                          : "bg-white text-foreground hover:bg-muted"
+                      }`}
+                    >
+                      All Orders
+                    </button>
+                    <button
+                      onClick={() => setOrderFilter("pending")}
+                      className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2 ${
+                        orderFilter === "pending"
+                          ? "bg-warning text-white"
+                          : "bg-white text-foreground hover:bg-muted"
+                      }`}
+                    >
+                      <Clock className="w-4 h-4" />
+                      Pending
+                      {orders && orders.filter((o: any) => o.status === "PENDING_PAYMENT").length > 0 && (
+                        <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+                          orderFilter === "pending" ? "bg-white/20" : "bg-warning text-white"
+                        }`}>
+                          {orders.filter((o: any) => o.status === "PENDING_PAYMENT").length}
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                  <button className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm font-medium">
+                    <Download className="w-4 h-4" />
+                    Export
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -741,12 +786,22 @@ export default function EventDashboardPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Date
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {orders && orders.length > 0 ? (
-                    orders.map((order) => (
-                      <tr key={order._id} className="hover:bg-muted">
+                    orders
+                      .filter((order: any) => orderFilter === "all" || order.status === "PENDING_PAYMENT")
+                      .map((order: any) => (
+                      <tr
+                        key={order._id}
+                        className={`hover:bg-muted ${
+                          order.status === "PENDING_PAYMENT" ? "bg-warning/5" : ""
+                        }`}
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                           {order._id.slice(0, 8)}...
                         </td>
@@ -761,40 +816,12 @@ export default function EventDashboardPage() {
                           ${(order.totalCents / 100).toFixed(2)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {/* Show dropdown for PENDING_PAYMENT (cash) orders, badge for others */}
-                          {order.status === "PENDING_PAYMENT" ? (
-                            <div className="flex items-center gap-2">
-                              <select
-                                value={order.status}
-                                onChange={async (e) => {
-                                  if (e.target.value === "COMPLETED") {
-                                    setApprovingOrderId(order._id);
-                                    try {
-                                      await approveCashOrder({ orderId: order._id as Id<"orders"> });
-                                      // Order list will auto-refresh via Convex reactivity
-                                    } catch (error: any) {
-                                      console.error("Failed to approve order:", error);
-                                      alert(error.message || "Failed to approve order");
-                                    } finally {
-                                      setApprovingOrderId(null);
-                                    }
-                                  }
-                                }}
-                                disabled={approvingOrderId === order._id}
-                                className="text-xs px-2 py-1 rounded border border-warning bg-warning/10 text-warning font-medium cursor-pointer hover:bg-warning/20 focus:outline-none focus:ring-2 focus:ring-warning/50"
-                              >
-                                <option value="PENDING_PAYMENT">⏳ Pending Cash</option>
-                                <option value="COMPLETED">✓ Approve Payment</option>
-                              </select>
-                              {approvingOrderId === order._id && (
-                                <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
-                              )}
-                            </div>
-                          ) : (
-                            <span
-                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                                order.status === "COMPLETED"
-                                  ? "bg-success/10 text-success"
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                              order.status === "COMPLETED"
+                                ? "bg-success/10 text-success"
+                                : order.status === "PENDING_PAYMENT"
+                                  ? "bg-warning/10 text-warning"
                                   : order.status === "PENDING"
                                     ? "bg-warning/10 text-warning"
                                     : order.status === "FAILED"
@@ -802,25 +829,67 @@ export default function EventDashboardPage() {
                                       : order.status === "CANCELLED"
                                         ? "bg-muted text-muted-foreground"
                                         : "bg-muted text-foreground"
-                              }`}
-                            >
-                              {order.status === "COMPLETED" && <CheckCircle2 className="w-3 h-3" />}
-                              {order.status === "PENDING" && <Clock className="w-3 h-3" />}
-                              {order.status === "FAILED" && <XCircle className="w-3 h-3" />}
-                              {order.status === "CANCELLED" && <XCircle className="w-3 h-3" />}
-                              {order.status}
-                            </span>
-                          )}
+                            }`}
+                          >
+                            {order.status === "COMPLETED" && <CheckCircle2 className="w-3 h-3" />}
+                            {order.status === "PENDING_PAYMENT" && <Clock className="w-3 h-3" />}
+                            {order.status === "PENDING" && <Clock className="w-3 h-3" />}
+                            {order.status === "FAILED" && <XCircle className="w-3 h-3" />}
+                            {order.status === "CANCELLED" && <XCircle className="w-3 h-3" />}
+                            {order.status === "PENDING_PAYMENT" ? "Pending Cash" : order.status}
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                           {format(new Date(order.createdAt), "MMM d, yyyy h:mm a")}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {order.status === "PENDING_PAYMENT" ? (
+                            <button
+                              onClick={async () => {
+                                setApprovingOrderId(order._id);
+                                try {
+                                  await approveCashOrder({ orderId: order._id as Id<"orders"> });
+                                } catch (error: any) {
+                                  console.error("Failed to approve order:", error);
+                                  alert(error.message || "Failed to approve order");
+                                } finally {
+                                  setApprovingOrderId(null);
+                                }
+                              }}
+                              disabled={approvingOrderId === order._id}
+                              className="inline-flex items-center gap-2 px-3 py-1.5 bg-success text-white text-sm font-medium rounded-lg hover:bg-success/90 transition-colors disabled:opacity-50"
+                            >
+                              {approvingOrderId === order._id ? (
+                                <>
+                                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                                  Approving...
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle2 className="w-4 h-4" />
+                                  Approve
+                                </>
+                              )}
+                            </button>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">—</span>
+                          )}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
+                      <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
                         No orders yet
+                      </td>
+                    </tr>
+                  )}
+                  {orders && orders.length > 0 && orderFilter === "pending" &&
+                    orders.filter((o: any) => o.status === "PENDING_PAYMENT").length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
+                        <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-success" />
+                        No pending orders! All payments are processed.
                       </td>
                     </tr>
                   )}
