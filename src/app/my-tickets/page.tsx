@@ -34,6 +34,8 @@ import { formatEventLocation } from "@/lib/location-format";
 import toast from "react-hot-toast";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { TodayTicketPrompt } from "@/components/tickets/TodayTicketPrompt";
+import { useTodayTickets } from "@/hooks/useTodayTickets";
 
 // Type for the ticket data
 type TicketData = {
@@ -188,6 +190,9 @@ export default function MyTicketsPage() {
 
   // Cast tickets
   const ticketsData = tickets as unknown as TicketData[] | undefined;
+
+  // Get tickets for today's events (for the quick access prompt)
+  const todayTickets = useTodayTickets(ticketsData);
 
   // Group tickets by event
   const groupedTickets = ticketsData?.reduce(
@@ -746,6 +751,16 @@ export default function MyTicketsPage() {
             </div>
           )}
         </div>
+
+        {/* Today's Ticket Quick Access Prompt */}
+        <TodayTicketPrompt
+          tickets={todayTickets}
+          onShowTicket={(ticket) => {
+            if (ticket.event) {
+              setFullscreenTicket({ ticket, event: ticket.event });
+            }
+          }}
+        />
 
         {/* Fullscreen QR Modal */}
         <AnimatePresence>

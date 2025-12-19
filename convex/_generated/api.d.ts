@@ -70,6 +70,8 @@ import type * as paymentConfig_queries from "../paymentConfig/queries.js";
 import type * as payments_actions from "../payments/actions.js";
 import type * as payments_mutations from "../payments/mutations.js";
 import type * as payments_queries from "../payments/queries.js";
+import type * as platformDebt_mutations from "../platformDebt/mutations.js";
+import type * as platformDebt_queries from "../platformDebt/queries.js";
 import type * as productOrders_mutations from "../productOrders/mutations.js";
 import type * as productOrders_queries from "../productOrders/queries.js";
 import type * as products_mutations from "../products/mutations.js";
@@ -182,6 +184,8 @@ declare const fullApi: ApiFromModules<{
   "payments/actions": typeof payments_actions;
   "payments/mutations": typeof payments_mutations;
   "payments/queries": typeof payments_queries;
+  "platformDebt/mutations": typeof platformDebt_mutations;
+  "platformDebt/queries": typeof platformDebt_queries;
   "productOrders/mutations": typeof productOrders_mutations;
   "productOrders/queries": typeof productOrders_queries;
   "products/mutations": typeof products_mutations;

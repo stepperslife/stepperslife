@@ -17,7 +17,57 @@ const nextConfig = {
     const isProduction = process.env.NODE_ENV === 'production';
 
     return [
-      // Security headers for all routes
+      // Scanner routes - allow camera access for QR code scanning
+      {
+        source: '/(staff/scan-tickets|scan/:path*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(), geolocation=(), interest-cohort=()',
+          },
+          // HSTS - Force HTTPS for 1 year (only in production)
+          ...(isProduction ? [{
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload',
+          }] : []),
+          // Content Security Policy
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdn.jsdelivr.net https://web.squarecdn.com https://sandbox.web.squarecdn.com https://js.sentry-cdn.com https://browser.sentry-cdn.com https://www.paypal.com https://www.paypalobjects.com https://js.stripe.com https://vercel.live",
+              "worker-src 'self' blob:",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' data: https://fonts.gstatic.com https://vercel.live",
+              `img-src 'self' data: blob: https: ${isDevelopment ? 'http://localhost:*' : ''} https://lh3.googleusercontent.com https://images.unsplash.com https://unsplash.com https://dazzling-mockingbird-241.convex.cloud https://neighborly-swordfish-681.convex.cloud https://expert-vulture-775.convex.cloud`.replace(/\s+/g, ' ').trim(),
+              "connect-src 'self' https://dazzling-mockingbird-241.convex.cloud wss://dazzling-mockingbird-241.convex.cloud https://neighborly-swordfish-681.convex.cloud wss://neighborly-swordfish-681.convex.cloud https://expert-vulture-775.convex.cloud wss://expert-vulture-775.convex.cloud https://api.stripe.com https://stripe.com https://m.stripe.com https://m.stripe.network https://web.squarecdn.com https://sandbox.web.squarecdn.com https://connect.squareup.com https://pci-connect.squareup.com https://api.resend.com https://www.paypal.com https://api.paypal.com https://*.sentry.io",
+              "frame-src 'self' https://web.squarecdn.com https://sandbox.web.squarecdn.com https://www.paypal.com https://js.stripe.com https://vercel.live",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+              "upgrade-insecure-requests",
+            ].join('; '),
+          },
+        ],
+      },
+      // Security headers for all other routes
       {
         source: '/(.*)',
         headers: [

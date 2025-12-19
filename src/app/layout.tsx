@@ -9,6 +9,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { FoodCartProvider } from "@/contexts/FoodCartContext";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { FloatingScanButton } from "@/components/FloatingScanButton";
 import { validateEnv } from "@/lib/env-validator";
 
 // Validate environment variables at startup (server-side only)
@@ -96,6 +97,7 @@ export default function RootLayout({
                 {children}
                 <ShoppingCart />
                 <MobileBottomNav />
+                <FloatingScanButton />
               </FoodCartProvider>
             </CartProvider>
           </ConvexClientProvider>

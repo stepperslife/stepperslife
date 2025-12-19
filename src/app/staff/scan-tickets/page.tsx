@@ -23,12 +23,43 @@ import { format } from "date-fns";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+// Utility function to find "current" event (happening now or starting soon)
+function findCurrentEvent(
+  events: Array<{ _id: string; startDate?: number }>
+): (typeof events)[0] | null {
+  const now = Date.now();
+  const HOURS_BEFORE = 2 * 60 * 60 * 1000; // 2 hours before event
+  const HOURS_AFTER = 4 * 60 * 60 * 1000; // 4 hours after event start
+
+  const windowStart = now - HOURS_AFTER;
+  const windowEnd = now + HOURS_BEFORE;
+
+  const currentEvents = events.filter((event) => {
+    if (!event.startDate) return false;
+    return event.startDate >= windowStart && event.startDate <= windowEnd;
+  });
+
+  if (currentEvents.length === 0) return null;
+
+  // Prioritize ongoing events (already started)
+  const ongoingEvents = currentEvents.filter((e) => e.startDate && e.startDate <= now);
+
+  if (ongoingEvents.length > 0) {
+    // Return most recently started ongoing event
+    return ongoingEvents.sort((a, b) => (b.startDate || 0) - (a.startDate || 0))[0];
+  }
+
+  // Return upcoming event closest to now
+  return currentEvents.sort((a, b) => (a.startDate || 0) - (b.startDate || 0))[0];
+}
+
 export default function StaffScanTicketsPage() {
   const router = useRouter();
   const events = useQuery(api.scanning.queries.getMyScannableEvents);
 
   // Scanner state
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [autoSelectedEventId, setAutoSelectedEventId] = useState<string | null>(null);
   const [lastScanResult, setLastScanResult] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [manualTicketCode, setManualTicketCode] = useState("");
@@ -159,11 +190,23 @@ export default function StaffScanTicketsPage() {
     setManualTicketCode("");
   };
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopScanner();
     };
   }, []);
+
+  // Auto-select current event on mount
+  useEffect(() => {
+    if (events && events.length > 0 && !selectedEventId) {
+      const currentEvent = findCurrentEvent(events);
+      if (currentEvent) {
+        setSelectedEventId(currentEvent._id);
+        setAutoSelectedEventId(currentEvent._id);
+      }
+    }
+  }, [events, selectedEventId]);
 
   if (events === undefined) {
     return (
@@ -253,23 +296,52 @@ export default function StaffScanTicketsPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header with back button */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            stopScanner();
-            setSelectedEventId(null);
-          }}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-xl font-bold">{selectedEvent?.name}</h1>
-          <p className="text-sm text-muted-foreground">Scanning tickets</p>
+      {/* Header with back button and change event option */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              stopScanner();
+              setSelectedEventId(null);
+              setAutoSelectedEventId(null);
+            }}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-xl font-bold">{selectedEvent?.name}</h1>
+            <p className="text-sm text-muted-foreground">Scanning tickets</p>
+          </div>
         </div>
+
+        {/* Show "Change Event" link when auto-selected and multiple events available */}
+        {autoSelectedEventId && events && events.length > 1 && (
+          <Button
+            variant="link"
+            size="sm"
+            className="text-primary"
+            onClick={() => {
+              stopScanner();
+              setSelectedEventId(null);
+              setAutoSelectedEventId(null);
+            }}
+          >
+            Change Event
+          </Button>
+        )}
       </div>
+
+      {/* Auto-selection indicator */}
+      {autoSelectedEventId && selectedEventId === autoSelectedEventId && (
+        <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-2 flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-primary" />
+          <span className="text-sm text-muted-foreground">
+            Auto-selected based on event timing
+          </span>
+        </div>
+      )}
 
       {/* Stats */}
       {stats && (
