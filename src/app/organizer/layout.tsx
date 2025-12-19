@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { RoleBasedSidebar } from "@/components/navigation";
 import { AppHeader } from "@/components/sidebar/app-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { NavUser } from "@/lib/navigation/types";
 import { generateUserInitials } from "@/lib/navigation/utils";
 import Link from "next/link";
@@ -82,14 +83,16 @@ export default function OrganizerLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full bg-background">
-        <RoleBasedSidebar user={user} activeRole="organizer" />
-        <SidebarInset className="flex-1">
-          <AppHeader />
-          <main className="flex-1 overflow-auto">{children}</main>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    <WorkspaceProvider initialUser={user} initialRole="organizer">
+      <SidebarProvider defaultOpen={true}>
+        <div className="flex min-h-screen w-full bg-background">
+          <RoleBasedSidebar user={user} activeRole="organizer" />
+          <SidebarInset className="flex-1">
+            <AppHeader />
+            <main className="flex-1 overflow-auto">{children}</main>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </WorkspaceProvider>
   );
 }

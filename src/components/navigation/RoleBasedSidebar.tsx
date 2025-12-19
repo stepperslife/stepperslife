@@ -1,16 +1,16 @@
 "use client";
 
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { NavItem } from "./NavItem";
-import { RoleSwitcher } from "./RoleSwitcher";
+import { WorkspaceHeader } from "./WorkspaceHeader";
+import { MobileWorkspaceBar } from "./MobileWorkspaceBar";
 import { getNavigationForRole } from "@/lib/navigation/config";
 import { AllRoles, NavUser } from "@/lib/navigation/types";
 import {
   isNavItemActive,
   hasActiveSubmenu,
-  generateUserInitials,
 } from "@/lib/navigation/utils";
-import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
@@ -20,8 +20,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 
 interface RoleBasedSidebarProps {
   user: NavUser;
@@ -32,14 +32,19 @@ interface RoleBasedSidebarProps {
 export function RoleBasedSidebar({
   user,
   activeRole,
-  onRoleSwitch,
 }: RoleBasedSidebarProps) {
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const { setUser, currentRole: contextRole } = useWorkspace();
 
-  // Determine which role's navigation to show
-  const currentRole = activeRole || user.role;
+  // Sync user with workspace context
+  useEffect(() => {
+    setUser(user);
+  }, [user, setUser]);
+
+  // Use role from context if available, otherwise fall back to props
+  const currentRole = contextRole || activeRole || user.role;
   const navigation = getNavigationForRole(currentRole);
 
   if (!navigation) {
@@ -47,46 +52,13 @@ export function RoleBasedSidebar({
     return null;
   }
 
-  const userInitials = user.initials || generateUserInitials(user.name, user.email);
-
   return (
-    <Sidebar collapsible="icon">
-      {/* Header with User Info */}
-      <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <Avatar className={cn("shrink-0", isCollapsed ? "w-8 h-8" : "w-10 h-10")}>
-            <AvatarImage src={user.avatar} alt={user.name || user.email} />
-            <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-              {userInitials}
-            </AvatarFallback>
-          </Avatar>
-
-          {!isCollapsed && (
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="font-bold text-sidebar-foreground truncate">
-                  {navigation.dashboardTitle}
-                </h2>
-              </div>
-              <p className="text-xs text-sidebar-foreground/60 truncate">
-                {navigation.roleDescription}
-              </p>
-              {user.name && (
-                <p className="text-xs text-sidebar-foreground/80 truncate mt-0.5">
-                  {user.name}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Role Switcher - only shown when user has multiple roles */}
-        {!isCollapsed && (
-          <div className="px-4 pb-3">
-            <RoleSwitcher user={user} activeRole={currentRole} />
-          </div>
-        )}
-      </SidebarHeader>
+    <>
+      <Sidebar collapsible="icon">
+        {/* Header with Workspace Switcher */}
+        <SidebarHeader className="border-b border-sidebar-border">
+          <WorkspaceHeader isCollapsed={isCollapsed} />
+        </SidebarHeader>
 
       {/* Main Navigation Content */}
       <SidebarContent>
@@ -153,5 +125,9 @@ export function RoleBasedSidebar({
         </SidebarFooter>
       )}
     </Sidebar>
+
+      {/* Mobile Workspace Bar - Fixed at bottom on mobile */}
+      <MobileWorkspaceBar />
+    </>
   );
 }
