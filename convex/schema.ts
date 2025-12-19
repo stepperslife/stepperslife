@@ -1384,12 +1384,23 @@ export default defineSchema({
     acceptingOrders: v.boolean(),
     estimatedPickupTime: v.number(),
     isActive: v.boolean(),
+    // Subscription fields
+    subscriptionTier: v.optional(
+      v.union(v.literal("STARTER"), v.literal("GROWTH"), v.literal("PROFESSIONAL"))
+    ),
+    subscriptionStatus: v.optional(
+      v.union(v.literal("ACTIVE"), v.literal("CANCELLED"), v.literal("EXPIRED"), v.literal("NONE"))
+    ),
+    subscriptionExpiresAt: v.optional(v.number()),
+    stripeSubscriptionId: v.optional(v.string()),
+    stripeCustomerId: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_active", ["isActive"])
     .index("by_slug", ["slug"])
-    .index("by_owner", ["ownerId"]),
+    .index("by_owner", ["ownerId"])
+    .index("by_subscription", ["subscriptionTier", "subscriptionStatus"]),
 
   // Restaurant Staff - Staff members with restaurant-specific roles
   restaurantStaff: defineTable({

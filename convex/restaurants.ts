@@ -4,6 +4,7 @@ import { getCurrentUser, requireAdmin } from "./lib/auth";
 import { requireRestaurantOwner, requireRestaurantRole } from "./lib/restaurantAuth";
 import { USER_ROLES } from "./lib/roles";
 import { validateRequiredString, validatePhoneNumber, validateEmail } from "./lib/validation";
+import { getDefaultPlanTier, RESTAURANT_PLANS } from "./lib/restaurantPlans";
 
 // Get all active restaurants
 export const getAll = query({
@@ -355,6 +356,9 @@ export const apply = mutation({
 
       console.log("[restaurants:apply] Inserting restaurant with slug:", slug);
 
+      // Get default subscription plan (STARTER - free tier)
+      const defaultPlan = getDefaultPlanTier();
+
       const restaurantId = await ctx.db.insert("restaurants", {
         name: args.name.trim(),
         slug,
@@ -372,6 +376,9 @@ export const apply = mutation({
         acceptingOrders: false,
         estimatedPickupTime: args.estimatedPickupTime || 30,
         isActive: false, // Pending approval
+        // Subscription: Starter plan is auto-activated (free tier)
+        subscriptionTier: defaultPlan,
+        subscriptionStatus: "ACTIVE",
         createdAt: now,
         updatedAt: now,
       });
@@ -417,9 +424,15 @@ export const approve = mutation({
 
     const now = Date.now();
 
-    // Approve the restaurant
+    // Get default subscription plan if not already set
+    const defaultPlan = getDefaultPlanTier();
+
+    // Approve the restaurant and ensure subscription is active
     await ctx.db.patch(args.restaurantId, {
       isActive: true,
+      // Ensure subscription is set (for backwards compatibility)
+      subscriptionTier: restaurant.subscriptionTier || defaultPlan,
+      subscriptionStatus: restaurant.subscriptionStatus || "ACTIVE",
       updatedAt: now,
     });
 
@@ -602,5 +615,61 @@ export const updateInternal = internalMutation({
       updatedAt: Date.now(),
     });
     return { success: true };
+  },
+});
+
+/**
+ * Get subscription info for a restaurant including current usage
+ */
+export const getSubscriptionInfo = query({
+  args: { restaurantId: v.id("restaurants") },
+  handler: async (ctx, args) => {
+    const restaurant = await ctx.db.get(args.restaurantId);
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
+
+    // Get current counts
+    const menuItems = await ctx.db
+      .query("menuItems")
+      .withIndex("by_restaurant", (q) => q.eq("restaurantId", args.restaurantId))
+      .collect();
+
+    const categories = await ctx.db
+      .query("menuCategories")
+      .withIndex("by_restaurant", (q) => q.eq("restaurantId", args.restaurantId))
+      .collect();
+
+    // Get plan details
+    const planTier = (restaurant.subscriptionTier || "STARTER") as keyof typeof RESTAURANT_PLANS;
+    const plan = RESTAURANT_PLANS[planTier];
+
+    return {
+      tier: planTier,
+      status: restaurant.subscriptionStatus || "ACTIVE",
+      plan: {
+        name: plan.name,
+        description: plan.description,
+        priceMonthly: plan.priceMonthly,
+        priceAnnual: plan.priceAnnual,
+        transactionFeePercent: plan.transactionFeePercent,
+        features: plan.features,
+        featuresList: plan.featuresList,
+      },
+      usage: {
+        menuItems: {
+          current: menuItems.length,
+          limit: plan.features.menuItemLimit,
+          canAdd: plan.features.menuItemLimit === -1 || menuItems.length < plan.features.menuItemLimit,
+        },
+        categories: {
+          current: categories.length,
+          limit: plan.features.categoryLimit,
+          canAdd: plan.features.categoryLimit === -1 || categories.length < plan.features.categoryLimit,
+        },
+      },
+      expiresAt: restaurant.subscriptionExpiresAt,
+      stripeSubscriptionId: restaurant.stripeSubscriptionId,
+    };
   },
 });

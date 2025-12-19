@@ -6,6 +6,12 @@ import {
   validateRequiredString,
   validateSortOrder,
 } from "./lib/validation";
+import {
+  canAddMenuItem,
+  canAddCategory,
+  getDefaultPlanTier,
+  type RestaurantPlanTier
+} from "./lib/restaurantPlans";
 
 // Helper to verify restaurant ownership
 async function verifyRestaurantOwnership(
@@ -86,6 +92,26 @@ export const createCategory = mutation({
       throw new Error("Unauthorized: You do not own this restaurant");
     }
 
+    // Check subscription plan limits
+    const restaurant = await ctx.db.get(args.restaurantId);
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
+
+    // Get current category count
+    const existingCategories = await ctx.db
+      .query("menuCategories")
+      .withIndex("by_restaurant", (q) => q.eq("restaurantId", args.restaurantId))
+      .collect();
+
+    // Check if plan allows adding more categories
+    const planTier = (restaurant.subscriptionTier || getDefaultPlanTier()) as RestaurantPlanTier;
+    const planCheck = canAddCategory(planTier, existingCategories.length);
+
+    if (!planCheck.allowed) {
+      throw new Error(planCheck.message || `Category limit reached for your plan. Upgrade to add more categories.`);
+    }
+
     const now = Date.now();
     return await ctx.db.insert("menuCategories", {
       ...args,
@@ -123,6 +149,26 @@ export const create = mutation({
     const isOwner = await verifyRestaurantOwnership(ctx, args.restaurantId);
     if (!isOwner) {
       throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
+    // Check subscription plan limits
+    const restaurant = await ctx.db.get(args.restaurantId);
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
+
+    // Get current menu item count
+    const existingItems = await ctx.db
+      .query("menuItems")
+      .withIndex("by_restaurant", (q) => q.eq("restaurantId", args.restaurantId))
+      .collect();
+
+    // Check if plan allows adding more items
+    const planTier = (restaurant.subscriptionTier || getDefaultPlanTier()) as RestaurantPlanTier;
+    const planCheck = canAddMenuItem(planTier, existingItems.length);
+
+    if (!planCheck.allowed) {
+      throw new Error(planCheck.message || `Menu item limit reached for your plan. Upgrade to add more items.`);
     }
 
     const now = Date.now();
