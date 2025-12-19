@@ -63,6 +63,36 @@ export const isAuthenticated = query({
 });
 
 /**
+ * Debug: Get raw identity information for troubleshooting
+ */
+export const getIdentityDebug = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return { authenticated: false, identity: null };
+    }
+
+    // Return all available fields from the identity
+    return {
+      authenticated: true,
+      identity: {
+        // Standard Convex identity fields
+        tokenIdentifier: identity.tokenIdentifier,
+        subject: (identity as any).subject,
+        issuer: (identity as any).issuer,
+        // Custom claims from our JWT
+        email: identity.email,
+        name: identity.name,
+        role: (identity as any).role,
+        // Raw object for debugging
+        raw: JSON.stringify(identity),
+      },
+    };
+  },
+});
+
+/**
  * Get user by ID (includes password hash - use getUserByIdPublic for client-facing endpoints)
  */
 export const getUserById = query({
