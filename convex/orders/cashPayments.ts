@@ -349,11 +349,22 @@ export const organizerApproveCashOrder = mutation({
       }
     }
 
+    // Send confirmation email with QR codes to customer
+    // Only send if customer has a valid email address
+    if (order.buyerEmail && !order.buyerEmail.includes("@temp.local")) {
+      await ctx.scheduler.runAfter(
+        0, // Send immediately
+        api.notifications.ticketNotifications.sendCashOrderConfirmation,
+        { orderId: args.orderId }
+      );
+    }
+
     return {
       success: true,
       orderId: args.orderId,
       ticketsActivated: tickets.length,
       approvedBy: user.name || user.email,
+      emailSent: !!(order.buyerEmail && !order.buyerEmail.includes("@temp.local")),
     };
   },
 });
