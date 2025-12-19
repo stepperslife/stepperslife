@@ -3,50 +3,73 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link as LinkIcon, Copy, Share2, BarChart3, ArrowRight } from "lucide-react";
+import { Link as LinkIcon, Copy, Share2, BarChart3, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 
+// Format cents to dollars
+const formatCurrency = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+
 export default function AssociateMyTicketLinkPage() {
-  const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const staffDashboard = useQuery(api.staff.queries.getStaffDashboard);
+
+  // Loading state
+  if (staffDashboard === undefined) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Filter to only ASSOCIATES role positions
+  const associatePositions = staffDashboard.filter(p => p.role === "ASSOCIATES");
+
+  // Calculate aggregate metrics from real data
+  const totalTicketsSold = associatePositions.reduce((sum, p) => sum + (p.ticketsSold || 0), 0);
+  const totalEarningsCents = associatePositions.reduce((sum, p) => sum + (p.commissionEarned || 0), 0);
+  const activeEvents = associatePositions.filter(p => {
+    if (!p.event?.startDate) return false;
+    return new Date(p.event.startDate) > new Date();
+  });
 
   return (
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">My Ticket Link</h1>
-        <p className="text-muted-foreground mt-2">Your unique link for selling tickets</p>
+        <p className="text-muted-foreground mt-2">Your unique links for selling tickets</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Link Clicks</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Links</CardTitle>
             <LinkIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">Total clicks</p>
+            <div className="text-2xl font-bold">{activeEvents.length}</div>
+            <p className="text-xs text-muted-foreground">Event links</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conversions</CardTitle>
+            <CardTitle className="text-sm font-medium">Sales</CardTitle>
             <BarChart3 className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">0</div>
-            <p className="text-xs text-muted-foreground">Sales from link</p>
+            <div className="text-2xl font-bold text-success">{totalTicketsSold}</div>
+            <p className="text-xs text-muted-foreground">Tickets sold</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conv. Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Events</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0%</div>
-            <p className="text-xs text-muted-foreground">Click to sale</p>
+            <div className="text-2xl font-bold">{associatePositions.length}</div>
+            <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
 
@@ -56,8 +79,8 @@ export default function AssociateMyTicketLinkPage() {
             <BarChart3 className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">$0</div>
-            <p className="text-xs text-muted-foreground">From link</p>
+            <div className="text-2xl font-bold text-success">{formatCurrency(totalEarningsCents)}</div>
+            <p className="text-xs text-muted-foreground">Commission earned</p>
           </CardContent>
         </Card>
       </div>

@@ -3,11 +3,56 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Target, Zap, Award } from "lucide-react";
+import { TrendingUp, Target, Zap, Award, Loader2 } from "lucide-react";
 import Link from "next/link";
 
+// Format cents to dollars
+const formatCurrency = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+
 export default function PerformanceStatsPage() {
-  const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const staffDashboard = useQuery(api.staff.queries.getStaffDashboard);
+
+  // Loading state
+  if (staffDashboard === undefined) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Filter to only ASSOCIATES role positions
+  const associatePositions = staffDashboard.filter(p => p.role === "ASSOCIATES");
+
+  // Calculate metrics
+  const totalTicketsSold = associatePositions.reduce((sum, p) => sum + (p.ticketsSold || 0), 0);
+  const totalEarningsCents = associatePositions.reduce((sum, p) => sum + (p.commissionEarned || 0), 0);
+  const totalEvents = associatePositions.length;
+  const eventsWithSales = associatePositions.filter(p => (p.ticketsSold || 0) > 0).length;
+
+  // Average commission per ticket (if any sales)
+  const avgCommissionPerTicket = totalTicketsSold > 0
+    ? Math.round(totalEarningsCents / totalTicketsSold)
+    : 0;
+
+  // Sales velocity - average tickets per event with sales
+  const salesVelocity = eventsWithSales > 0
+    ? (totalTicketsSold / eventsWithSales).toFixed(1)
+    : "0";
+
+  // Sell-through rate (tickets sold / tickets allocated)
+  const totalAllocated = associatePositions.reduce((sum, p) => sum + (p.allocatedTickets || 0), 0);
+  const sellThroughRate = totalAllocated > 0
+    ? Math.round((totalTicketsSold / totalAllocated) * 100)
+    : 0;
+
+  // Milestones
+  const milestones = [
+    { name: "First Sale", description: "Make your first ticket sale", target: 1 },
+    { name: "10 Ticket Milestone", description: "Sell 10 tickets", target: 10 },
+    { name: "50 Ticket Achiever", description: "Sell 50 tickets", target: 50 },
+    { name: "100 Ticket Champion", description: "Sell 100 tickets", target: 100 },
+  ];
 
   return (
     <div className="p-6 space-y-6">
@@ -26,14 +71,14 @@ export default function PerformanceStatsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
-              Conversion Rate
+              Sell-Through Rate
             </CardTitle>
-            <CardDescription>Link clicks to ticket sales</CardDescription>
+            <CardDescription>Tickets sold vs allocated</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">0%</p>
+            <p className="text-4xl font-bold">{sellThroughRate}%</p>
             <p className="text-sm text-muted-foreground mt-2">
-              No data available yet
+              {totalTicketsSold} of {totalAllocated} tickets sold
             </p>
           </CardContent>
         </Card>
@@ -44,12 +89,12 @@ export default function PerformanceStatsPage() {
               <Zap className="h-5 w-5" />
               Sales Velocity
             </CardTitle>
-            <CardDescription>Average sales per active day</CardDescription>
+            <CardDescription>Average sales per active event</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">0</p>
+            <p className="text-4xl font-bold">{salesVelocity}</p>
             <p className="text-sm text-muted-foreground mt-2">
-              tickets/day
+              tickets/event
             </p>
           </CardContent>
         </Card>
@@ -67,39 +112,47 @@ export default function PerformanceStatsPage() {
                 <p className="font-medium">Total Tickets Sold</p>
                 <p className="text-sm text-muted-foreground">All time sales</p>
               </div>
-              <p className="text-2xl font-bold">0</p>
+              <p className="text-2xl font-bold">{totalTicketsSold}</p>
             </div>
 
             <div className="flex items-center justify-between py-3 border-b">
               <div>
-                <p className="font-medium">Average Ticket Value</p>
+                <p className="font-medium">Total Commission Earned</p>
+                <p className="text-sm text-muted-foreground">All time earnings</p>
+              </div>
+              <p className="text-2xl font-bold text-success">{formatCurrency(totalEarningsCents)}</p>
+            </div>
+
+            <div className="flex items-center justify-between py-3 border-b">
+              <div>
+                <p className="font-medium">Avg Commission per Ticket</p>
                 <p className="text-sm text-muted-foreground">Per ticket average</p>
               </div>
-              <p className="text-2xl font-bold">$0.00</p>
+              <p className="text-2xl font-bold">{formatCurrency(avgCommissionPerTicket)}</p>
             </div>
 
             <div className="flex items-center justify-between py-3 border-b">
               <div>
-                <p className="font-medium">Events Participated</p>
+                <p className="font-medium">Events Assigned</p>
                 <p className="text-sm text-muted-foreground">Total events</p>
               </div>
-              <p className="text-2xl font-bold">0</p>
+              <p className="text-2xl font-bold">{totalEvents}</p>
             </div>
 
             <div className="flex items-center justify-between py-3 border-b">
               <div>
-                <p className="font-medium">Link Clicks</p>
-                <p className="text-sm text-muted-foreground">Total clicks on your link</p>
+                <p className="font-medium">Events with Sales</p>
+                <p className="text-sm text-muted-foreground">Active selling events</p>
               </div>
-              <p className="text-2xl font-bold">0</p>
+              <p className="text-2xl font-bold">{eventsWithSales}</p>
             </div>
 
             <div className="flex items-center justify-between py-3">
               <div>
-                <p className="font-medium">Active Selling Days</p>
-                <p className="text-sm text-muted-foreground">Days with sales activity</p>
+                <p className="font-medium">Tickets Available</p>
+                <p className="text-sm text-muted-foreground">Remaining inventory</p>
               </div>
-              <p className="text-2xl font-bold">0</p>
+              <p className="text-2xl font-bold">{totalAllocated - totalTicketsSold}</p>
             </div>
           </div>
         </CardContent>
@@ -115,49 +168,32 @@ export default function PerformanceStatsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
-              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                <Award className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold">First Sale</p>
-                <p className="text-sm text-muted-foreground">Make your first ticket sale</p>
-              </div>
-              <span className="text-sm text-muted-foreground">0/1</span>
-            </div>
+            {milestones.map((milestone) => {
+              const isAchieved = totalTicketsSold >= milestone.target;
+              const progress = Math.min(totalTicketsSold, milestone.target);
 
-            <div className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
-              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                <Award className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold">10 Ticket Milestone</p>
-                <p className="text-sm text-muted-foreground">Sell 10 tickets</p>
-              </div>
-              <span className="text-sm text-muted-foreground">0/10</span>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
-              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                <Award className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold">50 Ticket Achiever</p>
-                <p className="text-sm text-muted-foreground">Sell 50 tickets</p>
-              </div>
-              <span className="text-sm text-muted-foreground">0/50</span>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
-              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                <Award className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold">100 Ticket Champion</p>
-                <p className="text-sm text-muted-foreground">Sell 100 tickets</p>
-              </div>
-              <span className="text-sm text-muted-foreground">0/100</span>
-            </div>
+              return (
+                <div
+                  key={milestone.name}
+                  className={`flex items-center gap-3 p-3 border rounded-lg ${
+                    isAchieved ? "bg-success/10 border-success/30" : "opacity-50"
+                  }`}
+                >
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    isAchieved ? "bg-success/20" : "bg-muted"
+                  }`}>
+                    <Award className={`h-5 w-5 ${isAchieved ? "text-success" : "text-muted-foreground"}`} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold">{milestone.name}</p>
+                    <p className="text-sm text-muted-foreground">{milestone.description}</p>
+                  </div>
+                  <span className={`text-sm font-medium ${isAchieved ? "text-success" : "text-muted-foreground"}`}>
+                    {progress}/{milestone.target}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
