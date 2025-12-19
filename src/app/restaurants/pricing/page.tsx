@@ -69,45 +69,65 @@ const optionATiers = [
   },
 ];
 
-// Option B: Tiny Monthly Fee + Lower Percentage
+// Option B: Subscription Plans with Menu Limits
 const optionBTiers = [
   {
-    name: "Pay As You Go",
+    name: "Starter",
     price: 0,
     period: "forever",
-    description: "No monthly fees, just pay per order",
-    transactionFee: "6%",
+    description: "Perfect for getting started with online ordering",
+    transactionFee: "10%",
     customerFee: "$0.99",
     features: [
-      "Unlimited menu listings",
-      "Full order management",
+      "Up to 10 menu listings",
+      "Up to 3 menu categories",
+      "Basic order management",
       "Basic analytics dashboard",
       "Email order notifications",
-      "Customer reviews & ratings",
       "Mobile-friendly menu page",
       "Standard customer support",
     ],
     cta: "Get Started Free",
   },
   {
-    name: "Subscription",
-    price: 29,
+    name: "Growth",
+    price: 19,
     period: "month",
-    description: "Lower fees for higher volume restaurants",
-    transactionFee: "3%",
+    description: "For growing restaurants ready to scale",
+    transactionFee: "6%",
     customerFee: "$0.99",
     features: [
-      "Everything in Pay As You Go",
-      "50% lower transaction fees",
+      "Up to 100 menu listings",
+      "Up to 20 menu categories",
       "Advanced analytics & reports",
-      "Priority customer support",
+      "Customer reviews & ratings",
       "Custom pickup time slots",
+      "Priority email support",
       "Promotional tools",
       "Order history & insights",
-      "Custom branding options",
     ],
     highlighted: true,
-    cta: "Subscribe Now",
+    cta: "Start Growing",
+  },
+  {
+    name: "Professional",
+    price: 49,
+    period: "month",
+    description: "For established restaurants with high volume",
+    transactionFee: "4%",
+    customerFee: "$0.99",
+    features: [
+      "Unlimited menu listings",
+      "Unlimited menu categories",
+      "Real-time analytics dashboard",
+      "Priority customer support",
+      "Custom branding options",
+      "Advanced promotional tools",
+      "Multi-location support",
+      "API access",
+      "Dedicated account manager",
+    ],
+    cta: "Go Professional",
   },
 ];
 
@@ -383,30 +403,30 @@ export default function RestaurantPricingPage() {
                         Monthly Orders
                       </th>
                       <th className="text-center py-4 px-4 font-semibold text-foreground">
-                        # of Orders
-                      </th>
-                      <th className="text-center py-4 px-4 font-semibold text-foreground">
-                        Pay As You Go (6%)
+                        Starter (10%)
                       </th>
                       <th className="text-center py-4 px-4 font-semibold text-primary">
-                        Subscription (3% + $29)
+                        Growth (6% + $19)
+                      </th>
+                      <th className="text-center py-4 px-4 font-semibold text-foreground">
+                        Pro (4% + $49)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {[
-                      { orders: "$1,000", count: "~50", paygo: "$60 + $50*", sub: "$30 + $50* + $29" },
-                      { orders: "$3,000", count: "~150", paygo: "$180 + $150*", sub: "$90 + $150* + $29" },
-                      { orders: "$5,000", count: "~250", paygo: "$300 + $250*", sub: "$150 + $250* + $29" },
-                      { orders: "$10,000", count: "~500", paygo: "$600 + $500*", sub: "$300 + $500* + $29" },
+                      { orders: "$1,000", starter: "$100 + $50*", growth: "$79 + $50*", pro: "$89 + $50*" },
+                      { orders: "$3,000", starter: "$300 + $150*", growth: "$199 + $150*", pro: "$169 + $150*" },
+                      { orders: "$5,000", starter: "$500 + $250*", growth: "$319 + $250*", pro: "$249 + $250*" },
+                      { orders: "$10,000", starter: "$1,000 + $500*", growth: "$619 + $500*", pro: "$449 + $500*" },
                     ].map((row, idx) => (
                       <tr key={idx} className="border-b border-border/50">
                         <td className="py-4 px-4 font-medium text-foreground">{row.orders}</td>
-                        <td className="py-4 px-4 text-center text-muted-foreground">{row.count}</td>
-                        <td className="py-4 px-4 text-center text-muted-foreground">{row.paygo}</td>
+                        <td className="py-4 px-4 text-center text-muted-foreground">{row.starter}</td>
                         <td className="py-4 px-4 text-center text-primary font-medium bg-primary/5 dark:bg-primary/10">
-                          {row.sub}
+                          {row.growth}
                         </td>
+                        <td className="py-4 px-4 text-center text-muted-foreground">{row.pro}</td>
                       </tr>
                     ))}
                   </tbody>
