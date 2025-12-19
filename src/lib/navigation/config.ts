@@ -529,19 +529,19 @@ export const teamMemberNavigation: RoleNavigation = {
       items: [
         {
           label: "My Tickets",
-          href: "/team-member/my-tickets",
+          href: "/team/my-tickets",
           icon: Ticket,
           description: "Your ticket inventory",
         },
         {
           label: "My Associates",
-          href: "/team-member/my-associates",
+          href: "/team/my-associates",
           icon: Users,
           description: "Manage associates",
         },
         {
           label: "Share Link",
-          href: "/team-member/my-ticket-links",
+          href: "/team/my-ticket-links",
           icon: LinkIcon,
           description: "Your sales link",
         },
@@ -554,13 +554,13 @@ export const teamMemberNavigation: RoleNavigation = {
       items: [
         {
           label: "My Earnings",
-          href: "/team-member/earnings",
+          href: "/team/earnings",
           icon: DollarSign,
           description: "Track earnings",
         },
         {
           label: "Performance",
-          href: "/team-member/sales-performance",
+          href: "/team/sales-performance",
           icon: TrendingUp,
           description: "Sales stats",
         },
@@ -572,19 +572,19 @@ export const teamMemberNavigation: RoleNavigation = {
       items: [
         {
           label: "My Events",
-          href: "/team-member/my-events",
+          href: "/team/my-events",
           icon: Calendar,
           description: "Assigned events",
         },
         {
           label: "Profile",
-          href: "/team-member/profile",
+          href: "/team/profile",
           icon: User,
           description: "Your profile",
         },
         {
           label: "Support",
-          href: "/team-member/support",
+          href: "/team/support",
           icon: MessageSquare,
           description: "Get help",
         },
