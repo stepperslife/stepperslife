@@ -3,33 +3,31 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent } from "@/components/ui/card";
-import { DollarSign, Calendar, CheckCircle, Clock } from "lucide-react";
+import { DollarSign, Calendar, CheckCircle, Clock, Loader2, Info } from "lucide-react";
 import Link from "next/link";
 
-export default function PayoutHistoryPage() {
-  const currentUser = useQuery(api.users.queries.getCurrentUser);
-  const payouts: any[] = [];
+// Format cents to dollars
+const formatCurrency = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "completed":
-        return (
-          <span className="px-2 py-1 text-xs rounded-full bg-success/10 text-success flex items-center gap-1">
-            <CheckCircle className="h-3 w-3" />
-            Completed
-          </span>
-        );
-      case "pending":
-        return (
-          <span className="px-2 py-1 text-xs rounded-full bg-warning/10 text-warning flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            Pending
-          </span>
-        );
-      default:
-        return <span className="px-2 py-1 text-xs rounded-full bg-muted text-muted-foreground">{status}</span>;
-    }
-  };
+export default function PayoutHistoryPage() {
+  const staffDashboard = useQuery(api.staff.queries.getStaffDashboard);
+
+  // Loading state
+  if (staffDashboard === undefined) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Filter to only ASSOCIATES role positions
+  const associatePositions = staffDashboard.filter(p => p.role === "ASSOCIATES");
+
+  // Calculate totals
+  const totalEarnings = associatePositions.reduce((sum, p) => sum + (p.commissionEarned || 0), 0);
+  const cashCollected = associatePositions.reduce((sum, p) => sum + (p.cashCollected || 0), 0);
+  const pendingPayout = totalEarnings - cashCollected;
 
   return (
     <div className="p-6 space-y-6">
@@ -48,8 +46,8 @@ export default function PayoutHistoryPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Paid Out</p>
-                <p className="text-2xl font-bold mt-1 text-success">$0.00</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Earned</p>
+                <p className="text-2xl font-bold mt-1 text-success">{formatCurrency(totalEarnings)}</p>
               </div>
               <DollarSign className="h-8 w-8 text-success" />
             </div>
@@ -60,11 +58,20 @@ export default function PayoutHistoryPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Pending Payout</p>
-                <p className="text-2xl font-bold mt-1 text-warning">$0.00</p>
+                <p className="text-sm font-medium text-muted-foreground">Net Payout</p>
+                <p className={`text-2xl font-bold mt-1 ${pendingPayout >= 0 ? "text-success" : "text-warning"}`}>
+                  {formatCurrency(Math.abs(pendingPayout))}
+                </p>
               </div>
-              <Clock className="h-8 w-8 text-warning" />
+              {pendingPayout >= 0 ? (
+                <CheckCircle className="h-8 w-8 text-success" />
+              ) : (
+                <Clock className="h-8 w-8 text-warning" />
+              )}
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              {pendingPayout >= 0 ? "Owed to you" : "You owe (from cash sales)"}
+            </p>
           </CardContent>
         </Card>
 
@@ -72,8 +79,8 @@ export default function PayoutHistoryPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Payouts</p>
-                <p className="text-2xl font-bold mt-1">0</p>
+                <p className="text-sm font-medium text-muted-foreground">Events</p>
+                <p className="text-2xl font-bold mt-1">{associatePositions.length}</p>
               </div>
               <Calendar className="h-8 w-8 text-muted-foreground" />
             </div>
@@ -81,52 +88,68 @@ export default function PayoutHistoryPage() {
         </Card>
       </div>
 
-      {payouts.length === 0 ? (
-        <Card>
-          <CardContent className="text-center py-12">
-            <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-            <p className="text-muted-foreground">No payout history</p>
-            <p className="text-sm text-muted-foreground mt-1">Your payouts will appear here once processed</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          {payouts.map((payout: any) => (
-            <Card key={payout.id}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold">Payout #{payout.id}</h3>
-                      {getStatusBadge(payout.status)}
-                    </div>
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        <span>
-                          {payout.status === "completed"
-                            ? `Paid on ${new Date(payout.paidDate).toLocaleDateString()}`
-                            : `Expected ${new Date(payout.expectedDate).toLocaleDateString()}`}
-                        </span>
-                      </div>
-                      {payout.method && (
-                        <p className="text-xs">Payment Method: {payout.method}</p>
-                      )}
-                    </div>
-                  </div>
+      <Card>
+        <CardContent className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Earnings by Event</h3>
+          {associatePositions.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No payout history</p>
+              <p className="text-sm mt-1">Your earnings will appear here</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {associatePositions.map((position) => {
+                const commission = position.commissionEarned || 0;
+                const cash = position.cashCollected || 0;
+                const net = commission - cash;
 
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-success">${payout.amount || "0.00"}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {payout.ticketsSold || 0} tickets
-                    </p>
+                return (
+                  <div key={position._id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      {position.event?.imageUrl && (
+                        <img
+                          src={position.event.imageUrl}
+                          alt={position.event.name}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                      )}
+                      <div>
+                        <p className="font-semibold">{position.event?.name || "Event"}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {position.ticketsSold || 0} tickets sold
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-success">
+                        {formatCurrency(commission)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Commission earned</p>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="border-border bg-muted">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-3">
+            <Info className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-foreground">About Payouts</h3>
+              <p className="text-sm text-foreground mt-1">
+                Commission is calculated based on your sales. If you collect cash for ticket sales,
+                you&apos;ll need to submit that to your team member. Your net payout is your
+                commission earned minus any cash you&apos;ve collected.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
