@@ -130,7 +130,7 @@ export default function RestaurantPricingPage() {
     <>
       <PublicHeader />
       <RestaurantsSubNav />
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-background dark:from-orange-950/20 dark:to-background">
+      <div className="min-h-screen bg-gradient-to-b from-sky-50 to-background dark:from-sky-950/20 dark:to-background">
         {/* Hero Section */}
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 dark:bg-primary/20 rounded-full text-primary dark:text-primary text-sm font-medium mb-6">
@@ -241,12 +241,12 @@ export default function RestaurantPricingPage() {
                 key={tier.name}
                 className={`relative bg-card rounded-2xl shadow-lg overflow-hidden transition-transform hover:scale-105 ${
                   tier.highlighted
-                    ? "ring-2 ring-orange-500 dark:ring-orange-400"
+                    ? "ring-2 ring-primary dark:ring-primary"
                     : "border border-border"
                 }`}
               >
                 {tier.highlighted && (
-                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-center text-sm font-medium py-2">
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-primary to-sky-500 text-white text-center text-sm font-medium py-2">
                     {pricingModel === "A" ? "Most Popular" : "Best Value"}
                   </div>
                 )}
@@ -303,7 +303,7 @@ export default function RestaurantPricingPage() {
                     href={tier.cta === "Contact Sales" ? "/contact" : "/restaurateur/apply"}
                     className={`block w-full py-3 px-6 rounded-lg font-semibold text-center transition-colors mb-8 ${
                       tier.highlighted
-                        ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700"
+                        ? "bg-gradient-to-r from-primary to-sky-500 text-white hover:from-primary/90 hover:to-sky-600"
                         : "bg-muted text-foreground hover:bg-muted/80"
                     }`}
                   >
@@ -465,7 +465,7 @@ export default function RestaurantPricingPage() {
 
         {/* CTA Section */}
         <div className="container mx-auto px-4 py-16">
-          <div className="max-w-4xl mx-auto bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-8 md:p-12 text-center text-white">
+          <div className="max-w-4xl mx-auto bg-gradient-to-r from-primary to-sky-500 rounded-2xl p-8 md:p-12 text-center text-white">
             <Zap className="w-12 h-12 mx-auto mb-6 opacity-80" />
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Ready to grow your restaurant?
@@ -477,13 +477,13 @@ export default function RestaurantPricingPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/restaurateur/apply"
-                className="px-8 py-4 bg-white text-primary rounded-lg font-semibold hover:bg-primary/5 transition-colors"
+                className="px-8 py-4 bg-white text-primary rounded-lg font-semibold hover:bg-white/90 transition-colors"
               >
                 Apply Now - It's Free
               </Link>
               <Link
                 href="/restaurants"
-                className="px-8 py-4 bg-primary text-white border-2 border-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+                className="px-8 py-4 bg-sky-600 text-white border-2 border-white rounded-lg font-semibold hover:bg-sky-700 transition-colors"
               >
                 Browse Restaurants
               </Link>
