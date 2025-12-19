@@ -41,10 +41,10 @@ export default function RegisterPage() {
   };
 
   const getPasswordStrengthColor = () => {
-    if (passwordStrength <= 1) return "bg-red-500";
-    if (passwordStrength <= 2) return "bg-orange-500";
-    if (passwordStrength <= 3) return "bg-yellow-500";
-    if (passwordStrength <= 4) return "bg-blue-500";
+    if (passwordStrength <= 1) return "bg-destructive/100";
+    if (passwordStrength <= 2) return "bg-primary/50";
+    if (passwordStrength <= 3) return "bg-warning/100";
+    if (passwordStrength <= 4) return "bg-info/100";
     return "bg-success";
   };
 
@@ -331,7 +331,7 @@ export default function RegisterPage() {
                 </button>
               </div>
               {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="mt-1 text-xs text-destructive dark:text-red-400 flex items-center gap-1">
+                <p className="mt-1 text-xs text-destructive dark:text-destructive flex items-center gap-1">
                   <XCircle className="w-3 h-3" />
                   Passwords do not match
                 </p>

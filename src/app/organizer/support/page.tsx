@@ -37,7 +37,7 @@ export default function SupportPage() {
       description: "Browse our comprehensive guides and tutorials",
       icon: FileText,
       href: "https://docs.stepperslife.com",
-      color: "bg-blue-500",
+      color: "bg-info/100",
     },
     {
       title: "FAQs",

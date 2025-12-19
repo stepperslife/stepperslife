@@ -169,7 +169,7 @@ export function VendorBrandingUpload({
             <button
               type="button"
               onClick={removeImage}
-              className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+              className="p-2 bg-destructive/100 text-white rounded hover:bg-destructive transition-colors"
             >
               <X className="w-4 h-4" />
             </button>

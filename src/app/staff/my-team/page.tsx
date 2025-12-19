@@ -307,9 +307,9 @@ export default function MyTeamPage() {
 
             <form onSubmit={handleSubmit} className="p-6">
               {error && (
-                <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2">
+                <div className="mb-4 bg-destructive/10 border border-destructive/30 rounded-lg p-4 flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 text-destructive" />
-                  <span className="text-red-800">{error}</span>
+                  <span className="text-destructive">{error}</span>
                 </div>
               )}
 

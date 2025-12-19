@@ -215,7 +215,7 @@ export default function VendorSettingsPage() {
           <p className="text-muted-foreground">Manage your store information and preferences</p>
         </div>
         {hasChanges && (
-          <div className="flex items-center gap-2 text-yellow-600">
+          <div className="flex items-center gap-2 text-warning">
             <AlertCircle className="w-5 h-5" />
             <span className="text-sm font-medium">Unsaved changes</span>
           </div>
@@ -225,17 +225,17 @@ export default function VendorSettingsPage() {
       {/* Vendor Status */}
       <div className={`rounded-xl p-4 mb-8 ${
         vendor.status === "APPROVED"
-          ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
+          ? "bg-success/10 dark:bg-success/15 border border-success/30 dark:border-success/30"
           : vendor.status === "PENDING"
-          ? "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
-          : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+          ? "bg-warning/10 dark:bg-warning/15 border border-warning/30 dark:border-warning/30"
+          : "bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 dark:border-destructive/30"
       }`}>
         <div className="flex items-center gap-3">
           <CheckCircle className={`w-5 h-5 ${
             vendor.status === "APPROVED"
               ? "text-success"
               : vendor.status === "PENDING"
-              ? "text-yellow-600"
+              ? "text-warning"
               : "text-destructive"
           }`} />
           <div>

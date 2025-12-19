@@ -129,7 +129,7 @@ export default function RestaurantOnboardingPage() {
           <h1 className="text-3xl font-bold mb-2">
             Welcome to SteppersLife Restaurants!
           </h1>
-          <p className="text-orange-100">
+          <p className="text-primary-foreground">
             Complete these steps to get your restaurant ready to accept orders.
           </p>
 
@@ -139,7 +139,7 @@ export default function RestaurantOnboardingPage() {
               <span>{completedSteps} of {steps.length} steps completed</span>
               <span>{Math.round(progress)}%</span>
             </div>
-            <div className="h-2 bg-orange-400/30 rounded-full overflow-hidden">
+            <div className="h-2 bg-primary/30 rounded-full overflow-hidden">
               <div
                 className="h-full bg-white rounded-full transition-all duration-500"
                 style={{ width: `${progress}%` }}
@@ -190,9 +190,9 @@ export default function RestaurantOnboardingPage() {
                   <div
                     className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
                       step.isComplete
-                        ? "bg-success/20 dark:bg-green-900/30"
+                        ? "bg-success/20 dark:bg-success/20"
                         : canStart
-                          ? "bg-orange-100 dark:bg-orange-900/30"
+                          ? "bg-primary/10 dark:bg-primary/20"
                           : "bg-muted"
                     }`}
                   >
@@ -201,7 +201,7 @@ export default function RestaurantOnboardingPage() {
                     ) : (
                       <Icon
                         className={`w-6 h-6 ${
-                          canStart ? "text-orange-600" : "text-muted-foreground"
+                          canStart ? "text-primary" : "text-muted-foreground"
                         }`}
                       />
                     )}
@@ -240,7 +240,7 @@ export default function RestaurantOnboardingPage() {
 
         {/* Completion Message */}
         {isComplete && (
-          <div className="mt-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6 text-center">
+          <div className="mt-8 bg-success/10 dark:bg-success/15 border border-success/30 dark:border-success/30 rounded-xl p-6 text-center">
             <CheckCircle2 className="w-12 h-12 text-success mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-foreground mb-2">
               You&apos;re All Set!
@@ -250,7 +250,7 @@ export default function RestaurantOnboardingPage() {
             </p>
             <Link
               href="/restaurateur/dashboard"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-success text-white rounded-lg hover:bg-success/80 transition-colors"
             >
               Go to Dashboard
               <ArrowRight className="w-5 h-5" />

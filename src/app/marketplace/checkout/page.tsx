@@ -473,14 +473,14 @@ export default function CheckoutPage() {
                   <h2 className="text-xl font-semibold text-foreground mb-4">
                     Payment
                   </h2>
-                  <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                  <div className="bg-warning/10 dark:bg-warning/20 border border-warning/30 dark:border-warning/40 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-medium text-amber-800 dark:text-amber-200">
+                        <p className="font-medium text-foreground dark:text-warning">
                           Pay When You Receive
                         </p>
-                        <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                        <p className="text-sm text-warning dark:text-warning mt-1">
                           Payment will be collected upon delivery or pickup. The vendor will contact you to arrange payment details.
                         </p>
                       </div>
@@ -490,19 +490,19 @@ export default function CheckoutPage() {
 
                 {/* Cart Validation Errors */}
                 {validationErrors.length > 0 && (
-                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                  <div className="bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 dark:border-destructive/30 rounded-lg p-4">
                     <div className="flex items-start gap-3">
                       <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-medium text-red-800 dark:text-red-200 mb-2">
+                        <p className="font-medium text-destructive dark:text-destructive mb-2">
                           Some items in your cart have issues:
                         </p>
-                        <ul className="text-sm text-red-700 dark:text-red-300 space-y-1 list-disc list-inside">
+                        <ul className="text-sm text-destructive dark:text-destructive space-y-1 list-disc list-inside">
                           {validationErrors.map((err, i) => (
                             <li key={i}>{err}</li>
                           ))}
                         </ul>
-                        <p className="text-sm text-destructive dark:text-red-400 mt-2">
+                        <p className="text-sm text-destructive dark:text-destructive mt-2">
                           Please remove or update these items to continue.
                         </p>
                       </div>
@@ -512,7 +512,7 @@ export default function CheckoutPage() {
 
                 {/* Error Message */}
                 {error && (
-                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
+                  <div className="bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 dark:border-destructive/30 text-destructive dark:text-destructive px-4 py-3 rounded-lg">
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                       <div>

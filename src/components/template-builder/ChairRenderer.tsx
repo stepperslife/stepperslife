@@ -36,7 +36,7 @@ export default function ChairRenderer({
       <div
         className={`w-full h-full rounded border-2 transition-all ${
           isSelected
-            ? "ring-2 ring-yellow-400 border-yellow-400 shadow-lg"
+            ? "ring-2 ring-warning border-warning shadow-lg"
             : "border-muted-foreground shadow-sm"
         } ${chairColor ? "" : "bg-muted"}`}
         style={{

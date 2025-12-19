@@ -197,8 +197,8 @@ export default function RestaurateurApplyClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                <LogIn className="w-8 h-8 text-orange-600" />
+              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogIn className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
                 Sign In to Register Your Restaurant
@@ -208,7 +208,7 @@ export default function RestaurateurApplyClient() {
               </p>
               <Link
                 href={`/login?redirect=${encodeURIComponent("/restaurateur/apply")}`}
-                className="block w-full px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Sign In to Continue
               </Link>
@@ -232,7 +232,7 @@ export default function RestaurateurApplyClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-success/20 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-success/20 dark:bg-success/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-8 h-8 text-success" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
@@ -256,7 +256,7 @@ export default function RestaurateurApplyClient() {
               <button
                 type="button"
                 onClick={() => router.push("/restaurants")}
-                className="w-full px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                className="w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Browse Restaurants
               </button>
@@ -299,8 +299,8 @@ export default function RestaurateurApplyClient() {
             {/* Contact Information */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-orange-600" />
+                <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Contact Information</h2>
               </div>
@@ -354,8 +354,8 @@ export default function RestaurateurApplyClient() {
             {/* Restaurant Information */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-orange-600" />
+                <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Restaurant Information</h2>
               </div>
@@ -400,7 +400,7 @@ export default function RestaurateurApplyClient() {
                         onClick={() => handleCuisineToggle(cuisine)}
                         className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                           formData.cuisineTypes.includes(cuisine)
-                            ? "bg-orange-600 text-white"
+                            ? "bg-primary text-white"
                             : "bg-muted text-muted-foreground hover:bg-muted/80"
                         }`}
                       >
@@ -428,8 +428,8 @@ export default function RestaurateurApplyClient() {
             {/* Location */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-orange-600" />
+                <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Location</h2>
               </div>
@@ -502,8 +502,8 @@ export default function RestaurateurApplyClient() {
             {/* Operations */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-orange-600" />
+                <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Operations</h2>
               </div>
@@ -545,8 +545,8 @@ export default function RestaurateurApplyClient() {
             {/* Additional Notes */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-orange-600" />
+                <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground">Additional Notes</h2>
               </div>
@@ -566,7 +566,7 @@ export default function RestaurateurApplyClient() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-8 py-4 bg-orange-600 text-white rounded-lg font-semibold text-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-8 py-4 bg-primary text-white rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>

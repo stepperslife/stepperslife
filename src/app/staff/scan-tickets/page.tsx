@@ -288,7 +288,7 @@ export default function StaffScanTicketsPage() {
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-500">
+              <div className="text-2xl font-bold text-primary">
                 {(stats.pending || 0) + (stats.pendingActivation || 0)}
               </div>
               <div className="text-xs text-muted-foreground">Pending</div>

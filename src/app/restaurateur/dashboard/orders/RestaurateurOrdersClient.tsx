@@ -61,12 +61,12 @@ interface FoodOrder {
 }
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; bgColor: string; icon: typeof Clock; pulse?: boolean }> = {
-  PENDING: { label: "New Order", color: "text-yellow-700", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: Clock, pulse: true },
-  CONFIRMED: { label: "Confirmed", color: "text-blue-700", bgColor: "bg-blue-100 dark:bg-blue-900/30", icon: CheckCircle },
-  PREPARING: { label: "Preparing", color: "text-orange-700", bgColor: "bg-orange-100 dark:bg-orange-900/30", icon: ChefHat },
-  READY_FOR_PICKUP: { label: "Ready", color: "text-green-700", bgColor: "bg-success/20 dark:bg-green-900/30", icon: Package },
+  PENDING: { label: "New Order", color: "text-warning", bgColor: "bg-warning/20 dark:bg-warning/20", icon: Clock, pulse: true },
+  CONFIRMED: { label: "Confirmed", color: "text-info", bgColor: "bg-info/20 dark:bg-primary/20", icon: CheckCircle },
+  PREPARING: { label: "Preparing", color: "text-primary", bgColor: "bg-primary/10 dark:bg-primary/20", icon: ChefHat },
+  READY_FOR_PICKUP: { label: "Ready", color: "text-success", bgColor: "bg-success/20 dark:bg-success/20", icon: Package },
   COMPLETED: { label: "Completed", color: "text-foreground", bgColor: "bg-muted dark:bg-card", icon: CheckCircle },
-  CANCELLED: { label: "Cancelled", color: "text-red-700", bgColor: "bg-red-100 dark:bg-red-900/30", icon: XCircle },
+  CANCELLED: { label: "Cancelled", color: "text-destructive", bgColor: "bg-destructive/20 dark:bg-destructive/20", icon: XCircle },
 };
 
 const STATUS_FLOW: OrderStatus[] = ["PENDING", "CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "COMPLETED"];
@@ -235,8 +235,8 @@ export default function RestaurateurOrdersClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                <LogIn className="w-8 h-8 text-orange-600" />
+              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogIn className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">Sign In Required</h1>
               <p className="text-muted-foreground mb-8">
@@ -244,7 +244,7 @@ export default function RestaurateurOrdersClient() {
               </p>
               <Link
                 href={`/login?redirect=${encodeURIComponent("/restaurateur/dashboard/orders")}`}
-                className="block w-full px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Sign In
               </Link>
@@ -265,8 +265,8 @@ export default function RestaurateurOrdersClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                <AlertCircle className="w-8 h-8 text-orange-600" />
+              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">No Restaurants Found</h1>
               <p className="text-muted-foreground mb-8">
@@ -274,7 +274,7 @@ export default function RestaurateurOrdersClient() {
               </p>
               <Link
                 href="/restaurateur/apply"
-                className="block w-full px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Apply Now
               </Link>
@@ -350,7 +350,7 @@ export default function RestaurateurOrdersClient() {
                   <button
                     type="button"
                     onClick={requestNotificationPermission}
-                    className="flex items-center gap-2 px-3 py-2 bg-yellow-500/80 text-white rounded-lg hover:bg-yellow-500 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 bg-warning/100/80 text-white rounded-lg hover:bg-warning/100 transition-colors"
                     title="Enable browser notifications"
                   >
                     <Bell className="w-4 h-4" />
@@ -411,7 +411,7 @@ export default function RestaurateurOrdersClient() {
               onClick={() => setStatusFilter("ALL")}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 statusFilter === "ALL"
-                  ? "bg-orange-600 text-white"
+                  ? "bg-primary text-white"
                   : "bg-card border border-input hover:bg-muted"
               }`}
             >
@@ -427,7 +427,7 @@ export default function RestaurateurOrdersClient() {
                   onClick={() => setStatusFilter(status)}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                     statusFilter === status
-                      ? "bg-orange-600 text-white"
+                      ? "bg-primary text-white"
                       : "bg-card border border-input hover:bg-muted"
                   }`}
                 >
@@ -492,7 +492,7 @@ export default function RestaurateurOrdersClient() {
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-xl">${(order.total / 100).toFixed(2)}</p>
-                        <p className={`text-sm ${order.paymentStatus === "paid" ? "text-success" : "text-yellow-600"}`}>
+                        <p className={`text-sm ${order.paymentStatus === "paid" ? "text-success" : "text-warning"}`}>
                           {order.paymentStatus === "paid" ? "Paid" : "Payment Pending"}
                         </p>
                       </div>
@@ -503,11 +503,11 @@ export default function RestaurateurOrdersClient() {
                       <h4 className="font-medium mb-2">Customer</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
                         <span className="font-medium">{order.customerName}</span>
-                        <a href={`tel:${order.customerPhone}`} className="flex items-center gap-1 text-orange-600 hover:underline">
+                        <a href={`tel:${order.customerPhone}`} className="flex items-center gap-1 text-primary hover:underline">
                           <Phone className="w-3 h-3" />
                           {order.customerPhone}
                         </a>
-                        <a href={`mailto:${order.customerEmail}`} className="flex items-center gap-1 text-orange-600 hover:underline">
+                        <a href={`mailto:${order.customerEmail}`} className="flex items-center gap-1 text-primary hover:underline">
                           <Mail className="w-3 h-3" />
                           {order.customerEmail}
                         </a>
@@ -531,7 +531,7 @@ export default function RestaurateurOrdersClient() {
                         ))}
                       </div>
                       {order.specialInstructions && (
-                        <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                        <div className="mt-3 p-3 bg-warning/10 dark:bg-warning/15 rounded-lg">
                           <p className="text-sm">
                             <span className="font-medium">Special Instructions:</span>{" "}
                             {order.specialInstructions}
@@ -563,7 +563,7 @@ export default function RestaurateurOrdersClient() {
                           <button
                             type="button"
                             onClick={() => handleStatusUpdate(order._id, nextStatus)}
-                            className="flex-1 sm:flex-none px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
+                            className="flex-1 sm:flex-none px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
                           >
                             Mark as {STATUS_CONFIG[nextStatus].label}
                           </button>
@@ -572,7 +572,7 @@ export default function RestaurateurOrdersClient() {
                           <button
                             type="button"
                             onClick={() => handleMarkPaid(order._id)}
-                            className="flex-1 sm:flex-none px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                            className="flex-1 sm:flex-none px-4 py-2 bg-success text-white rounded-lg font-medium hover:bg-success/80 transition-colors"
                           >
                             Mark as Paid
                           </button>
@@ -581,7 +581,7 @@ export default function RestaurateurOrdersClient() {
                           <button
                             type="button"
                             onClick={() => handleStatusUpdate(order._id, "CANCELLED")}
-                            className="px-4 py-2 border border-red-300 text-destructive rounded-lg font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            className="px-4 py-2 border border-destructive/50 text-destructive rounded-lg font-medium hover:bg-destructive/10 dark:hover:bg-destructive/20 transition-colors"
                           >
                             Cancel Order
                           </button>

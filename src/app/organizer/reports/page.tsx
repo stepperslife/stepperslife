@@ -36,7 +36,7 @@ export default function ReportsPage() {
       description: "Analyze ticket sales and revenue trends",
       icon: BarChart3,
       href: "/organizer/reports/sales",
-      color: "bg-blue-500",
+      color: "bg-info/100",
       stats: `$${totalRevenue.toLocaleString()} total revenue`,
     },
     {

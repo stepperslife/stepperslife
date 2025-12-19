@@ -69,7 +69,7 @@ export default function TodayEventsPage() {
                       <div>
                         <h3 className="text-2xl font-bold">{event.name}</h3>
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="px-3 py-1 bg-success/20 text-green-800 text-sm font-medium rounded-full">
+                          <span className="px-3 py-1 bg-success/20 text-success text-sm font-medium rounded-full">
                             Active
                           </span>
                         </div>

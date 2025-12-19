@@ -127,13 +127,13 @@ export default function MyTeamMemberPage() {
         </>
       )}
 
-      <Card className="border-blue-200 bg-blue-50">
+      <Card className="border-info/30 bg-info/10">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
             <User className="h-5 w-5 text-primary mt-0.5" />
             <div>
-              <h3 className="font-semibold text-blue-900">About Team Members</h3>
-              <p className="text-sm text-blue-800 mt-1">
+              <h3 className="font-semibold text-foreground">About Team Members</h3>
+              <p className="text-sm text-foreground mt-1">
                 Your team member is responsible for assigning events, distributing tickets, and helping you succeed.
                 Reach out to them for support, questions, or to request more ticket inventory.
               </p>

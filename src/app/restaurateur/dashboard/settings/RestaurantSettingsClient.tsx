@@ -81,7 +81,7 @@ export default function RestaurantSettingsClient() {
         <PublicHeader />
         <RestaurantsSubNav />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
         <PublicFooter />
       </>
@@ -97,9 +97,9 @@ export default function RestaurantSettingsClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <LogIn className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+              <LogIn className="w-12 h-12 text-primary mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-4">Sign In Required</h1>
-              <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
+              <Button asChild className="w-full bg-primary hover:bg-primary/90">
                 <Link href="/login">Sign In</Link>
               </Button>
             </div>
@@ -119,9 +119,9 @@ export default function RestaurantSettingsClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+              <AlertCircle className="w-12 h-12 text-warning mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-4">No Restaurant Found</h1>
-              <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
+              <Button asChild className="w-full bg-primary hover:bg-primary/90">
                 <Link href="/restaurateur/apply">Apply Now</Link>
               </Button>
             </div>
@@ -138,7 +138,7 @@ export default function RestaurantSettingsClient() {
         <PublicHeader />
         <RestaurantsSubNav />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
         <PublicFooter />
       </>
@@ -343,7 +343,7 @@ export default function RestaurantSettingsClient() {
                 {formData.cuisine.map((cuisine) => (
                   <span
                     key={cuisine}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-sm"
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary rounded-full text-sm"
                   >
                     {cuisine}
                     <button
@@ -440,7 +440,7 @@ export default function RestaurantSettingsClient() {
               </p>
               <Link
                 href="/restaurateur/dashboard/orders"
-                className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium"
+                className="inline-flex items-center gap-2 text-primary hover:text-primary font-medium"
               >
                 Go to Orders Page →
               </Link>
@@ -452,7 +452,7 @@ export default function RestaurantSettingsClient() {
             <Button
               onClick={handleSave}
               disabled={isSaving}
-              className="bg-orange-600 hover:bg-orange-700 min-w-[150px]"
+              className="bg-primary hover:bg-primary/90 min-w-[150px]"
             >
               {isSaving ? (
                 <>

@@ -134,10 +134,10 @@ export function ImageUpload({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
-          className="w-full h-32 border-2 border-dashed border-input rounded-lg flex flex-col items-center justify-center gap-2 hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/10 transition-colors"
+          className="w-full h-32 border-2 border-dashed border-input rounded-lg flex flex-col items-center justify-center gap-2 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
         >
           {isUploading ? (
-            <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
           ) : (
             <>
               <ImageIcon className="w-8 h-8 text-muted-foreground" />

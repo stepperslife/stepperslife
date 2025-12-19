@@ -28,9 +28,9 @@ export default function PendingPayoutsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total Pending</p>
-              <p className="text-3xl font-bold mt-1 text-yellow-600">${totalPending}</p>
+              <p className="text-3xl font-bold mt-1 text-warning">${totalPending}</p>
             </div>
-            <Clock className="h-12 w-12 text-yellow-600" />
+            <Clock className="h-12 w-12 text-warning" />
           </div>
         </CardContent>
       </Card>
@@ -55,7 +55,7 @@ export default function PendingPayoutsPage() {
                       Expected: {payout.expectedDate}
                     </p>
                   </div>
-                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
+                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-warning/20 text-warning-foreground">
                     Pending
                   </span>
                 </div>

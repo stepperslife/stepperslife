@@ -65,15 +65,15 @@ export default function AdminProductOrdersPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-warning/20 text-warning-foreground";
       case "PROCESSING":
         return "bg-accent text-foreground";
       case "SHIPPED":
         return "bg-accent text-foreground";
       case "DELIVERED":
-        return "bg-success/20 text-green-800";
+        return "bg-success/20 text-success";
       case "CANCELLED":
-        return "bg-red-100 text-red-800";
+        return "bg-destructive/20 text-destructive";
       default:
         return "bg-muted text-foreground";
     }

@@ -65,11 +65,11 @@ interface VendorOrder {
 }
 
 const STATUS_CONFIG: Record<FulfillmentStatus, { label: string; color: string; icon: typeof Clock }> = {
-  PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
-  PROCESSING: { label: "Processing", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", icon: Package },
+  PENDING: { label: "Pending", color: "bg-warning/20 text-warning-foreground dark:bg-warning/20 dark:text-warning", icon: Clock },
+  PROCESSING: { label: "Processing", color: "bg-info/20 text-foreground dark:bg-primary/20 dark:text-primary", icon: Package },
   SHIPPED: { label: "Shipped", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300", icon: Truck },
-  DELIVERED: { label: "Delivered", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
-  CANCELLED: { label: "Cancelled", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: XCircle },
+  DELIVERED: { label: "Delivered", color: "bg-success/20 text-success dark:bg-success/20 dark:text-success", icon: CheckCircle },
+  CANCELLED: { label: "Cancelled", color: "bg-destructive/20 text-destructive dark:bg-destructive/20 dark:text-destructive", icon: XCircle },
 };
 
 export default function VendorOrdersPage() {
@@ -227,8 +227,8 @@ export default function VendorOrdersPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-yellow-600" />
+            <div className="w-10 h-10 bg-warning/20 dark:bg-warning/20 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-warning" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
@@ -238,7 +238,7 @@ export default function VendorOrdersPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-info/20 dark:bg-primary/20 rounded-lg flex items-center justify-center">
               <Package className="w-5 h-5 text-primary" />
             </div>
             <div>
@@ -480,7 +480,7 @@ export default function VendorOrdersPage() {
                               type="button"
                               onClick={() => handleUpdateStatus(order, "PROCESSING")}
                               disabled={updating}
-                              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                               {updating ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -510,7 +510,7 @@ export default function VendorOrdersPage() {
                               type="button"
                               onClick={() => handleUpdateStatus(order, "DELIVERED")}
                               disabled={updating}
-                              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg font-medium hover:bg-success/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                               {updating ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -522,7 +522,7 @@ export default function VendorOrdersPage() {
                           )}
                         </div>
                         {updateError && (
-                          <p className="mt-2 text-sm text-destructive dark:text-red-400">{updateError}</p>
+                          <p className="mt-2 text-sm text-destructive dark:text-destructive">{updateError}</p>
                         )}
                       </div>
                     )}
@@ -591,7 +591,7 @@ export default function VendorOrdersPage() {
               </div>
 
               {updateError && (
-                <p className="text-sm text-destructive dark:text-red-400">{updateError}</p>
+                <p className="text-sm text-destructive dark:text-destructive">{updateError}</p>
               )}
 
               <div className="bg-muted/50 rounded-lg p-3">

@@ -964,7 +964,7 @@ export default function BulkFlyerUploadPage() {
                                   </button>
                                   <button
                                     onClick={() => handleDeleteFlyer(flyer._id)}
-                                    className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-sm sm:text-base"
+                                    className="px-4 py-2 bg-destructive text-white rounded-lg font-semibold hover:bg-destructive/80 transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-sm sm:text-base"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                     Delete

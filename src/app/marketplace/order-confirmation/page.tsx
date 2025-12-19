@@ -97,7 +97,7 @@ export default function OrderConfirmationPage() {
         <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Success Header */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-success/20 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-success/20 dark:bg-success/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-12 h-12 text-success" />
             </div>
             <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -248,11 +248,11 @@ export default function OrderConfirmationPage() {
           </div>
 
           {/* Next Steps */}
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-6 mb-8">
-            <h3 className="font-semibold text-amber-800 dark:text-amber-200 mb-3">
+          <div className="bg-warning/10 dark:bg-warning/20 border border-warning/30 dark:border-warning/40 rounded-xl p-6 mb-8">
+            <h3 className="font-semibold text-foreground dark:text-warning mb-3">
               What's Next?
             </h3>
-            <ul className="space-y-2 text-sm text-amber-700 dark:text-amber-300">
+            <ul className="space-y-2 text-sm text-warning dark:text-warning">
               <li className="flex items-start gap-2">
                 <span className="font-bold">1.</span>
                 <span>The vendor will receive your order and begin processing it.</span>

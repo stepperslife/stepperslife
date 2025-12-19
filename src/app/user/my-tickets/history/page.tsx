@@ -45,21 +45,21 @@ export default function TicketHistoryPage() {
     switch (status) {
       case "completed":
         return (
-          <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-success/20 text-green-800">
+          <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-success/20 text-success">
             <CheckCircle className="h-3 w-3" />
             Completed
           </span>
         );
       case "refunded":
         return (
-          <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+          <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-info/20 text-foreground">
             <Download className="h-3 w-3" />
             Refunded
           </span>
         );
       case "cancelled":
         return (
-          <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
+          <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-destructive/20 text-destructive">
             <XCircle className="h-3 w-3" />
             Cancelled
           </span>

@@ -86,7 +86,7 @@ export default function TicketInventoryPage() {
         >
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-blue-500 p-3 rounded-lg text-white">
+              <div className="bg-info/100 p-3 rounded-lg text-white">
                 <Package className="w-6 h-6" />
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function TicketInventoryPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-info/20 text-foreground">
                             {event.eventType || "Event"}
                           </span>
                         </td>
@@ -213,9 +213,9 @@ export default function TicketInventoryPage() {
                               <div
                                 className={`h-2 rounded-full ${
                                   percentSold >= 90
-                                    ? "bg-red-500"
+                                    ? "bg-destructive/100"
                                     : percentSold >= 70
-                                    ? "bg-yellow-500"
+                                    ? "bg-warning/100"
                                     : "bg-success"
                                 }`}
                                 style={{ width: `${Math.min(percentSold, 100)}%` }}

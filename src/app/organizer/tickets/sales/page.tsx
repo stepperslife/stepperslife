@@ -109,7 +109,7 @@ export default function TicketSalesPage() {
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-blue-500 p-3 rounded-lg text-white">
+              <div className="bg-info/100 p-3 rounded-lg text-white">
                 <ShoppingCart className="w-6 h-6" />
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function TicketSalesPage() {
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-emerald-500 p-3 rounded-lg text-white">
+              <div className="bg-success500 p-3 rounded-lg text-white">
                 <BarChart3 className="w-6 h-6" />
               </div>
             </div>
@@ -228,7 +228,7 @@ export default function TicketSalesPage() {
                     <div key={event._id} className="px-6 py-4 hover:bg-card">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <span className="flex-shrink-0 w-6 h-6 bg-blue-500/10 text-primary rounded-full flex items-center justify-center text-sm font-bold">
+                          <span className="flex-shrink-0 w-6 h-6 bg-info/100/10 text-primary rounded-full flex items-center justify-center text-sm font-bold">
                             {index + 1}
                           </span>
                           <div className="min-w-0 flex-1">
@@ -252,7 +252,7 @@ export default function TicketSalesPage() {
                       </div>
                       <div className="w-full bg-muted rounded-full h-2">
                         <div
-                          className="bg-blue-500 h-2 rounded-full"
+                          className="bg-info/100 h-2 rounded-full"
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
@@ -275,11 +275,11 @@ export default function TicketSalesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-8 text-center"
+            className="mt-8 bg-info/10 border border-info/30 rounded-lg p-8 text-center"
           >
             <TrendingUp className="w-16 h-16 text-primary mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-blue-900 mb-2">Start Selling Tickets</h3>
-            <p className="text-blue-700 mb-6 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-foreground mb-2">Start Selling Tickets</h3>
+            <p className="text-info mb-6 max-w-2xl mx-auto">
               Create your first event and start tracking sales. Our analytics will help you
               understand your audience and optimize your revenue.
             </p>

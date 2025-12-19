@@ -39,7 +39,7 @@ export default function ActiveEventsPage() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-lg font-semibold">{event.name}</h3>
-                      <span className="px-2 py-1 text-xs rounded-full bg-success/20 text-green-700">
+                      <span className="px-2 py-1 text-xs rounded-full bg-success/20 text-success">
                         Active
                       </span>
                     </div>

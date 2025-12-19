@@ -100,7 +100,7 @@ export default function RestaurantCheckoutPage() {
             <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
             <Link
               href={`/restaurants/${slug}`}
-              className="text-orange-600 hover:underline"
+              className="text-primary hover:underline"
             >
               Return to restaurant menu
             </Link>
@@ -287,8 +287,8 @@ export default function RestaurantCheckoutPage() {
                         onClick={() => setPickupTimeOption(option.value)}
                         className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
                           pickupTimeOption === option.value
-                            ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 font-medium"
-                            : "border-input hover:border-orange-300 hover:bg-orange-50/50 dark:hover:bg-orange-900/10"
+                            ? "border-primary bg-primary/5 dark:bg-primary/20 text-primary dark:text-primary font-medium"
+                            : "border-input hover:border-primary/30 hover:bg-primary/5 dark:hover:bg-primary/10"
                         }`}
                       >
                         {option.label}
@@ -310,8 +310,8 @@ export default function RestaurantCheckoutPage() {
 
                 <div className="bg-card rounded-lg border p-6">
                   <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-                  <div className="flex items-center gap-3 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-                    <CreditCard className="h-5 w-5 text-orange-600" />
+                  <div className="flex items-center gap-3 p-4 bg-primary/5 dark:bg-primary/20 border border-primary/30 dark:border-primary/40 rounded-lg">
+                    <CreditCard className="h-5 w-5 text-primary" />
                     <div>
                       <p className="font-medium">Pay at Pickup</p>
                       <p className="text-sm text-muted-foreground">
@@ -322,7 +322,7 @@ export default function RestaurantCheckoutPage() {
                 </div>
 
                 {error && (
-                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
+                  <div className="bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 dark:border-destructive/30 text-destructive dark:text-destructive px-4 py-3 rounded-lg">
                     {error}
                   </div>
                 )}
@@ -330,7 +330,7 @@ export default function RestaurantCheckoutPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>

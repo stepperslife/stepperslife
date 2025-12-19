@@ -853,11 +853,11 @@ export default function EventDashboardPage() {
                           <span
                             className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                               ticket.status === "VALID"
-                                ? "bg-success/20 text-green-800"
+                                ? "bg-success/20 text-success"
                                 : ticket.status === "SCANNED"
                                   ? "bg-accent text-accent-foreground"
                                   : ticket.status === "CANCELLED"
-                                    ? "bg-red-100 text-red-800"
+                                    ? "bg-destructive/20 text-destructive"
                                     : "bg-muted text-foreground"
                             }`}
                           >
@@ -945,7 +945,7 @@ export default function EventDashboardPage() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-muted-foreground">Cash Collected</span>
-                    <TrendingUp className="w-5 h-5 text-orange-600" />
+                    <TrendingUp className="w-5 h-5 text-primary" />
                   </div>
                   <p className="text-3xl font-bold text-foreground">
                     ${(staffSummary.totalCashCollected / 100).toFixed(2)}
@@ -1437,7 +1437,7 @@ export default function EventDashboardPage() {
                                   !isExpired &&
                                   !isNotStarted &&
                                   !isLimitReached && (
-                                    <span className="px-2 py-1 bg-success/20 text-green-800 text-xs font-medium rounded-full">
+                                    <span className="px-2 py-1 bg-success/20 text-success text-xs font-medium rounded-full">
                                       Active
                                     </span>
                                   )}
@@ -1447,7 +1447,7 @@ export default function EventDashboardPage() {
                                   </span>
                                 )}
                                 {isExpired && (
-                                  <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">
+                                  <span className="px-2 py-1 bg-destructive/20 text-destructive text-xs font-medium rounded-full">
                                     Expired
                                   </span>
                                 )}
@@ -1457,7 +1457,7 @@ export default function EventDashboardPage() {
                                   </span>
                                 )}
                                 {isLimitReached && (
-                                  <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
+                                  <span className="px-2 py-1 bg-primary/10 text-foreground text-xs font-medium rounded-full">
                                     Limit Reached
                                   </span>
                                 )}
@@ -1524,7 +1524,7 @@ export default function EventDashboardPage() {
                               onClick={() => handleToggleDiscount(discount._id, discount.isActive)}
                               className={`p-2 rounded-lg transition-colors ${
                                 discount.isActive
-                                  ? "bg-success/20 text-green-700 hover:bg-green-200"
+                                  ? "bg-success/20 text-success hover:bg-success/30"
                                   : "bg-muted text-foreground hover:bg-muted"
                               }`}
                               title={discount.isActive ? "Deactivate" : "Activate"}
@@ -1534,7 +1534,7 @@ export default function EventDashboardPage() {
                             {discount.usedCount === 0 && (
                               <button
                                 onClick={() => handleDeleteDiscount(discount._id)}
-                                className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                                className="p-2 bg-destructive/20 text-destructive rounded-lg hover:bg-destructive/30 transition-colors"
                                 title="Delete"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -1643,7 +1643,7 @@ export default function EventDashboardPage() {
                             <span
                               className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                                 entry.status === "ACTIVE"
-                                  ? "bg-success/20 text-green-800"
+                                  ? "bg-success/20 text-success"
                                   : entry.status === "NOTIFIED"
                                     ? "bg-accent text-accent-foreground"
                                     : "bg-muted text-foreground"

@@ -108,7 +108,7 @@ export default function PerformanceStatsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-yellow-600" />
+            <Award className="h-5 w-5 text-warning" />
             Performance Milestones
           </CardTitle>
           <CardDescription>Your achievements and progress</CardDescription>

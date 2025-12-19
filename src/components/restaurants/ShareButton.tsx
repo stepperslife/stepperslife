@@ -103,7 +103,7 @@ export function ShareButton({
         <button
           type="button"
           onClick={handleShare}
-          className={`${sizeClasses[size]} flex items-center justify-center rounded-full bg-white/80 dark:bg-card/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform text-muted-foreground dark:text-muted-foreground hover:text-orange-600`}
+          className={`${sizeClasses[size]} flex items-center justify-center rounded-full bg-white/80 dark:bg-card/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform text-muted-foreground dark:text-muted-foreground hover:text-primary`}
           aria-label="Share"
         >
           <Share2 className="w-4 h-4" />

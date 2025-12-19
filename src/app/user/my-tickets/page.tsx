@@ -209,7 +209,7 @@ export default function MyTicketsPage() {
                         <div className="text-right">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                             ticket.status === "active"
-                              ? "bg-success/20 text-green-800"
+                              ? "bg-success/20 text-success"
                               : "bg-muted text-foreground"
                           }`}>
                             {ticket.status}

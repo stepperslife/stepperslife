@@ -213,7 +213,7 @@ export default function ClassesListClient() {
                   delay: Math.random() * 2,
                 }}
               >
-                <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-yellow-400/40" />
+                <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-warning/40" />
               </motion.div>
             ))}
           </div>
@@ -320,7 +320,7 @@ export default function ClassesListClient() {
                   animate={{ y: [0, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <GraduationCap className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                  <GraduationCap className="h-6 w-6 md:h-8 md:w-8 text-warning" />
                 </motion.div>
                 <p className="text-white font-bold text-lg md:text-2xl">50+</p>
                 <p className="text-white/70 text-xs md:text-sm">Instructors</p>
@@ -331,7 +331,7 @@ export default function ClassesListClient() {
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                 >
-                  <Award className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                  <Award className="h-6 w-6 md:h-8 md:w-8 text-warning" />
                 </motion.div>
                 <p className="text-white font-bold text-lg md:text-2xl">All Levels</p>
                 <p className="text-white/70 text-xs md:text-sm">Beginner to Pro</p>
@@ -342,7 +342,7 @@ export default function ClassesListClient() {
                   animate={{ y: [0, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 >
-                  <MapPin className="h-6 w-6 md:h-8 md:w-8 text-yellow-300" />
+                  <MapPin className="h-6 w-6 md:h-8 md:w-8 text-warning" />
                 </motion.div>
                 <p className="text-white font-bold text-lg md:text-2xl">15+</p>
                 <p className="text-white/70 text-xs md:text-sm">Cities</p>

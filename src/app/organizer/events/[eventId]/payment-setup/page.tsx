@@ -241,9 +241,9 @@ export default function PaymentSetupPage() {
           </p>
 
           {creditBalance && creditBalance.creditsRemaining > 0 && (
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-lg">
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-success/10 border border-success/30 rounded-lg">
               <Check className="w-5 h-5 text-success" />
-              <span className="text-sm font-semibold text-green-900">
+              <span className="text-sm font-semibold text-success">
                 You have {creditBalance.creditsRemaining.toLocaleString()} free tickets available!
               </span>
             </div>
@@ -363,10 +363,10 @@ export default function PaymentSetupPage() {
             </div>
 
             {!hasStripeConnected && (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+              <div className="bg-primary/5 border border-primary/30 rounded-lg p-3 mb-4">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-orange-800">
+                  <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-foreground">
                     <span className="font-semibold">Stripe Connect Required:</span> Connect your
                     Stripe account to use this payment model
                   </p>
@@ -455,7 +455,7 @@ export default function PaymentSetupPage() {
               </div>
               {creditBalance.creditsRemaining < 100 && (
                 <div className="text-right">
-                  <p className="text-sm text-orange-600 font-medium">Low balance</p>
+                  <p className="text-sm text-primary font-medium">Low balance</p>
                   <p className="text-xs text-muted-foreground">You'll be prompted to purchase more</p>
                 </div>
               )}

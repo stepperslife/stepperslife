@@ -51,21 +51,21 @@ export default function PayoutsPage() {
     switch (status) {
       case "completed":
         return (
-          <span className="px-2 py-1 text-xs font-medium rounded-full bg-success/20 text-green-800 flex items-center gap-1 w-fit">
+          <span className="px-2 py-1 text-xs font-medium rounded-full bg-success/20 text-success flex items-center gap-1 w-fit">
             <CheckCircle className="w-3 h-3" />
             Completed
           </span>
         );
       case "pending":
         return (
-          <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 flex items-center gap-1 w-fit">
+          <span className="px-2 py-1 text-xs font-medium rounded-full bg-warning/20 text-warning-foreground flex items-center gap-1 w-fit">
             <Clock className="w-3 h-3" />
             Pending
           </span>
         );
       case "failed":
         return (
-          <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 flex items-center gap-1 w-fit">
+          <span className="px-2 py-1 text-xs font-medium rounded-full bg-destructive/20 text-destructive flex items-center gap-1 w-fit">
             <XCircle className="w-3 h-3" />
             Failed
           </span>

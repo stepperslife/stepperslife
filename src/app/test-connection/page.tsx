@@ -42,7 +42,7 @@ export default function TestConnectionPage() {
           <h2 className="text-xl font-semibold mb-4">Query Result</h2>
           {events === undefined ? (
             <div className="flex items-center gap-2">
-              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
               <span>Waiting for query to complete...</span>
             </div>
           ) : events === null ? (
@@ -60,7 +60,7 @@ export default function TestConnectionPage() {
               </ul>
             </div>
           ) : (
-            <p className="text-orange-600">Unexpected response type: {typeof events}</p>
+            <p className="text-primary">Unexpected response type: {typeof events}</p>
           )}
         </div>
 

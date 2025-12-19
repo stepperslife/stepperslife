@@ -82,7 +82,7 @@ export default function MenuManagementClient() {
         <PublicHeader />
         <RestaurantsSubNav />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
         <PublicFooter />
       </>
@@ -98,12 +98,12 @@ export default function MenuManagementClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <LogIn className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+              <LogIn className="w-12 h-12 text-primary mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-4">Sign In Required</h1>
               <p className="text-muted-foreground mb-6">
                 Please sign in to manage your restaurant menu.
               </p>
-              <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
+              <Button asChild className="w-full bg-primary hover:bg-primary/90">
                 <Link href="/login">Sign In</Link>
               </Button>
             </div>
@@ -123,12 +123,12 @@ export default function MenuManagementClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+              <AlertCircle className="w-12 h-12 text-warning mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-4">No Restaurant Found</h1>
               <p className="text-muted-foreground mb-6">
                 You don't have a restaurant registered yet. Apply to become a restaurant partner.
               </p>
-              <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
+              <Button asChild className="w-full bg-primary hover:bg-primary/90">
                 <Link href="/restaurateur/apply">Apply Now</Link>
               </Button>
             </div>
@@ -146,7 +146,7 @@ export default function MenuManagementClient() {
         <PublicHeader />
         <RestaurantsSubNav />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
         <PublicFooter />
       </>
@@ -348,7 +348,7 @@ export default function MenuManagementClient() {
               <Plus className="w-4 h-4 mr-2" />
               Add Category
             </Button>
-            <Button onClick={() => handleAddItem()} className="bg-orange-600 hover:bg-orange-700">
+            <Button onClick={() => handleAddItem()} className="bg-primary hover:bg-primary/90">
               <Plus className="w-4 h-4 mr-2" />
               Add Menu Item
             </Button>
@@ -460,7 +460,7 @@ export default function MenuManagementClient() {
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className="font-semibold text-orange-600">
+                              <span className="font-semibold text-primary">
                                 ${(item.price / 100).toFixed(2)}
                               </span>
                               <Button
@@ -539,7 +539,7 @@ export default function MenuManagementClient() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="font-semibold text-orange-600">
+                          <span className="font-semibold text-primary">
                             ${(item.price / 100).toFixed(2)}
                           </span>
                           <Button
@@ -590,7 +590,7 @@ export default function MenuManagementClient() {
                       <Plus className="w-4 h-4 mr-2" />
                       Add Category
                     </Button>
-                    <Button onClick={() => handleAddItem()} className="bg-orange-600 hover:bg-orange-700">
+                    <Button onClick={() => handleAddItem()} className="bg-primary hover:bg-primary/90">
                       <Plus className="w-4 h-4 mr-2" />
                       Add Item
                     </Button>
@@ -651,7 +651,7 @@ export default function MenuManagementClient() {
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 bg-orange-600 hover:bg-orange-700"
+                    className="flex-1 bg-primary hover:bg-primary/90"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Saving..." : "Save"}
@@ -752,7 +752,7 @@ export default function MenuManagementClient() {
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 bg-orange-600 hover:bg-orange-700"
+                    className="flex-1 bg-primary hover:bg-primary/90"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Saving..." : "Save"}

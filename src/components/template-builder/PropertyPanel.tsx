@@ -495,8 +495,8 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
   return (
     <div className="space-y-4">
       {/* Dance Floor type indicator */}
-      <div className="p-3 bg-pink-50 border border-pink-200 rounded-lg">
-        <p className="text-sm font-semibold text-pink-900 flex items-center gap-2">
+      <div className="p-3 bg-accent border border-accent rounded-lg">
+        <p className="text-sm font-semibold text-foreground flex items-center gap-2">
           <Sparkles className="w-4 h-4" />
           Dance Floor
         </p>
@@ -505,7 +505,7 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
       {/* Label */}
       <div>
         <label className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
-          <Tag className="w-4 h-4 text-pink-600" />
+          <Tag className="w-4 h-4 text-primary" />
           Label
         </label>
         <input
@@ -513,14 +513,14 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
           value={danceFloor.label || ""}
           onChange={(e) => onUpdate({ label: e.target.value })}
           placeholder="e.g., Dance Floor"
-          className="w-full px-3 py-2.5 border-2 border-border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all"
+          className="w-full px-3 py-2.5 border-2 border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
         />
       </div>
 
       {/* Width */}
       <div>
         <label className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
-          <Ruler className="w-4 h-4 text-pink-600" />
+          <Ruler className="w-4 h-4 text-primary" />
           Width
         </label>
         <div className="flex items-center gap-2">
@@ -543,7 +543,7 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
             onChange={(e) =>
               onUpdate({ size: { ...danceFloor.size, width: parseInt(e.target.value) || 50 } })
             }
-            className="flex-1 text-center px-3 py-2.5 border-2 border-border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 font-semibold transition-all"
+            className="flex-1 text-center px-3 py-2.5 border-2 border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-semibold transition-all"
           />
           <span className="text-sm text-muted-foreground w-8">px</span>
           <button
@@ -563,7 +563,7 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
       {/* Height */}
       <div>
         <label className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
-          <MoveVertical className="w-4 h-4 text-pink-600" />
+          <MoveVertical className="w-4 h-4 text-primary" />
           Height
         </label>
         <div className="flex items-center gap-2">
@@ -586,7 +586,7 @@ function DanceFloorProperties({ danceFloor, onUpdate }: DanceFloorPropertiesProp
             onChange={(e) =>
               onUpdate({ size: { ...danceFloor.size, height: parseInt(e.target.value) || 50 } })
             }
-            className="flex-1 text-center px-3 py-2.5 border-2 border-border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 font-semibold transition-all"
+            className="flex-1 text-center px-3 py-2.5 border-2 border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-semibold transition-all"
           />
           <span className="text-sm text-muted-foreground w-8">px</span>
           <button

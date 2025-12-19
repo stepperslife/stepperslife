@@ -80,7 +80,7 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
                     <span className="w-8 text-muted-foreground dark:text-muted-foreground">{stars}★</span>
                     <div className="flex-1 h-2 bg-muted dark:bg-card rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-yellow-500 rounded-full transition-all"
+                        className="h-full bg-warning/100 rounded-full transition-all"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -95,7 +95,7 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
           <div>
             <Button
               onClick={() => setShowReviewForm(!showReviewForm)}
-              className="bg-orange-600 hover:bg-orange-700"
+              className="bg-primary hover:bg-primary/90"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               Write a Review
@@ -126,7 +126,7 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
             </p>
             <Button
               onClick={() => setShowReviewForm(true)}
-              className="bg-orange-600 hover:bg-orange-700"
+              className="bg-primary hover:bg-primary/90"
             >
               Write the First Review
             </Button>
@@ -184,8 +184,8 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
 
                 {/* Restaurant Response */}
                 {review.restaurantResponse && (
-                  <div className="mt-4 pl-4 border-l-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 p-4 rounded-r-lg">
-                    <p className="text-sm font-medium text-orange-700 dark:text-orange-400 mb-1">
+                  <div className="mt-4 pl-4 border-l-2 border-primary bg-primary/5 dark:bg-primary/20 p-4 rounded-r-lg">
+                    <p className="text-sm font-medium text-primary dark:text-primary mb-1">
                       Restaurant Response
                     </p>
                     <p className="text-foreground dark:text-muted-foreground text-sm">

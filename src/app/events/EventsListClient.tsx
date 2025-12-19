@@ -215,7 +215,7 @@ export default function EventsListClient() {
                   delay: Math.random() * 2,
                 }}
               >
-                <Star className="w-3 h-3 md:w-4 md:h-4 text-yellow-400/30 fill-yellow-400/30" />
+                <Star className="w-3 h-3 md:w-4 md:h-4 text-warning/30 fill-yellow-400/30" />
               </motion.div>
             ))}
           </div>

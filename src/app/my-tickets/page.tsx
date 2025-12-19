@@ -596,7 +596,7 @@ export default function MyTicketsPage() {
                                   ticket.status === "PENDING"
                                     ? "bg-warning/10 text-warning"
                                     : ticket.status === "PENDING_ACTIVATION"
-                                      ? "bg-orange-100 text-orange-600"
+                                      ? "bg-primary/10 text-primary"
                                       : "bg-muted text-muted-foreground"
                                 }`}>
                                   <AlertCircle className="w-8 h-8" />
@@ -632,7 +632,7 @@ export default function MyTicketsPage() {
                                   {ticket.status === "PENDING_ACTIVATION" && (
                                     <Link
                                       href="/activate"
-                                      className="px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600"
+                                      className="px-4 py-2 bg-primary/50 text-white rounded-lg font-medium hover:bg-primary"
                                     >
                                       Activate Now
                                     </Link>

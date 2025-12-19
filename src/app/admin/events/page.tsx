@@ -303,7 +303,7 @@ export default function EventsModerationPage() {
                         type="button"
                         onClick={() => handleStatusChange(event._id, "PUBLISHED")}
                         disabled={event.status === "PUBLISHED"}
-                        className="px-3 py-1 text-sm bg-success/20 text-green-800 rounded-lg hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-1 text-sm bg-success/20 text-success rounded-lg hover:bg-success/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         Publish
                       </button>
@@ -311,7 +311,7 @@ export default function EventsModerationPage() {
                         type="button"
                         onClick={() => handleStatusChange(event._id, "DRAFT")}
                         disabled={event.status === "DRAFT"}
-                        className="px-3 py-1 text-sm bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-1 text-sm bg-warning/20 text-warning-foreground rounded-lg hover:bg-warning/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         Draft
                       </button>
@@ -319,7 +319,7 @@ export default function EventsModerationPage() {
                         type="button"
                         onClick={() => handleStatusChange(event._id, "CANCELLED")}
                         disabled={event.status === "CANCELLED"}
-                        className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded-lg hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-1 text-sm bg-destructive/20 text-destructive rounded-lg hover:bg-destructive/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         Cancel
                       </button>
@@ -348,7 +348,7 @@ export default function EventsModerationPage() {
                         <button
                           type="button"
                           onClick={() => setClaimModalEventId(event._id)}
-                          className="px-3 py-1 text-sm bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors flex items-center gap-1"
+                          className="px-3 py-1 text-sm bg-success100 text-success700 rounded-lg hover:bg-success200 transition-colors flex items-center gap-1"
                           title="Make event claimable by organizers"
                         >
                           <Gift className="w-4 h-4" />

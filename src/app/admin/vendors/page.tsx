@@ -27,9 +27,9 @@ type VendorStatus = "PENDING" | "APPROVED" | "SUSPENDED" | "REJECTED";
 type VendorTier = "BASIC" | "VERIFIED" | "PREMIUM";
 
 const STATUS_CONFIG: Record<VendorStatus, { label: string; color: string; icon: typeof Clock }> = {
-  PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
-  APPROVED: { label: "Approved", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
-  SUSPENDED: { label: "Suspended", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: AlertTriangle },
+  PENDING: { label: "Pending", color: "bg-warning/20 text-warning-foreground dark:bg-warning/20 dark:text-warning", icon: Clock },
+  APPROVED: { label: "Approved", color: "bg-success/20 text-success dark:bg-success/20 dark:text-success", icon: CheckCircle },
+  SUSPENDED: { label: "Suspended", color: "bg-destructive/20 text-destructive dark:bg-destructive/20 dark:text-destructive", icon: AlertTriangle },
   REJECTED: { label: "Rejected", color: "bg-muted text-foreground dark:bg-background/30 dark:text-muted-foreground", icon: XCircle },
 };
 
@@ -168,8 +168,8 @@ export default function AdminVendorsPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-yellow-600" />
+            <div className="w-10 h-10 bg-warning/20 dark:bg-warning/20 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-warning" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
@@ -179,7 +179,7 @@ export default function AdminVendorsPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-success/20 dark:bg-success/20 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-success" />
             </div>
             <div>
@@ -190,7 +190,7 @@ export default function AdminVendorsPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-destructive/20 dark:bg-destructive/20 rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-destructive" />
             </div>
             <div>
@@ -204,7 +204,7 @@ export default function AdminVendorsPage() {
           className="bg-card rounded-xl border border-border p-4 hover:bg-muted/50 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-info/20 dark:bg-primary/20 rounded-lg flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-primary" />
             </div>
             <div>
@@ -544,7 +544,7 @@ export default function AdminVendorsPage() {
                 className={`px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   actionModal.type === "approve" || actionModal.type === "reactivate" || actionModal.type === "changeTier"
                     ? "bg-primary text-white hover:bg-primary/90"
-                    : "bg-red-600 text-white hover:bg-red-700"
+                    : "bg-destructive text-white hover:bg-destructive/80"
                 }`}
               >
                 {actionModal.type === "approve" && "Approve"}

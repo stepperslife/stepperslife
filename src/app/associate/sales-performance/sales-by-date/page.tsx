@@ -103,13 +103,13 @@ export default function SalesByDatePage() {
         </CardContent>
       </Card>
 
-      <Card className="border-blue-200 bg-blue-50">
+      <Card className="border-info/30 bg-info/10">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
             <TrendingUp className="h-5 w-5 text-primary mt-0.5" />
             <div>
-              <h3 className="font-semibold text-blue-900">Sales Insights</h3>
-              <p className="text-sm text-blue-800 mt-1">
+              <h3 className="font-semibold text-foreground">Sales Insights</h3>
+              <p className="text-sm text-foreground mt-1">
                 Consistent daily sales activity helps build momentum. Try to maintain regular sales throughout each week for best results.
               </p>
             </div>

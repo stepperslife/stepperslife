@@ -66,11 +66,11 @@ export default function SalesReportsPage() {
             Detailed sales analytics and charts will be available here
           </p>
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-            <div className="bg-blue-50 rounded-lg p-4">
+            <div className="bg-info/10 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Total Revenue</p>
               <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
             </div>
-            <div className="bg-green-50 rounded-lg p-4">
+            <div className="bg-success/10 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Tickets Sold</p>
               <p className="text-2xl font-bold text-foreground">{totalTicketsSold.toLocaleString()}</p>
             </div>

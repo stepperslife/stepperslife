@@ -244,7 +244,7 @@ export function ProductImageUpload({
                 <button
                   type="button"
                   onClick={() => removeImage(img)}
-                  className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                  className="p-1.5 bg-destructive/100 text-white rounded hover:bg-destructive transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>

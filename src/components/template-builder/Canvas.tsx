@@ -635,7 +635,7 @@ function RowSectionRenderer({
 
       {/* Selection indicator */}
       {isSelected && (
-        <div className="absolute -top-2 -right-2 w-4 h-4 bg-amber-500 rounded-full border-2 border-white shadow-md" />
+        <div className="absolute -top-2 -right-2 w-4 h-4 bg-warning/100 rounded-full border-2 border-white shadow-md" />
       )}
     </div>
   );
@@ -701,7 +701,7 @@ function StageRenderer({ stage, isSelected, isDragging, onDragStart }: StageRend
 
       {/* Selection indicator */}
       {isSelected && (
-        <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-md" />
+        <div className="absolute -top-2 -right-2 w-4 h-4 bg-destructive/100 rounded-full border-2 border-white shadow-md" />
       )}
     </div>
   );
@@ -789,7 +789,7 @@ function DanceFloorRenderer({
 
       {/* Selection indicator */}
       {isSelected && (
-        <div className="absolute -top-2 -right-2 w-4 h-4 bg-pink-500 rounded-full border-2 border-white shadow-md" />
+        <div className="absolute -top-2 -right-2 w-4 h-4 bg-accent0 rounded-full border-2 border-white shadow-md" />
       )}
     </div>
   );

@@ -24,9 +24,9 @@ import toast from "react-hot-toast";
 type RestaurantStatus = "pending" | "active" | "suspended";
 
 const STATUS_CONFIG: Record<RestaurantStatus, { label: string; color: string; icon: typeof Clock }> = {
-  pending: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
-  active: { label: "Active", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
-  suspended: { label: "Suspended", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: AlertTriangle },
+  pending: { label: "Pending", color: "bg-warning/20 text-warning-foreground dark:bg-warning/20 dark:text-warning", icon: Clock },
+  active: { label: "Active", color: "bg-success/20 text-success dark:bg-success/20 dark:text-success", icon: CheckCircle },
+  suspended: { label: "Suspended", color: "bg-destructive/20 text-destructive dark:bg-destructive/20 dark:text-destructive", icon: AlertTriangle },
 };
 
 export default function AdminRestaurantsPage() {
@@ -156,8 +156,8 @@ export default function AdminRestaurantsPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-              <UtensilsCrossed className="w-5 h-5 text-orange-600" />
+            <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
+              <UtensilsCrossed className="w-5 h-5 text-primary" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.total}</p>
@@ -167,8 +167,8 @@ export default function AdminRestaurantsPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-yellow-600" />
+            <div className="w-10 h-10 bg-warning/20 dark:bg-warning/20 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-warning" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
@@ -178,7 +178,7 @@ export default function AdminRestaurantsPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-success/20 dark:bg-success/20 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-success" />
             </div>
             <div>
@@ -189,7 +189,7 @@ export default function AdminRestaurantsPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-destructive/20 dark:bg-destructive/20 rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-destructive" />
             </div>
             <div>
@@ -266,8 +266,8 @@ export default function AdminRestaurantsPage() {
                               className="w-10 h-10 rounded-lg object-cover"
                             />
                           ) : (
-                            <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                              <UtensilsCrossed className="w-5 h-5 text-orange-600" />
+                            <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
+                              <UtensilsCrossed className="w-5 h-5 text-primary" />
                             </div>
                           )}
                           <div>
@@ -489,8 +489,8 @@ export default function AdminRestaurantsPage() {
                 onClick={handleAction}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   actionModal.type === "approve" || actionModal.type === "reactivate"
-                    ? "bg-green-600 text-white hover:bg-green-700"
-                    : "bg-red-600 text-white hover:bg-red-700"
+                    ? "bg-success text-white hover:bg-success/80"
+                    : "bg-destructive text-white hover:bg-destructive/80"
                 }`}
               >
                 {actionModal.type === "approve" && "Approve"}

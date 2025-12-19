@@ -48,8 +48,8 @@ export default function RestaurateurDashboardClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                <LogIn className="w-8 h-8 text-orange-600" />
+              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogIn className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
                 Sign In Required
@@ -59,7 +59,7 @@ export default function RestaurateurDashboardClient() {
               </p>
               <Link
                 href={`/login?redirect=${encodeURIComponent("/restaurateur/dashboard")}`}
-                className="block w-full px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Sign In
               </Link>
@@ -146,20 +146,20 @@ export default function RestaurateurDashboardClient() {
             </div>
           ) : (
             /* Show Application Notice if no restaurant */
-            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-6 mb-8">
+            <div className="bg-warning/10 dark:bg-warning/20 border border-warning/30 dark:border-warning/40 rounded-xl p-6 mb-8">
               <div className="flex items-start gap-4">
-                <Construction className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+                <Construction className="w-6 h-6 text-warning flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h2 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-2">
+                  <h2 className="text-lg font-semibold text-foreground dark:text-warning mb-2">
                     Get Started with Your Restaurant
                   </h2>
-                  <p className="text-amber-700 dark:text-amber-300 mb-4">
+                  <p className="text-warning dark:text-warning mb-4">
                     You haven't set up a restaurant yet. Submit an application to join our
                     restaurant partner network and start receiving orders.
                   </p>
                   <Link
                     href="/restaurateur/apply"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
                   >
                     Apply Now
                     <ArrowRight className="w-4 h-4" />
@@ -175,8 +175,8 @@ export default function RestaurateurDashboardClient() {
               const Icon = item.icon;
               const CardContent = (
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-6 h-6 text-orange-600" />
+                  <div className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-6 h-6 text-primary" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
@@ -207,7 +207,7 @@ export default function RestaurateurDashboardClient() {
                 <Link
                   key={item.title}
                   href={item.href}
-                  className="bg-card rounded-xl border border-border p-6 hover:border-orange-300 hover:shadow-md transition-all"
+                  className="bg-card rounded-xl border border-border p-6 hover:border-primary/30 hover:shadow-md transition-all"
                 >
                   {CardContent}
                 </Link>
@@ -223,7 +223,7 @@ export default function RestaurateurDashboardClient() {
                 <>
                   <Link
                     href="/restaurateur/dashboard/orders"
-                    className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
+                    className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
                   >
                     View Orders
                   </Link>
@@ -250,7 +250,7 @@ export default function RestaurateurDashboardClient() {
                 <>
                   <Link
                     href="/restaurateur/apply"
-                    className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
+                    className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
                   >
                     Submit Application
                   </Link>

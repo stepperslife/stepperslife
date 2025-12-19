@@ -56,7 +56,7 @@ export default function AnalyticsDashboardClient() {
         <PublicHeader />
         <RestaurantsSubNav />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
         <PublicFooter />
       </>
@@ -72,12 +72,12 @@ export default function AnalyticsDashboardClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <LogIn className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+              <LogIn className="w-12 h-12 text-primary mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-4">Sign In Required</h1>
               <p className="text-muted-foreground mb-6">
                 Please sign in to view your restaurant analytics.
               </p>
-              <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
+              <Button asChild className="w-full bg-primary hover:bg-primary/90">
                 <Link href="/login">Sign In</Link>
               </Button>
             </div>
@@ -97,12 +97,12 @@ export default function AnalyticsDashboardClient() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+              <AlertCircle className="w-12 h-12 text-warning mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-4">No Restaurant Found</h1>
               <p className="text-muted-foreground mb-6">
                 You don't have a restaurant registered yet.
               </p>
-              <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
+              <Button asChild className="w-full bg-primary hover:bg-primary/90">
                 <Link href="/restaurateur/apply">Apply Now</Link>
               </Button>
             </div>
@@ -120,7 +120,7 @@ export default function AnalyticsDashboardClient() {
         <PublicHeader />
         <RestaurantsSubNav />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
         <PublicFooter />
       </>
@@ -170,7 +170,7 @@ export default function AnalyticsDashboardClient() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <div className="p-2 bg-info/20 dark:bg-primary/20 rounded-lg">
                     <ShoppingBag className="w-5 h-5 text-primary" />
                   </div>
                   <div>
@@ -184,7 +184,7 @@ export default function AnalyticsDashboardClient() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-success/20 dark:bg-green-900/30 rounded-lg">
+                  <div className="p-2 bg-success/20 dark:bg-success/20 rounded-lg">
                     <DollarSign className="w-5 h-5 text-success" />
                   </div>
                   <div>
@@ -212,8 +212,8 @@ export default function AnalyticsDashboardClient() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                    <Star className="w-5 h-5 text-yellow-600" />
+                  <div className="p-2 bg-warning/20 dark:bg-warning/20 rounded-lg">
+                    <Star className="w-5 h-5 text-warning" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{reviewSummary.averageRating || "N/A"}</p>
@@ -249,7 +249,7 @@ export default function AnalyticsDashboardClient() {
                     <div className="flex items-center gap-2">
                       <div className="w-32 h-2 bg-muted dark:bg-card rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-yellow-500 rounded-full"
+                          className="h-full bg-warning/100 rounded-full"
                           style={{ width: `${orderStats.totalOrders ? (orderStats.pendingOrders / orderStats.totalOrders) * 100 : 0}%` }}
                         />
                       </div>
@@ -261,7 +261,7 @@ export default function AnalyticsDashboardClient() {
                     <div className="flex items-center gap-2">
                       <div className="w-32 h-2 bg-muted dark:bg-card rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-red-500 rounded-full"
+                          className="h-full bg-destructive/100 rounded-full"
                           style={{ width: `${orderStats.totalOrders ? (orderStats.cancelledOrders / orderStats.totalOrders) * 100 : 0}%` }}
                         />
                       </div>
@@ -292,7 +292,7 @@ export default function AnalyticsDashboardClient() {
                     {popularItems.map((item, index) => (
                       <div key={item.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="w-5 h-5 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 text-xs flex items-center justify-center font-semibold">
+                          <span className="w-5 h-5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary text-xs flex items-center justify-center font-semibold">
                             {index + 1}
                           </span>
                           <span className="text-sm font-medium">{item.name}</span>
@@ -322,7 +322,7 @@ export default function AnalyticsDashboardClient() {
                     className="flex-1 flex flex-col items-center gap-1"
                   >
                     <div
-                      className="w-full bg-orange-500 rounded-t transition-all hover:bg-orange-600"
+                      className="w-full bg-primary/50 rounded-t transition-all hover:bg-primary"
                       style={{ height: `${(day.orders / maxDailyOrders) * 100}%`, minHeight: day.orders > 0 ? "4px" : "0" }}
                       title={`${day.date}: ${day.orders} orders, $${(day.revenue / 100).toFixed(0)}`}
                     />
@@ -355,7 +355,7 @@ export default function AnalyticsDashboardClient() {
                   >
                     <div
                       className={`w-full rounded-t transition-all ${
-                        hour.hour === peakHour.hour ? "bg-orange-500" : "bg-muted dark:bg-accent"
+                        hour.hour === peakHour.hour ? "bg-primary/50" : "bg-muted dark:bg-accent"
                       }`}
                       style={{ height: `${(hour.orders / maxHourlyOrders) * 100}%`, minHeight: hour.orders > 0 ? "2px" : "0" }}
                       title={`${hour.label}: ${hour.orders} orders`}

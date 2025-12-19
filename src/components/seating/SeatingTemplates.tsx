@@ -1449,10 +1449,10 @@ export default function SeatingTemplates({ onSelectTemplate, onClose }: SeatingT
   const categories = [
     { id: "theater", name: "Theater", color: "bg-accent text-primary" },
     { id: "stadium", name: "Stadium", color: "bg-accent text-primary" },
-    { id: "concert", name: "Concert", color: "bg-pink-100 text-pink-700" },
+    { id: "concert", name: "Concert", color: "bg-accent text-accent-foreground" },
     { id: "conference", name: "Conference", color: "bg-destructive/10 text-destructive" },
     { id: "outdoor", name: "Outdoor", color: "bg-success/10 text-success" },
-    { id: "wedding", name: "Wedding", color: "bg-pink-100 text-pink-700" },
+    { id: "wedding", name: "Wedding", color: "bg-accent text-accent-foreground" },
     { id: "gala", name: "Gala", color: "bg-accent text-primary" },
     { id: "banquet", name: "Banquet", color: "bg-warning/10 text-warning" },
     { id: "custom", name: "Custom", color: "bg-muted text-muted-foreground" },
@@ -1468,7 +1468,7 @@ export default function SeatingTemplates({ onSelectTemplate, onClose }: SeatingT
         {/* Header */}
         <div className="bg-primary px-8 py-6 text-white">
           <h2 className="text-2xl font-bold mb-2">Choose a Seating Template</h2>
-          <p className="text-blue-100">
+          <p className="text-primary-foreground">
             Start with a pre-built layout or create your own from scratch
           </p>
         </div>

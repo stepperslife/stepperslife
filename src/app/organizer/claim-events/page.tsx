@@ -96,7 +96,7 @@ export default function ClaimEventsPage() {
                   type="text"
                   placeholder="Search by event name, location, or description..."
                   onChange={handleSearchChange}
-                  className="w-full pl-10 pr-4 py-2 border border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                  className="w-full pl-10 pr-4 py-2 border border rounded-lg focus:ring-2 focus:ring-success focus:border-success outline-none"
                 />
               </div>
             </div>
@@ -107,7 +107,7 @@ export default function ClaimEventsPage() {
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors ${
                 showFilters
-                  ? "bg-green-50 border-green-500 text-green-700"
+                  ? "bg-success/10 border-success text-success"
                   : "border hover:bg-card"
               }`}
             >
@@ -144,7 +144,7 @@ export default function ClaimEventsPage() {
                       <select
                         value={category || ""}
                         onChange={(e) => setCategory(e.target.value || undefined)}
-                        className="w-full px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-success focus:border-success"
                       >
                         <option value="">All Categories</option>
                         {EVENT_CATEGORIES.map((cat) => (
@@ -164,7 +164,7 @@ export default function ClaimEventsPage() {
                         type="date"
                         value={dateFrom}
                         onChange={(e) => setDateFrom(e.target.value)}
-                        className="w-full px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-success focus:border-success"
                       />
                     </div>
 
@@ -177,7 +177,7 @@ export default function ClaimEventsPage() {
                         type="date"
                         value={dateTo}
                         onChange={(e) => setDateTo(e.target.value)}
-                        className="w-full px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-3 py-2 border border rounded-lg focus:ring-2 focus:ring-success focus:border-success"
                       />
                     </div>
                   </div>
@@ -187,7 +187,7 @@ export default function ClaimEventsPage() {
                     <button
                       type="button"
                       onClick={clearFilters}
-                      className="mt-3 text-sm text-destructive hover:text-red-700 font-medium"
+                      className="mt-3 text-sm text-destructive hover:text-destructive font-medium"
                     >
                       Clear all filters
                     </button>
@@ -217,7 +217,7 @@ export default function ClaimEventsPage() {
           {hasActiveFilters && searchResults === undefined && (
             <div className="bg-white rounded-lg p-12">
               <div className="text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-success"></div>
                 <p className="mt-4 text-muted-foreground">Searching for events...</p>
               </div>
             </div>
@@ -311,7 +311,7 @@ export default function ClaimEventsPage() {
                                 value={claimCode}
                                 onChange={(e) => setClaimCode(e.target.value)}
                                 placeholder="Enter claim code"
-                                className="w-full px-3 py-2 border border rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                className="w-full px-3 py-2 border border rounded-lg text-sm focus:ring-2 focus:ring-success focus:border-success"
                               />
                             </div>
                           )}
@@ -319,7 +319,7 @@ export default function ClaimEventsPage() {
                             <button
                               type="button"
                               onClick={() => handleClaimEvent(event._id)}
-                              className="flex-1 px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                              className="flex-1 px-4 py-2 text-sm bg-success text-white rounded-lg hover:bg-success/80 transition-colors font-medium"
                             >
                               Confirm Claim
                             </button>
@@ -339,7 +339,7 @@ export default function ClaimEventsPage() {
                         <button
                           type="button"
                           onClick={() => setClaimingEventId(event._id)}
-                          className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm bg-success text-white rounded-lg hover:bg-success/80 transition-colors font-medium"
                         >
                           <Gift className="w-4 h-4" />
                           Claim This Event

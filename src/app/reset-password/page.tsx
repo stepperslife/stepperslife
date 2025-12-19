@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
         <div className="min-h-screen flex items-center justify-center bg-background px-4">
           <div className="w-full max-w-md">
             <div className="bg-white dark:bg-card rounded-2xl shadow-xl p-8 text-center">
-              <div className="w-16 h-16 bg-success/20 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-success/20 dark:bg-success/15 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Check className="w-8 h-8 text-success dark:text-success" />
               </div>
               <h1 className="text-3xl font-bold text-foreground dark:text-white mb-2">
@@ -193,7 +193,7 @@ export default function ResetPasswordPage() {
                       className={`flex items-center gap-2 ${hasMinLength ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasMinLength ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
+                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasMinLength ? "bg-success/20 dark:bg-success/15" : "bg-muted dark:bg-card"}`}
                       >
                         {hasMinLength && <Check className="w-3 h-3" />}
                       </div>
@@ -203,7 +203,7 @@ export default function ResetPasswordPage() {
                       className={`flex items-center gap-2 ${hasUpperCase ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasUpperCase ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
+                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasUpperCase ? "bg-success/20 dark:bg-success/15" : "bg-muted dark:bg-card"}`}
                       >
                         {hasUpperCase && <Check className="w-3 h-3" />}
                       </div>
@@ -213,7 +213,7 @@ export default function ResetPasswordPage() {
                       className={`flex items-center gap-2 ${hasLowerCase ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasLowerCase ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
+                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasLowerCase ? "bg-success/20 dark:bg-success/15" : "bg-muted dark:bg-card"}`}
                       >
                         {hasLowerCase && <Check className="w-3 h-3" />}
                       </div>
@@ -223,7 +223,7 @@ export default function ResetPasswordPage() {
                       className={`flex items-center gap-2 ${hasNumber ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasNumber ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
+                        className={`w-4 h-4 rounded-full flex items-center justify-center ${hasNumber ? "bg-success/20 dark:bg-success/15" : "bg-muted dark:bg-card"}`}
                       >
                         {hasNumber && <Check className="w-3 h-3" />}
                       </div>
@@ -234,7 +234,7 @@ export default function ResetPasswordPage() {
                         className={`flex items-center gap-2 ${passwordsMatch ? "text-success dark:text-success" : "text-muted-foreground dark:text-muted-foreground"}`}
                       >
                         <div
-                          className={`w-4 h-4 rounded-full flex items-center justify-center ${passwordsMatch ? "bg-success/20 dark:bg-green-900/20" : "bg-muted dark:bg-card"}`}
+                          className={`w-4 h-4 rounded-full flex items-center justify-center ${passwordsMatch ? "bg-success/20 dark:bg-success/15" : "bg-muted dark:bg-card"}`}
                         >
                           {passwordsMatch && <Check className="w-3 h-3" />}
                         </div>
@@ -246,7 +246,7 @@ export default function ResetPasswordPage() {
               )}
 
               {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+                <div className="bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 dark:border-destructive/30 text-destructive dark:text-destructive px-4 py-3 rounded-lg text-sm">
                   {error}
                 </div>
               )}

@@ -28,9 +28,9 @@ import toast from "react-hot-toast";
 type VendorStatus = "PENDING" | "APPROVED" | "SUSPENDED" | "REJECTED";
 
 const STATUS_CONFIG: Record<VendorStatus, { label: string; color: string; bgColor: string }> = {
-  PENDING: { label: "Pending Review", color: "text-yellow-600", bgColor: "bg-yellow-50 dark:bg-yellow-900/20" },
-  APPROVED: { label: "Approved", color: "text-success", bgColor: "bg-green-50 dark:bg-green-900/20" },
-  SUSPENDED: { label: "Suspended", color: "text-destructive", bgColor: "bg-red-50 dark:bg-red-900/20" },
+  PENDING: { label: "Pending Review", color: "text-warning", bgColor: "bg-warning/10 dark:bg-warning/15" },
+  APPROVED: { label: "Approved", color: "text-success", bgColor: "bg-success/10 dark:bg-success/15" },
+  SUSPENDED: { label: "Suspended", color: "text-destructive", bgColor: "bg-destructive/10 dark:bg-destructive/15" },
   REJECTED: { label: "Rejected", color: "text-muted-foreground", bgColor: "bg-card dark:bg-background/20" },
 };
 
@@ -204,7 +204,7 @@ export default function AdminVendorDetailPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Pending</p>
-                <p className="text-xl font-bold text-yellow-600">
+                <p className="text-xl font-bold text-warning">
                   {formatCurrency(earningsSummary?.pendingEarnings || 0)}
                 </p>
               </div>
@@ -252,7 +252,7 @@ export default function AdminVendorDetailPage() {
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         product.status === "ACTIVE"
-                          ? "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                          ? "bg-success/20 text-success dark:bg-success/20 dark:text-success"
                           : "bg-muted text-foreground dark:bg-background/30 dark:text-muted-foreground"
                       }`}
                     >
@@ -291,7 +291,7 @@ export default function AdminVendorDetailPage() {
                           payout.status === "COMPLETED"
                             ? "text-success"
                             : payout.status === "PENDING"
-                            ? "text-yellow-600"
+                            ? "text-warning"
                             : payout.status === "FAILED"
                             ? "text-destructive"
                             : "text-primary"

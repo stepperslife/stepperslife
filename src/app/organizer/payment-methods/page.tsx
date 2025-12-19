@@ -61,7 +61,7 @@ export default function PaymentMethodsPage() {
             <div className="space-y-4">
               <div className="border border rounded-lg p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="bg-blue-100 p-3 rounded-lg">
+                  <div className="bg-info/20 p-3 rounded-lg">
                     <CreditCard className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -69,7 +69,7 @@ export default function PaymentMethodsPage() {
                     <p className="text-sm text-muted-foreground">****1234</p>
                   </div>
                 </div>
-                <span className="px-3 py-1 bg-success/20 text-green-800 text-sm font-medium rounded-full flex items-center gap-1">
+                <span className="px-3 py-1 bg-success/20 text-success text-sm font-medium rounded-full flex items-center gap-1">
                   <Check className="w-4 h-4" />
                   Verified
                 </span>
@@ -96,9 +96,9 @@ export default function PaymentMethodsPage() {
               Connect Stripe Account
             </Link>
 
-            <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-2xl mx-auto text-left">
-              <h4 className="font-bold text-blue-900 mb-3">Why Stripe?</h4>
-              <ul className="space-y-2 text-blue-800 text-sm">
+            <div className="mt-8 bg-info/10 border border-info/30 rounded-lg p-6 max-w-2xl mx-auto text-left">
+              <h4 className="font-bold text-foreground mb-3">Why Stripe?</h4>
+              <ul className="space-y-2 text-foreground text-sm">
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 mt-0.5 flex-shrink-0" />
                   <span>Fast and secure payments processing</span>

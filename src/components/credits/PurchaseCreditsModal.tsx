@@ -113,7 +113,7 @@ function CreditPurchaseForm({
 
       {/* Error Message */}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive text-sm">
           {error}
         </div>
       )}
@@ -274,7 +274,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
 
         {/* Error State */}
         {error && !isLoading && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-6">
+          <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive text-sm mb-6">
             {error}
             <button
               type="button"

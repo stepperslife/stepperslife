@@ -40,8 +40,8 @@ export default function Error({
           We apologize for the inconvenience. An error occurred while processing your request.
         </p>
         {process.env.NODE_ENV === "development" && error.message && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-left">
-            <p className="text-sm font-mono text-red-800 break-words">{error.message}</p>
+          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg text-left">
+            <p className="text-sm font-mono text-destructive break-words">{error.message}</p>
           </div>
         )}
         <div className="flex gap-3 justify-center">

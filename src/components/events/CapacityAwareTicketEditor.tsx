@@ -241,7 +241,7 @@ export function CapacityAwareTicketEditor({
                         e.stopPropagation();
                         removeTier(tier.id);
                       }}
-                      className="p-2 text-muted-foreground hover:text-destructive hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg transition-colors"
                       title="Delete tier"
                     >
                       <Trash2 className="w-4 h-4" />

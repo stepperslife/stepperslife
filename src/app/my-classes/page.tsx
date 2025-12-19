@@ -281,13 +281,13 @@ export default function MyClassesPage() {
       <div className="min-h-screen bg-muted">
         <div className="max-w-4xl mx-auto px-4 py-6">
           {/* Role Indicator Banner */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-center gap-3">
-            <div className="bg-blue-100 p-2 rounded-full">
+          <div className="bg-info/10 border border-info/30 rounded-lg p-3 mb-4 flex items-center gap-3">
+            <div className="bg-info/20 p-2 rounded-full">
               <User className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="font-medium text-blue-900">Student View</p>
-              <p className="text-xs text-blue-700">Classes you've enrolled in as a student</p>
+              <p className="font-medium text-foreground">Student View</p>
+              <p className="text-xs text-info">Classes you've enrolled in as a student</p>
             </div>
           </div>
 

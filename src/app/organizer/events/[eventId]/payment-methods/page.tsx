@@ -245,8 +245,8 @@ export default function PaymentMethodsPage() {
             {/* Cash In-Person */}
             <div className="flex items-start justify-between p-4 border border rounded-lg bg-card">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <DollarSign className="w-6 h-6 text-orange-600" />
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <DollarSign className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">Cash In-Person</h3>

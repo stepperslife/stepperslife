@@ -200,17 +200,17 @@ export function formatRoleName(role: AllRoles): string {
 export function getRoleColor(role: AllRoles): string {
   switch (role) {
     case "admin":
-      return "bg-red-500 text-white";
+      return "bg-destructive/100 text-white";
     case "organizer":
       return "bg-primary text-white";
     case "user":
-      return "bg-blue-500 text-white";
+      return "bg-info/100 text-white";
     case "STAFF":
       return "bg-sky-500 text-white";
     case "TEAM_MEMBERS":
       return "bg-success text-white";
     case "ASSOCIATES":
-      return "bg-orange-500 text-white";
+      return "bg-primary/50 text-white";
     default:
       return "bg-card0 text-white";
   }

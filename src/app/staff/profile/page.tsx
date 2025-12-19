@@ -37,7 +37,7 @@ export default function StaffProfilePage() {
             <div>
               <h2 className="text-2xl font-semibold">{currentUser?.name || "Staff Member"}</h2>
               <p className="text-muted-foreground">{currentUser?.email}</p>
-              <span className="inline-block px-2 py-1 mt-2 bg-blue-100 text-blue-800 text-xs font-medium rounded">
+              <span className="inline-block px-2 py-1 mt-2 bg-info/20 text-foreground text-xs font-medium rounded">
                 Event Staff
               </span>
             </div>

@@ -137,19 +137,19 @@ export default function PricingPage() {
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-5xl font-bold mb-4">Simple, Transparent Event Pricing</h1>
-              <p className="text-xl mb-8 text-emerald-100">
+              <p className="text-xl mb-8 text-success100">
                 Choose the payment model that works best for your event
               </p>
               <div className="flex justify-center gap-4">
                 <Link
                   href="/organizer/events/create"
-                  className="bg-white text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors"
+                  className="bg-white text-success600 px-8 py-3 rounded-lg font-semibold hover:bg-success50 transition-colors"
                 >
                   Create Your Event
                 </Link>
                 <a
                   href="#calculator"
-                  className="bg-emerald-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition-colors border border-emerald-500"
+                  className="bg-success700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-success800 transition-colors border border-success500"
                 >
                   Calculate Fees
                 </a>
@@ -159,23 +159,23 @@ export default function PricingPage() {
         </div>
 
         {/* FREE TICKETS PROMOTION BANNER */}
-        <div className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 border-b-4 border-emerald-700">
+        <div className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 border-b-4 border-success700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center">
               <div className="flex items-center justify-center gap-3 mb-3">
-                <Sparkles className="w-8 h-8 text-yellow-300 animate-pulse" />
+                <Sparkles className="w-8 h-8 text-warning animate-pulse" />
                 <h2 className="text-3xl md:text-4xl font-bold text-white">
                   🎉 NEW ORGANIZER SPECIAL! 🎉
                 </h2>
-                <Sparkles className="w-8 h-8 text-yellow-300 animate-pulse" />
+                <Sparkles className="w-8 h-8 text-warning animate-pulse" />
               </div>
               <p className="text-2xl md:text-3xl font-bold text-white mb-2">
                 Get 1,000 FREE Tickets for Your First Event!
               </p>
-              <p className="text-lg text-emerald-100 mb-4">
+              <p className="text-lg text-success100 mb-4">
                 Valid for <span className="font-semibold text-white">TICKETED</span>, <span className="font-semibold text-white">FREE</span>, and <span className="font-semibold text-white">SAVE-THE-DATE</span> events
               </p>
-              <p className="text-sm text-emerald-200 italic">
+              <p className="text-sm text-success200 italic">
                 * Credits are event-specific and expire when your first event ends
               </p>
             </div>
@@ -183,11 +183,11 @@ export default function PricingPage() {
         </div>
 
         {/* PAYMENT FLEXIBILITY NOTE */}
-        <div className="bg-blue-50 border-b border-blue-200">
+        <div className="bg-info/10 border-b border-info/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex items-start gap-4 max-w-3xl mx-auto">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-info/100 rounded-full flex items-center justify-center">
                   <Clock className="w-6 h-6 text-white" />
                 </div>
               </div>
@@ -207,7 +207,7 @@ export default function PricingPage() {
                     <span><strong>Choose your payment option</strong> - Select PREPAY or CREDIT CARD model when ready to publish</span>
                   </li>
                 </ol>
-                <p className="mt-3 text-sm font-semibold text-blue-700">
+                <p className="mt-3 text-sm font-semibold text-info">
                   ✨ No payment required until you're ready to publish your event!
                 </p>
               </div>
@@ -216,7 +216,7 @@ export default function PricingPage() {
         </div>
 
         {/* Additional Offers */}
-        <div className="bg-yellow-50 border-b border-yellow-200">
+        <div className="bg-warning/10 border-b border-warning/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <div className="flex items-center gap-2">

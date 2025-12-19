@@ -99,9 +99,9 @@ export default function RestaurateurLayout({ children }: { children: React.React
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center space-y-6 max-w-md p-8">
-          <div className="w-16 h-16 mx-auto bg-amber-100 rounded-full flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto bg-warning/20 rounded-full flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-amber-600"
+              className="w-8 h-8 text-warning"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

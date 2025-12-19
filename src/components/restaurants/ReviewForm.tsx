@@ -87,9 +87,9 @@ export function ReviewForm({ restaurantId, userId, onSuccess, onCancel }: Review
   // Already reviewed
   if (canReviewData && !canReviewData.canReview && canReviewData.reason === "already_reviewed") {
     return (
-      <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 text-center">
+      <div className="bg-success/10 dark:bg-success/15 rounded-lg p-6 text-center">
         <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
-        <p className="text-green-700 dark:text-success">
+        <p className="text-success dark:text-success">
           You&apos;ve already reviewed this restaurant
         </p>
       </div>
@@ -179,7 +179,7 @@ export function ReviewForm({ restaurantId, userId, onSuccess, onCancel }: Review
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-destructive dark:text-red-400 rounded-lg text-sm">
+        <div className="mb-4 p-3 bg-destructive/10 dark:bg-destructive/15 text-destructive dark:text-destructive rounded-lg text-sm">
           {error}
         </div>
       )}
@@ -189,7 +189,7 @@ export function ReviewForm({ restaurantId, userId, onSuccess, onCancel }: Review
         <Button
           type="submit"
           disabled={isSubmitting || rating === 0}
-          className="flex-1 bg-orange-600 hover:bg-orange-700"
+          className="flex-1 bg-primary hover:bg-primary/90"
         >
           {isSubmitting ? "Submitting..." : "Submit Review"}
         </Button>

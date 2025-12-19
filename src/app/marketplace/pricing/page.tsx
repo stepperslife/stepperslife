@@ -131,7 +131,7 @@ export default function MarketplacePricingPage() {
               }`}
             >
               Annual
-              <span className="text-xs bg-success/20 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">
+              <span className="text-xs bg-success/20 dark:bg-success/30 text-success dark:text-success px-2 py-0.5 rounded-full">
                 Save 20%
               </span>
             </button>

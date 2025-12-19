@@ -94,7 +94,7 @@ export default function UpcomingEventsPage() {
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="text-xl font-semibold">{event.name}</h3>
-                        <span className="inline-block px-2 py-1 mt-2 bg-blue-100 text-blue-800 text-xs font-medium rounded">
+                        <span className="inline-block px-2 py-1 mt-2 bg-info/20 text-foreground text-xs font-medium rounded">
                           {getDaysUntil(event.date)}
                         </span>
                       </div>

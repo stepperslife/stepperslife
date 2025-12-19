@@ -78,15 +78,15 @@ export default function OrganizerClassesPage() {
   return (
     <div className="min-h-screen bg-muted" data-testid="organizer-classes-page">
       {/* Instructor Role Indicator */}
-      <div className="bg-amber-50 border-b border-amber-200">
+      <div className="bg-warning/10 border-b border-warning/30">
         <div className="container mx-auto px-4 py-2">
           <div className="flex items-center gap-2">
-            <div className="bg-amber-100 p-1.5 rounded-full">
-              <GraduationCap className="w-4 h-4 text-amber-600" />
+            <div className="bg-warning/20 p-1.5 rounded-full">
+              <GraduationCap className="w-4 h-4 text-warning" />
             </div>
             <div>
-              <span className="font-medium text-amber-900 text-sm">Instructor View</span>
-              <span className="text-amber-700 text-xs ml-2">Classes you teach and manage</span>
+              <span className="font-medium text-foreground text-sm">Instructor View</span>
+              <span className="text-warning text-xs ml-2">Classes you teach and manage</span>
             </div>
           </div>
         </div>
@@ -254,7 +254,7 @@ export default function OrganizerClassesPage() {
                             </span>
                           )}
                           {isUpcoming && (
-                            <span className="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                            <span className="px-2 py-1 text-xs font-semibold bg-info/20 text-info rounded-full">
                               Upcoming
                             </span>
                           )}

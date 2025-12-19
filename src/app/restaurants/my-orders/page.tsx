@@ -55,12 +55,12 @@ interface FoodOrder extends Doc<"foodOrders"> {
 }
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; bgColor: string; icon: typeof Clock }> = {
-  PENDING: { label: "Order Placed", color: "text-yellow-700 dark:text-yellow-300", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: Clock },
-  CONFIRMED: { label: "Confirmed", color: "text-blue-700 dark:text-blue-300", bgColor: "bg-blue-100 dark:bg-blue-900/30", icon: CheckCircle },
-  PREPARING: { label: "Preparing", color: "text-orange-700 dark:text-orange-300", bgColor: "bg-orange-100 dark:bg-orange-900/30", icon: ChefHat },
-  READY_FOR_PICKUP: { label: "Ready for Pickup", color: "text-green-700 dark:text-green-300", bgColor: "bg-success/20 dark:bg-green-900/30", icon: Package },
+  PENDING: { label: "Order Placed", color: "text-warning dark:text-warning", bgColor: "bg-warning/20 dark:bg-warning/20", icon: Clock },
+  CONFIRMED: { label: "Confirmed", color: "text-info dark:text-primary", bgColor: "bg-info/20 dark:bg-primary/20", icon: CheckCircle },
+  PREPARING: { label: "Preparing", color: "text-primary dark:text-primary", bgColor: "bg-primary/10 dark:bg-primary/20", icon: ChefHat },
+  READY_FOR_PICKUP: { label: "Ready for Pickup", color: "text-success dark:text-success", bgColor: "bg-success/20 dark:bg-success/20", icon: Package },
   COMPLETED: { label: "Completed", color: "text-foreground dark:text-muted-foreground", bgColor: "bg-muted dark:bg-card", icon: CheckCircle },
-  CANCELLED: { label: "Cancelled", color: "text-red-700 dark:text-red-300", bgColor: "bg-red-100 dark:bg-red-900/30", icon: XCircle },
+  CANCELLED: { label: "Cancelled", color: "text-destructive dark:text-destructive", bgColor: "bg-destructive/20 dark:bg-destructive/20", icon: XCircle },
 };
 
 export default function MyFoodOrdersPage() {
@@ -81,7 +81,7 @@ export default function MyFoodOrdersPage() {
         <PublicHeader />
         <RestaurantsSubNav />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
         <PublicFooter />
       </>
@@ -97,8 +97,8 @@ export default function MyFoodOrdersPage() {
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                <LogIn className="w-8 h-8 text-orange-600" />
+              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogIn className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">Sign In Required</h1>
               <p className="text-muted-foreground mb-8">
@@ -106,7 +106,7 @@ export default function MyFoodOrdersPage() {
               </p>
               <Link
                 href={`/login?redirect=${encodeURIComponent("/restaurants/my-orders")}`}
-                className="block w-full px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Sign In
               </Link>
@@ -189,7 +189,7 @@ export default function MyFoodOrdersPage() {
                   <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
                   <p className="text-2xl font-bold mt-1">{totalOrders}</p>
                 </div>
-                <Package className="h-8 w-8 text-orange-500" />
+                <Package className="h-8 w-8 text-primary" />
               </div>
             </div>
 
@@ -199,7 +199,7 @@ export default function MyFoodOrdersPage() {
                   <p className="text-sm font-medium text-muted-foreground">Total Spent</p>
                   <p className="text-2xl font-bold mt-1">${(totalSpent / 100).toFixed(2)}</p>
                 </div>
-                <Utensils className="h-8 w-8 text-orange-500" />
+                <Utensils className="h-8 w-8 text-primary" />
               </div>
             </div>
 
@@ -209,7 +209,7 @@ export default function MyFoodOrdersPage() {
                   <p className="text-sm font-medium text-muted-foreground">Active Orders</p>
                   <p className="text-2xl font-bold mt-1">{activeOrders}</p>
                 </div>
-                <Clock className="h-8 w-8 text-orange-500" />
+                <Clock className="h-8 w-8 text-primary" />
               </div>
             </div>
           </div>
@@ -245,13 +245,13 @@ export default function MyFoodOrdersPage() {
           {/* Orders Loading */}
           {orders === undefined ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : filteredOrders.length === 0 ? (
             /* Empty State */
             <div className="text-center py-16">
-              <div className="inline-block p-8 bg-orange-50 dark:bg-orange-900/20 rounded-3xl">
-                <Package className="h-16 w-16 mx-auto text-orange-400 mb-4" />
+              <div className="inline-block p-8 bg-primary/5 dark:bg-primary/20 rounded-3xl">
+                <Package className="h-16 w-16 mx-auto text-primary mb-4" />
                 <h3 className="text-xl font-bold text-foreground mb-2">
                   {searchTerm || statusFilter !== "ALL" ? "No Orders Found" : "No Orders Yet"}
                 </h3>
@@ -263,7 +263,7 @@ export default function MyFoodOrdersPage() {
                 {!searchTerm && statusFilter === "ALL" && (
                   <Link
                     href="/restaurants"
-                    className="inline-block px-6 py-3 bg-orange-600 text-white rounded-full font-semibold hover:bg-orange-700 transition-colors"
+                    className="inline-block px-6 py-3 bg-primary text-white rounded-full font-semibold hover:bg-primary/90 transition-colors"
                   >
                     Browse Restaurants
                   </Link>
@@ -314,7 +314,7 @@ export default function MyFoodOrdersPage() {
                     </div>
 
                     {order.specialInstructions && (
-                      <div className="text-sm bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 mb-4">
+                      <div className="text-sm bg-warning/10 dark:bg-warning/15 rounded-lg p-3 mb-4">
                         <span className="font-medium">Special Instructions:</span> {order.specialInstructions}
                       </div>
                     )}
@@ -330,7 +330,7 @@ export default function MyFoodOrdersPage() {
                           Payment: {order.paymentStatus === "paid" ? (
                             <span className="text-success font-medium">Paid</span>
                           ) : (
-                            <span className="text-yellow-600 font-medium">Pay at Pickup</span>
+                            <span className="text-warning font-medium">Pay at Pickup</span>
                           )}
                         </div>
                       </div>
@@ -338,14 +338,14 @@ export default function MyFoodOrdersPage() {
                       {/* Actions */}
                       <div className="flex gap-2">
                         {order.status === "READY_FOR_PICKUP" && (
-                          <span className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium animate-pulse">
+                          <span className="px-4 py-2 bg-success text-white rounded-lg text-sm font-medium animate-pulse">
                             Ready for Pickup!
                           </span>
                         )}
                         {order.status === "COMPLETED" && (
                           <Link
                             href={`/restaurants`}
-                            className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700"
+                            className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
                           >
                             Order Again
                           </Link>

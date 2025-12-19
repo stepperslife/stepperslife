@@ -289,7 +289,7 @@ function OptionCard({
           <div className="flex items-center gap-2">
             <h4 className="font-semibold text-foreground">{option.name}</h4>
             {option.required && (
-              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">
+              <span className="px-2 py-0.5 bg-destructive/20 text-destructive text-xs rounded-full">
                 Required
               </span>
             )}
@@ -311,7 +311,7 @@ function OptionCard({
           <button
             type="button"
             onClick={onDelete}
-            className="px-3 py-1 text-sm text-destructive hover:bg-red-50 rounded transition-colors"
+            className="px-3 py-1 text-sm text-destructive hover:bg-destructive/10 rounded transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -629,7 +629,7 @@ function AddOptionForm({
                   <button
                     type="button"
                     onClick={() => removeChoice(index)}
-                    className="p-2 text-destructive hover:bg-red-50 rounded transition-colors"
+                    className="p-2 text-destructive hover:bg-destructive/10 rounded transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -970,7 +970,7 @@ function EditOptionForm({
                   <button
                     type="button"
                     onClick={() => removeChoice(index)}
-                    className="p-2 text-destructive hover:bg-red-50 rounded transition-colors"
+                    className="p-2 text-destructive hover:bg-destructive/10 rounded transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

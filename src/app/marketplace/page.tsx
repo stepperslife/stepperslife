@@ -193,7 +193,7 @@ export default function ShopPage() {
                   delay: Math.random() * 2,
                 }}
               >
-                <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-yellow-400/40" />
+                <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-warning/40" />
               </motion.div>
             ))}
           </div>
@@ -258,10 +258,10 @@ export default function ShopPage() {
                 >
                   <Button
                     size="lg"
-                    className="text-lg px-8 py-6 bg-white !text-teal-900 hover:bg-white/90 shadow-xl shadow-teal-900/30"
+                    className="text-lg px-8 py-6 bg-white !text-info900 hover:bg-white/90 shadow-xl shadow-teal-900/30"
                     onClick={() => document.getElementById('products-grid')?.scrollIntoView({ behavior: 'smooth' })}
                   >
-                    <ShoppingBag className="w-5 h-5 mr-2 text-teal-900" />
+                    <ShoppingBag className="w-5 h-5 mr-2 text-info900" />
                     Browse Products
                   </Button>
                 </motion.div>

@@ -234,11 +234,11 @@ export default function EditProductPage() {
   if (product.vendorId?.toString() !== vendor._id.toString()) {
     return (
       <div className="p-8">
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
-          <h2 className="text-lg font-bold text-red-800 dark:text-red-200 mb-2">
+        <div className="bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 dark:border-destructive/30 rounded-lg p-6 text-center">
+          <h2 className="text-lg font-bold text-destructive dark:text-destructive mb-2">
             Access Denied
           </h2>
-          <p className="text-destructive dark:text-red-300">
+          <p className="text-destructive dark:text-destructive">
             You don't have permission to edit this product.
           </p>
           <Link
@@ -272,7 +272,7 @@ export default function EditProductPage() {
           <button
             type="button"
             onClick={() => setShowDeleteModal(true)}
-            className="px-4 py-2 text-destructive hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg font-medium transition-colors flex items-center gap-2"
           >
             <Trash2 className="w-5 h-5" />
             Delete Product
@@ -624,7 +624,7 @@ export default function EditProductPage() {
               <button
                 type="button"
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-destructive text-white rounded-lg font-medium hover:bg-destructive/80 transition-colors"
               >
                 Delete
               </button>

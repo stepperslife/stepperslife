@@ -68,17 +68,17 @@ export function ActivityFeed({
   const getActivityColor = (type: string, metadata?: Record<string, unknown>) => {
     switch (type) {
       case "order":
-        if (metadata?.status === "PENDING") return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30";
-        if (metadata?.status === "COMPLETED") return "text-success bg-success/20 dark:bg-green-900/30";
-        return "text-primary bg-blue-100 dark:bg-blue-900/30";
+        if (metadata?.status === "PENDING") return "text-warning bg-warning/20 dark:bg-warning/20";
+        if (metadata?.status === "COMPLETED") return "text-success bg-success/20 dark:bg-success/20";
+        return "text-primary bg-info/20 dark:bg-primary/20";
       case "review":
         const rating = metadata?.rating as number;
-        if (rating >= 4) return "text-success bg-success/20 dark:bg-green-900/30";
-        if (rating >= 3) return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30";
-        return "text-destructive bg-red-100 dark:bg-red-900/30";
+        if (rating >= 4) return "text-success bg-success/20 dark:bg-success/20";
+        if (rating >= 3) return "text-warning bg-warning/20 dark:bg-warning/20";
+        return "text-destructive bg-destructive/20 dark:bg-destructive/20";
       case "staff":
-        if (metadata?.status === "ACTIVE") return "text-success bg-success/20 dark:bg-green-900/30";
-        if (metadata?.status === "PENDING") return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30";
+        if (metadata?.status === "ACTIVE") return "text-success bg-success/20 dark:bg-success/20";
+        if (metadata?.status === "PENDING") return "text-warning bg-warning/20 dark:bg-warning/20";
         return "text-muted-foreground bg-muted dark:bg-background/30";
       default:
         return "text-muted-foreground bg-muted dark:bg-background/30";
@@ -120,8 +120,8 @@ export function ActivityFeed({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-card rounded-xl border border-border p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
-                <AlertCircle className="w-5 h-5 text-yellow-600" />
+              <div className="w-10 h-10 rounded-lg bg-warning/20 dark:bg-warning/20 flex items-center justify-center">
+                <AlertCircle className="w-5 h-5 text-warning" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">
@@ -134,7 +134,7 @@ export function ActivityFeed({
 
           <div className="bg-card rounded-xl border border-border p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-info/20 dark:bg-primary/20 flex items-center justify-center">
                 <ShoppingBag className="w-5 h-5 text-primary" />
               </div>
               <div>
@@ -148,7 +148,7 @@ export function ActivityFeed({
 
           <div className="bg-card rounded-xl border border-border p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-success/20 dark:bg-green-900/30 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-success/20 dark:bg-success/20 flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-success" />
               </div>
               <div>
@@ -162,7 +162,7 @@ export function ActivityFeed({
 
           <div className="bg-card rounded-xl border border-border p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-info/20 dark:bg-primary/20 flex items-center justify-center">
                 <Star className="w-5 h-5 text-primary" />
               </div>
               <div>

@@ -20,8 +20,8 @@ import {
 import toast from "react-hot-toast";
 
 const STATUS_LABELS: Record<"ACTIVE" | "DRAFT" | "ARCHIVED", { label: string; color: string }> = {
-  ACTIVE: { label: "Active", color: "bg-success/20 text-green-700 dark:bg-green-900/30 dark:text-green-300" },
-  DRAFT: { label: "Draft", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300" },
+  ACTIVE: { label: "Active", color: "bg-success/20 text-success dark:bg-success/20 dark:text-success" },
+  DRAFT: { label: "Draft", color: "bg-warning/20 text-warning dark:bg-warning/20 dark:text-warning" },
   ARCHIVED: { label: "Archived", color: "bg-muted text-foreground dark:bg-background/30 dark:text-muted-foreground" },
 } as const;
 
@@ -212,7 +212,7 @@ export default function VendorProductsPage() {
                         <button
                           type="button"
                           onClick={() => setDeleteProductId(product._id)}
-                          className="p-2 text-muted-foreground hover:text-destructive hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg transition-colors"
                           title="Delete product"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -261,7 +261,7 @@ export default function VendorProductsPage() {
               <button
                 type="button"
                 onClick={handleDelete}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                className="flex-1 px-4 py-2 bg-destructive text-white rounded-lg font-medium hover:bg-destructive/80 transition-colors"
               >
                 Delete
               </button>

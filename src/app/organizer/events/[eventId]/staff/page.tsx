@@ -1243,7 +1243,7 @@ export default function StaffManagementPage() {
 
               {/* Preview */}
               {selectedSourceEvent && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-info/10 border border-info/30 rounded-lg p-4">
                   <div className="flex items-start gap-3">
                     <CheckSquare className="w-5 h-5 text-primary mt-0.5" />
                     <div className="flex-1">
@@ -1283,10 +1283,10 @@ export default function StaffManagementPage() {
 
               {/* Warnings */}
               {eventStaff.length > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="bg-warning/10 border border-warning/30 rounded-lg p-4">
                   <div className="flex items-start gap-3">
                     <svg
-                      className="w-5 h-5 text-yellow-600 mt-0.5"
+                      className="w-5 h-5 text-warning mt-0.5"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -1297,10 +1297,10 @@ export default function StaffManagementPage() {
                       />
                     </svg>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-yellow-800">
+                      <h4 className="font-semibold text-warning-foreground">
                         Warning: This event already has staff
                       </h4>
-                      <p className="text-sm text-yellow-700 mt-1">
+                      <p className="text-sm text-warning mt-1">
                         This event has {eventStaff.length} existing staff member
                         {eventStaff.length !== 1 ? "s" : ""}. Copying will add new staff members
                         from the selected event. No existing staff will be removed.
@@ -1418,7 +1418,7 @@ export default function StaffManagementPage() {
               )}
 
               {bulkAction === "deactivate" && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
                   <div className="flex items-start gap-3">
                     <svg
                       className="w-5 h-5 text-destructive mt-0.5"
@@ -1432,16 +1432,16 @@ export default function StaffManagementPage() {
                       />
                     </svg>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-red-800">
+                      <h4 className="font-semibold text-destructive">
                         Warning: This action cannot be undone
                       </h4>
-                      <p className="text-sm text-red-700 mt-1">Deactivating staff members will:</p>
-                      <ul className="text-sm text-red-700 mt-2 space-y-1 ml-4">
+                      <p className="text-sm text-destructive mt-1">Deactivating staff members will:</p>
+                      <ul className="text-sm text-destructive mt-2 space-y-1 ml-4">
                         <li>• Remove them from this event</li>
                         <li>• Prevent them from selling tickets</li>
                         <li>• Keep their sales history intact</li>
                       </ul>
-                      <p className="text-sm text-red-700 mt-2 font-medium">
+                      <p className="text-sm text-destructive mt-2 font-medium">
                         You can add them back later if needed.
                       </p>
                     </div>
@@ -1471,7 +1471,7 @@ export default function StaffManagementPage() {
                 }}
                 className={`px-6 py-3 rounded-lg transition-colors font-semibold flex items-center gap-2 ${
                   bulkAction === "deactivate"
-                    ? "bg-red-600 text-white hover:bg-red-700"
+                    ? "bg-destructive text-white hover:bg-destructive/80"
                     : "bg-primary text-white hover:bg-primary/90"
                 }`}
               >

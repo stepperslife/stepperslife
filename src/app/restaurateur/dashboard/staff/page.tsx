@@ -32,13 +32,13 @@ const ROLE_CONFIG: Record<StaffRole, { label: string; description: string; color
   RESTAURANT_STAFF: {
     label: "Staff",
     description: "Can view and update order status only",
-    color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+    color: "bg-info/20 text-foreground dark:bg-primary/20 dark:text-primary",
   },
 };
 
 const STATUS_CONFIG: Record<StaffStatus, { label: string; color: string }> = {
-  PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" },
-  ACTIVE: { label: "Active", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
+  PENDING: { label: "Pending", color: "bg-warning/20 text-warning-foreground dark:bg-warning/20 dark:text-warning" },
+  ACTIVE: { label: "Active", color: "bg-success/20 text-success dark:bg-success/20 dark:text-success" },
   INACTIVE: { label: "Inactive", color: "bg-muted text-foreground dark:bg-background/30 dark:text-muted-foreground" },
 };
 
@@ -169,7 +169,7 @@ export default function StaffManagementPage() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-success/20 dark:bg-success/20 rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-success" />
             </div>
             <div>
@@ -180,8 +180,8 @@ export default function StaffManagementPage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-yellow-600" />
+            <div className="w-10 h-10 bg-warning/20 dark:bg-warning/20 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-warning" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{pendingStaff.length}</p>
@@ -316,7 +316,7 @@ export default function StaffManagementPage() {
                                   });
                                   setSelectedStaff(null);
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm text-yellow-600 hover:bg-muted transition-colors"
+                                className="w-full px-4 py-2 text-left text-sm text-warning hover:bg-muted transition-colors"
                               >
                                 Deactivate
                               </button>
@@ -424,8 +424,8 @@ export default function StaffManagementPage() {
                 onClick={handleAction}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   actionModal.type === "reactivate"
-                    ? "bg-green-600 text-white hover:bg-green-700"
-                    : "bg-red-600 text-white hover:bg-red-700"
+                    ? "bg-success text-white hover:bg-success/80"
+                    : "bg-destructive text-white hover:bg-destructive/80"
                 }`}
               >
                 {actionModal.type === "deactivate" && "Deactivate"}

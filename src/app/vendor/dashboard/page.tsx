@@ -49,14 +49,14 @@ export default function VendorDashboardPage() {
       value: vendor.totalProducts || 0,
       icon: Package,
       href: "/vendor/dashboard/products",
-      color: "bg-blue-100 dark:bg-blue-900/30 text-primary",
+      color: "bg-info/20 dark:bg-primary/20 text-primary",
     },
     {
       name: "Total Sales",
       value: `$${((vendor.totalSales || 0) / 100).toFixed(2)}`,
       icon: ShoppingCart,
       href: "/vendor/dashboard/orders",
-      color: "bg-success/20 dark:bg-green-900/30 text-success",
+      color: "bg-success/20 dark:bg-success/20 text-success",
     },
     {
       name: "Available Balance",
@@ -70,7 +70,7 @@ export default function VendorDashboardPage() {
       value: `$${((vendor.totalEarnings || 0) / 100).toFixed(2)}`,
       icon: TrendingUp,
       href: "/vendor/dashboard/earnings",
-      color: "bg-orange-100 dark:bg-orange-900/30 text-orange-600",
+      color: "bg-primary/10 dark:bg-primary/20 text-primary",
     },
   ];
 
@@ -132,7 +132,7 @@ export default function VendorDashboardPage() {
               className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-success rounded-lg flex items-center justify-center">
                   <DollarSign className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -198,19 +198,19 @@ export default function VendorDashboardPage() {
         <div className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-lg font-bold text-foreground mb-4">Earnings Summary</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+            <div className="p-4 bg-warning/10 dark:bg-warning/15 rounded-lg">
               <p className="text-sm text-muted-foreground">Pending</p>
-              <p className="text-xl font-bold text-yellow-600">
+              <p className="text-xl font-bold text-warning">
                 ${(earningsSummary.pendingEarnings / 100).toFixed(2)}
               </p>
             </div>
-            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div className="p-4 bg-success/10 dark:bg-success/15 rounded-lg">
               <p className="text-sm text-muted-foreground">Available</p>
               <p className="text-xl font-bold text-success">
                 ${(earningsSummary.availableBalance / 100).toFixed(2)}
               </p>
             </div>
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="p-4 bg-info/10 dark:bg-primary/20 rounded-lg">
               <p className="text-sm text-muted-foreground">Processing</p>
               <p className="text-xl font-bold text-primary">
                 ${(earningsSummary.processingEarnings / 100).toFixed(2)}

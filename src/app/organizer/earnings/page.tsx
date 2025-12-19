@@ -71,7 +71,7 @@ export default function EarningsPage() {
       description: "View all your past payouts",
       icon: Download,
       href: "/organizer/earnings/payouts",
-      color: "bg-blue-500",
+      color: "bg-info/100",
     },
     {
       title: "Transactions",

@@ -98,7 +98,7 @@ export default function Home() {
                   <p className="text-sm font-medium text-foreground mb-2">
                     Step 1: Open New Terminal
                   </p>
-                  <div className="bg-blue-900 text-blue-50 rounded p-3 font-mono text-sm">
+                  <div className="bg-card text-foreground rounded p-3 font-mono text-sm">
                     cd "/Users/irawatkins/Desktop/File Cabinet/event.stepperslife.com"
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export default function Home() {
                   <p className="text-sm font-medium text-foreground mb-2">
                     Step 2: Run Convex Setup
                   </p>
-                  <div className="bg-blue-900 text-blue-50 rounded p-3 font-mono text-sm">
+                  <div className="bg-card text-foreground rounded p-3 font-mono text-sm">
                     npx convex dev
                   </div>
                 </div>

@@ -21,11 +21,11 @@ import toast from "react-hot-toast";
 type PayoutStatus = "PENDING" | "APPROVED" | "PROCESSING" | "COMPLETED" | "FAILED";
 
 const STATUS_CONFIG: Record<PayoutStatus, { label: string; color: string; icon: typeof Clock }> = {
-  PENDING: { label: "Pending Review", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
-  APPROVED: { label: "Approved", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", icon: CheckCircle },
+  PENDING: { label: "Pending Review", color: "bg-warning/20 text-warning-foreground dark:bg-warning/20 dark:text-warning", icon: Clock },
+  APPROVED: { label: "Approved", color: "bg-info/20 text-foreground dark:bg-primary/20 dark:text-primary", icon: CheckCircle },
   PROCESSING: { label: "Processing", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300", icon: Loader2 },
-  COMPLETED: { label: "Completed", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle },
-  FAILED: { label: "Failed", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: XCircle },
+  COMPLETED: { label: "Completed", color: "bg-success/20 text-success dark:bg-success/20 dark:text-success", icon: CheckCircle },
+  FAILED: { label: "Failed", color: "bg-destructive/20 text-destructive dark:bg-destructive/20 dark:text-destructive", icon: XCircle },
 };
 
 const PAYOUT_METHODS = [
@@ -143,7 +143,7 @@ export default function VendorPayoutsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-success/20 dark:bg-success/20 rounded-lg flex items-center justify-center">
               <Banknote className="w-6 h-6 text-success" />
             </div>
           </div>
@@ -153,8 +153,8 @@ export default function VendorPayoutsPage() {
 
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-              <Clock className="w-6 h-6 text-yellow-600" />
+            <div className="w-12 h-12 bg-warning/20 dark:bg-warning/20 rounded-lg flex items-center justify-center">
+              <Clock className="w-6 h-6 text-warning" />
             </div>
           </div>
           <p className="text-3xl font-bold text-foreground">{formatCurrency(stats.pendingAmount)}</p>
@@ -174,14 +174,14 @@ export default function VendorPayoutsPage() {
 
       {/* Alerts */}
       {!canRequestPayout && (
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-6">
+        <div className="bg-warning/10 dark:bg-warning/15 border border-warning/30 dark:border-warning/30 rounded-xl p-4 mb-6">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-yellow-800 dark:text-yellow-200">
+              <p className="font-medium text-warning-foreground dark:text-warning">
                 Minimum payout not reached
               </p>
-              <p className="text-sm text-yellow-700 dark:text-yellow-300">
+              <p className="text-sm text-warning dark:text-warning">
                 You need at least {formatCurrency(minimumPayout)} available to request a payout.
                 You currently have {formatCurrency(availableBalance)} available.
               </p>
@@ -191,14 +191,14 @@ export default function VendorPayoutsPage() {
       )}
 
       {hasPendingPayout && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6">
+        <div className="bg-info/10 dark:bg-primary/20 border border-info/30 dark:border-primary/40 rounded-xl p-4 mb-6">
           <div className="flex items-start gap-3">
             <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-blue-800 dark:text-blue-200">
+              <p className="font-medium text-foreground dark:text-primary">
                 Payout in progress
               </p>
-              <p className="text-sm text-blue-700 dark:text-blue-300">
+              <p className="text-sm text-info dark:text-primary">
                 You already have a pending payout request. Please wait for it to complete before
                 requesting another.
               </p>

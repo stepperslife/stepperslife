@@ -399,7 +399,7 @@ export default function OrganizerEventsPage() {
                       </div>
                     )}
                     {effectiveCredits.creditsRemaining <= 100 && effectiveCredits.creditsRemaining > 0 && (
-                      <div className="bg-orange-500 rounded-lg px-3 py-1.5 md:px-4 md:py-2 flex-1 lg:flex-none">
+                      <div className="bg-primary/50 rounded-lg px-3 py-1.5 md:px-4 md:py-2 flex-1 lg:flex-none">
                         <p className="text-xs md:text-sm font-semibold text-center">Running low!</p>
                       </div>
                     )}
@@ -671,7 +671,7 @@ export default function OrganizerEventsPage() {
                             </span>
                           )}
                           {isUpcoming && (
-                            <span className="px-1.5 py-0.5 md:px-2 md:py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                            <span className="px-1.5 py-0.5 md:px-2 md:py-1 text-xs font-semibold bg-info/20 text-info rounded-full">
                               Upcoming
                             </span>
                           )}
@@ -773,7 +773,7 @@ export default function OrganizerEventsPage() {
                             </Link>
                             <Link
                               href={`/organizer/events/${event._id}#bundles`}
-                              className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm border border-emerald-300 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors"
+                              className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm border border-success300 bg-success50 text-success700 rounded-lg hover:bg-success100 transition-colors"
                             >
                               <Package className="w-4 h-4" />
                               Bundles

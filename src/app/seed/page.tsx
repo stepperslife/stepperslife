@@ -44,9 +44,9 @@ export default function SeedPage() {
           </ul>
         </div>
 
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-yellow-900 mb-2">Run this command in your terminal:</h3>
-          <code className="block bg-yellow-100 p-3 rounded text-sm font-mono text-yellow-900 overflow-x-auto">
+        <div className="bg-warning/10 border border-warning/30 rounded-lg p-4 mb-6">
+          <h3 className="font-semibold text-warning mb-2">Run this command in your terminal:</h3>
+          <code className="block bg-warning/20 p-3 rounded text-sm font-mono text-warning overflow-x-auto">
             npx convex run seed:createSampleEvents
           </code>
         </div>

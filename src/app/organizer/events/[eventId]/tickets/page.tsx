@@ -359,7 +359,7 @@ export default function TicketTiersPage() {
                           </span>
                         )}
                         {soldOut && (
-                          <span className="px-3 py-1 text-xs font-semibold bg-destructive/10 dark:bg-red-900/30 text-destructive dark:text-red-300 rounded-full">
+                          <span className="px-3 py-1 text-xs font-semibold bg-destructive/10 dark:bg-destructive/20 text-destructive dark:text-destructive rounded-full">
                             SOLD OUT
                           </span>
                         )}
@@ -369,7 +369,7 @@ export default function TicketTiersPage() {
                           </span>
                         )}
                         {!soldOut && !saleActive && (
-                          <span className="px-3 py-1 text-xs font-semibold bg-warning/10 dark:bg-yellow-900/30 text-warning dark:text-yellow-300 rounded-full">
+                          <span className="px-3 py-1 text-xs font-semibold bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning rounded-full">
                             NOT STARTED
                           </span>
                         )}
@@ -441,7 +441,7 @@ export default function TicketTiersPage() {
                       </button>
                       <button
                         onClick={() => handleDeleteTier(tier._id)}
-                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg transition-colors"
                         title="Delete tier"
                       >
                         <Trash2 className="w-5 h-5" />

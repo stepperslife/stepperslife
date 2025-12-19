@@ -66,7 +66,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
         <RestaurantsSubNav />
         <div className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold">Restaurant not found</h1>
-          <Link href="/restaurants" className="text-orange-600 hover:underline mt-4 inline-block">
+          <Link href="/restaurants" className="text-primary hover:underline mt-4 inline-block">
             Back to restaurants
           </Link>
         </div>
@@ -158,11 +158,11 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                 )}
               </div>
               {restaurant.acceptingOrders ? (
-                <span className="px-3 py-1 text-sm font-medium bg-success/20 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
+                <span className="px-3 py-1 text-sm font-medium bg-success/20 text-success dark:bg-success/20 dark:text-success rounded-full">
                   Accepting Orders
                 </span>
               ) : (
-                <span className="px-3 py-1 text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded-full">
+                <span className="px-3 py-1 text-sm font-medium bg-destructive/20 text-destructive dark:bg-destructive/20 dark:text-destructive rounded-full">
                   Closed
                 </span>
               )}
@@ -199,7 +199,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                     const hours = (restaurant.operatingHours as Record<string, { open: string; close: string; closed: boolean }>)?.[day];
                     const isToday = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase() === day;
                     return (
-                      <div key={day} className={`flex justify-between ${isToday ? "font-semibold text-orange-600" : ""}`}>
+                      <div key={day} className={`flex justify-between ${isToday ? "font-semibold text-primary" : ""}`}>
                         <span className="capitalize">{day}</span>
                         <span>
                           {hours?.closed ? "Closed" : hours ? `${hours.open} - ${hours.close}` : "Not set"}
@@ -256,7 +256,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                                 {item.description}
                               </p>
                             )}
-                            <p className="text-orange-600 font-semibold mt-2">
+                            <p className="text-primary font-semibold mt-2">
                               ${(item.price / 100).toFixed(2)}
                             </p>
                           </div>
@@ -264,7 +264,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             <button
                               type="button"
                               onClick={() => addToCart(item)}
-                              className="p-3 min-w-[44px] min-h-[44px] bg-orange-600 text-white rounded-full hover:bg-orange-700 flex items-center justify-center flex-shrink-0"
+                              className="p-3 min-w-[44px] min-h-[44px] bg-primary text-white rounded-full hover:bg-primary/90 flex items-center justify-center flex-shrink-0"
                               aria-label={`Add ${item.name} to cart`}
                             >
                               <Plus className="h-5 w-5" />
@@ -305,7 +305,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                                 {item.description}
                               </p>
                             )}
-                            <p className="text-orange-600 font-semibold mt-2">
+                            <p className="text-primary font-semibold mt-2">
                               ${(item.price / 100).toFixed(2)}
                             </p>
                           </div>
@@ -313,7 +313,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                             <button
                               type="button"
                               onClick={() => addToCart(item)}
-                              className="p-3 min-w-[44px] min-h-[44px] bg-orange-600 text-white rounded-full hover:bg-orange-700 flex items-center justify-center flex-shrink-0"
+                              className="p-3 min-w-[44px] min-h-[44px] bg-primary text-white rounded-full hover:bg-primary/90 flex items-center justify-center flex-shrink-0"
                               aria-label={`Add ${item.name} to cart`}
                             >
                               <Plus className="h-5 w-5" />
@@ -343,7 +343,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
           <button
             type="button"
             onClick={() => setShowCart(true)}
-            className="fixed bottom-6 right-6 flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-full shadow-lg hover:bg-orange-700 transition-colors"
+            className="fixed bottom-6 right-6 flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full shadow-lg hover:bg-primary/90 transition-colors"
           >
             <ShoppingCart className="h-5 w-5" />
             <span className="font-medium">View Cart ({cartCount})</span>
@@ -425,7 +425,7 @@ export default function RestaurantDetailClient({ slug }: { slug: string }) {
                       <button
                         type="button"
                         onClick={handleCheckout}
-                        className="w-full mt-4 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 min-h-[44px]"
+                        className="w-full mt-4 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 min-h-[44px]"
                       >
                         Proceed to Checkout
                       </button>

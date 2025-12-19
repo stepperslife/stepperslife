@@ -71,10 +71,10 @@ export function PendingInvitations({ variant = "full", onAccept }: PendingInvita
 
   if (variant === "compact") {
     return (
-      <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4">
+      <div className="bg-primary/5 dark:bg-primary/20 border border-primary/30 dark:border-primary/40 rounded-xl p-4">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-            <UtensilsCrossed className="w-4 h-4 text-orange-600" />
+          <div className="w-8 h-8 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center">
+            <UtensilsCrossed className="w-4 h-4 text-primary" />
           </div>
           <div>
             <h4 className="font-medium text-foreground">Restaurant Invitations</h4>
@@ -99,14 +99,14 @@ export function PendingInvitations({ variant = "full", onAccept }: PendingInvita
                 <button
                   onClick={() => handleAccept(invitation._id, invitation.restaurant?.name || "Restaurant")}
                   disabled={processingId === invitation._id}
-                  className="p-1.5 bg-success/20 text-green-700 rounded hover:bg-green-200 transition-colors disabled:opacity-50"
+                  className="p-1.5 bg-success/20 text-success rounded hover:bg-success/30 transition-colors disabled:opacity-50"
                 >
                   <Check className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => handleDecline(invitation._id)}
                   disabled={processingId === invitation._id}
-                  className="p-1.5 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors disabled:opacity-50"
+                  className="p-1.5 bg-destructive/20 text-destructive rounded hover:bg-destructive/30 transition-colors disabled:opacity-50"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -134,8 +134,8 @@ export function PendingInvitations({ variant = "full", onAccept }: PendingInvita
           >
             <div className="flex items-start gap-4">
               {/* Restaurant Logo/Icon */}
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                <UtensilsCrossed className="w-6 h-6 text-orange-600" />
+              <div className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <UtensilsCrossed className="w-6 h-6 text-primary" />
               </div>
 
               {/* Details */}

@@ -66,7 +66,7 @@ export default function RestaurateurClient() {
               </p>
               <Link
                 href="/restaurateur/apply"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-orange-600 rounded-full font-semibold text-lg hover:bg-orange-50 transition-colors shadow-lg"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary rounded-full font-semibold text-lg hover:bg-primary/5 transition-colors shadow-lg"
               >
                 <Plus className="h-5 w-5" />
                 Add Your Restaurant
@@ -92,8 +92,8 @@ export default function RestaurateurClient() {
                   key={index}
                   className="text-center p-6 bg-card rounded-2xl shadow-lg border border-border"
                 >
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-orange-100 dark:bg-orange-900/30 rounded-full mb-4">
-                    <Icon className="h-7 w-7 text-orange-600" />
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-primary/10 dark:bg-primary/20 rounded-full mb-4">
+                    <Icon className="h-7 w-7 text-primary" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">{benefit.title}</h3>
                   <p className="text-muted-foreground text-sm">{benefit.description}</p>
@@ -115,7 +115,7 @@ export default function RestaurateurClient() {
               {steps.map((item) => (
                 <div key={item.step} className="relative">
                   <div className="bg-card p-6 rounded-2xl shadow-md border border-border h-full">
-                    <div className="w-10 h-10 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold mb-4">
+                    <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold mb-4">
                       {item.step}
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
@@ -140,7 +140,7 @@ export default function RestaurateurClient() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/restaurateur/apply"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-orange-600 rounded-full font-semibold hover:bg-orange-50 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary rounded-full font-semibold hover:bg-primary/5 transition-colors"
               >
                 <Plus className="h-5 w-5" />
                 Add Your Restaurant

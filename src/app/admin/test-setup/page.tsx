@@ -352,11 +352,11 @@ export default function TestSetupPage() {
                     <span className="text-sm">Restaurant</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${(stats?.isActive || getRestaurantBySlug?.isActive) ? "bg-success" : "bg-yellow-500"}`} />
+                    <span className={`w-2 h-2 rounded-full ${(stats?.isActive || getRestaurantBySlug?.isActive) ? "bg-success" : "bg-warning/100"}`} />
                     <span className="font-medium">{(stats?.isActive || getRestaurantBySlug?.isActive) ? "Active" : "Pending"}</span>
                   </div>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className={`w-2 h-2 rounded-full ${(stats?.acceptingOrders || getRestaurantBySlug?.acceptingOrders) ? "bg-success" : "bg-red-500"}`} />
+                    <span className={`w-2 h-2 rounded-full ${(stats?.acceptingOrders || getRestaurantBySlug?.acceptingOrders) ? "bg-success" : "bg-destructive/100"}`} />
                     <span className="text-sm text-muted-foreground">
                       {(stats?.acceptingOrders || getRestaurantBySlug?.acceptingOrders) ? "Accepting Orders" : "Not Accepting"}
                     </span>
@@ -449,20 +449,20 @@ export default function TestSetupPage() {
             <div
               className={`p-4 ${
                 result.success
-                  ? "bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800"
-                  : "bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800"
+                  ? "bg-success/10 dark:bg-success/15 border-b border-success/30 dark:border-success/30"
+                  : "bg-destructive/10 dark:bg-destructive/15 border-b border-destructive/30 dark:border-destructive/30"
               }`}
             >
               <div className="flex items-center gap-2">
                 {result.success ? (
                   <>
                     <CheckCircle2 className="w-5 h-5 text-success" />
-                    <span className="font-medium text-green-800 dark:text-green-200">Setup Completed</span>
+                    <span className="font-medium text-success dark:text-success">Setup Completed</span>
                   </>
                 ) : (
                   <>
                     <XCircle className="w-5 h-5 text-destructive" />
-                    <span className="font-medium text-red-800 dark:text-red-200">Setup Failed</span>
+                    <span className="font-medium text-destructive dark:text-destructive">Setup Failed</span>
                   </>
                 )}
               </div>
@@ -487,7 +487,7 @@ export default function TestSetupPage() {
                     key={i}
                     className={`py-1 ${
                       step.startsWith("✓") ? "text-success" :
-                      step.startsWith("⚠") ? "text-yellow-600" :
+                      step.startsWith("⚠") ? "text-warning" :
                       "text-foreground"
                     }`}
                   >
@@ -501,9 +501,9 @@ export default function TestSetupPage() {
             {result.errors.length > 0 && (
               <div className="p-4 border-t border-border">
                 <h3 className="font-medium text-destructive mb-3">Errors ({result.errors.length})</h3>
-                <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                <div className="bg-destructive/10 dark:bg-destructive/15 rounded-lg p-4">
                   {result.errors.map((error, i) => (
-                    <div key={i} className="text-red-800 dark:text-red-200 text-sm py-1">
+                    <div key={i} className="text-destructive dark:text-destructive text-sm py-1">
                       {error}
                     </div>
                   ))}
@@ -514,9 +514,9 @@ export default function TestSetupPage() {
         )}
 
         {/* Instructions */}
-        <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
-          <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-3">What This Test Does</h3>
-          <ul className="space-y-2 text-blue-700 dark:text-blue-300 text-sm">
+        <div className="mt-8 bg-info/10 dark:bg-primary/20 border border-info/30 dark:border-primary/40 rounded-xl p-6">
+          <h3 className="font-semibold text-foreground dark:text-primary mb-3">What This Test Does</h3>
+          <ul className="space-y-2 text-info dark:text-primary text-sm">
             <li>1. Creates restaurant "Steppers Soul Kitchen" in Chicago</li>
             <li>2. Approves the restaurant (requires admin permission)</li>
             <li>3. Configures operating hours (Mon-Sun)</li>
@@ -528,8 +528,8 @@ export default function TestSetupPage() {
             <li>9. Marks payment as received</li>
           </ul>
 
-          <h3 className="font-semibold text-blue-800 dark:text-blue-200 mt-6 mb-3">Verify After Running</h3>
-          <ul className="space-y-2 text-blue-700 dark:text-blue-300 text-sm">
+          <h3 className="font-semibold text-foreground dark:text-primary mt-6 mb-3">Verify After Running</h3>
+          <ul className="space-y-2 text-info dark:text-primary text-sm">
             <li>• Check <a href="/restaurateur/dashboard" className="underline">Restaurateur Dashboard</a> for activity feed</li>
             <li>• Check <a href="/restaurateur/dashboard/orders" className="underline">Orders Dashboard</a> for the test order</li>
             <li>• Check <a href="/restaurateur/dashboard/staff" className="underline">Staff Dashboard</a> for invited members</li>

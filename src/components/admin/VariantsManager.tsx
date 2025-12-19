@@ -393,7 +393,7 @@ export default function VariantsManager({
                             <button
                               type="button"
                               onClick={() => handleUpdateVariant(variant.id)}
-                              className="p-1 text-success hover:bg-green-50 rounded transition-colors"
+                              className="p-1 text-success hover:bg-success/10 rounded transition-colors"
                               title="Save changes"
                             >
                               <Save className="w-4 h-4" />
@@ -419,7 +419,7 @@ export default function VariantsManager({
                             <button
                               type="button"
                               onClick={() => handleDeleteVariant(variant.id, variant.name)}
-                              className="p-1 text-destructive hover:bg-red-50 rounded transition-colors"
+                              className="p-1 text-destructive hover:bg-destructive/10 rounded transition-colors"
                               title="Delete variant"
                             >
                               <Trash2 className="w-4 h-4" />

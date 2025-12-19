@@ -233,10 +233,10 @@ export default function Toolbar({ className = "" }: ToolbarProps) {
                   rotation: 0,
                 })
               }
-              className="flex flex-col items-center justify-center p-3 bg-card border-2 border rounded-lg cursor-move hover:bg-pink-50 hover:border-pink-300 transition-all group"
+              className="flex flex-col items-center justify-center p-3 bg-card border-2 border rounded-lg cursor-move hover:bg-accent hover:border-primary/30 transition-all group"
             >
-              <div className="text-muted-foreground group-hover:text-pink-600 mb-1">{template.icon}</div>
-              <span className="text-xs font-medium text-foreground group-hover:text-pink-700">
+              <div className="text-muted-foreground group-hover:text-primary mb-1">{template.icon}</div>
+              <span className="text-xs font-medium text-foreground group-hover:text-accent-foreground">
                 {template.label}
               </span>
             </div>

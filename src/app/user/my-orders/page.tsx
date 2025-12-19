@@ -62,7 +62,7 @@ export default function MyOrdersPage() {
         );
       case "SHIPPED":
         return (
-          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-blue-500/10 text-primary">
+          <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-info/100/10 text-primary">
             <Truck className="h-3 w-3" />
             Shipped
           </span>

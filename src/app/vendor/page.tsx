@@ -197,15 +197,15 @@ export default function VendorLandingPage() {
                     </p>
                     <ul className="space-y-3">
                       <li className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-300" />
+                        <CheckCircle className="h-5 w-5 text-success" />
                         <span>No monthly fees</span>
                       </li>
                       <li className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-300" />
+                        <CheckCircle className="h-5 w-5 text-success" />
                         <span>No setup costs</span>
                       </li>
                       <li className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-300" />
+                        <CheckCircle className="h-5 w-5 text-success" />
                         <span>Pay only when you sell</span>
                       </li>
                     </ul>

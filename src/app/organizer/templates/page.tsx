@@ -370,7 +370,7 @@ export default function TemplatesPage() {
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-muted-foreground">Categories</span>
-                <Filter className="w-5 h-5 text-orange-600" />
+                <Filter className="w-5 h-5 text-primary" />
               </div>
               <p className="text-3xl font-bold text-foreground">
                 {Object.keys(templateStats?.byCategory || {}).length}

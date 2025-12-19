@@ -26,7 +26,7 @@ export default function MarketplaceCheckoutError({
     <div className="min-h-screen flex items-center justify-center bg-muted p-4">
       <div className="max-w-md w-full bg-card rounded-lg shadow-lg p-8 text-center">
         <div className="mb-6">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 bg-destructive/20 rounded-full flex items-center justify-center mx-auto">
             <ShoppingBag className="w-8 h-8 text-destructive" />
           </div>
         </div>
@@ -42,8 +42,8 @@ export default function MarketplaceCheckoutError({
         </p>
 
         {process.env.NODE_ENV === "development" && error.message && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-left">
-            <p className="text-xs font-mono text-red-800 break-words">
+          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg text-left">
+            <p className="text-xs font-mono text-destructive break-words">
               {error.message}
             </p>
             {error.digest && (

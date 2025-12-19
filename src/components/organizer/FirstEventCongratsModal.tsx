@@ -49,7 +49,7 @@ export function FirstEventCongratsModal({
             <div className="text-left space-y-3 text-sm">
               <p className="font-medium text-foreground">Welcome to SteppersLife Events! 🎊</p>
 
-              <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="bg-info/10 dark:bg-primary/20 p-4 rounded-lg border border-info/30 dark:border-primary/40">
                 <p className="font-semibold text-foreground mb-2">✨ How it works:</p>
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex gap-2">

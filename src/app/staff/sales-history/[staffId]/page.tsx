@@ -64,7 +64,7 @@ export default function SalesHistoryPage() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-muted-foreground">Cash Collected</span>
-            <Wallet className="w-5 h-5 text-orange-600" />
+            <Wallet className="w-5 h-5 text-primary" />
           </div>
           <p className="text-3xl font-bold text-foreground">
             ${((staffDetails.cashCollected || 0) / 100).toFixed(2)}
@@ -93,7 +93,7 @@ export default function SalesHistoryPage() {
             <p className="text-2xl font-bold text-foreground">{staffDetails.salesBreakdown.online}</p>
             <p className="text-sm text-muted-foreground">Online</p>
           </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg">
+          <div className="text-center p-4 bg-success/10 rounded-lg">
             <Wallet className="w-6 h-6 text-success mx-auto mb-2" />
             <p className="text-2xl font-bold text-foreground">{staffDetails.salesBreakdown.cash}</p>
             <p className="text-sm text-muted-foreground">Cash</p>
@@ -152,7 +152,7 @@ export default function SalesHistoryPage() {
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                           sale.paymentMethod === "CASH"
-                            ? "bg-success/20 text-green-800"
+                            ? "bg-success/20 text-success"
                             : sale.paymentMethod === "CASH_APP"
                               ? "bg-accent text-foreground"
                               : "bg-accent text-accent-foreground"

@@ -89,13 +89,13 @@ export default function UpcomingTicketsPage() {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-success/20 text-green-800 text-xs font-medium rounded">
+                          <span className="px-2 py-1 bg-success/20 text-success text-xs font-medium rounded">
                             {getDaysUntil(ticket.eventDate)}
                           </span>
                         </div>
                         <h3 className="text-2xl font-bold">{ticket.eventName}</h3>
                       </div>
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-success/20 text-green-800">
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-success/20 text-success">
                         Active
                       </span>
                     </div>

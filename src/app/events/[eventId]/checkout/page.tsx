@@ -879,12 +879,12 @@ export default function CheckoutPage() {
 
                   {/* Payment Model Info */}
                   {paymentModel === "PREPAY" ? (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <div className="bg-success/10 border border-success/30 rounded-lg p-4 mb-4">
                       <div className="flex items-start gap-2">
                         <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-sm font-semibold text-green-900">No Additional Fees</p>
-                          <p className="text-xs text-green-700 mt-1">
+                          <p className="text-sm font-semibold text-success">No Additional Fees</p>
+                          <p className="text-xs text-success mt-1">
                             The organizer has prepaid platform fees. You only pay the ticket price!
                           </p>
                         </div>
@@ -913,7 +913,7 @@ export default function CheckoutPage() {
                         data-testid="payment-method-paypal"
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "paypal"
-                            ? "border-[#0070BA] bg-blue-50 text-[#003087] font-semibold"
+                            ? "border-[#0070BA] bg-info/10 text-[#003087] font-semibold"
                             : "border hover:border"
                         }`}
                       >
@@ -925,7 +925,7 @@ export default function CheckoutPage() {
                         data-testid="payment-method-cash"
                         className={`px-4 py-3 rounded-lg border-2 transition-all ${
                           paymentMethod === "cash"
-                            ? "border-green-600 bg-green-50 text-green-900 font-semibold"
+                            ? "border-success bg-success/10 text-success font-semibold"
                             : "border hover:border"
                         }`}
                       >
@@ -998,9 +998,9 @@ export default function CheckoutPage() {
                   ) : paymentMethod === "cash" ? (
                     // Cash payment (physical USD, staff validated)
                     <div className="space-y-4">
-                      <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
-                        <h4 className="font-semibold text-amber-900 mb-2">Cash Payment Instructions</h4>
-                        <ol className="text-sm text-amber-800 space-y-2 list-decimal list-inside">
+                      <div className="bg-warning/10 border-2 border-warning/30 rounded-lg p-4">
+                        <h4 className="font-semibold text-foreground mb-2">Cash Payment Instructions</h4>
+                        <ol className="text-sm text-foreground space-y-2 list-decimal list-inside">
                           <li>Your order will be held for 30 minutes</li>
                           <li>Bring physical USD cash to the event</li>
                           <li>Pay the staff member at the door</li>
@@ -1034,7 +1034,7 @@ export default function CheckoutPage() {
                               toast.error(error.message || "Failed to create cash order");
                             }
                           }}
-                          className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                          className="flex-1 px-6 py-3 bg-success text-white rounded-lg hover:bg-success/80 transition-colors font-medium"
                         >
                           Confirm Cash Payment
                         </button>
@@ -1091,8 +1091,8 @@ export default function CheckoutPage() {
 
                   {/* Cash payment login notice */}
                   {paymentMethod === "cash" && !currentUser && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-                      <p className="text-sm text-amber-800">
+                    <div className="bg-warning/10 border border-warning/30 rounded-lg p-3 mb-4">
+                      <p className="text-sm text-foreground">
                         <strong>Note:</strong> Cash payments require you to be signed in.
                         <Link href={`/login?redirect=/events/${eventId}/checkout`} className="text-primary underline ml-1">
                           Sign in here
@@ -1103,8 +1103,8 @@ export default function CheckoutPage() {
 
                   {/* Show logged-in user info for cash payments */}
                   {paymentMethod === "cash" && currentUser && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                      <p className="text-sm text-green-800">
+                    <div className="bg-success/10 border border-success/30 rounded-lg p-3 mb-4">
+                      <p className="text-sm text-success">
                         ✓ Signed in as <strong>{currentUser.email}</strong>
                       </p>
                     </div>
@@ -1159,13 +1159,13 @@ export default function CheckoutPage() {
 
                   {/* Applied Discount Display */}
                   {appliedDiscount ? (
-                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                    <div className="bg-success/10 border-2 border-success/30 rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-semibold text-green-900 text-lg">
+                          <p className="font-semibold text-success text-lg">
                             {appliedDiscount.code}
                           </p>
-                          <p className="text-sm text-green-700 mt-1">
+                          <p className="text-sm text-success mt-1">
                             {appliedDiscount.discountType === "PERCENTAGE"
                               ? `${appliedDiscount.discountValue}% off`
                               : `$${(appliedDiscount.discountValue / 100).toFixed(2)} off`}
@@ -1176,7 +1176,7 @@ export default function CheckoutPage() {
                         <button
                           type="button"
                           onClick={handleRemoveDiscount}
-                          className="p-2 text-green-700 hover:bg-success/20 rounded-lg transition-colors"
+                          className="p-2 text-success hover:bg-success/20 rounded-lg transition-colors"
                           title="Remove discount"
                         >
                           <X className="w-5 h-5" />
@@ -1273,12 +1273,12 @@ export default function CheckoutPage() {
                     </div>
 
                     {appliedDiscount && (
-                      <div className="flex items-center justify-between text-sm bg-green-50 -mx-2 px-2 py-2 rounded">
-                        <span className="text-green-700 font-medium flex items-center gap-1">
+                      <div className="flex items-center justify-between text-sm bg-success/10 -mx-2 px-2 py-2 rounded">
+                        <span className="text-success font-medium flex items-center gap-1">
                           <Tag className="w-4 h-4" />
                           Discount ({appliedDiscount.code})
                         </span>
-                        <span className="font-medium text-green-700">
+                        <span className="font-medium text-success">
                           -${(appliedDiscount.discountAmountCents / 100).toFixed(2)}
                         </span>
                       </div>

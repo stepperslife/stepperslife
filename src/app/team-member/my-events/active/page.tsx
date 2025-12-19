@@ -58,7 +58,7 @@ export default function ActiveEventsPage() {
                       </div>
                     </div>
                   </div>
-                  <span className="px-3 py-1 bg-success/20 text-green-800 text-sm font-medium rounded-full">Active</span>
+                  <span className="px-3 py-1 bg-success/20 text-success text-sm font-medium rounded-full">Active</span>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">

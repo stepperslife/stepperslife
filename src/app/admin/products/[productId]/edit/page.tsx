@@ -513,7 +513,7 @@ export default function EditProductPage() {
               <label className="block text-sm font-medium text-foreground mb-2">Primary Image</label>
 
               {primaryImageUrl ? (
-                <div className="relative w-full aspect-square border-2 border-green-300 rounded-lg overflow-hidden group">
+                <div className="relative w-full aspect-square border-2 border-success/50 rounded-lg overflow-hidden group">
                   <Image
                     src={primaryImageUrl}
                     alt="Primary product image"
@@ -521,14 +521,14 @@ export default function EditProductPage() {
                     className="object-cover"
                     unoptimized
                   />
-                  <div className="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                  <div className="absolute top-2 right-2 bg-success text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                     <Star className="w-3 h-3" fill="white" />
                     Primary
                   </div>
                   <button
                     type="button"
                     onClick={removePrimaryImage}
-                    className="absolute bottom-2 right-2 bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition-colors opacity-0 group-hover:opacity-100"
+                    className="absolute bottom-2 right-2 bg-destructive text-white p-2 rounded-lg hover:bg-destructive/80 transition-colors opacity-0 group-hover:opacity-100"
                     title="Delete primary image"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -588,7 +588,7 @@ export default function EditProductPage() {
                         <button
                           type="button"
                           onClick={() => setAsPrimary(url)}
-                          className="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors opacity-0 group-hover:opacity-100"
+                          className="bg-success text-white p-2 rounded-lg hover:bg-success/80 transition-colors opacity-0 group-hover:opacity-100"
                           title="Set as primary"
                         >
                           <Star className="w-4 h-4" />
@@ -596,7 +596,7 @@ export default function EditProductPage() {
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
-                          className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition-colors opacity-0 group-hover:opacity-100"
+                          className="bg-destructive text-white p-2 rounded-lg hover:bg-destructive/80 transition-colors opacity-0 group-hover:opacity-100"
                           title="Remove image"
                         >
                           <Trash2 className="w-4 h-4" />

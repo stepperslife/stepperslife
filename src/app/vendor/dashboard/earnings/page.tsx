@@ -19,11 +19,11 @@ import {
 type EarningStatus = "PENDING" | "AVAILABLE" | "PROCESSING" | "PAID" | "REFUNDED";
 
 const STATUS_CONFIG: Record<EarningStatus, { label: string; color: string }> = {
-  PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" },
-  AVAILABLE: { label: "Available", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
-  PROCESSING: { label: "Processing", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" },
+  PENDING: { label: "Pending", color: "bg-warning/20 text-warning-foreground dark:bg-warning/20 dark:text-warning" },
+  AVAILABLE: { label: "Available", color: "bg-success/20 text-success dark:bg-success/20 dark:text-success" },
+  PROCESSING: { label: "Processing", color: "bg-info/20 text-foreground dark:bg-primary/20 dark:text-primary" },
   PAID: { label: "Paid", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300" },
-  REFUNDED: { label: "Refunded", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
+  REFUNDED: { label: "Refunded", color: "bg-destructive/20 text-destructive dark:bg-destructive/20 dark:text-destructive" },
 };
 
 export default function VendorEarningsPage() {
@@ -85,7 +85,7 @@ export default function VendorEarningsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-success/20 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-success/20 dark:bg-success/20 rounded-lg flex items-center justify-center">
               <DollarSign className="w-6 h-6 text-success" />
             </div>
           </div>
@@ -109,8 +109,8 @@ export default function VendorEarningsPage() {
 
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-              <Clock className="w-6 h-6 text-yellow-600" />
+            <div className="w-12 h-12 bg-warning/20 dark:bg-warning/20 rounded-lg flex items-center justify-center">
+              <Clock className="w-6 h-6 text-warning" />
             </div>
           </div>
           <p className="text-3xl font-bold text-foreground">
@@ -121,7 +121,7 @@ export default function VendorEarningsPage() {
 
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-info/20 dark:bg-primary/20 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-primary" />
             </div>
           </div>

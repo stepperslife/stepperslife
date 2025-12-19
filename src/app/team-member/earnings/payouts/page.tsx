@@ -13,9 +13,9 @@ export default function PayoutHistoryPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-success/20 text-green-800 flex items-center gap-1"><CheckCircle className="h-3 w-3" />Completed</span>;
+        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-success/20 text-success flex items-center gap-1"><CheckCircle className="h-3 w-3" />Completed</span>;
       case "pending":
-        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 flex items-center gap-1"><Clock className="h-3 w-3" />Pending</span>;
+        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-warning/20 text-warning-foreground flex items-center gap-1"><Clock className="h-3 w-3" />Pending</span>;
       default:
         return <span className="px-2 py-1 text-xs font-medium rounded-full bg-muted text-foreground">{status}</span>;
     }

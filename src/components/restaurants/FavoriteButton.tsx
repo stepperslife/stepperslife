@@ -82,7 +82,7 @@ export function FavoriteButton({
         rounded-full
         transition-all duration-200
         ${isFavorited
-          ? "bg-red-50 dark:bg-red-900/30 text-destructive"
+          ? "bg-destructive/10 dark:bg-destructive/20 text-destructive"
           : "bg-white/80 dark:bg-card/80 text-muted-foreground hover:text-destructive"
         }
         hover:scale-110

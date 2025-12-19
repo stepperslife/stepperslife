@@ -26,17 +26,17 @@ type FulfillmentStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "C
 type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED";
 
 const statusConfig: Record<FulfillmentStatus, { label: string; color: string; icon: typeof Clock }> = {
-  PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: Clock },
-  PROCESSING: { label: "Processing", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: Package },
+  PENDING: { label: "Pending", color: "bg-warning/20 text-warning-foreground dark:bg-warning/20 dark:text-warning", icon: Clock },
+  PROCESSING: { label: "Processing", color: "bg-info/20 text-foreground dark:bg-primary/20 dark:text-primary", icon: Package },
   SHIPPED: { label: "Shipped", color: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400", icon: Truck },
-  DELIVERED: { label: "Delivered", color: "bg-success/20 text-green-800 dark:bg-green-900/30 dark:text-success", icon: CheckCircle },
-  CANCELLED: { label: "Cancelled", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: XCircle },
+  DELIVERED: { label: "Delivered", color: "bg-success/20 text-success dark:bg-success/20 dark:text-success", icon: CheckCircle },
+  CANCELLED: { label: "Cancelled", color: "bg-destructive/20 text-destructive dark:bg-destructive/20 dark:text-destructive", icon: XCircle },
 };
 
 const paymentStatusConfig: Record<PaymentStatus, { label: string; color: string }> = {
-  PENDING: { label: "Payment Pending", color: "text-yellow-600 dark:text-yellow-400" },
+  PENDING: { label: "Payment Pending", color: "text-warning dark:text-warning" },
   PAID: { label: "Paid", color: "text-success dark:text-success" },
-  FAILED: { label: "Payment Failed", color: "text-destructive dark:text-red-400" },
+  FAILED: { label: "Payment Failed", color: "text-destructive dark:text-destructive" },
   REFUNDED: { label: "Refunded", color: "text-muted-foreground dark:text-muted-foreground" },
 };
 

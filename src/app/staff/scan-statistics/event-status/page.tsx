@@ -58,7 +58,7 @@ export default function EventStatusPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>{event.name}</CardTitle>
-                  <span className="px-3 py-1 bg-success/20 text-green-800 text-sm font-medium rounded-full">
+                  <span className="px-3 py-1 bg-success/20 text-success text-sm font-medium rounded-full">
                     In Progress
                   </span>
                 </div>

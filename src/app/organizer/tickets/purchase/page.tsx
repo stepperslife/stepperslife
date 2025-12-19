@@ -248,10 +248,10 @@ export default function PurchaseTicketsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6"
+          className="mt-8 bg-info/10 border border-info/30 rounded-lg p-6"
         >
-          <h3 className="text-lg font-bold text-blue-900 mb-2">How Ticket Purchase Works</h3>
-          <ul className="space-y-2 text-blue-800">
+          <h3 className="text-lg font-bold text-foreground mb-2">How Ticket Purchase Works</h3>
+          <ul className="space-y-2 text-foreground">
             <li className="flex items-start gap-2">
               <Check className="w-5 h-5 mt-0.5 flex-shrink-0" />
               <span>1 credit = 1 ticket - Simple and transparent pricing</span>

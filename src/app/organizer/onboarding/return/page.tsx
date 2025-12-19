@@ -118,9 +118,9 @@ export default function StripeConnectReturnPage() {
             <p className="text-muted-foreground mb-4">{message}</p>
 
             {requirements.length > 0 && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left">
-                <p className="font-semibold text-sm text-yellow-800 mb-2">Missing Information:</p>
-                <ul className="list-disc list-inside text-sm text-yellow-700">
+              <div className="bg-warning/10 border border-warning/30 rounded-lg p-4 mb-6 text-left">
+                <p className="font-semibold text-sm text-warning-foreground mb-2">Missing Information:</p>
+                <ul className="list-disc list-inside text-sm text-warning">
                   {requirements.map((req, index) => (
                     <li key={index} className="capitalize">
                       {req.replace(/_/g, " ")}

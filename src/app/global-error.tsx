@@ -43,7 +43,7 @@ export default function GlobalError({
             <div className="flex gap-4 justify-center">
               <button
                 onClick={() => reset()}
-                className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="px-6 py-3 bg-destructive text-white rounded-lg hover:bg-destructive/80 transition-colors"
               >
                 Try again
               </button>

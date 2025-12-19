@@ -192,7 +192,7 @@ export default function FreeEventRegisterPage() {
 
             {/* Staff Attribution */}
             {referralCode && staffMemberInfo && (
-              <div className="p-8 bg-accent border-t border-blue-100">
+              <div className="p-8 bg-accent border-t border-primary/20">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
                     <UserCheck className="w-5 h-5 text-primary" />
@@ -290,7 +290,7 @@ export default function FreeEventRegisterPage() {
 
           {/* Referral Code Banner */}
           {referralCode && staffMemberInfo && (
-            <div className="p-6 bg-accent border-b border-blue-100">
+            <div className="p-6 bg-accent border-b border-primary/20">
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
                   <UserCheck className="w-5 h-5 text-primary" />

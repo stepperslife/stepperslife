@@ -83,8 +83,8 @@ export default function VendorDashboardLayout({
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Clock className="w-8 h-8 text-yellow-600" />
+              <div className="w-16 h-16 bg-warning/20 dark:bg-warning/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Clock className="w-8 h-8 text-warning" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
                 Application Under Review
@@ -122,7 +122,7 @@ export default function VendorDashboardLayout({
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-destructive/20 dark:bg-destructive/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <AlertCircle className="w-8 h-8 text-destructive" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
@@ -133,11 +133,11 @@ export default function VendorDashboardLayout({
                 was not approved.
               </p>
               {vendor.rejectionReason && (
-                <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 text-left text-sm mb-6">
-                  <p className="font-medium text-red-900 dark:text-red-100 mb-1">
+                <div className="bg-destructive/10 dark:bg-destructive/15 rounded-lg p-4 text-left text-sm mb-6">
+                  <p className="font-medium text-destructive dark:text-destructive mb-1">
                     Reason:
                   </p>
-                  <p className="text-red-700 dark:text-red-300">
+                  <p className="text-destructive dark:text-destructive">
                     {vendor.rejectionReason}
                   </p>
                 </div>
@@ -160,8 +160,8 @@ export default function VendorDashboardLayout({
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                <AlertCircle className="w-8 h-8 text-orange-600" />
+              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
                 Account Suspended
@@ -170,11 +170,11 @@ export default function VendorDashboardLayout({
                 Your vendor account for <strong>{vendor.name}</strong> has been suspended.
               </p>
               {vendor.rejectionReason && (
-                <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 text-left text-sm mb-6">
-                  <p className="font-medium text-orange-900 dark:text-orange-100 mb-1">
+                <div className="bg-primary/5 dark:bg-primary/20 rounded-lg p-4 text-left text-sm mb-6">
+                  <p className="font-medium text-foreground dark:text-primary-foreground mb-1">
                     Reason:
                   </p>
-                  <p className="text-orange-700 dark:text-orange-300">
+                  <p className="text-primary dark:text-primary">
                     {vendor.rejectionReason}
                   </p>
                 </div>

@@ -93,10 +93,10 @@ export default function RegisterSalePage() {
           {/* ACTIVATION CODES - Most Important Section */}
           {successData.activationCodes && successData.activationCodes.length > 0 && (
             <div className="bg-accent border-2 border-primary rounded-lg p-6 mb-6">
-              <div className="bg-yellow-100 border border-yellow-400 rounded-lg p-3 mb-4">
+              <div className="bg-warning/20 border border-warning rounded-lg p-3 mb-4">
                 <div className="flex items-start">
-                  <AlertCircle className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-yellow-800">
+                  <AlertCircle className="w-5 h-5 text-warning mr-2 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-warning-foreground">
                     <p className="font-semibold mb-1">
                       IMPORTANT: Customer Must Receive These Codes!
                     </p>

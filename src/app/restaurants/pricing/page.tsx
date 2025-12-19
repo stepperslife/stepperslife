@@ -133,7 +133,7 @@ export default function RestaurantPricingPage() {
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-background dark:from-orange-950/20 dark:to-background">
         {/* Hero Section */}
         <div className="container mx-auto px-4 py-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 dark:bg-orange-900/30 rounded-full text-orange-700 dark:text-orange-300 text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 dark:bg-primary/20 rounded-full text-primary dark:text-primary text-sm font-medium mb-6">
             <Utensils className="w-4 h-4" />
             Restaurant Partner Pricing
           </div>
@@ -154,13 +154,13 @@ export default function RestaurantPricingPage() {
                   onClick={() => setPricingModel("A")}
                   className={`p-4 rounded-xl border-2 transition-all text-left ${
                     pricingModel === "A"
-                      ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20"
-                      : "border-border hover:border-orange-300"
+                      ? "border-primary bg-primary/5 dark:bg-primary/20"
+                      : "border-border hover:border-primary/30"
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     {pricingModel === "A" ? (
-                      <ToggleRight className="w-5 h-5 text-orange-500" />
+                      <ToggleRight className="w-5 h-5 text-primary" />
                     ) : (
                       <ToggleLeft className="w-5 h-5 text-muted-foreground" />
                     )}
@@ -169,7 +169,7 @@ export default function RestaurantPricingPage() {
                   <p className="text-sm text-muted-foreground">
                     Tiered monthly plans with decreasing transaction fees
                   </p>
-                  <p className="text-xs text-orange-600 dark:text-orange-400 mt-2 font-medium">
+                  <p className="text-xs text-primary dark:text-primary mt-2 font-medium">
                     Best for: Restaurants wanting predictable costs
                   </p>
                 </button>
@@ -178,13 +178,13 @@ export default function RestaurantPricingPage() {
                   onClick={() => setPricingModel("B")}
                   className={`p-4 rounded-xl border-2 transition-all text-left ${
                     pricingModel === "B"
-                      ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20"
-                      : "border-border hover:border-orange-300"
+                      ? "border-primary bg-primary/5 dark:bg-primary/20"
+                      : "border-border hover:border-primary/30"
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     {pricingModel === "B" ? (
-                      <ToggleRight className="w-5 h-5 text-orange-500" />
+                      <ToggleRight className="w-5 h-5 text-primary" />
                     ) : (
                       <ToggleLeft className="w-5 h-5 text-muted-foreground" />
                     )}
@@ -193,7 +193,7 @@ export default function RestaurantPricingPage() {
                   <p className="text-sm text-muted-foreground">
                     Low fees + small customer service charge per order
                   </p>
-                  <p className="text-xs text-orange-600 dark:text-orange-400 mt-2 font-medium">
+                  <p className="text-xs text-primary dark:text-primary mt-2 font-medium">
                     Best for: High-volume restaurants
                   </p>
                 </button>
@@ -223,7 +223,7 @@ export default function RestaurantPricingPage() {
                 }`}
               >
                 Annual
-                <span className="text-xs bg-success/20 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-success/20 dark:bg-success/30 text-success dark:text-success px-2 py-0.5 rounded-full">
                   Save 20%
                 </span>
               </button>
@@ -282,16 +282,16 @@ export default function RestaurantPricingPage() {
 
                   {/* Fee Badges */}
                   <div className="space-y-2 mb-6">
-                    <div className="inline-flex items-center gap-2 px-3 py-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg w-full">
-                      <TrendingUp className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                      <span className="text-sm font-medium text-orange-700 dark:text-orange-300">
+                    <div className="inline-flex items-center gap-2 px-3 py-2 bg-primary/5 dark:bg-primary/20 rounded-lg w-full">
+                      <TrendingUp className="w-4 h-4 text-primary dark:text-primary" />
+                      <span className="text-sm font-medium text-primary dark:text-primary">
                         {tier.transactionFee} transaction fee
                       </span>
                     </div>
                     {tier.customerFee && (
-                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg w-full">
-                        <Utensils className="w-4 h-4 text-primary dark:text-blue-400" />
-                        <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-info/10 dark:bg-primary/20 rounded-lg w-full">
+                        <Utensils className="w-4 h-4 text-primary dark:text-primary" />
+                        <span className="text-sm font-medium text-info dark:text-primary">
                           {tier.customerFee} customer service fee per order
                         </span>
                       </div>
@@ -347,7 +347,7 @@ export default function RestaurantPricingPage() {
                       <th className="text-center py-4 px-4 font-semibold text-foreground">
                         Starter (10%)
                       </th>
-                      <th className="text-center py-4 px-4 font-semibold text-orange-600">
+                      <th className="text-center py-4 px-4 font-semibold text-primary">
                         Growth (6% + $19)
                       </th>
                       <th className="text-center py-4 px-4 font-semibold text-foreground">
@@ -365,7 +365,7 @@ export default function RestaurantPricingPage() {
                       <tr key={idx} className="border-b border-border/50">
                         <td className="py-4 px-4 font-medium text-foreground">{row.orders}</td>
                         <td className="py-4 px-4 text-center text-muted-foreground">{row.starter}</td>
-                        <td className="py-4 px-4 text-center text-orange-600 font-medium bg-orange-50/50 dark:bg-orange-900/10">
+                        <td className="py-4 px-4 text-center text-primary font-medium bg-primary/5 dark:bg-primary/10">
                           {row.growth}
                         </td>
                         <td className="py-4 px-4 text-center text-muted-foreground">{row.pro}</td>
@@ -388,7 +388,7 @@ export default function RestaurantPricingPage() {
                       <th className="text-center py-4 px-4 font-semibold text-foreground">
                         Pay As You Go (6%)
                       </th>
-                      <th className="text-center py-4 px-4 font-semibold text-orange-600">
+                      <th className="text-center py-4 px-4 font-semibold text-primary">
                         Subscription (3% + $29)
                       </th>
                     </tr>
@@ -404,7 +404,7 @@ export default function RestaurantPricingPage() {
                         <td className="py-4 px-4 font-medium text-foreground">{row.orders}</td>
                         <td className="py-4 px-4 text-center text-muted-foreground">{row.count}</td>
                         <td className="py-4 px-4 text-center text-muted-foreground">{row.paygo}</td>
-                        <td className="py-4 px-4 text-center text-orange-600 font-medium bg-orange-50/50 dark:bg-orange-900/10">
+                        <td className="py-4 px-4 text-center text-primary font-medium bg-primary/5 dark:bg-primary/10">
                           {row.sub}
                         </td>
                       </tr>
@@ -477,13 +477,13 @@ export default function RestaurantPricingPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/restaurateur/apply"
-                className="px-8 py-4 bg-white text-orange-600 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
+                className="px-8 py-4 bg-white text-primary rounded-lg font-semibold hover:bg-primary/5 transition-colors"
               >
                 Apply Now - It's Free
               </Link>
               <Link
                 href="/restaurants"
-                className="px-8 py-4 bg-orange-600 text-white border-2 border-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                className="px-8 py-4 bg-primary text-white border-2 border-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Browse Restaurants
               </Link>
@@ -498,7 +498,7 @@ export default function RestaurantPricingPage() {
             <span>Questions? Contact us at </span>
             <a
               href="mailto:restaurants@stepperslife.com"
-              className="text-orange-600 hover:underline font-medium"
+              className="text-primary hover:underline font-medium"
             >
               restaurants@stepperslife.com
             </a>

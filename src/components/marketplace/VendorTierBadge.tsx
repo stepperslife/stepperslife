@@ -34,14 +34,14 @@ const TIER_CONFIG: Record<
     label: "Verified",
     tooltip: "Verified seller with priority support",
     className: "text-primary",
-    bgClassName: "bg-blue-50 dark:bg-blue-900/20",
+    bgClassName: "bg-info/10 dark:bg-primary/20",
   },
   PREMIUM: {
     icon: Crown,
     label: "Premium",
     tooltip: "Featured seller with lowest fees",
-    className: "text-amber-500",
-    bgClassName: "bg-amber-50 dark:bg-amber-900/20",
+    className: "text-warning",
+    bgClassName: "bg-warning/10 dark:bg-warning/20",
   },
 };
 

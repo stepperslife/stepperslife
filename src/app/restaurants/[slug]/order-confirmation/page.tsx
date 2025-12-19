@@ -45,7 +45,7 @@ export default function OrderConfirmationPage() {
             <h1 className="text-2xl font-bold mb-4">Order not found</h1>
             <Link
               href="/restaurants"
-              className="text-orange-600 hover:underline"
+              className="text-primary hover:underline"
             >
               Browse restaurants
             </Link>
@@ -64,7 +64,7 @@ export default function OrderConfirmationPage() {
         <div className="container mx-auto px-4 py-8 max-w-2xl">
           {/* Success Message */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-success/20 dark:bg-green-900/30 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-success/20 dark:bg-success/20 rounded-full mb-4">
               <CheckCircle className="h-10 w-10 text-success" />
             </div>
             <h1 className="text-3xl font-bold mb-2">Order Placed!</h1>
@@ -76,7 +76,7 @@ export default function OrderConfirmationPage() {
           {/* Order Details Card */}
           <div className="bg-card rounded-lg border p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <Receipt className="h-5 w-5 text-orange-600" />
+              <Receipt className="h-5 w-5 text-primary" />
               <h2 className="text-xl font-semibold">Order Details</h2>
             </div>
 
@@ -88,7 +88,7 @@ export default function OrderConfirmationPage() {
 
               <div className="flex items-center justify-between py-3 border-b">
                 <span className="text-muted-foreground">Status</span>
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full text-sm font-medium">
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-warning/20 dark:bg-warning/20 text-warning dark:text-warning rounded-full text-sm font-medium">
                   <Clock className="h-3 w-3" />
                   {order.status === "PENDING" ? "Preparing" : order.status}
                 </span>
@@ -129,7 +129,7 @@ export default function OrderConfirmationPage() {
           {/* Pickup Location Card */}
           <div className="bg-card rounded-lg border p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <MapPin className="h-5 w-5 text-orange-600" />
+              <MapPin className="h-5 w-5 text-primary" />
               <h2 className="text-xl font-semibold">Pickup Location</h2>
             </div>
 
@@ -141,7 +141,7 @@ export default function OrderConfirmationPage() {
               </p>
               <a
                 href={`tel:${restaurant.phone}`}
-                className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700"
+                className="inline-flex items-center gap-2 text-primary hover:text-primary"
               >
                 <Phone className="h-4 w-4" />
                 {restaurant.phone}
@@ -150,19 +150,19 @@ export default function OrderConfirmationPage() {
           </div>
 
           {/* What's Next */}
-          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800 p-6 mb-8">
+          <div className="bg-primary/5 dark:bg-primary/20 rounded-lg border border-primary/30 dark:border-primary/40 p-6 mb-8">
             <h3 className="font-semibold mb-3">What happens next?</h3>
             <ol className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="inline-flex items-center justify-center w-5 h-5 bg-orange-600 text-white rounded-full text-xs flex-shrink-0 mt-0.5">1</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 bg-primary text-white rounded-full text-xs flex-shrink-0 mt-0.5">1</span>
                 <span>The restaurant is preparing your order</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="inline-flex items-center justify-center w-5 h-5 bg-orange-600 text-white rounded-full text-xs flex-shrink-0 mt-0.5">2</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 bg-primary text-white rounded-full text-xs flex-shrink-0 mt-0.5">2</span>
                 <span>You'll receive an email when your order is ready</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="inline-flex items-center justify-center w-5 h-5 bg-orange-600 text-white rounded-full text-xs flex-shrink-0 mt-0.5">3</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 bg-primary text-white rounded-full text-xs flex-shrink-0 mt-0.5">3</span>
                 <span>Pick up your order and pay at the restaurant</span>
               </li>
             </ol>
@@ -178,7 +178,7 @@ export default function OrderConfirmationPage() {
             </Link>
             <Link
               href="/restaurants"
-              className="flex-1 py-3 px-6 bg-orange-600 text-white rounded-lg font-medium text-center hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 py-3 px-6 bg-primary text-white rounded-lg font-medium text-center hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
             >
               Browse Restaurants
               <ArrowRight className="h-4 w-4" />
