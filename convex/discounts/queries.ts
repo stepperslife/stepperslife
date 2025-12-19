@@ -31,9 +31,16 @@ export const getEventDiscountCodes = query({
 
     if (!user) throw new Error("User not found");
 
-    // Verify user owns the event
+    // Verify user owns the event or is admin
     const event = await ctx.db.get(args.eventId);
-    if (!event || event.organizerId !== user._id) {
+    if (!event) {
+      throw new Error("Event not found");
+    }
+
+    const isOrganizer = event.organizerId === user._id;
+    const isAdmin = user.role === "admin";
+
+    if (!isOrganizer && !isAdmin) {
       throw new Error("Not authorized");
     }
 
@@ -171,7 +178,14 @@ export const getDiscountCodeStats = query({
     if (!user) throw new Error("User not found");
 
     const discountCode = await ctx.db.get(args.discountCodeId);
-    if (!discountCode || discountCode.organizerId !== user._id) {
+    if (!discountCode) {
+      throw new Error("Discount code not found");
+    }
+
+    const isOrganizer = discountCode.organizerId === user._id;
+    const isAdmin = user.role === "admin";
+
+    if (!isOrganizer && !isAdmin) {
       throw new Error("Not authorized");
     }
 
