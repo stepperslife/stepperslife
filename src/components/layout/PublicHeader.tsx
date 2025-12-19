@@ -21,6 +21,7 @@ import {
   BookOpen,
   ShoppingBag,
   Package,
+  Sparkles,
 } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -157,8 +158,8 @@ export function PublicHeader({
 
             {isAuthenticated ? (
               <>
-                {/* Context-Aware CTA Button */}
-                {showCreateButton && headerCTA && (
+                {/* Context-Aware CTA Button - Only for organizers/admins */}
+                {showCreateButton && headerCTA && (user?.role === "organizer" || user?.role === "admin") && (
                   <Link
                     href={headerCTA.href}
                     data-testid="header-cta"
@@ -205,6 +206,7 @@ export function PublicHeader({
                       </div>
 
                       <div className="py-1">
+                        {/* Consumer links - always visible */}
                         <Link
                           href="/my-tickets"
                           onClick={() => setIsProfileOpen(false)}
@@ -213,24 +215,6 @@ export function PublicHeader({
                         >
                           <Ticket className="w-4 h-4 text-muted-foreground" />
                           My Tickets
-                        </Link>
-                        <Link
-                          href="/organizer/events"
-                          onClick={() => setIsProfileOpen(false)}
-                          data-testid="menu-my-events"
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                        >
-                          <Calendar className="w-4 h-4 text-muted-foreground" />
-                          My Events
-                        </Link>
-                        <Link
-                          href="/organizer/classes"
-                          onClick={() => setIsProfileOpen(false)}
-                          data-testid="menu-my-classes"
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                        >
-                          <BookOpen className="w-4 h-4 text-muted-foreground" />
-                          My Classes
                         </Link>
                         <Link
                           href="/restaurants/my-orders"
@@ -250,27 +234,70 @@ export function PublicHeader({
                           <Package className="w-4 h-4 text-muted-foreground" />
                           My Marketplace Orders
                         </Link>
-                        {user?.role === "admin" && (
-                          <Link
-                            href="/restaurateur/dashboard"
-                            onClick={() => setIsProfileOpen(false)}
-                            data-testid="menu-my-restaurant"
-                            className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                          >
-                            <Utensils className="w-4 h-4 text-muted-foreground" />
-                            My Restaurant
-                          </Link>
+
+                        {/* Organizer links - only for organizers/admins */}
+                        {(user?.role === "organizer" || user?.role === "admin") && (
+                          <>
+                            <div className="border-t border-border my-1" />
+                            <Link
+                              href="/organizer/events"
+                              onClick={() => setIsProfileOpen(false)}
+                              data-testid="menu-my-events"
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                            >
+                              <Calendar className="w-4 h-4 text-muted-foreground" />
+                              My Events
+                            </Link>
+                            <Link
+                              href="/organizer/classes"
+                              onClick={() => setIsProfileOpen(false)}
+                              data-testid="menu-my-classes"
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                            >
+                              <BookOpen className="w-4 h-4 text-muted-foreground" />
+                              My Classes
+                            </Link>
+                          </>
                         )}
+
+                        {/* Admin-only links */}
                         {user?.role === "admin" && (
-                          <Link
-                            href="/admin"
-                            onClick={() => setIsProfileOpen(false)}
-                            data-testid="menu-admin-panel"
-                            className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                          >
-                            <User className="w-4 h-4 text-muted-foreground" />
-                            Admin Panel
-                          </Link>
+                          <>
+                            <Link
+                              href="/restaurateur/dashboard"
+                              onClick={() => setIsProfileOpen(false)}
+                              data-testid="menu-my-restaurant"
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                            >
+                              <Utensils className="w-4 h-4 text-muted-foreground" />
+                              My Restaurant
+                            </Link>
+                            <Link
+                              href="/admin"
+                              onClick={() => setIsProfileOpen(false)}
+                              data-testid="menu-admin-panel"
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                            >
+                              <User className="w-4 h-4 text-muted-foreground" />
+                              Admin Panel
+                            </Link>
+                          </>
+                        )}
+
+                        {/* For Creators link - only for non-organizers */}
+                        {user?.role !== "organizer" && user?.role !== "admin" && (
+                          <>
+                            <div className="border-t border-border my-1" />
+                            <Link
+                              href="/create"
+                              onClick={() => setIsProfileOpen(false)}
+                              data-testid="menu-for-creators"
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                            >
+                              <Sparkles className="w-4 h-4 text-muted-foreground" />
+                              For Creators
+                            </Link>
+                          </>
                         )}
                       </div>
 
@@ -367,6 +394,8 @@ export function PublicHeader({
                     <p className="text-sm font-medium text-foreground">{user?.name || "User"}</p>
                     <p className="text-xs text-muted-foreground">{user?.email}</p>
                   </div>
+
+                  {/* Consumer links - always visible */}
                   <Link
                     href="/my-tickets"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -374,22 +403,6 @@ export function PublicHeader({
                   >
                     <Ticket className="w-4 h-4" />
                     My Tickets
-                  </Link>
-                  <Link
-                    href="/organizer/events"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    My Events
-                  </Link>
-                  <Link
-                    href="/organizer/classes"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    My Classes
                   </Link>
                   <Link
                     href="/restaurants/my-orders"
@@ -407,6 +420,31 @@ export function PublicHeader({
                     <Package className="w-4 h-4" />
                     My Marketplace Orders
                   </Link>
+
+                  {/* Organizer links - only for organizers/admins */}
+                  {(user?.role === "organizer" || user?.role === "admin") && (
+                    <>
+                      <div className="border-t border-border my-2" />
+                      <Link
+                        href="/organizer/events"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        My Events
+                      </Link>
+                      <Link
+                        href="/organizer/classes"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        My Classes
+                      </Link>
+                    </>
+                  )}
+
+                  {/* Admin-only links */}
                   {user?.role === "admin" && (
                     <Link
                       href="/restaurateur/dashboard"
@@ -417,7 +455,9 @@ export function PublicHeader({
                       My Restaurant
                     </Link>
                   )}
-                  {showCreateButton && headerCTA && (
+
+                  {/* CTA button - only for organizers/admins */}
+                  {showCreateButton && headerCTA && (user?.role === "organizer" || user?.role === "admin") && (
                     <Link
                       href={headerCTA.href}
                       onClick={() => setIsMobileMenuOpen(false)}
@@ -427,6 +467,22 @@ export function PublicHeader({
                       {headerCTA.label}
                     </Link>
                   )}
+
+                  {/* For Creators link - only for non-organizers */}
+                  {user?.role !== "organizer" && user?.role !== "admin" && (
+                    <>
+                      <div className="border-t border-border my-2" />
+                      <Link
+                        href="/create"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        For Creators
+                      </Link>
+                    </>
+                  )}
+
                   <button
                     type="button"
                     onClick={() => {
