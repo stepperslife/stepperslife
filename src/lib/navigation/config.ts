@@ -339,19 +339,19 @@ export const userNavigation: RoleNavigation = {
       items: [
         {
           label: "Upcoming Events",
-          href: "/user/tickets?filter=upcoming",
+          href: "/user/my-tickets/upcoming",
           icon: Ticket,
           description: "Your upcoming tickets",
         },
         {
           label: "Past Events",
-          href: "/user/tickets?filter=past",
+          href: "/user/my-tickets/past",
           icon: CheckSquare,
           description: "Previous events",
         },
         {
           label: "Orders",
-          href: "/user/orders",
+          href: "/user/my-orders",
           icon: FileText,
           description: "Order history",
         },
@@ -529,19 +529,19 @@ export const teamMemberNavigation: RoleNavigation = {
       items: [
         {
           label: "My Tickets",
-          href: "/team/tickets",
+          href: "/team-member/my-tickets",
           icon: Ticket,
           description: "Your ticket inventory",
         },
         {
           label: "My Associates",
-          href: "/team/associates",
+          href: "/team-member/my-associates",
           icon: Users,
           description: "Manage associates",
         },
         {
           label: "Share Link",
-          href: "/team/links",
+          href: "/team-member/my-ticket-links",
           icon: LinkIcon,
           description: "Your sales link",
         },
@@ -554,13 +554,13 @@ export const teamMemberNavigation: RoleNavigation = {
       items: [
         {
           label: "My Earnings",
-          href: "/team/earnings",
+          href: "/team-member/earnings",
           icon: DollarSign,
           description: "Track earnings",
         },
         {
           label: "Performance",
-          href: "/team/performance",
+          href: "/team-member/sales-performance",
           icon: TrendingUp,
           description: "Sales stats",
         },
@@ -572,19 +572,19 @@ export const teamMemberNavigation: RoleNavigation = {
       items: [
         {
           label: "My Events",
-          href: "/team/events",
+          href: "/team-member/my-events",
           icon: Calendar,
           description: "Assigned events",
         },
         {
           label: "Profile",
-          href: "/team/profile",
+          href: "/team-member/profile",
           icon: User,
           description: "Your profile",
         },
         {
           label: "Support",
-          href: "/team/support",
+          href: "/team-member/support",
           icon: MessageSquare,
           description: "Get help",
         },
@@ -613,7 +613,7 @@ export const associateNavigation: RoleNavigation = {
       items: [
         {
           label: "My Ticket Link",
-          href: "/associate/link",
+          href: "/associate/my-ticket-link",
           icon: LinkIcon,
           description: "Share to sell tickets",
           isPrimary: true,
@@ -632,7 +632,7 @@ export const associateNavigation: RoleNavigation = {
         },
         {
           label: "My Tickets",
-          href: "/associate/tickets",
+          href: "/associate/my-tickets",
           icon: Ticket,
           description: "Ticket inventory",
         },
@@ -650,7 +650,7 @@ export const associateNavigation: RoleNavigation = {
       items: [
         {
           label: "My Events",
-          href: "/associate/events",
+          href: "/associate/my-events",
           icon: Calendar,
           description: "Selling events",
         },
