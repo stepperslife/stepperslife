@@ -9,7 +9,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import { Id } from "@/convex/_generated/dataModel";
 import {
   ChefHat,
   MapPin,
@@ -148,7 +147,6 @@ export default function RestaurateurApplyClient() {
       const estimatedPickupTime = pickupMatch ? parseInt(pickupMatch[0], 10) : 30;
 
       await applyMutation({
-        ownerId: user._id as Id<"users">,
         name: formData.restaurantName,
         description: formData.description || undefined,
         address: formData.address,
@@ -275,7 +273,7 @@ export default function RestaurateurApplyClient() {
       <RestaurantsSubNav />
       <div className="min-h-screen bg-background">
         {/* Hero */}
-        <div className="bg-gradient-to-br from-orange-600 to-red-600 py-12">
+        <div className="bg-gradient-to-br from-primary to-sky-700 py-12">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4">
@@ -316,7 +314,7 @@ export default function RestaurateurApplyClient() {
                     value={formData.contactName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                     placeholder="John Doe"
                   />
                 </div>
@@ -330,7 +328,7 @@ export default function RestaurateurApplyClient() {
                     value={formData.contactEmail}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                     placeholder="john@restaurant.com"
                   />
                 </div>
@@ -344,7 +342,7 @@ export default function RestaurateurApplyClient() {
                     value={formData.contactPhone}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                     placeholder="(312) 555-0123"
                   />
                 </div>
@@ -371,7 +369,7 @@ export default function RestaurateurApplyClient() {
                     value={formData.restaurantName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                     placeholder="Soul Kitchen"
                   />
                 </div>
@@ -384,7 +382,7 @@ export default function RestaurateurApplyClient() {
                     value={formData.description}
                     onChange={handleInputChange}
                     rows={3}
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background resize-none"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background resize-none"
                     placeholder="Tell us about your restaurant, your specialties, and what makes you unique..."
                   />
                 </div>
@@ -418,7 +416,7 @@ export default function RestaurateurApplyClient() {
                     name="website"
                     value={formData.website}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                     placeholder="https://www.yourrestaurant.com"
                   />
                 </div>
@@ -445,7 +443,7 @@ export default function RestaurateurApplyClient() {
                     value={formData.address}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                     placeholder="123 Main Street"
                   />
                 </div>
@@ -460,7 +458,7 @@ export default function RestaurateurApplyClient() {
                       value={formData.city}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                       placeholder="Chicago"
                     />
                   </div>
@@ -473,7 +471,7 @@ export default function RestaurateurApplyClient() {
                       value={formData.state}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                     >
                       <option value="IL">IL</option>
                       <option value="IN">IN</option>
@@ -491,7 +489,7 @@ export default function RestaurateurApplyClient() {
                       value={formData.zipCode}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                       placeholder="60601"
                     />
                   </div>
@@ -518,7 +516,7 @@ export default function RestaurateurApplyClient() {
                     value={formData.hoursOfOperation}
                     onChange={handleInputChange}
                     rows={3}
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background resize-none"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background resize-none"
                     placeholder="Mon-Fri: 11am-9pm&#10;Sat-Sun: 12pm-10pm"
                   />
                 </div>
@@ -530,7 +528,7 @@ export default function RestaurateurApplyClient() {
                     name="estimatedPickupTime"
                     value={formData.estimatedPickupTime}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                   >
                     <option value="10-15 minutes">10-15 minutes</option>
                     <option value="15-20 minutes">15-20 minutes</option>
@@ -556,7 +554,7 @@ export default function RestaurateurApplyClient() {
                 value={formData.additionalNotes}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-background resize-none"
+                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background resize-none"
                 placeholder="Anything else you'd like us to know about your restaurant..."
               />
             </div>
