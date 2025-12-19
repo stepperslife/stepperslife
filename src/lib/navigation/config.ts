@@ -238,12 +238,6 @@ export const organizerNavigation: RoleNavigation = {
           description: "Manage and purchase credits",
         },
         {
-          label: "Bundles",
-          href: "/organizer/bundles",
-          icon: Package,
-          description: "Create ticket bundles and packages",
-        },
-        {
           label: "Templates",
           href: "/organizer/templates",
           icon: FileText,
