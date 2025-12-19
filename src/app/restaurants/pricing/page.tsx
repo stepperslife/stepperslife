@@ -300,7 +300,7 @@ export default function RestaurantPricingPage() {
 
                   {/* CTA Button */}
                   <Link
-                    href={tier.cta === "Contact Sales" ? "/contact" : "/restaurateur/apply"}
+                    href={tier.cta === "Contact Sales" ? "/contact" : `/restaurateur/apply?plan=${tier.name.toLowerCase()}`}
                     className={`block w-full py-3 px-6 rounded-lg font-semibold text-center transition-colors mb-8 ${
                       tier.highlighted
                         ? "bg-gradient-to-r from-primary to-sky-500 text-white hover:from-primary/90 hover:to-sky-600"

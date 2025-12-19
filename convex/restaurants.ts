@@ -305,6 +305,8 @@ export const apply = mutation({
     hoursOfOperation: v.optional(v.string()),
     estimatedPickupTime: v.optional(v.number()),
     additionalNotes: v.optional(v.string()),
+    // Subscription plan selection (defaults to STARTER if not provided)
+    selectedPlan: v.optional(v.union(v.literal("starter"), v.literal("growth"), v.literal("professional"))),
   },
   handler: async (ctx, args) => {
     console.log("[restaurants:apply] Starting application...");
@@ -356,8 +358,14 @@ export const apply = mutation({
 
       console.log("[restaurants:apply] Inserting restaurant with slug:", slug);
 
-      // Get default subscription plan (STARTER - free tier)
-      const defaultPlan = getDefaultPlanTier();
+      // Map selected plan to tier (or use default STARTER)
+      const planMap: Record<string, "STARTER" | "GROWTH" | "PROFESSIONAL"> = {
+        starter: "STARTER",
+        growth: "GROWTH",
+        professional: "PROFESSIONAL",
+      };
+      const subscriptionTier = args.selectedPlan ? planMap[args.selectedPlan] : getDefaultPlanTier();
+      console.log("[restaurants:apply] Selected plan:", args.selectedPlan, "-> Tier:", subscriptionTier);
 
       const restaurantId = await ctx.db.insert("restaurants", {
         name: args.name.trim(),
@@ -376,8 +384,8 @@ export const apply = mutation({
         acceptingOrders: false,
         estimatedPickupTime: args.estimatedPickupTime || 30,
         isActive: false, // Pending approval
-        // Subscription: Starter plan is auto-activated (free tier)
-        subscriptionTier: defaultPlan,
+        // Subscription: Selected plan is auto-activated
+        subscriptionTier: subscriptionTier,
         subscriptionStatus: "ACTIVE",
         createdAt: now,
         updatedAt: now,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -21,9 +21,30 @@ import {
   FileText,
   CheckCircle,
   Loader2,
-  LogIn
+  LogIn,
+  CreditCard,
+  Sparkles
 } from "lucide-react";
 import toast from "react-hot-toast";
+
+// Plan details for display
+const PLAN_DETAILS: Record<string, { name: string; price: string; features: string[] }> = {
+  starter: {
+    name: "Starter",
+    price: "Free",
+    features: ["10 menu items", "3 categories", "10% transaction fee"],
+  },
+  growth: {
+    name: "Growth",
+    price: "$19/month",
+    features: ["100 menu items", "20 categories", "6% transaction fee"],
+  },
+  professional: {
+    name: "Professional",
+    price: "$49/month",
+    features: ["Unlimited menu items", "Unlimited categories", "4% transaction fee"],
+  },
+};
 
 interface FormData {
   // Contact Info
@@ -71,9 +92,14 @@ const CUISINE_OPTIONS = [
 export default function RestaurateurApplyClient() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const applyMutation = useMutation(api.restaurants.apply);
+
+  // Get selected plan from URL (default to starter)
+  const selectedPlanKey = searchParams.get("plan") || "starter";
+  const selectedPlan = PLAN_DETAILS[selectedPlanKey] || PLAN_DETAILS.starter;
 
   const [formData, setFormData] = useState<FormData>({
     contactName: "",
@@ -161,6 +187,7 @@ export default function RestaurateurApplyClient() {
         hoursOfOperation: formData.hoursOfOperation || undefined,
         estimatedPickupTime,
         additionalNotes: formData.additionalNotes || undefined,
+        selectedPlan: selectedPlanKey as "starter" | "growth" | "professional",
       });
 
       setSubmitted(true);
@@ -293,6 +320,35 @@ export default function RestaurateurApplyClient() {
         {/* Application Form */}
         <div className="container mx-auto px-4 py-12">
           <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-8">
+
+            {/* Selected Plan Display */}
+            <div className="bg-gradient-to-r from-primary/10 to-sky-500/10 dark:from-primary/20 dark:to-sky-500/20 rounded-2xl shadow-md border border-primary/20 p-6">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Selected Plan</p>
+                    <h2 className="text-xl font-bold text-foreground">{selectedPlan.name} Plan</h2>
+                    <p className="text-lg font-semibold text-primary">{selectedPlan.price}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedPlan.features.map((feature, idx) => (
+                    <span key={idx} className="px-3 py-1 bg-white/50 dark:bg-black/20 rounded-full text-sm text-foreground">
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+                <Link
+                  href="/restaurants/pricing"
+                  className="text-sm text-primary hover:underline font-medium"
+                >
+                  Change Plan
+                </Link>
+              </div>
+            </div>
 
             {/* Contact Information */}
             <div className="bg-card rounded-2xl shadow-md border border-border p-6">
