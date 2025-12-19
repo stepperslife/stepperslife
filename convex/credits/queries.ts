@@ -61,9 +61,9 @@ export const getMyCredits = query({
       const email = userInfo.email || identity.email;
       if (!email) {
         return {
-          creditsTotal: 300,
+          creditsTotal: 1000,
           creditsUsed: 0,
-          creditsRemaining: 300,
+          creditsRemaining: 1000,
           firstEventFreeUsed: false,
           hasFirstEventFree: true,
         };
@@ -78,9 +78,9 @@ export const getMyCredits = query({
     if (!user) {
       // Return default credits for new organizers
       return {
-        creditsTotal: 300,
+        creditsTotal: 1000,
         creditsUsed: 0,
-        creditsRemaining: 300,
+        creditsRemaining: 1000,
         firstEventFreeUsed: false,
         hasFirstEventFree: true,
       };
@@ -95,9 +95,9 @@ export const getMyCredits = query({
     if (!credits) {
       // Return default structure if not initialized
       return {
-        creditsTotal: 300,
+        creditsTotal: 1000,
         creditsUsed: 0,
-        creditsRemaining: 300,
+        creditsRemaining: 1000,
         firstEventFreeUsed: false,
         hasFirstEventFree: true,
       };

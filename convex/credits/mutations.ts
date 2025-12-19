@@ -274,7 +274,7 @@ export const markFirstEventUsed = mutation({
 });
 
 /**
- * Reset organizer credits to 300 (for fixing accounts created with wrong initial value)
+ * Reset organizer credits to 1000 (for fixing accounts created with wrong initial value)
  */
 export const resetToFreeCredits = mutation({
   args: {
@@ -290,7 +290,7 @@ export const resetToFreeCredits = mutation({
       throw new Error("No credit balance found");
     }
 
-    // Reset to 300 free credits
+    // Reset to 1000 free credits
     await ctx.db.patch(credits._id, {
       creditsTotal: FIRST_EVENT_FREE_TICKETS,
       creditsUsed: 0,
