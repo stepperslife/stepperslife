@@ -176,13 +176,13 @@ export function EventsGrid({ events }: EventsGridProps) {
                     }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    <div className="relative aspect-[4/5] overflow-hidden">
+                    <div className="relative aspect-[4/5] overflow-hidden bg-muted">
                       <Image
                         src={imageUrl}
                         alt={event.name}
                         fill
                         sizes="(max-width: 768px) 300px, 350px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="object-contain transition-transform duration-500 group-hover:scale-110"
                         loading="lazy"
                         unoptimized={true}
                       />

@@ -505,15 +505,15 @@ export default function ClassesListClient() {
                           transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         >
                           {/* Class Image */}
-                          <div className="relative aspect-[4/3] bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
+                          <div className="relative bg-muted overflow-hidden">
                             {classItem.imageUrl ? (
                               <img
                                 src={classItem.imageUrl}
                                 alt={classItem.name}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                className="h-auto max-w-full w-full rounded-t-lg transition-transform duration-500 group-hover:scale-105"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center">
+                              <div className="w-full h-48 flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
                                 <BookOpen className="w-16 h-16 text-white opacity-50" />
                               </div>
                             )}
@@ -588,15 +588,15 @@ export default function ClassesListClient() {
                             className="group block bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
                           >
                             {/* Class Image */}
-                            <div className="relative h-48 bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
+                            <div className="relative bg-muted overflow-hidden">
                               {classItem.imageUrl ? (
                                 <img
                                   src={classItem.imageUrl}
                                   alt={classItem.name}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  className="h-auto max-w-full w-full rounded-t-lg transition-transform duration-300 group-hover:scale-105"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center">
+                                <div className="w-full h-48 flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
                                   <BookOpen className="w-16 h-16 text-white opacity-50" />
                                 </div>
                               )}

@@ -35,7 +35,7 @@ export function ListView({ events }: ListViewProps) {
                   alt={event.name}
                   fill
                   sizes="(max-width: 640px) 100vw, 256px"
-                  className="object-cover"
+                  className="object-contain"
                   loading="lazy"
                 />
               ) : (
