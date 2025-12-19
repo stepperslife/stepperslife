@@ -39,16 +39,48 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
 
     // In production or if test user not found, require authentication
     console.error("[getCurrentUser] No identity found - user not authenticated");
-    throw new Error("Not authenticated");
+    throw new Error("Not authenticated - please sign in");
   }
 
   // Extract email from identity
   // Convex auth identity can have different structures depending on the provider
   // The email is passed as a custom claim in the JWT
-  const email = identity.email || (identity as any).tokenIdentifier?.split("|").pop();
+  let email: string | undefined = undefined;
 
-  if (!email || typeof email !== "string") {
-    throw new Error("No email found in authentication token");
+  // Try direct email field first
+  if (identity.email && typeof identity.email === "string") {
+    email = identity.email;
+    console.log("[getCurrentUser] Found email directly:", email);
+  }
+
+  // Try extracting from tokenIdentifier (format: "provider|userId|email" or similar)
+  if (!email && (identity as any).tokenIdentifier) {
+    const tokenParts = (identity as any).tokenIdentifier.split("|");
+    console.log("[getCurrentUser] Token parts:", tokenParts);
+    // Try last part first (often the email)
+    const lastPart = tokenParts[tokenParts.length - 1];
+    if (lastPart && lastPart.includes("@")) {
+      email = lastPart;
+      console.log("[getCurrentUser] Found email from tokenIdentifier:", email);
+    }
+  }
+
+  // Try subject claim which might contain email
+  if (!email && (identity as any).subject) {
+    const subject = (identity as any).subject;
+    console.log("[getCurrentUser] Subject:", subject);
+    if (subject.includes("@")) {
+      const emailMatch = subject.match(/[\w.-]+@[\w.-]+\.\w+/);
+      if (emailMatch) {
+        email = emailMatch[0];
+        console.log("[getCurrentUser] Found email from subject:", email);
+      }
+    }
+  }
+
+  if (!email) {
+    console.error("[getCurrentUser] Could not extract email from identity:", JSON.stringify(identity));
+    throw new Error("No email found in authentication token - please sign in again");
   }
 
   const user = await ctx.db
@@ -57,9 +89,11 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
     .first();
 
   if (!user) {
-    throw new Error("User not found in database");
+    console.error("[getCurrentUser] User not found for email:", email);
+    throw new Error(`User not found in database for email: ${email}`);
   }
 
+  console.log("[getCurrentUser] Found user:", user.email, user._id);
   return user;
 }
 
