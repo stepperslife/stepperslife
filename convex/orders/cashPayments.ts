@@ -296,7 +296,8 @@ export const generateCashActivationCode = mutation({
     // Generate 4-digit activation code
     const activationCode = generateActivationCode();
 
-    // Update all tickets with activation code
+    // Update all tickets with activation code and change status to PENDING_ACTIVATION
+    // This allows customers to use the activateTicket mutation
     const tickets = await ctx.db
       .query("tickets")
       .withIndex("by_order", (q) => q.eq("orderId", args.orderId))
@@ -305,12 +306,14 @@ export const generateCashActivationCode = mutation({
     for (const ticket of tickets) {
       await ctx.db.patch(ticket._id, {
         activationCode,
+        status: "PENDING_ACTIVATION", // Change from PENDING to PENDING_ACTIVATION
         soldByStaffId: args.staffId,
         updatedAt: now,
       });
     }
 
-    // Mark order as having code generated (but still pending activation)
+    // Mark order as having code generated
+    // Keep status as PENDING_PAYMENT - will change to COMPLETED when customer activates
     await ctx.db.patch(args.orderId, {
       soldByStaffId: args.staffId,
       updatedAt: now,

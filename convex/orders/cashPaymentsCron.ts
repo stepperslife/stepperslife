@@ -16,9 +16,10 @@ export const expireCashOrders = internalMutation({
 
 
     // Find all pending cash orders with expired holds
+    // Note: PENDING_PAYMENT is the status used for cash orders awaiting payment at door
     const allPendingOrders = await ctx.db
       .query("orders")
-      .filter((q) => q.eq(q.field("status"), "PENDING_CASH_PAYMENT"))
+      .filter((q) => q.eq(q.field("status"), "PENDING_PAYMENT"))
       .collect();
 
     // Filter by expired hold time (30 minutes from order creation)

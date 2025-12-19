@@ -1184,6 +1184,12 @@ export const completeBundleOrder = mutation({
 /**
  * Activate a ticket using 4-digit activation code
  * Used by customers who purchased tickets via cash from staff
+ *
+ * Flow:
+ * 1. Staff generates activation code via generateCashActivationCode
+ * 2. Customer receives code and uses this mutation to activate
+ * 3. When all tickets in order are activated, order is marked COMPLETED
+ * 4. Staff stats are updated when order completes
  */
 export const activateTicket = mutation({
   args: {
@@ -1192,6 +1198,7 @@ export const activateTicket = mutation({
     customerName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const now = Date.now();
 
     // Find ticket by activation code
     const ticket = await ctx.db
@@ -1221,14 +1228,82 @@ export const activateTicket = mutation({
       status: "VALID",
       attendeeEmail: args.customerEmail,
       attendeeName: args.customerName || ticket.attendeeName,
-      activatedAt: Date.now(),
-      updatedAt: Date.now(),
+      activatedAt: now,
+      updatedAt: now,
     });
 
     // Get event and ticket tier details for response
     const event = await ctx.db.get(ticket.eventId);
     const ticketTier = ticket.ticketTierId ? await ctx.db.get(ticket.ticketTierId) : null;
 
+    // Check if this was a cash order that needs to be completed
+    if (ticket.orderId) {
+      const order = await ctx.db.get(ticket.orderId);
+
+      if (order && order.status === "PENDING_PAYMENT" && order.paymentMethod === "CASH") {
+        // Check if ALL tickets in this order are now activated (status = VALID)
+        const allOrderTickets = await ctx.db
+          .query("tickets")
+          .withIndex("by_order", (q) => q.eq("orderId", ticket.orderId!))
+          .collect();
+
+        const allActivated = allOrderTickets.every(
+          (t) => t._id === ticket._id || t.status === "VALID"
+        );
+
+        if (allActivated) {
+          // Complete the order
+          await ctx.db.patch(order._id, {
+            status: "COMPLETED",
+            paidAt: now,
+            updatedAt: now,
+          });
+
+          // Update staff stats if a staff member sold this
+          const staffId = ticket.soldByStaffId || order.soldByStaffId;
+          if (staffId) {
+            const staff = await ctx.db.get(staffId);
+            if (staff) {
+              const ticketCount = allOrderTickets.length;
+
+              // Update staff sales tracking
+              await ctx.db.patch(staffId, {
+                ticketsSold: (staff.ticketsSold || 0) + ticketCount,
+                cashCollected: (staff.cashCollected || 0) + order.totalCents,
+                updatedAt: now,
+              });
+
+              // Calculate commission
+              let commission = 0;
+              if (staff.commissionType === "PERCENTAGE" && staff.commissionValue) {
+                commission = Math.round((order.subtotalCents * staff.commissionValue) / 100);
+              } else if (staff.commissionType === "FIXED" && staff.commissionValue) {
+                commission = staff.commissionValue * ticketCount;
+              }
+
+              // Update commission earned
+              if (commission > 0) {
+                await ctx.db.patch(staffId, {
+                  commissionEarned: (staff.commissionEarned || 0) + commission,
+                });
+              }
+
+              // Record staff sale
+              await ctx.db.insert("staffSales", {
+                orderId: order._id,
+                eventId: order.eventId,
+                staffId: staffId,
+                staffUserId: staff.staffUserId,
+                ticketCount,
+                commissionAmount: commission,
+                paymentMethod: "CASH",
+                createdAt: now,
+              });
+            }
+          }
+        }
+      }
+    }
 
     return {
       success: true,
