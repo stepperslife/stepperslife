@@ -42,6 +42,12 @@ export interface NavItem {
 
   /** Whether to open in new tab */
   external?: boolean;
+
+  /** Whether this is a primary action (big prominent button) */
+  isPrimary?: boolean;
+
+  /** Subtitle for primary actions */
+  subtitle?: string;
 }
 
 /**
@@ -74,8 +80,20 @@ export interface NavSection {
   /** Section title (optional, if you want labeled sections) */
   title?: string;
 
+  /** Section icon */
+  icon?: LucideIcon;
+
   /** Navigation items in this section */
   items: NavItem[];
+
+  /** Whether this section can be collapsed */
+  collapsible?: boolean;
+
+  /** Whether collapsed by default (requires collapsible: true) */
+  defaultCollapsed?: boolean;
+
+  /** Whether to show a divider before this section */
+  showDivider?: boolean;
 }
 
 /**

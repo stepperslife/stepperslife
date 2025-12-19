@@ -19,127 +19,137 @@ import {
   AlertTriangle,
   TrendingUp,
   Link as LinkIcon,
-  UserPlus,
   FileText,
   CreditCard,
-  Shield,
-  Upload,
-  Database,
-  Mail,
-  Percent,
   Wallet,
   Share2,
   UtensilsCrossed,
   Clock,
   ClipboardList,
   Store,
+  Search,
+  MoreHorizontal,
+  Briefcase,
+  PieChart,
 } from "lucide-react";
 import { RoleNavigation } from "./types";
 
 /**
- * Complete navigation configuration for all 6 user roles
- * Based on the stepperslife_dashboard_navigation_menus.md specification
+ * Simplified, mobile-first navigation configuration for all 7 user roles
+ * Following UX principles: Progressive Disclosure, Primary Action Focus,
+ * Grouping by Context, Collapsible Sections
  */
 
 // ============================================================================
-// ADMIN NAVIGATION
+// ADMIN NAVIGATION - Grouped by Domain
 // ============================================================================
 export const adminNavigation: RoleNavigation = {
   role: "admin",
-  dashboardTitle: "SteppersLife Admin",
+  dashboardTitle: "Admin",
   roleDescription: "Platform Administrator",
   sections: [
+    // Dashboard - always visible
     {
       items: [
         {
           label: "Dashboard",
           href: "/admin",
           icon: LayoutDashboard,
-          description: "Overview of platform metrics and recent activity",
+          description: "Overview of platform metrics",
         },
+      ],
+    },
+    // Users & Events Section
+    {
+      title: "Users & Events",
+      icon: Users,
+      items: [
         {
-          label: "Users Management",
+          label: "Users",
           href: "/admin/users",
           icon: Users,
-          description: "Manage all user types and permissions",
-          submenu: [
-            { label: "All Users", href: "/admin/users" },
-            { label: "Organizers", href: "/admin/users?role=organizer" },
-            { label: "Team Members", href: "/admin/users?role=team" },
-            { label: "Associates", href: "/admin/users?role=associate" },
-            { label: "Staff", href: "/admin/users?role=staff" },
-          ],
+          description: "Manage all users",
         },
         {
-          label: "Events Management",
+          label: "Events",
           href: "/admin/events",
           icon: Calendar,
-          description: "Approve, monitor, and manage all events",
-          submenu: [
-            { label: "All Events", href: "/admin/events" },
-            { label: "Pending Approval", href: "/admin/events?status=pending" },
-            { label: "Active Events", href: "/admin/events?status=active" },
-            { label: "Past Events", href: "/admin/events?status=past" },
-          ],
+          description: "Manage all events",
         },
+        {
+          label: "CRM",
+          href: "/admin/crm",
+          icon: Briefcase,
+          description: "Event contacts and CRM",
+        },
+      ],
+    },
+    // Commerce Section
+    {
+      title: "Commerce",
+      icon: ShoppingCart,
+      items: [
         {
           label: "Orders",
           href: "/admin/orders",
           icon: Ticket,
-          description: "View all ticket orders",
-        },
-        {
-          label: "Product Orders",
-          href: "/admin/product-orders",
-          icon: Package,
-          description: "Manage product orders and fulfillment",
+          description: "Ticket orders",
         },
         {
           label: "Products",
           href: "/admin/products",
           icon: ShoppingCart,
-          description: "Manage marketplace products",
+          description: "Marketplace products",
         },
         {
           label: "Vendors",
           href: "/admin/vendors",
-          icon: Users,
-          description: "Manage marketplace vendors",
-          submenu: [
-            { label: "All Vendors", href: "/admin/vendors" },
-            { label: "Vendor Payouts", href: "/admin/vendors/payouts" },
-          ],
+          icon: Store,
+          description: "Marketplace vendors",
         },
         {
-          label: "CRM",
-          href: "/admin/crm",
-          icon: Mail,
-          description: "Event contacts and CRM data",
+          label: "Product Orders",
+          href: "/admin/product-orders",
+          icon: Package,
+          description: "Product fulfillment",
         },
-        {
-          label: "Settings",
-          href: "/admin/settings",
-          icon: Settings,
-          description: "Configure platform-wide settings",
-        },
+      ],
+    },
+    // Insights Section
+    {
+      title: "Insights",
+      icon: PieChart,
+      items: [
         {
           label: "Analytics",
           href: "/admin/analytics",
           icon: BarChart3,
-          description: "Deep dive into platform performance",
+          description: "Platform analytics",
+        },
+        {
+          label: "Support Tickets",
+          href: "/admin/support",
+          icon: MessageSquare,
+          description: "Support requests",
+        },
+      ],
+    },
+    // Settings at bottom with divider
+    {
+      showDivider: true,
+      items: [
+        {
+          label: "Settings",
+          href: "/admin/settings",
+          icon: Settings,
+          description: "Platform settings",
         },
         {
           label: "Notifications",
           href: "/admin/notifications",
           icon: Bell,
           badge: "5",
-          description: "System alerts and admin notices",
-        },
-        {
-          label: "Support",
-          href: "/admin/support",
-          icon: MessageSquare,
-          description: "Manage support tickets and inquiries",
+          description: "System alerts",
         },
       ],
     },
@@ -154,129 +164,128 @@ export const adminNavigation: RoleNavigation = {
 };
 
 // ============================================================================
-// ORGANIZER NAVIGATION
+// ORGANIZER NAVIGATION - Sectioned with Collapsible "More Tools"
 // ============================================================================
 export const organizerNavigation: RoleNavigation = {
   role: "organizer",
-  dashboardTitle: "SteppersLife",
-  roleDescription: "Events Organizer",
+  dashboardTitle: "Organizer",
+  roleDescription: "Event Organizer",
   sections: [
+    // Overview
     {
       items: [
         {
           label: "Dashboard",
           href: "/organizer/dashboard",
           icon: LayoutDashboard,
-          description: "Quick view of events, sales, earnings",
+          description: "Quick overview",
         },
+      ],
+    },
+    // Events & Tickets - Primary section
+    {
+      title: "Events & Tickets",
+      icon: Ticket,
+      items: [
         {
           label: "My Events",
           href: "/organizer/events",
           icon: Calendar,
-          description: "Create and manage all events",
-          submenu: [
-            { label: "Create Event", href: "/organizer/events/create" },
-            { label: "Active Events", href: "/organizer/events?status=active" },
-            { label: "Past Events", href: "/organizer/events?status=past" },
-            { label: "Drafts", href: "/organizer/events?status=draft" },
-          ],
+          description: "Create and manage events",
         },
         {
           label: "Tickets",
           href: "/organizer/tickets",
           icon: Ticket,
-          description: "Purchase pre-paid tickets, view inventory",
-          submenu: [
-            { label: "Purchase Tickets", href: "/organizer/tickets/purchase" },
-            { label: "My Ticket Inventory", href: "/organizer/tickets/inventory" },
-            { label: "Sales Overview", href: "/organizer/tickets/sales" },
-          ],
+          description: "Purchase and manage tickets",
         },
         {
-          label: "Team Management",
+          label: "Team",
           href: "/organizer/team",
           icon: Users,
-          description: "Add team members, distribute tickets",
-          submenu: [
-            { label: "Team Members", href: "/organizer/team/members" },
-            { label: "Add Team Member", href: "/organizer/team/add" },
-            { label: "Ticket Distribution", href: "/organizer/team/distribution" },
-          ],
+          description: "Manage your team",
         },
+      ],
+    },
+    // Earnings Section
+    {
+      title: "Earnings",
+      icon: DollarSign,
+      items: [
         {
-          label: "Earnings",
+          label: "Earnings Overview",
           href: "/organizer/earnings",
           icon: DollarSign,
-          description: "View revenue, request payouts",
-          submenu: [
-            { label: "Total Earnings", href: "/organizer/earnings" },
-            { label: "Payout History", href: "/organizer/earnings/payouts" },
-            { label: "Transaction History", href: "/organizer/earnings/transactions" },
-          ],
+          description: "View revenue",
         },
         {
           label: "Reports",
           href: "/organizer/reports",
           icon: BarChart3,
-          description: "Detailed analytics for events and sales",
-          submenu: [
-            { label: "Sales Reports", href: "/organizer/reports/sales" },
-            { label: "Attendee Reports", href: "/organizer/reports/attendees" },
-            { label: "Financial Reports", href: "/organizer/reports/financial" },
-          ],
+          description: "Detailed analytics",
         },
-        {
-          label: "Analytics",
-          href: "/organizer/analytics",
-          icon: TrendingUp,
-          description: "Advanced analytics and insights",
-        },
+      ],
+    },
+    // More Tools - Collapsed by default
+    {
+      title: "More Tools",
+      icon: MoreHorizontal,
+      collapsible: true,
+      defaultCollapsed: true,
+      items: [
         {
           label: "Credits",
           href: "/organizer/credits",
           icon: Wallet,
-          description: "Manage and purchase credits",
+          description: "Manage credits",
         },
         {
           label: "Templates",
           href: "/organizer/templates",
           icon: FileText,
-          description: "Event templates and quick setup",
+          description: "Event templates",
+        },
+        {
+          label: "Bundles",
+          href: "/organizer/bundles",
+          icon: Package,
+          description: "Ticket bundles",
         },
         {
           label: "Settlement",
           href: "/organizer/settlement",
-          icon: Database,
-          description: "Financial settlement and reconciliation",
+          icon: CreditCard,
+          description: "Financial settlement",
         },
         {
-          label: "Payment Methods",
-          href: "/organizer/payment-methods",
-          icon: CreditCard,
-          description: "Configure payout preferences",
+          label: "Analytics",
+          href: "/organizer/analytics",
+          icon: TrendingUp,
+          description: "Advanced analytics",
         },
+      ],
+    },
+    // Footer items with divider
+    {
+      showDivider: true,
+      items: [
         {
           label: "Settings",
           href: "/organizer/settings",
           icon: Settings,
-          description: "Update profile and business information",
-          submenu: [
-            { label: "Profile", href: "/organizer/settings/profile" },
-            { label: "Business Info", href: "/organizer/settings/business" },
-            { label: "Preferences", href: "/organizer/settings/preferences" },
-          ],
+          description: "Your settings",
         },
         {
           label: "Notifications",
           href: "/organizer/notifications",
           icon: Bell,
-          description: "Event updates and sales alerts",
+          description: "Updates and alerts",
         },
         {
           label: "Support",
           href: "/organizer/support",
           icon: MessageSquare,
-          description: "Get help from platform",
+          description: "Get help",
         },
       ],
     },
@@ -291,14 +300,17 @@ export const organizerNavigation: RoleNavigation = {
 };
 
 // ============================================================================
-// USER/CUSTOMER NAVIGATION
+// USER/CUSTOMER NAVIGATION - Clean 3 Sections
 // ============================================================================
 export const userNavigation: RoleNavigation = {
   role: "user",
   dashboardTitle: "SteppersLife",
   roleDescription: "Customer",
   sections: [
+    // Discover Section
     {
+      title: "Discover",
+      icon: Search,
       items: [
         {
           label: "Home",
@@ -310,60 +322,69 @@ export const userNavigation: RoleNavigation = {
           label: "Browse Events",
           href: "/events",
           icon: Calendar,
-          description: "Discover all events",
-        },
-        {
-          label: "My Tickets",
-          href: "/user/tickets",
-          icon: Ticket,
-          description: "View purchased tickets with QR codes",
-          submenu: [
-            { label: "Upcoming Events", href: "/user/tickets?filter=upcoming" },
-            { label: "Past Events", href: "/user/tickets?filter=past" },
-            { label: "Ticket History", href: "/user/tickets/history" },
-          ],
+          description: "Discover events",
         },
         {
           label: "Favorites",
           href: "/user/favorites",
           icon: Heart,
-          description: "Saved events for later",
+          description: "Saved events",
+        },
+      ],
+    },
+    // My Tickets Section - Most important for customers
+    {
+      title: "My Tickets",
+      icon: Ticket,
+      items: [
+        {
+          label: "Upcoming Events",
+          href: "/user/tickets?filter=upcoming",
+          icon: Ticket,
+          description: "Your upcoming tickets",
+        },
+        {
+          label: "Past Events",
+          href: "/user/tickets?filter=past",
+          icon: CheckSquare,
+          description: "Previous events",
+        },
+        {
+          label: "Orders",
+          href: "/user/orders",
+          icon: FileText,
+          description: "Order history",
+        },
+      ],
+    },
+    // Account items with divider
+    {
+      showDivider: true,
+      items: [
+        {
+          label: "Profile",
+          href: "/user/profile",
+          icon: User,
+          description: "Your account",
         },
         {
           label: "Cart",
           href: "/user/cart",
           icon: ShoppingCart,
           badge: "3",
-          description: "Current items before checkout",
-        },
-        {
-          label: "My Orders",
-          href: "/user/orders",
-          icon: FileText,
-          description: "Complete order history",
-        },
-        {
-          label: "Profile",
-          href: "/user/profile",
-          icon: User,
-          description: "Update personal information",
-          submenu: [
-            { label: "Personal Info", href: "/user/profile" },
-            { label: "Saved Addresses", href: "/user/profile/addresses" },
-            { label: "Payment Methods", href: "/user/profile/payments" },
-          ],
+          description: "Shopping cart",
         },
         {
           label: "Notifications",
           href: "/user/notifications",
           icon: Bell,
-          description: "Event reminders and updates",
+          description: "Updates",
         },
         {
           label: "Support",
           href: "/user/support",
           icon: MessageSquare,
-          description: "Contact customer service",
+          description: "Get help",
         },
       ],
     },
@@ -378,119 +399,97 @@ export const userNavigation: RoleNavigation = {
 };
 
 // ============================================================================
-// STAFF (Door Staff) NAVIGATION
+// STAFF (Door Staff) NAVIGATION - Scan Tickets Primary
 // ============================================================================
 export const staffNavigation: RoleNavigation = {
   role: "STAFF",
-  dashboardTitle: "SteppersLife Staff",
+  dashboardTitle: "Staff",
   roleDescription: "Event Staff",
   sections: [
+    // PRIMARY ACTION - Scan Tickets (Giant Button)
     {
       items: [
-        {
-          label: "Dashboard",
-          href: "/staff/dashboard",
-          icon: LayoutDashboard,
-          description: "Today's event overview and scan metrics",
-        },
         {
           label: "Scan Tickets",
           href: "/staff/scan-tickets",
           icon: QrCode,
-          description: "QR code scanner interface",
-          highlight: true,
+          description: "Open QR scanner",
+          isPrimary: true,
+          subtitle: "Tap to open scanner",
         },
+      ],
+    },
+    // Quick Actions - Visible
+    {
+      items: [
         {
           label: "Register Sale",
           href: "/staff/register-sale",
           icon: DollarSign,
-          description: "Register in-person cash or card sales",
+          description: "In-person sales",
         },
+        {
+          label: "Today's Scans",
+          href: "/staff/scanned-tickets/today",
+          icon: CheckSquare,
+          description: "View today's scans",
+        },
+        {
+          label: "My Events",
+          href: "/staff/assigned-events",
+          icon: Calendar,
+          description: "Assigned events",
+        },
+      ],
+    },
+    // More Options - Collapsed
+    {
+      title: "More Options",
+      icon: MoreHorizontal,
+      collapsible: true,
+      defaultCollapsed: true,
+      items: [
         {
           label: "Cash Orders",
           href: "/staff/cash-orders",
           icon: Wallet,
-          description: "View and manage cash orders",
-        },
-        {
-          label: "Scanned Tickets",
-          href: "/staff/scanned-tickets",
-          icon: CheckSquare,
-          description: "View all scanned tickets in real-time",
-          submenu: [
-            { label: "Today's Scans", href: "/staff/scanned-tickets/today" },
-            { label: "By Event", href: "/staff/scanned-tickets/by-event" },
-            { label: "Search Ticket", href: "/staff/scanned-tickets/search" },
-          ],
-        },
-        {
-          label: "Assigned Events",
-          href: "/staff/assigned-events",
-          icon: Calendar,
-          description: "Events staff is scheduled for",
-          submenu: [
-            { label: "Today", href: "/staff/assigned-events/today" },
-            { label: "Upcoming", href: "/staff/assigned-events/upcoming" },
-            { label: "Past Events", href: "/staff/assigned-events/past" },
-          ],
+          description: "Cash payments",
         },
         {
           label: "Scan Statistics",
           href: "/staff/scan-statistics",
           icon: BarChart3,
-          description: "Entry analytics and reporting",
-          submenu: [
-            { label: "Entry Rate", href: "/staff/scan-statistics/entry-rate" },
-            { label: "Total Scans", href: "/staff/scan-statistics/total-scans" },
-            { label: "Event Status", href: "/staff/scan-statistics/event-status" },
-          ],
+          description: "Entry analytics",
         },
         {
           label: "Transfers",
           href: "/staff/transfers",
           icon: Share2,
-          description: "View and manage ticket transfers",
-        },
-        {
-          label: "My Team",
-          href: "/staff/my-team",
-          icon: Users,
-          description: "View your team hierarchy",
-        },
-        {
-          label: "My Sub-Sellers",
-          href: "/staff/my-sub-sellers",
-          icon: UserPlus,
-          description: "Manage your sub-sellers",
+          description: "Ticket transfers",
         },
         {
           label: "Issues",
           href: "/staff/issues",
           icon: AlertTriangle,
-          description: "Report and view ticket validation issues",
-          submenu: [
-            { label: "Invalid Tickets", href: "/staff/issues/invalid" },
-            { label: "Duplicate Scans", href: "/staff/issues/duplicates" },
-            { label: "Report Issue", href: "/staff/issues/report" },
-          ],
+          description: "Report issues",
         },
         {
-          label: "Profile",
+          label: "My Team",
+          href: "/staff/my-team",
+          icon: Users,
+          description: "Team hierarchy",
+        },
+        {
+          label: "Profile & Settings",
           href: "/staff/profile",
-          icon: User,
-          description: "Update personal information",
-        },
-        {
-          label: "Settings",
-          href: "/staff/settings",
           icon: Settings,
-          description: "Staff preferences and settings",
+          description: "Your settings",
         },
         {
-          label: "Notifications",
+          label: "Support",
           href: "/staff/notifications",
-          icon: Bell,
-          description: "Event assignments and alerts",
+          icon: MessageSquare,
+          description: "Get help",
         },
       ],
     },
@@ -505,104 +504,89 @@ export const staffNavigation: RoleNavigation = {
 };
 
 // ============================================================================
-// TEAM MEMBER NAVIGATION
+// TEAM MEMBER NAVIGATION - Focused on Sales
 // ============================================================================
 export const teamMemberNavigation: RoleNavigation = {
   role: "TEAM_MEMBERS",
-  dashboardTitle: "SteppersLife",
+  dashboardTitle: "Team Member",
   roleDescription: "Team Member",
   sections: [
+    // Dashboard
     {
       items: [
         {
           label: "Dashboard",
           href: "/team/dashboard",
           icon: LayoutDashboard,
-          description: "Overview of tickets, sales, and earnings",
+          description: "Overview",
         },
-        {
-          label: "My Events",
-          href: "/team/events",
-          icon: Calendar,
-          description: "Events assigned by organizer",
-          submenu: [
-            { label: "Active Events", href: "/team/events?status=active" },
-            { label: "Past Events", href: "/team/events?status=past" },
-            { label: "Event Details", href: "/team/events/details" },
-          ],
-        },
+      ],
+    },
+    // Tickets & Sales - Primary section
+    {
+      title: "Tickets & Sales",
+      icon: Ticket,
+      items: [
         {
           label: "My Tickets",
           href: "/team/tickets",
           icon: Ticket,
-          description: "Ticket inventory and distribution status",
-          submenu: [
-            { label: "Available Tickets", href: "/team/tickets?status=available" },
-            { label: "Assigned to Associates", href: "/team/tickets?status=assigned" },
-            { label: "Sold Tickets", href: "/team/tickets?status=sold" },
-          ],
+          description: "Your ticket inventory",
         },
         {
           label: "My Associates",
           href: "/team/associates",
           icon: Users,
-          description: "Add and manage associates under you",
-          submenu: [
-            { label: "Add Associate", href: "/team/associates/add" },
-            { label: "Manage Associates", href: "/team/associates" },
-            { label: "Distribute Tickets", href: "/team/associates/distribute" },
-          ],
+          description: "Manage associates",
         },
         {
-          label: "Earnings",
-          href: "/team/earnings",
-          icon: DollarSign,
-          description: "Track your 100% commission earnings",
-          submenu: [
-            { label: "Total Earnings", href: "/team/earnings" },
-            { label: "By Event", href: "/team/earnings/by-event" },
-            { label: "Payout History", href: "/team/earnings/payouts" },
-            { label: "Pending Payouts", href: "/team/earnings/pending" },
-          ],
-        },
-        {
-          label: "Sales Performance",
-          href: "/team/performance",
-          icon: TrendingUp,
-          description: "Compare sales with team",
-          submenu: [
-            { label: "My Sales", href: "/team/performance/my-sales" },
-            { label: "Associates Sales", href: "/team/performance/associates" },
-            { label: "Leaderboard", href: "/team/performance/leaderboard" },
-          ],
-        },
-        {
-          label: "My Ticket Links",
+          label: "Share Link",
           href: "/team/links",
           icon: LinkIcon,
-          description: "Unique links to sell tickets",
-          submenu: [
-            { label: "Generate Link", href: "/team/links/generate" },
-            { label: "Link Performance", href: "/team/links/performance" },
-          ],
+          description: "Your sales link",
+        },
+      ],
+    },
+    // Earnings Section
+    {
+      title: "Earnings",
+      icon: DollarSign,
+      items: [
+        {
+          label: "My Earnings",
+          href: "/team/earnings",
+          icon: DollarSign,
+          description: "Track earnings",
+        },
+        {
+          label: "Performance",
+          href: "/team/performance",
+          icon: TrendingUp,
+          description: "Sales stats",
+        },
+      ],
+    },
+    // Footer items with divider
+    {
+      showDivider: true,
+      items: [
+        {
+          label: "My Events",
+          href: "/team/events",
+          icon: Calendar,
+          description: "Assigned events",
         },
         {
           label: "Profile",
           href: "/team/profile",
           icon: User,
-          description: "Update personal information",
-        },
-        {
-          label: "Notifications",
-          href: "/team/notifications",
-          icon: Bell,
-          description: "Ticket assignments and sales alerts",
+          description: "Your profile",
         },
         {
           label: "Support",
           href: "/team/support",
           icon: MessageSquare,
-          description: "Get help from organizer or platform",
+          description: "Get help",
         },
       ],
     },
@@ -617,103 +601,70 @@ export const teamMemberNavigation: RoleNavigation = {
 };
 
 // ============================================================================
-// ASSOCIATE NAVIGATION
+// ASSOCIATE NAVIGATION - Super Simple, Link Primary
 // ============================================================================
 export const associateNavigation: RoleNavigation = {
   role: "ASSOCIATES",
-  dashboardTitle: "SteppersLife",
+  dashboardTitle: "Associate",
   roleDescription: "Sales Associate",
   sections: [
+    // PRIMARY ACTION - My Ticket Link
+    {
+      items: [
+        {
+          label: "My Ticket Link",
+          href: "/associate/link",
+          icon: LinkIcon,
+          description: "Share to sell tickets",
+          isPrimary: true,
+          subtitle: "Tap to copy & share",
+        },
+      ],
+    },
+    // Main items
     {
       items: [
         {
           label: "Dashboard",
           href: "/associate/dashboard",
           icon: LayoutDashboard,
-          description: "Quick view of tickets, sales, earnings",
-        },
-        {
-          label: "My Events",
-          href: "/associate/events",
-          icon: Calendar,
-          description: "Events you're selling tickets for",
-          submenu: [
-            { label: "Active Events", href: "/associate/events?status=active" },
-            { label: "Past Events", href: "/associate/events?status=past" },
-            { label: "Event Details", href: "/associate/events/details" },
-          ],
+          description: "Overview",
         },
         {
           label: "My Tickets",
           href: "/associate/tickets",
           icon: Ticket,
-          description: "Your ticket inventory and availability",
-          submenu: [
-            { label: "Available Tickets", href: "/associate/tickets?status=available" },
-            { label: "Sold Tickets", href: "/associate/tickets?status=sold" },
-            { label: "Ticket Inventory", href: "/associate/tickets/inventory" },
-          ],
+          description: "Ticket inventory",
         },
         {
-          label: "Earnings",
+          label: "My Earnings",
           href: "/associate/earnings",
           icon: DollarSign,
-          description: "Commission-based earnings tracking",
-          submenu: [
-            { label: "Total Earnings", href: "/associate/earnings" },
-            { label: "By Event", href: "/associate/earnings/by-event" },
-            { label: "Commission Rate", href: "/associate/earnings/rate" },
-            { label: "Payout History", href: "/associate/earnings/payouts" },
-          ],
+          description: "Commission earnings",
         },
+      ],
+    },
+    // Footer items with divider
+    {
+      showDivider: true,
+      items: [
         {
-          label: "Sales Performance",
-          href: "/associate/performance",
-          icon: TrendingUp,
-          description: "Your sales analytics",
-          submenu: [
-            { label: "Tickets Sold", href: "/associate/performance/tickets" },
-            { label: "Sales by Date", href: "/associate/performance/by-date" },
-            { label: "Performance Stats", href: "/associate/performance/stats" },
-          ],
-        },
-        {
-          label: "My Ticket Link",
-          href: "/associate/link",
-          icon: LinkIcon,
-          description: "Unique link to sell tickets",
-          submenu: [
-            { label: "Copy Link", href: "/associate/link/copy" },
-            { label: "Share Link", href: "/associate/link/share" },
-            { label: "Link Stats", href: "/associate/link/stats" },
-          ],
-        },
-        {
-          label: "My Team Member",
-          href: "/associate/team-member",
-          icon: UserPlus,
-          description: "Your assigned team member contact",
-          submenu: [
-            { label: "Contact Info", href: "/associate/team-member/contact" },
-          ],
+          label: "My Events",
+          href: "/associate/events",
+          icon: Calendar,
+          description: "Selling events",
         },
         {
           label: "Profile",
           href: "/associate/profile",
           icon: User,
-          description: "Update personal information",
-        },
-        {
-          label: "Notifications",
-          href: "/associate/notifications",
-          icon: Bell,
-          description: "Ticket assignments and sales alerts",
+          description: "Your profile",
         },
         {
           label: "Support",
           href: "/associate/support",
           icon: MessageSquare,
-          description: "Contact your team member or platform",
+          description: "Get help",
         },
       ],
     },
@@ -728,111 +679,91 @@ export const associateNavigation: RoleNavigation = {
 };
 
 // ============================================================================
-// RESTAURATEUR NAVIGATION
+// RESTAURATEUR NAVIGATION - Orders Dominant
 // ============================================================================
 export const restaurateurNavigation: RoleNavigation = {
   role: "restaurateur",
-  dashboardTitle: "SteppersLife",
+  dashboardTitle: "Restaurant",
   roleDescription: "Restaurant Partner",
   sections: [
+    // PRIMARY ACTION - Orders
     {
       items: [
-        {
-          label: "Dashboard",
-          href: "/restaurateur/dashboard",
-          icon: LayoutDashboard,
-          description: "Overview of orders, sales, and restaurant performance",
-        },
         {
           label: "Orders",
           href: "/restaurateur/dashboard/orders",
           icon: ClipboardList,
-          description: "View and manage incoming food orders",
-          highlight: true,
-          submenu: [
-            { label: "Active Orders", href: "/restaurateur/dashboard/orders?status=active" },
-            { label: "Completed", href: "/restaurateur/dashboard/orders?status=completed" },
-            { label: "Cancelled", href: "/restaurateur/dashboard/orders?status=cancelled" },
-          ],
+          description: "Manage orders",
+          isPrimary: true,
+          subtitle: "View active orders",
         },
+      ],
+    },
+    // Restaurant Section
+    {
+      title: "Restaurant",
+      icon: UtensilsCrossed,
+      items: [
         {
           label: "Menu",
           href: "/restaurateur/dashboard/menu",
           icon: UtensilsCrossed,
-          description: "Manage menu items and categories",
-          submenu: [
-            { label: "All Items", href: "/restaurateur/dashboard/menu" },
-            { label: "Categories", href: "/restaurateur/dashboard/menu?tab=categories" },
-            { label: "Add Item", href: "/restaurateur/dashboard/menu?action=add" },
-          ],
+          description: "Manage menu",
         },
         {
           label: "Hours",
           href: "/restaurateur/dashboard/hours",
           icon: Clock,
-          description: "Set operating hours and availability",
+          description: "Operating hours",
         },
         {
           label: "Staff",
           href: "/restaurateur/dashboard/staff",
           icon: Users,
-          description: "Manage restaurant staff and permissions",
-          submenu: [
-            { label: "Team Members", href: "/restaurateur/dashboard/staff" },
-            { label: "Invite Staff", href: "/restaurateur/dashboard/staff?action=invite" },
-            { label: "Pending Invites", href: "/restaurateur/dashboard/staff?tab=pending" },
-          ],
+          description: "Manage staff",
+        },
+      ],
+    },
+    // Business Section
+    {
+      title: "Business",
+      icon: BarChart3,
+      items: [
+        {
+          label: "Earnings",
+          href: "/restaurateur/dashboard/earnings",
+          icon: DollarSign,
+          description: "Revenue and payouts",
         },
         {
           label: "Analytics",
           href: "/restaurateur/dashboard/analytics",
           icon: BarChart3,
-          description: "Sales reports and performance metrics",
-          submenu: [
-            { label: "Overview", href: "/restaurateur/dashboard/analytics" },
-            { label: "Sales Report", href: "/restaurateur/dashboard/analytics?tab=sales" },
-            { label: "Popular Items", href: "/restaurateur/dashboard/analytics?tab=items" },
-          ],
+          description: "Performance metrics",
         },
+      ],
+    },
+    // Footer items with divider
+    {
+      showDivider: true,
+      items: [
         {
           label: "Reviews",
           href: "/restaurateur/dashboard/reviews",
           icon: MessageSquare,
-          description: "View and respond to customer reviews",
-        },
-        {
-          label: "Earnings",
-          href: "/restaurateur/dashboard/earnings",
-          icon: DollarSign,
-          description: "Track revenue and request payouts",
-          submenu: [
-            { label: "Overview", href: "/restaurateur/dashboard/earnings" },
-            { label: "Payout History", href: "/restaurateur/dashboard/earnings/payouts" },
-            { label: "Transactions", href: "/restaurateur/dashboard/earnings/transactions" },
-          ],
+          description: "Customer reviews",
         },
         {
           label: "Settings",
           href: "/restaurateur/dashboard/settings",
           icon: Settings,
-          description: "Restaurant profile and preferences",
-          submenu: [
-            { label: "Restaurant Info", href: "/restaurateur/dashboard/settings" },
-            { label: "Notifications", href: "/restaurateur/dashboard/settings?tab=notifications" },
-            { label: "Payment Methods", href: "/restaurateur/dashboard/settings?tab=payments" },
-          ],
-        },
-        {
-          label: "Notifications",
-          href: "/restaurateur/dashboard/notifications",
-          icon: Bell,
-          description: "Order alerts and updates",
+          description: "Restaurant settings",
         },
         {
           label: "Support",
           href: "/restaurateur/dashboard/support",
           icon: MessageSquare,
-          description: "Get help from platform support",
+          description: "Get help",
         },
       ],
     },
