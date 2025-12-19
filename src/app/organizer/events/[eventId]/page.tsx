@@ -849,10 +849,15 @@ export default function EventDashboardPage() {
                               onClick={async () => {
                                 setApprovingOrderId(order._id);
                                 try {
-                                  await approveCashOrder({ orderId: order._id as Id<"orders"> });
+                                  const result = await approveCashOrder({ orderId: order._id as Id<"orders"> });
+                                  if (result.emailSent) {
+                                    toast.success(`Payment approved! Confirmation email sent to ${order.buyerEmail}`);
+                                  } else {
+                                    toast.success("Payment approved! Tickets are now valid.");
+                                  }
                                 } catch (error: any) {
                                   console.error("Failed to approve order:", error);
-                                  alert(error.message || "Failed to approve order");
+                                  toast.error(error.message || "Failed to approve order");
                                 } finally {
                                   setApprovingOrderId(null);
                                 }

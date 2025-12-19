@@ -12,6 +12,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "../_generated/server";
 import { api } from "../_generated/api";
+import { Id } from "../_generated/dataModel";
 
 const CASH_HOLD_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
 
