@@ -133,9 +133,9 @@ export default function OrganizerEventsPage() {
 
   // Default credits if null (for new users or when Convex auth not ready)
   const effectiveCredits = credits || {
-    creditsTotal: 300,
+    creditsTotal: 1000,
     creditsUsed: 0,
-    creditsRemaining: 300,
+    creditsRemaining: 1000,
     firstEventFreeUsed: false,
     hasFirstEventFree: true,
   };
@@ -345,7 +345,7 @@ export default function OrganizerEventsPage() {
       <main className="container mx-auto px-4 py-4 md:py-8">
         {/* Welcome Banner for New Organizers - Mobile Optimized */}
         {effectiveCredits &&
-          effectiveCredits.creditsRemaining === 300 &&
+          effectiveCredits.creditsRemaining === 1000 &&
           effectiveCredits.creditsUsed === 0 &&
           showWelcomeBanner && (
             <motion.div
@@ -367,7 +367,7 @@ export default function OrganizerEventsPage() {
                       </h3>
                       <p className="text-sm md:text-lg text-foreground mb-2 md:mb-3">
                         You've received{" "}
-                        <span className="font-bold text-primary">300 FREE tickets</span> to get
+                        <span className="font-bold text-primary">1,000 FREE tickets</span> to get
                         started!
                       </p>
                       <div className="bg-white/70 rounded-lg p-3 md:p-4 border border-primary/20">
@@ -376,7 +376,7 @@ export default function OrganizerEventsPage() {
                         </p>
                         <ul className="text-xs md:text-sm text-foreground space-y-0.5 md:space-y-1 list-disc list-inside">
                           <li>Create your first event</li>
-                          <li>Use 300 free tickets - no charges!</li>
+                          <li>Use 1,000 free tickets - no charges!</li>
                           <li>After free tickets: $0.30 per ticket</li>
                         </ul>
                       </div>
@@ -444,7 +444,7 @@ export default function OrganizerEventsPage() {
                     <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1.5 md:px-4 md:py-2 flex-1 lg:flex-none">
                       <p className="text-xs md:text-sm font-medium text-center">$0.30 per ticket</p>
                     </div>
-                    {effectiveCredits.creditsTotal === 300 && effectiveCredits.creditsUsed === 0 && (
+                    {effectiveCredits.creditsTotal === 1000 && effectiveCredits.creditsUsed === 0 && (
                       <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-3 py-1.5 md:px-4 md:py-2 flex-1 lg:flex-none">
                         <div className="flex items-center justify-center gap-1.5 md:gap-2 text-xs md:text-sm">
                           <Check className="w-3 h-3 md:w-4 md:h-4" />

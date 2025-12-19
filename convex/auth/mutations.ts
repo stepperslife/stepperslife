@@ -36,13 +36,13 @@ export const createUserWithPassword = mutation({
       updatedAt: now,
     });
 
-    // Initialize credit balance for organizers - 300 FREE tickets!
+    // Initialize credit balance for organizers - 1000 FREE tickets!
     if (args.role === "organizer" || args.role === "admin") {
       await ctx.db.insert("organizerCredits", {
         organizerId: userId,
-        creditsTotal: 300,
+        creditsTotal: 1000,
         creditsUsed: 0,
-        creditsRemaining: 300,
+        creditsRemaining: 1000,
         firstEventFreeUsed: false,
         createdAt: now,
         updatedAt: now,
@@ -166,9 +166,9 @@ export const verifyMagicLinkToken = mutation({
       if (!existingCredits) {
         await ctx.db.insert("organizerCredits", {
           organizerId: user._id,
-          creditsTotal: 300,
+          creditsTotal: 1000,
           creditsUsed: 0,
-          creditsRemaining: 300,
+          creditsRemaining: 1000,
           firstEventFreeUsed: false,
           createdAt: Date.now(),
           updatedAt: Date.now(),
