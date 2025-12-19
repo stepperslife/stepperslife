@@ -306,67 +306,82 @@ export const apply = mutation({
     additionalNotes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Validate inputs
-    validateRequiredString(args.name, "Restaurant name", { maxLength: 200 });
-    validatePhoneNumber(args.phone, "Phone number");
-    validateRequiredString(args.address, "Address", { maxLength: 500 });
-    validateRequiredString(args.city, "City", { maxLength: 100 });
-    validateRequiredString(args.state, "State", { maxLength: 50 });
-    validateRequiredString(args.zipCode, "ZIP code", { maxLength: 20 });
-    validateRequiredString(args.contactName, "Contact name", { maxLength: 100 });
-    validateEmail(args.contactEmail, "Contact email");
+    console.log("[restaurants:apply] Starting application...");
 
-    if (args.cuisine.length === 0) {
-      throw new Error("Please select at least one cuisine type");
+    try {
+      // Validate inputs
+      validateRequiredString(args.name, "Restaurant name", { maxLength: 200 });
+      validatePhoneNumber(args.phone, "Phone number");
+      validateRequiredString(args.address, "Address", { maxLength: 500 });
+      validateRequiredString(args.city, "City", { maxLength: 100 });
+      validateRequiredString(args.state, "State", { maxLength: 50 });
+      validateRequiredString(args.zipCode, "ZIP code", { maxLength: 20 });
+      validateRequiredString(args.contactName, "Contact name", { maxLength: 100 });
+      validateEmail(args.contactEmail, "Contact email");
+
+      if (args.cuisine.length === 0) {
+        throw new Error("Please select at least one cuisine type");
+      }
+      if (args.cuisine.length > 10) {
+        throw new Error("Maximum 10 cuisine types allowed");
+      }
+
+      console.log("[restaurants:apply] Validation passed, getting user...");
+
+      // SECURITY: Get ownerId from authenticated user, not from client
+      const user = await getCurrentUser(ctx);
+      console.log("[restaurants:apply] User found:", user.email);
+      const now = Date.now();
+
+      // Generate slug from name
+      const baseSlug = args.name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
+      // Check for existing slug and make unique if needed
+      let slug = baseSlug;
+      let counter = 1;
+      while (true) {
+        const existing = await ctx.db
+          .query("restaurants")
+          .withIndex("by_slug", (q) => q.eq("slug", slug))
+          .first();
+        if (!existing) break;
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+
+      console.log("[restaurants:apply] Inserting restaurant with slug:", slug);
+
+      const restaurantId = await ctx.db.insert("restaurants", {
+        name: args.name.trim(),
+        slug,
+        description: args.description?.trim(),
+        ownerId: user._id, // SECURE: From auth context, not client
+        address: args.address.trim(),
+        city: args.city.trim(),
+        state: args.state.trim(),
+        zipCode: args.zipCode.trim(),
+        phone: args.phone.trim(),
+        cuisine: args.cuisine,
+        logoUrl: undefined,
+        coverImageUrl: undefined,
+        operatingHours: args.hoursOfOperation,
+        acceptingOrders: false,
+        estimatedPickupTime: args.estimatedPickupTime || 30,
+        isActive: false, // Pending approval
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      console.log("[restaurants:apply] Restaurant created:", restaurantId);
+      return restaurantId;
+    } catch (error: any) {
+      console.error("[restaurants:apply] Error:", error.message || error);
+      throw error;
     }
-    if (args.cuisine.length > 10) {
-      throw new Error("Maximum 10 cuisine types allowed");
-    }
-
-    // SECURITY: Get ownerId from authenticated user, not from client
-    const user = await getCurrentUser(ctx);
-    const now = Date.now();
-
-    // Generate slug from name
-    const baseSlug = args.name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-
-    // Check for existing slug and make unique if needed
-    let slug = baseSlug;
-    let counter = 1;
-    while (true) {
-      const existing = await ctx.db
-        .query("restaurants")
-        .withIndex("by_slug", (q) => q.eq("slug", slug))
-        .first();
-      if (!existing) break;
-      slug = `${baseSlug}-${counter}`;
-      counter++;
-    }
-
-    return await ctx.db.insert("restaurants", {
-      name: args.name.trim(),
-      slug,
-      description: args.description?.trim(),
-      ownerId: user._id, // SECURE: From auth context, not client
-      address: args.address.trim(),
-      city: args.city.trim(),
-      state: args.state.trim(),
-      zipCode: args.zipCode.trim(),
-      phone: args.phone.trim(),
-      cuisine: args.cuisine,
-      logoUrl: undefined,
-      coverImageUrl: undefined,
-      operatingHours: args.hoursOfOperation,
-      acceptingOrders: false,
-      estimatedPickupTime: args.estimatedPickupTime || 30,
-      isActive: false, // Pending approval
-      createdAt: now,
-      updatedAt: now,
-    });
   },
 });
 
