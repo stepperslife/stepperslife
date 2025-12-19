@@ -81,3 +81,63 @@ export const saveStripeConnectAccount = mutation({
     return { success: true };
   },
 });
+
+/**
+ * Save PayPal account (email or merchant ID) for organizer
+ * Used for receiving split payments from ticket sales
+ * Supports both personal and business PayPal accounts
+ */
+export const savePayPalAccount = mutation({
+  args: {
+    userId: v.id("users"),
+    paypalMerchantId: v.string(), // Email or merchant ID
+    paypalEmail: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Update user with PayPal account
+    await ctx.db.patch(args.userId, {
+      paypalMerchantId: args.paypalMerchantId,
+      paypalAccountSetupComplete: true,
+      acceptsPaypalPayments: true,
+      updatedAt: Date.now(),
+    });
+
+    console.log(`[PayPal] Account saved for user ${args.userId}: ${args.paypalMerchantId}`);
+
+    return { success: true };
+  },
+});
+
+/**
+ * Disconnect PayPal account from organizer
+ */
+export const disconnectPayPalAccount = mutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Remove PayPal account info
+    await ctx.db.patch(args.userId, {
+      paypalMerchantId: undefined,
+      paypalAccountSetupComplete: false,
+      acceptsPaypalPayments: false,
+      updatedAt: Date.now(),
+    });
+
+    console.log(`[PayPal] Account disconnected for user ${args.userId}`);
+
+    return { success: true };
+  },
+});

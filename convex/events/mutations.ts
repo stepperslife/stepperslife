@@ -353,6 +353,17 @@ export const configurePayment = mutation({
       }
     }
 
+    // Determine customer payment methods based on connected accounts
+    let customerPaymentMethods: ("CASH" | "STRIPE" | "PAYPAL")[] = ["CASH"]; // Cash always available
+    if (args.model === "CREDIT_CARD") {
+      if (user.stripeConnectedAccountId) {
+        customerPaymentMethods.push("STRIPE");
+      }
+      if (user.paypalMerchantId) {
+        customerPaymentMethods.push("PAYPAL");
+      }
+    }
+
     // Create payment config
     const configId = await ctx.db.insert("eventPaymentConfig", {
       eventId: args.eventId,
@@ -366,9 +377,12 @@ export const configurePayment = mutation({
       charityDiscount: false,
       lowPriceDiscount: false,
       ticketsAllocated: args.model === "PREPAY" ? 0 : undefined,
+      // Copy organizer's payment account IDs for CREDIT_CARD model
       stripeConnectAccountId:
         args.model === "CREDIT_CARD" ? user.stripeConnectedAccountId : undefined,
-      customerPaymentMethods: args.model === "PREPAY" ? ["CASH"] : ["STRIPE"],
+      paypalMerchantId:
+        args.model === "CREDIT_CARD" ? user.paypalMerchantId : undefined,
+      customerPaymentMethods,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });

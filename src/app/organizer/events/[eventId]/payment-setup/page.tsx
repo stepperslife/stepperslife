@@ -30,8 +30,10 @@ export default function PaymentSetupPage() {
 
   const isLoading = event === undefined || currentUser === undefined;
 
-  // Check if user has Stripe account connected
+  // Check if user has payment accounts connected
   const hasStripeConnected = currentUser?.stripeAccountSetupComplete === true;
+  const hasPayPalConnected = !!currentUser?.paypalMerchantId;
+  const hasAnyPaymentMethod = hasStripeConnected || hasPayPalConnected;
 
   // Check if user is the organizer
   if (!isLoading && event && event.organizerId !== currentUser?._id) {
@@ -87,6 +89,13 @@ export default function PaymentSetupPage() {
         }
       } else {
         // Configure credit card model (CREDIT_CARD)
+        // Requires at least one payment method connected
+        if (!hasAnyPaymentMethod) {
+          alert("Please connect at least one payment method (Stripe or PayPal) to continue.");
+          setIsProcessing(false);
+          return;
+        }
+
         await configurePayment({
           eventId,
           model: "CREDIT_CARD",
@@ -96,8 +105,8 @@ export default function PaymentSetupPage() {
           stripeFeeFixed: 0.3,
         });
 
-        // Redirect to Stripe Connect onboarding flow
-        router.push(`/organizer/stripe-connect?action=create&email=${currentUser?.email || ""}`);
+        alert("Payment configured successfully!");
+        router.push(`/organizer/events/${eventId}`);
       }
     } catch (error) {
       console.error("Payment setup error:", error);
@@ -292,8 +301,9 @@ export default function PaymentSetupPage() {
               <div className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-foreground">
-                  Pay upfront with <span className="font-semibold">CashApp</span> or{" "}
-                  <span className="font-semibold">Square</span>
+                  Pay upfront with <span className="font-semibold">Card</span>,{" "}
+                  <span className="font-semibold">Cash App Pay</span>, or{" "}
+                  <span className="font-semibold">PayPal</span>
                 </p>
               </div>
               <div className="flex items-start gap-2">
@@ -330,13 +340,10 @@ export default function PaymentSetupPage() {
           {/* Pay-As-Sell Model */}
           <button
             onClick={() => handleModelSelection("CREDIT_CARD")}
-            disabled={!hasStripeConnected}
-            className={`relative bg-white rounded-lg border-2 p-6 text-left transition-all ${
-              !hasStripeConnected
-                ? "opacity-60 cursor-not-allowed border"
-                : selectedModel === "CREDIT_CARD"
-                  ? "border-primary shadow-lg hover:shadow-lg"
-                  : "border hover:shadow-lg"
+            className={`relative bg-white rounded-lg border-2 p-6 text-left transition-all hover:shadow-lg ${
+              selectedModel === "CREDIT_CARD"
+                ? "border-primary shadow-lg"
+                : "border"
             }`}
           >
             {selectedModel === "CREDIT_CARD" && (
@@ -349,7 +356,7 @@ export default function PaymentSetupPage() {
 
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                <Zap className="w-6 h-6 text-primary" />
+                <Zap className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-foreground">Pay-As-You-Sell</h3>
@@ -359,20 +366,8 @@ export default function PaymentSetupPage() {
 
             <div className="mb-4">
               <p className="text-3xl font-bold text-foreground">3.7% + $1.79</p>
-              <p className="text-sm text-muted-foreground">+ Stripe fees (2.9% + $0.30)</p>
+              <p className="text-sm text-muted-foreground">+ processing fees (2.9% + $0.30)</p>
             </div>
-
-            {!hasStripeConnected && (
-              <div className="bg-primary/5 border border-primary/30 rounded-lg p-3 mb-4">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-foreground">
-                    <span className="font-semibold">Stripe Connect Required:</span> Connect your
-                    Stripe account to use this payment model
-                  </p>
-                </div>
-              </div>
-            )}
 
             <div className="space-y-3 mb-4">
               <div className="flex items-start gap-2">
@@ -388,7 +383,7 @@ export default function PaymentSetupPage() {
               <div className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-foreground">
-                  Customers pay with <span className="font-semibold">credit/debit cards</span>
+                  Accept <span className="font-semibold">Stripe</span> and/or <span className="font-semibold">PayPal</span>
                 </p>
               </div>
               <div className="flex items-start gap-2">
@@ -397,17 +392,83 @@ export default function PaymentSetupPage() {
               </div>
             </div>
 
-            <div className="bg-primary border border-primary rounded-lg p-3 mb-4">
-              <div className="flex items-start gap-2">
-                <Info className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-primary">
-                  <span className="font-semibold">Requires Stripe Connect:</span>{" "}
-                  {hasStripeConnected
-                    ? "Your Stripe account is connected and ready!"
-                    : "You'll be guided to connect your Stripe account"}
-                </p>
+            {/* Payment Method Connection Status */}
+            <div className="space-y-2 mb-4">
+              {/* Stripe Status */}
+              <div className={`flex items-center justify-between p-2 rounded-lg ${
+                hasStripeConnected ? "bg-success/10 border border-success/20" : "bg-muted border border-border"
+              }`}>
+                <div className="flex items-center gap-2">
+                  <CreditCard className={`w-4 h-4 ${hasStripeConnected ? "text-success" : "text-muted-foreground"}`} />
+                  <span className="text-sm font-medium">Stripe</span>
+                </div>
+                {hasStripeConnected ? (
+                  <span className="text-xs text-success font-medium flex items-center gap-1">
+                    <Check className="w-3 h-3" /> Connected
+                  </span>
+                ) : (
+                  <Link
+                    href={`/organizer/stripe-connect?action=create&email=${currentUser?.email || ""}&eventId=${eventId}`}
+                    className="text-xs text-primary hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Connect →
+                  </Link>
+                )}
+              </div>
+
+              {/* PayPal Status */}
+              <div className={`flex items-center justify-between p-2 rounded-lg ${
+                hasPayPalConnected ? "bg-success/10 border border-success/20" : "bg-muted border border-border"
+              }`}>
+                <div className="flex items-center gap-2">
+                  <svg className={`w-4 h-4 ${hasPayPalConnected ? "text-success" : "text-muted-foreground"}`} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.771.771 0 0 1 .76-.654h6.536c2.96 0 4.95 1.585 4.95 4.202 0 3.538-3.196 5.707-6.545 5.707H8.188a.641.641 0 0 0-.633.543l-.479 3.59-.436 2.974a.39.39 0 0 1-.385.329h-.68a.39.39 0 0 1-.385-.329l-.114-.745zm6.17-14.404c0 1.614-1.312 2.925-2.93 2.925H7.972l.706-5.274h2.344c1.214 0 2.224.99 2.224 2.349z"/>
+                  </svg>
+                  <span className="text-sm font-medium">PayPal</span>
+                </div>
+                {hasPayPalConnected ? (
+                  <span className="text-xs text-success font-medium flex items-center gap-1">
+                    <Check className="w-3 h-3" /> Connected
+                  </span>
+                ) : (
+                  <Link
+                    href={`/organizer/paypal-connect?eventId=${eventId}`}
+                    className="text-xs text-primary hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Connect →
+                  </Link>
+                )}
               </div>
             </div>
+
+            {!hasAnyPaymentMethod && (
+              <div className="bg-primary/5 border border-primary/30 rounded-lg p-3 mb-4">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-foreground">
+                    <span className="font-semibold">Connect at least one:</span> Connect Stripe and/or PayPal to receive payments from customers
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {hasAnyPaymentMethod && (
+              <div className="bg-success/10 border border-success/30 rounded-lg p-3 mb-4">
+                <div className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-foreground">
+                    <span className="font-semibold">Ready to accept payments!</span>{" "}
+                    {hasStripeConnected && hasPayPalConnected
+                      ? "Customers can pay with card or PayPal"
+                      : hasStripeConnected
+                        ? "Customers can pay with card via Stripe"
+                        : "Customers can pay with PayPal"}
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="bg-card rounded-lg p-4">
               <p className="text-xs text-muted-foreground mb-2">Example: ${exampleTicketPrice} ticket</p>
@@ -417,7 +478,7 @@ export default function PaymentSetupPage() {
                   <span className="text-foreground">-${payAsSellPlatformFee.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Stripe fee:</span>
+                  <span className="text-muted-foreground">Processing fee:</span>
                   <span className="text-foreground">-${payAsSellStripeFee.toFixed(2)}</span>
                 </div>
               </div>

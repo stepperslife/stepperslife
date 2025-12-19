@@ -179,7 +179,7 @@ export default defineSchema({
     amountPaid: v.number(), // in cents
     pricePerTicket: v.number(), // in cents
     stripePaymentIntentId: v.optional(v.string()),
-    squarePaymentId: v.optional(v.string()),
+    squarePaymentId: v.optional(v.string()), // DEPRECATED: Legacy Square payments - no longer used
     paypalOrderId: v.optional(v.string()),
     status: v.union(v.literal("PENDING"), v.literal("COMPLETED"), v.literal("FAILED")),
     purchasedAt: v.number(),
@@ -210,13 +210,15 @@ export default defineSchema({
     ),
 
     // HOW ORGANIZER PAYS STEPPERSLIFE (for PREPAY model only)
-    // Organizer purchases ticket credits FROM platform via Square, Cash App (Square SDK), or PayPal
+    // Organizer purchases ticket credits FROM platform via Stripe or PayPal
     // NOTE: This is SEPARATE from customer payment methods - organizers pay the platform for capacity
     organizerPaymentMethod: v.optional(
       v.union(
-        v.literal("SQUARE"),    // Square credit card payment
-        v.literal("CASHAPP"),   // Cash App via Square SDK (organizer-only)
-        v.literal("PAYPAL")     // PayPal payment to platform
+        v.literal("STRIPE"),    // Stripe credit card payment (includes Cash App Pay via Stripe)
+        v.literal("PAYPAL"),    // PayPal payment to platform
+        // DEPRECATED: Legacy values - no longer used for new events
+        v.literal("SQUARE"),    // Legacy: Square credit card payment
+        v.literal("CASHAPP")    // Legacy: Cash App via Square SDK
       )
     ),
 

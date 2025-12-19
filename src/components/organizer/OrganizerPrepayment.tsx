@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -14,7 +14,10 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import toast from "react-hot-toast";
+
+type PaymentMethod = "stripe" | "paypal";
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -204,6 +207,190 @@ function PrepaymentForm({
   );
 }
 
+// PayPal payment component
+function PayPalCreditPurchase({
+  eventId,
+  eventName,
+  estimatedTickets,
+  pricePerTicket,
+  totalAmount,
+  totalAmountCents,
+  userId,
+  onPaymentSuccess,
+  onBack,
+}: {
+  eventId: string;
+  eventName: string;
+  estimatedTickets: number;
+  pricePerTicket: number;
+  totalAmount: number;
+  totalAmountCents: number;
+  userId: string;
+  onPaymentSuccess: () => void;
+  onBack: () => void;
+}) {
+  const [error, setError] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const configurePayment = useMutation(api.events.mutations.configurePayment);
+
+  const createOrder = useCallback(async () => {
+    try {
+      const response = await fetch("/api/paypal/create-credit-purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: totalAmountCents,
+          userId,
+          ticketQuantity: estimatedTickets,
+          pricePerTicket: Math.round(pricePerTicket * 100),
+          eventId,
+          eventName,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to create PayPal order");
+      }
+
+      return data.orderId;
+    } catch (err: any) {
+      console.error("Failed to create PayPal order:", err);
+      setError(err.message || "Failed to initialize PayPal payment");
+      throw err;
+    }
+  }, [totalAmountCents, userId, estimatedTickets, pricePerTicket, eventId, eventName]);
+
+  const onApprove = useCallback(async (data: { orderID: string }) => {
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      // Capture the PayPal payment
+      const response = await fetch("/api/paypal/capture-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paypalOrderId: data.orderID,
+        }),
+      });
+
+      const captureData = await response.json();
+
+      if (captureData.status !== "COMPLETED") {
+        throw new Error("Payment was not completed");
+      }
+
+      // Configure the event with PREPAY model
+      const configToast = toast.loading("Activating your event...");
+
+      try {
+        await configurePayment({
+          eventId: eventId as Id<"events">,
+          model: "PREPAY",
+          ticketPrice: pricePerTicket,
+        });
+
+        toast.dismiss(configToast);
+        toast.success("Payment successful! Your event is now active.");
+        onPaymentSuccess();
+      } catch (configError: any) {
+        toast.dismiss(configToast);
+        toast.error(configError.message || "Failed to configure event. Please contact support.");
+        setError("Payment succeeded but event configuration failed. Please contact support.");
+      }
+    } catch (err: any) {
+      console.error("PayPal capture error:", err);
+      setError(err.message || "Payment failed. Please try again.");
+      toast.error("Payment failed. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [configurePayment, eventId, pricePerTicket, onPaymentSuccess]);
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center mb-6">
+            <h3 className="text-xl font-bold text-foreground mb-2">Complete Payment with PayPal</h3>
+            <p className="text-muted-foreground">
+              Prepay ${totalAmount.toFixed(2)} for {estimatedTickets} ticket credits
+            </p>
+          </div>
+
+          {/* Payment Summary */}
+          <div className="bg-accent rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-muted-foreground">Ticket Credits:</span>
+              <span className="font-semibold text-foreground">{estimatedTickets} tickets</span>
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-muted-foreground">Price per ticket:</span>
+              <span className="font-semibold text-foreground">${pricePerTicket.toFixed(2)}</span>
+            </div>
+            <div className="border-t border-border pt-2 mt-2">
+              <div className="flex items-center justify-between text-lg font-bold">
+                <span>Total:</span>
+                <span className="text-primary">${totalAmount.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* PayPal Buttons */}
+          {isProcessing ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
+              <p className="text-muted-foreground">Processing your payment...</p>
+            </div>
+          ) : (
+            <div className="mb-6">
+              <PayPalButtons
+                style={{
+                  layout: "vertical",
+                  color: "gold",
+                  shape: "rect",
+                  label: "pay",
+                }}
+                createOrder={createOrder}
+                onApprove={onApprove}
+                onError={(err) => {
+                  console.error("PayPal error:", err);
+                  setError("PayPal encountered an error. Please try again.");
+                }}
+                onCancel={() => {
+                  toast("Payment cancelled");
+                }}
+              />
+            </div>
+          )}
+
+          {/* Back Button */}
+          <div className="flex justify-center">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onBack}
+              disabled={isProcessing}
+            >
+              Back to Payment Options
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export function OrganizerPrepayment({
   eventId,
   eventName,
@@ -212,6 +399,7 @@ export function OrganizerPrepayment({
   onPaymentSuccess,
   onCancel,
 }: OrganizerPrepaymentProps) {
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -223,8 +411,8 @@ export function OrganizerPrepayment({
   const totalAmount = estimatedTickets * pricePerTicket;
   const totalAmountCents = Math.round(totalAmount * 100);
 
-  // Create payment intent when proceeding to payment
-  const handleProceedToPayment = async () => {
+  // Create Stripe payment intent when proceeding to Stripe payment
+  const handleProceedToStripe = async () => {
     if (!currentUser?._id) {
       toast.error("Please log in to continue");
       return;
@@ -269,8 +457,19 @@ export function OrganizerPrepayment({
     }
   };
 
-  // Show payment form with Stripe Elements
-  if (showPayment && clientSecret && currentUser?._id) {
+  const handleSelectMethod = (method: PaymentMethod) => {
+    setSelectedMethod(method);
+    setError(null);
+  };
+
+  const handleBack = () => {
+    setShowPayment(false);
+    setClientSecret(null);
+    setSelectedMethod(null);
+  };
+
+  // Show Stripe payment form
+  if (selectedMethod === "stripe" && showPayment && clientSecret && currentUser?._id) {
     return (
       <Elements
         stripe={stripePromise}
@@ -292,12 +491,34 @@ export function OrganizerPrepayment({
           totalAmount={totalAmount}
           userId={currentUser._id}
           onPaymentSuccess={onPaymentSuccess}
-          onBack={() => {
-            setShowPayment(false);
-            setClientSecret(null);
-          }}
+          onBack={handleBack}
         />
       </Elements>
+    );
+  }
+
+  // Show PayPal payment form
+  if (selectedMethod === "paypal" && currentUser?._id) {
+    return (
+      <PayPalScriptProvider
+        options={{
+          clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
+          currency: "USD",
+          intent: "capture",
+        }}
+      >
+        <PayPalCreditPurchase
+          eventId={eventId}
+          eventName={eventName}
+          estimatedTickets={estimatedTickets}
+          pricePerTicket={pricePerTicket}
+          totalAmount={totalAmount}
+          totalAmountCents={totalAmountCents}
+          userId={currentUser._id}
+          onPaymentSuccess={onPaymentSuccess}
+          onBack={handleBack}
+        />
+      </PayPalScriptProvider>
     );
   }
 
@@ -354,21 +575,58 @@ export function OrganizerPrepayment({
       <Card>
         <CardContent className="pt-6">
           <div className="text-center mb-6">
-            <h3 className="text-lg font-semibold text-foreground mb-2">Pay with Card or Cash App</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">Choose Payment Method</h3>
             <p className="text-sm text-muted-foreground">
-              Secure payment processing by Stripe
+              Select how you'd like to pay for your ticket credits
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-6 mb-6">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CreditCard className="w-5 h-5" />
-              Credit/Debit Card
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Smartphone className="w-5 h-5" />
-              Cash App Pay
-            </div>
+          {/* Payment Method Cards */}
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
+            {/* Stripe Option */}
+            <button
+              onClick={() => handleSelectMethod("stripe")}
+              className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
+                selectedMethod === "stripe"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/50"
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <CreditCard className="w-6 h-6 text-primary" />
+                <span className="font-semibold text-foreground">Card / Cash App Pay</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Pay with credit/debit card or Cash App Pay via Stripe
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <Smartphone className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">Cash App Pay available</span>
+              </div>
+            </button>
+
+            {/* PayPal Option */}
+            <button
+              onClick={() => handleSelectMethod("paypal")}
+              className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
+                selectedMethod === "paypal"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/50"
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="#003087">
+                  <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.771.771 0 0 1 .76-.654h6.536c2.96 0 4.95 1.585 4.95 4.202 0 3.538-3.196 5.707-6.545 5.707H8.188a.641.641 0 0 0-.633.543l-.479 3.59-.436 2.974a.39.39 0 0 1-.385.329h-.68a.39.39 0 0 1-.385-.329l-.114-.745zm6.17-14.404c0 1.614-1.312 2.925-2.93 2.925H7.972l.706-5.274h2.344c1.214 0 2.224.99 2.224 2.349z"/>
+                </svg>
+                <span className="font-semibold text-foreground">PayPal</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Pay securely with your PayPal account balance or linked cards
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Personal or business accounts</span>
+              </div>
+            </button>
           </div>
 
           {error && (
@@ -377,9 +635,17 @@ export function OrganizerPrepayment({
             </div>
           )}
 
+          {/* Continue Button */}
           <Button
-            onClick={handleProceedToPayment}
-            disabled={isLoading || !currentUser}
+            onClick={() => {
+              if (selectedMethod === "stripe") {
+                handleProceedToStripe();
+              } else if (selectedMethod === "paypal") {
+                // PayPal flow is handled by selecting the method
+                // The PayPal buttons will render on the next screen
+              }
+            }}
+            disabled={!selectedMethod || isLoading || !currentUser}
             className="w-full py-6 text-lg"
             size="lg"
           >
@@ -389,7 +655,7 @@ export function OrganizerPrepayment({
                 Initializing...
               </>
             ) : (
-              <>Proceed to Payment - ${totalAmount.toFixed(2)}</>
+              <>Continue to Payment - ${totalAmount.toFixed(2)}</>
             )}
           </Button>
         </CardContent>

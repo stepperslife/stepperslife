@@ -15,6 +15,7 @@ export type PaymentMethod = 'card' | 'paypal' | 'cash';
 export interface PaymentConfig {
   merchantProcessor?: MerchantProcessor;
   stripeConnectAccountId?: string;
+  paypalMerchantId?: string;
   creditCardEnabled?: boolean;
   paypalEnabled?: boolean;
 }
@@ -68,8 +69,11 @@ export function getAvailablePaymentMethods(
   const hasStripe = !!paymentConfig.stripeConnectAccountId;
   const creditCard = hasStripe && (paymentConfig.creditCardEnabled ?? true);
 
-  // PayPal is enabled separately
-  const paypal = paymentConfig.paypalEnabled ?? false;
+  // PayPal is enabled if:
+  // 1. Explicitly enabled via paypalEnabled flag, OR
+  // 2. Organizer has a PayPal merchant ID configured
+  const hasPayPal = !!paymentConfig.paypalMerchantId;
+  const paypal = (paymentConfig.paypalEnabled ?? false) || hasPayPal;
 
   return {
     creditCard,

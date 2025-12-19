@@ -76,14 +76,21 @@ export interface PayPalWebhookEvent {
 }
 
 // ============================================================================
-// Square Types
+// Square Types (DEPRECATED - Legacy support only, no longer used for new payments)
 // ============================================================================
 
+/**
+ * @deprecated Square integration has been removed. Use Stripe or PayPal instead.
+ * These types are kept only for reading historical transaction data.
+ */
 export interface SquareMoney {
   amount: bigint;
   currency: string;
 }
 
+/**
+ * @deprecated Square integration has been removed. Use Stripe or PayPal instead.
+ */
 export interface SquarePayment {
   id?: string;
   status?: 'APPROVED' | 'PENDING' | 'COMPLETED' | 'CANCELED' | 'FAILED';
@@ -106,6 +113,9 @@ export interface SquarePayment {
   updatedAt?: string;
 }
 
+/**
+ * @deprecated Square integration has been removed. Use Stripe or PayPal instead.
+ */
 export interface SquarePaymentRequest {
   sourceId: string;
   idempotencyKey: string;
@@ -119,6 +129,9 @@ export interface SquarePaymentRequest {
   verificationToken?: string;
 }
 
+/**
+ * @deprecated Square integration has been removed. Use Stripe or PayPal instead.
+ */
 export interface SquareWebhookEvent {
   merchant_id: string;
   type: string;
@@ -135,6 +148,9 @@ export interface SquareWebhookEvent {
   };
 }
 
+/**
+ * @deprecated Square integration has been removed. Use Stripe or PayPal instead.
+ */
 export interface SquareRefund {
   id: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'FAILED';
@@ -184,9 +200,8 @@ export type PaymentResponse =
 export interface CreditPurchaseRequest {
   userId: string;
   credits: number;
-  sourceId?: string; // For Square
-  orderID?: string; // For PayPal
-  verificationToken?: string; // For Square 3DS
+  stripePaymentIntentId?: string; // For Stripe payments
+  orderID?: string; // For PayPal payments
 }
 
 export interface CreditPurchaseResponse {
@@ -232,7 +247,12 @@ export interface WebhookProcessingResult {
   error?: string;
 }
 
-export type WebhookEvent = PayPalWebhookEvent | SquareWebhookEvent;
+export type WebhookEvent = PayPalWebhookEvent;
+
+/**
+ * @deprecated Legacy webhook type - Square webhooks no longer supported
+ */
+export type LegacyWebhookEvent = PayPalWebhookEvent | SquareWebhookEvent;
 
 // ============================================================================
 // Payment Method Types
@@ -241,11 +261,17 @@ export type WebhookEvent = PayPalWebhookEvent | SquareWebhookEvent;
 /**
  * ORGANIZER Payment Providers
  * Used when organizers purchase ticket credits FROM SteppersLife.com platform
- * - SQUARE: Square credit card payment
- * - CASHAPP: Cash App via Square SDK
- * - PAYPAL: PayPal payment
+ * - STRIPE: Credit card payment via Stripe (includes Cash App Pay)
+ * - PAYPAL: PayPal payment (supports personal or business accounts)
+ *
+ * Both personal and business accounts are supported for Stripe and PayPal.
  */
-export type OrganizerPaymentProvider = 'SQUARE' | 'CASHAPP' | 'PAYPAL';
+export type OrganizerPaymentProvider = 'STRIPE' | 'PAYPAL';
+
+/**
+ * @deprecated Legacy organizer payment providers - no longer used for new payments
+ */
+export type LegacyOrganizerPaymentProvider = 'SQUARE' | 'CASHAPP';
 
 /**
  * CUSTOMER Payment Providers
@@ -268,7 +294,12 @@ export type PaymentMethodType = 'card' | 'paypal' | 'cash';
  * @deprecated Use OrganizerPaymentProvider or CustomerPaymentProvider instead
  * This type mixes organizer and customer payment systems - being phased out
  */
-export type PaymentProviderType = 'SQUARE' | 'PAYPAL' | 'STRIPE' | 'CASHAPP';
+export type PaymentProviderType = 'STRIPE' | 'PAYPAL';
+
+/**
+ * @deprecated Legacy payment provider types - includes removed providers
+ */
+export type LegacyPaymentProviderType = 'SQUARE' | 'PAYPAL' | 'STRIPE' | 'CASHAPP';
 
 export interface PaymentMethodConfig {
   type: PaymentMethodType;
