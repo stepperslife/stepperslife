@@ -165,54 +165,92 @@ export default function TicketHistoryPage() {
             </CardContent>
           </Card>
         ) : (
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-muted/50">
-                    <tr>
-                      <th className="text-left p-4 font-medium text-sm">Date</th>
-                      <th className="text-left p-4 font-medium text-sm">Event</th>
-                      <th className="text-left p-4 font-medium text-sm">Transaction ID</th>
-                      <th className="text-right p-4 font-medium text-sm">Quantity</th>
-                      <th className="text-right p-4 font-medium text-sm">Amount</th>
-                      <th className="text-center p-4 font-medium text-sm">Status</th>
-                      <th className="text-right p-4 font-medium text-sm">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTransactions.map((transaction, index) => (
-                      <tr key={transaction.id} className={index % 2 === 0 ? "bg-muted/20" : ""}>
-                        <td className="p-4 text-sm">
+          <>
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {filteredTransactions.map((transaction) => (
+                <Card key={transaction.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <p className="font-medium text-foreground">{transaction.eventName}</p>
+                        <p className="text-xs text-muted-foreground">
                           {formatDate(transaction.date)}
-                        </td>
-                        <td className="p-4 text-sm font-medium">
-                          {transaction.eventName}
-                        </td>
-                        <td className="p-4 text-sm text-muted-foreground font-mono">
-                          {transaction.transactionId}
-                        </td>
-                        <td className="p-4 text-sm text-right">
-                          {transaction.quantity}
-                        </td>
-                        <td className="p-4 text-sm text-right font-medium">
+                        </p>
+                      </div>
+                      {getStatusBadge(transaction.status)}
+                    </div>
+                    <p className="text-xs text-muted-foreground font-mono mb-3 truncate">
+                      {transaction.transactionId}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        {transaction.quantity} ticket{transaction.quantity !== 1 ? "s" : ""}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-foreground">
                           ${transaction.amount.toFixed(2)}
-                        </td>
-                        <td className="p-4 text-center">
-                          {getStatusBadge(transaction.status)}
-                        </td>
-                        <td className="p-4 text-right">
-                          <Button variant="ghost" size="sm">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </td>
+                        </span>
+                        <Button variant="ghost" size="sm">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <Card className="hidden md:block">
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-muted/50">
+                      <tr>
+                        <th className="text-left p-4 font-medium text-sm">Date</th>
+                        <th className="text-left p-4 font-medium text-sm">Event</th>
+                        <th className="text-left p-4 font-medium text-sm">Transaction ID</th>
+                        <th className="text-right p-4 font-medium text-sm">Quantity</th>
+                        <th className="text-right p-4 font-medium text-sm">Amount</th>
+                        <th className="text-center p-4 font-medium text-sm">Status</th>
+                        <th className="text-right p-4 font-medium text-sm">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+                    </thead>
+                    <tbody>
+                      {filteredTransactions.map((transaction, index) => (
+                        <tr key={transaction.id} className={index % 2 === 0 ? "bg-muted/20" : ""}>
+                          <td className="p-4 text-sm">
+                            {formatDate(transaction.date)}
+                          </td>
+                          <td className="p-4 text-sm font-medium">
+                            {transaction.eventName}
+                          </td>
+                          <td className="p-4 text-sm text-muted-foreground font-mono">
+                            {transaction.transactionId}
+                          </td>
+                          <td className="p-4 text-sm text-right">
+                            {transaction.quantity}
+                          </td>
+                          <td className="p-4 text-sm text-right font-medium">
+                            ${transaction.amount.toFixed(2)}
+                          </td>
+                          <td className="p-4 text-center">
+                            {getStatusBadge(transaction.status)}
+                          </td>
+                          <td className="p-4 text-right">
+                            <Button variant="ghost" size="sm">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </>
         )}
       </div>
     </div>

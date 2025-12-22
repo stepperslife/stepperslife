@@ -276,7 +276,39 @@ export default function MarketplacePricingPage() {
               See how much you keep based on monthly sales
             </p>
 
-            <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {[
+                { sales: "$500", starter: "$460", growth: "$465", pro: "$460" },
+                { sales: "$1,000", starter: "$920", growth: "$940", pro: "$945" },
+                { sales: "$2,500", starter: "$2,300", growth: "$2,365", pro: "$2,400" },
+                { sales: "$5,000", starter: "$4,600", growth: "$4,740", pro: "$4,825" },
+                { sales: "$10,000", starter: "$9,200", growth: "$9,490", pro: "$9,675" },
+              ].map((row, idx) => (
+                <div key={idx} className="border border-border rounded-lg p-4">
+                  <p className="font-semibold text-foreground text-center mb-3">
+                    Monthly Sales: {row.sales}
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center py-2 border-b border-border/50">
+                      <span className="text-sm text-muted-foreground">Starter (8%)</span>
+                      <span className="text-sm text-foreground">Keep {row.starter}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-border/50 bg-sky-50/50 dark:bg-sky-900/10 -mx-4 px-4">
+                      <span className="text-sm font-medium text-primary">Growth (5%)</span>
+                      <span className="text-sm font-medium text-primary">Keep {row.growth}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-sm text-muted-foreground">Pro (3%)</span>
+                      <span className="text-sm text-foreground">Keep {row.pro}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">

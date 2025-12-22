@@ -251,105 +251,342 @@ export default function AdminVendorsPage() {
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>
       ) : filteredVendors && filteredVendors.length > 0 ? (
-        <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Vendor</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Contact</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Tier</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Products</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Sales</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Joined</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredVendors.map((vendor) => {
-                  const statusConfig = STATUS_CONFIG[vendor.status as VendorStatus];
-                  const StatusIcon = statusConfig.icon;
+        <>
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredVendors.map((vendor) => {
+              const statusConfig = STATUS_CONFIG[vendor.status as VendorStatus];
+              const StatusIcon = statusConfig.icon;
 
-                  return (
-                    <tr key={vendor._id} className="border-b border-border last:border-0">
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
-                            <Store className="w-5 h-5 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-foreground">{vendor.name}</p>
-                            <p className="text-sm text-muted-foreground">/{vendor.slug}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <p className="text-sm text-foreground">{vendor.contactEmail}</p>
-                        {vendor.contactPhone && (
-                          <p className="text-sm text-muted-foreground">{vendor.contactPhone}</p>
-                        )}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex flex-col gap-1">
-                          <VendorTierBadge tier={(vendor.tier as VendorTier) || "BASIC"} size="sm" showLabel />
-                          <span className="text-xs text-muted-foreground">
-                            {vendor.commissionPercent || getTierCommission(vendor.tier || "BASIC")}% fee
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <Package className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-foreground">{vendor.totalProducts || 0}</span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <p className="font-medium text-foreground">
-                          {formatCurrency(vendor.totalSales || 0)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {(vendor as { totalOrders?: number }).totalOrders || 0} orders
-                        </p>
-                      </td>
-                      <td className="p-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
-                        >
-                          <StatusIcon className="w-3 h-3" />
-                          {statusConfig.label}
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm text-muted-foreground">
-                        {formatDate(vendor.createdAt)}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <Link
-                            href={`/admin/vendors/${vendor._id}`}
-                            className="p-2 hover:bg-muted rounded-lg transition-colors"
-                          >
-                            <Eye className="w-4 h-4 text-muted-foreground" />
-                          </Link>
-                          <div className="relative">
+              return (
+                <div key={vendor._id} className="bg-card rounded-xl border border-border p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Store className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">{vendor.name}</p>
+                        <p className="text-sm text-muted-foreground">/{vendor.slug}</p>
+                      </div>
+                    </div>
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
+                    >
+                      <StatusIcon className="w-3 h-3" />
+                      {statusConfig.label}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-sm mb-3">
+                    <p className="text-foreground">{vendor.contactEmail}</p>
+                    {vendor.contactPhone && (
+                      <p className="text-muted-foreground">{vendor.contactPhone}</p>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 text-sm mb-3 py-3 border-t border-b border-border">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Tier</p>
+                      <div className="flex items-center gap-1 mt-1">
+                        <VendorTierBadge tier={(vendor.tier as VendorTier) || "BASIC"} size="sm" showLabel />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Products</p>
+                      <p className="font-medium flex items-center gap-1">
+                        <Package className="w-4 h-4 text-muted-foreground" />
+                        {vendor.totalProducts || 0}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Sales</p>
+                      <p className="font-medium text-foreground">{formatCurrency(vendor.totalSales || 0)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Joined</p>
+                      <p className="font-medium">{formatDate(vendor.createdAt)}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <Link
+                      href={`/admin/vendors/${vendor._id}`}
+                      className="flex items-center gap-2 text-primary text-sm font-medium"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View Details
+                    </Link>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedVendor(selectedVendor === vendor._id ? null : vendor._id)
+                        }
+                        className="p-2 hover:bg-muted rounded-lg transition-colors"
+                      >
+                        <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                      </button>
+                      {selectedVendor === vendor._id && (
+                        <div className="absolute right-0 bottom-full mb-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
+                          {vendor.status === "PENDING" && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActionModal({
+                                    type: "approve",
+                                    vendorId: vendor._id,
+                                    vendorName: vendor.name,
+                                  });
+                                  setSelectedVendor(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActionModal({
+                                    type: "reject",
+                                    vendorId: vendor._id,
+                                    vendorName: vendor.name,
+                                  });
+                                  setSelectedVendor(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          {vendor.status === "APPROVED" && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedTier((vendor.tier as VendorTier) || "BASIC");
+                                  setActionModal({
+                                    type: "changeTier",
+                                    vendorId: vendor._id,
+                                    vendorName: vendor.name,
+                                    currentTier: (vendor.tier as VendorTier) || "BASIC",
+                                  });
+                                  setSelectedVendor(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-primary hover:bg-muted transition-colors flex items-center gap-2"
+                              >
+                                <Crown className="w-4 h-4" />
+                                Change Tier
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActionModal({
+                                    type: "suspend",
+                                    vendorId: vendor._id,
+                                    vendorName: vendor.name,
+                                  });
+                                  setSelectedVendor(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                              >
+                                Suspend
+                              </button>
+                            </>
+                          )}
+                          {(vendor.status === "SUSPENDED" || vendor.status === "REJECTED") && (
                             <button
                               type="button"
-                              onClick={() =>
-                                setSelectedVendor(selectedVendor === vendor._id ? null : vendor._id)
-                              }
+                              onClick={() => {
+                                setActionModal({
+                                  type: "reactivate",
+                                  vendorId: vendor._id,
+                                  vendorName: vendor.name,
+                                });
+                                setSelectedVendor(null);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
+                            >
+                              Reactivate
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-card rounded-xl border border-border overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Vendor</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Contact</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Tier</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Products</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Sales</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Joined</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredVendors.map((vendor) => {
+                    const statusConfig = STATUS_CONFIG[vendor.status as VendorStatus];
+                    const StatusIcon = statusConfig.icon;
+
+                    return (
+                      <tr key={vendor._id} className="border-b border-border last:border-0">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+                              <Store className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground">{vendor.name}</p>
+                              <p className="text-sm text-muted-foreground">/{vendor.slug}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <p className="text-sm text-foreground">{vendor.contactEmail}</p>
+                          {vendor.contactPhone && (
+                            <p className="text-sm text-muted-foreground">{vendor.contactPhone}</p>
+                          )}
+                        </td>
+                        <td className="p-4">
+                          <div className="flex flex-col gap-1">
+                            <VendorTierBadge tier={(vendor.tier as VendorTier) || "BASIC"} size="sm" showLabel />
+                            <span className="text-xs text-muted-foreground">
+                              {vendor.commissionPercent || getTierCommission(vendor.tier || "BASIC")}% fee
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
+                            <Package className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-foreground">{vendor.totalProducts || 0}</span>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <p className="font-medium text-foreground">
+                            {formatCurrency(vendor.totalSales || 0)}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {(vendor as { totalOrders?: number }).totalOrders || 0} orders
+                          </p>
+                        </td>
+                        <td className="p-4">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
+                          >
+                            <StatusIcon className="w-3 h-3" />
+                            {statusConfig.label}
+                          </span>
+                        </td>
+                        <td className="p-4 text-sm text-muted-foreground">
+                          {formatDate(vendor.createdAt)}
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
+                            <Link
+                              href={`/admin/vendors/${vendor._id}`}
                               className="p-2 hover:bg-muted rounded-lg transition-colors"
                             >
-                              <MoreVertical className="w-4 h-4 text-muted-foreground" />
-                            </button>
-                            {selectedVendor === vendor._id && (
-                              <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
-                                {vendor.status === "PENDING" && (
-                                  <>
+                              <Eye className="w-4 h-4 text-muted-foreground" />
+                            </Link>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setSelectedVendor(selectedVendor === vendor._id ? null : vendor._id)
+                                }
+                                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                              >
+                                <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                              </button>
+                              {selectedVendor === vendor._id && (
+                                <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
+                                  {vendor.status === "PENDING" && (
+                                    <>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActionModal({
+                                            type: "approve",
+                                            vendorId: vendor._id,
+                                            vendorName: vendor.name,
+                                          });
+                                          setSelectedVendor(null);
+                                        }}
+                                        className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
+                                      >
+                                        Approve
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActionModal({
+                                            type: "reject",
+                                            vendorId: vendor._id,
+                                            vendorName: vendor.name,
+                                          });
+                                          setSelectedVendor(null);
+                                        }}
+                                        className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                                      >
+                                        Reject
+                                      </button>
+                                    </>
+                                  )}
+                                  {vendor.status === "APPROVED" && (
+                                    <>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setSelectedTier((vendor.tier as VendorTier) || "BASIC");
+                                          setActionModal({
+                                            type: "changeTier",
+                                            vendorId: vendor._id,
+                                            vendorName: vendor.name,
+                                            currentTier: (vendor.tier as VendorTier) || "BASIC",
+                                          });
+                                          setSelectedVendor(null);
+                                        }}
+                                        className="w-full px-4 py-2 text-left text-sm text-primary hover:bg-muted transition-colors flex items-center gap-2"
+                                      >
+                                        <Crown className="w-4 h-4" />
+                                        Change Tier
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActionModal({
+                                            type: "suspend",
+                                            vendorId: vendor._id,
+                                            vendorName: vendor.name,
+                                          });
+                                          setSelectedVendor(null);
+                                        }}
+                                        className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                                      >
+                                        Suspend
+                                      </button>
+                                    </>
+                                  )}
+                                  {(vendor.status === "SUSPENDED" || vendor.status === "REJECTED") && (
                                     <button
                                       type="button"
                                       onClick={() => {
                                         setActionModal({
-                                          type: "approve",
+                                          type: "reactivate",
                                           vendorId: vendor._id,
                                           vendorName: vendor.name,
                                         });
@@ -357,87 +594,22 @@ export default function AdminVendorsPage() {
                                       }}
                                       className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
                                     >
-                                      Approve
+                                      Reactivate
                                     </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setActionModal({
-                                          type: "reject",
-                                          vendorId: vendor._id,
-                                          vendorName: vendor.name,
-                                        });
-                                        setSelectedVendor(null);
-                                      }}
-                                      className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
-                                    >
-                                      Reject
-                                    </button>
-                                  </>
-                                )}
-                                {vendor.status === "APPROVED" && (
-                                  <>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setSelectedTier((vendor.tier as VendorTier) || "BASIC");
-                                        setActionModal({
-                                          type: "changeTier",
-                                          vendorId: vendor._id,
-                                          vendorName: vendor.name,
-                                          currentTier: (vendor.tier as VendorTier) || "BASIC",
-                                        });
-                                        setSelectedVendor(null);
-                                      }}
-                                      className="w-full px-4 py-2 text-left text-sm text-primary hover:bg-muted transition-colors flex items-center gap-2"
-                                    >
-                                      <Crown className="w-4 h-4" />
-                                      Change Tier
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setActionModal({
-                                          type: "suspend",
-                                          vendorId: vendor._id,
-                                          vendorName: vendor.name,
-                                        });
-                                        setSelectedVendor(null);
-                                      }}
-                                      className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
-                                    >
-                                      Suspend
-                                    </button>
-                                  </>
-                                )}
-                                {(vendor.status === "SUSPENDED" || vendor.status === "REJECTED") && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setActionModal({
-                                        type: "reactivate",
-                                        vendorId: vendor._id,
-                                        vendorName: vendor.name,
-                                      });
-                                      setSelectedVendor(null);
-                                    }}
-                                    className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
-                                  >
-                                    Reactivate
-                                  </button>
-                                )}
-                              </div>
-                            )}
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </>
       ) : (
         <div className="bg-card rounded-xl border border-border p-12 text-center">
           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">

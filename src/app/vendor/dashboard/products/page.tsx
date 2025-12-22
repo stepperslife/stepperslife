@@ -125,106 +125,186 @@ export default function VendorProductsPage() {
 
       {/* Products Table */}
       {filteredProducts && filteredProducts.length > 0 ? (
-        <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border bg-muted/50">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Product
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Inventory
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filteredProducts.map((product: Doc<"products">) => (
-                  <tr key={product._id} className="hover:bg-muted/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
-                          {product.primaryImage ? (
-                            <img
-                              src={product.primaryImage}
-                              alt={product.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Package className="w-6 h-6 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">{product.name}</p>
-                          <p className="text-sm text-muted-foreground">{product.category || "Uncategorized"}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-medium text-foreground">
-                        ${(product.price / 100).toFixed(2)}
+        <>
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredProducts.map((product: Doc<"products">) => (
+              <div key={product._id} className="bg-card rounded-xl border border-border p-4">
+                <div className="flex items-start gap-4 mb-3">
+                  <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {product.primaryImage ? (
+                      <img
+                        src={product.primaryImage}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Package className="w-8 h-8 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-foreground truncate">{product.name}</p>
+                    <p className="text-sm text-muted-foreground">{product.category || "Uncategorized"}</p>
+                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium mt-1 ${STATUS_LABELS[product.status].color}`}>
+                      {STATUS_LABELS[product.status].label}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-sm mb-3 py-3 border-t border-b border-border">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Price</p>
+                    <p className="font-medium text-foreground">
+                      ${(product.price / 100).toFixed(2)}
+                    </p>
+                    {product.compareAtPrice && (
+                      <p className="text-xs text-muted-foreground line-through">
+                        ${(product.compareAtPrice / 100).toFixed(2)}
                       </p>
-                      {product.compareAtPrice && (
-                        <p className="text-sm text-muted-foreground line-through">
-                          ${(product.compareAtPrice / 100).toFixed(2)}
-                        </p>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className={`font-medium ${product.inventoryQuantity <= 5 ? "text-destructive" : "text-foreground"}`}>
-                        {product.inventoryQuantity}
-                      </p>
-                      {product.inventoryQuantity <= 5 && (
-                        <p className="text-xs text-destructive">Low stock</p>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${STATUS_LABELS[product.status].color}`}>
-                        {STATUS_LABELS[product.status].label}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/marketplace/${product._id}`}
-                          target="_blank"
-                          className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-                          title="View in marketplace"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Link>
-                        <Link
-                          href={`/vendor/dashboard/products/${product._id}/edit`}
-                          className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-                          title="Edit product"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteProductId(product._id)}
-                          className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg transition-colors"
-                          title="Delete product"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Inventory</p>
+                    <p className={`font-medium ${product.inventoryQuantity <= 5 ? "text-destructive" : "text-foreground"}`}>
+                      {product.inventoryQuantity}
+                    </p>
+                    {product.inventoryQuantity <= 5 && (
+                      <p className="text-xs text-destructive">Low stock</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2">
+                  <Link
+                    href={`/marketplace/${product._id}`}
+                    target="_blank"
+                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                    title="View in marketplace"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    href={`/vendor/dashboard/products/${product._id}/edit`}
+                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                    title="Edit product"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteProductId(product._id)}
+                    className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg transition-colors"
+                    title="Delete product"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-card rounded-xl border border-border overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-muted/50">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Product
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Price
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Inventory
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {filteredProducts.map((product: Doc<"products">) => (
+                    <tr key={product._id} className="hover:bg-muted/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+                            {product.primaryImage ? (
+                              <img
+                                src={product.primaryImage}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Package className="w-6 h-6 text-muted-foreground" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">{product.name}</p>
+                            <p className="text-sm text-muted-foreground">{product.category || "Uncategorized"}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="font-medium text-foreground">
+                          ${(product.price / 100).toFixed(2)}
+                        </p>
+                        {product.compareAtPrice && (
+                          <p className="text-sm text-muted-foreground line-through">
+                            ${(product.compareAtPrice / 100).toFixed(2)}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className={`font-medium ${product.inventoryQuantity <= 5 ? "text-destructive" : "text-foreground"}`}>
+                          {product.inventoryQuantity}
+                        </p>
+                        {product.inventoryQuantity <= 5 && (
+                          <p className="text-xs text-destructive">Low stock</p>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${STATUS_LABELS[product.status].color}`}>
+                          {STATUS_LABELS[product.status].label}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/marketplace/${product._id}`}
+                            target="_blank"
+                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                            title="View in marketplace"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Link>
+                          <Link
+                            href={`/vendor/dashboard/products/${product._id}/edit`}
+                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                            title="Edit product"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => setDeleteProductId(product._id)}
+                            className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg transition-colors"
+                            title="Delete product"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       ) : (
         <div className="bg-card rounded-xl border border-border p-12 text-center">
           <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />

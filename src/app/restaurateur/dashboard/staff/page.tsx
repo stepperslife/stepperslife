@@ -166,7 +166,7 @@ export default function StaffManagementPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-success/20 dark:bg-success/20 rounded-lg flex items-center justify-center">
@@ -233,131 +233,237 @@ export default function StaffManagementPage() {
         </div>
       ) : displayStaff.length > 0 ? (
         <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Staff Member</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Role</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">
-                  {activeTab === "pending" ? "Invited" : "Joined"}
-                </th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayStaff.map((member) => {
-                const roleConfig = ROLE_CONFIG[member.role as StaffRole];
-                const statusConfig = STATUS_CONFIG[member.status as StaffStatus];
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-border">
+            {displayStaff.map((member) => {
+              const roleConfig = ROLE_CONFIG[member.role as StaffRole];
+              const statusConfig = STATUS_CONFIG[member.status as StaffStatus];
 
-                return (
-                  <tr key={member._id} className="border-b border-border last:border-0">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="text-primary font-medium">
-                            {member.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">{member.name}</p>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Mail className="w-3 h-3" />
-                              {member.email}
-                            </span>
-                            {member.phone && (
-                              <span className="flex items-center gap-1">
-                                <Phone className="w-3 h-3" />
-                                {member.phone}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        {member.role === "RESTAURANT_MANAGER" ? (
-                          <ShieldCheck className="w-4 h-4 text-primary" />
-                        ) : (
-                          <Shield className="w-4 h-4 text-primary" />
-                        )}
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleConfig.color}`}>
-                          {roleConfig.label}
+              return (
+                <div key={member._id} className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-primary font-medium">
+                          {member.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
-                    </td>
-                    <td className="p-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}>
-                        {statusConfig.label}
-                      </span>
-                    </td>
-                    <td className="p-4 text-sm text-muted-foreground">
-                      {formatDate(member.status === "PENDING" ? member.invitedAt : (member.acceptedAt || member.createdAt))}
-                    </td>
-                    <td className="p-4">
-                      <div className="relative">
-                        <button
-                          onClick={() => setSelectedStaff(selectedStaff === member._id ? null : member._id)}
-                          className="p-2 hover:bg-muted rounded-lg transition-colors"
-                        >
-                          <MoreVertical className="w-4 h-4 text-muted-foreground" />
-                        </button>
-                        {selectedStaff === member._id && (
-                          <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
-                            {member.status === "ACTIVE" && (
-                              <button
-                                onClick={() => {
-                                  setActionModal({
-                                    type: "deactivate",
-                                    staffId: member._id,
-                                    staffName: member.name,
-                                  });
-                                  setSelectedStaff(null);
-                                }}
-                                className="w-full px-4 py-2 text-left text-sm text-warning hover:bg-muted transition-colors"
-                              >
-                                Deactivate
-                              </button>
-                            )}
-                            {member.status === "INACTIVE" && (
-                              <button
-                                onClick={() => {
-                                  setActionModal({
-                                    type: "reactivate",
-                                    staffId: member._id,
-                                    staffName: member.name,
-                                  });
-                                  setSelectedStaff(null);
-                                }}
-                                className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
-                              >
-                                Reactivate
-                              </button>
-                            )}
+                      <div>
+                        <p className="font-medium text-foreground">{member.name}</p>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${roleConfig.color}`}>
+                            {roleConfig.label}
+                          </span>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusConfig.color}`}>
+                            {statusConfig.label}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <button
+                        onClick={() => setSelectedStaff(selectedStaff === member._id ? null : member._id)}
+                        className="p-2 hover:bg-muted rounded-lg transition-colors"
+                      >
+                        <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                      </button>
+                      {selectedStaff === member._id && (
+                        <div className="absolute right-0 bottom-full mb-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
+                          {member.status === "ACTIVE" && (
                             <button
                               onClick={() => {
                                 setActionModal({
-                                  type: "remove",
+                                  type: "deactivate",
                                   staffId: member._id,
                                   staffName: member.name,
                                 });
                                 setSelectedStaff(null);
                               }}
-                              className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                              className="w-full px-4 py-2 text-left text-sm text-warning hover:bg-muted transition-colors"
                             >
-                              Remove Permanently
+                              Deactivate
                             </button>
-                          </div>
-                        )}
+                          )}
+                          {member.status === "INACTIVE" && (
+                            <button
+                              onClick={() => {
+                                setActionModal({
+                                  type: "reactivate",
+                                  staffId: member._id,
+                                  staffName: member.name,
+                                });
+                                setSelectedStaff(null);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
+                            >
+                              Reactivate
+                            </button>
+                          )}
+                          <button
+                            onClick={() => {
+                              setActionModal({
+                                type: "remove",
+                                staffId: member._id,
+                                staffName: member.name,
+                              });
+                              setSelectedStaff(null);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                          >
+                            Remove Permanently
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="pl-13 space-y-1 text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Mail className="w-3 h-3 flex-shrink-0" />
+                      <span className="truncate">{member.email}</span>
+                    </div>
+                    {member.phone && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Phone className="w-3 h-3 flex-shrink-0" />
+                        <span>{member.phone}</span>
                       </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    )}
+                    <p className="text-muted-foreground text-xs mt-2">
+                      {activeTab === "pending" ? "Invited" : "Joined"}: {formatDate(member.status === "PENDING" ? member.invitedAt : (member.acceptedAt || member.createdAt))}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Staff Member</th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Role</th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">
+                    {activeTab === "pending" ? "Invited" : "Joined"}
+                  </th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayStaff.map((member) => {
+                  const roleConfig = ROLE_CONFIG[member.role as StaffRole];
+                  const statusConfig = STATUS_CONFIG[member.status as StaffStatus];
+
+                  return (
+                    <tr key={member._id} className="border-b border-border last:border-0">
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="text-primary font-medium">
+                              {member.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">{member.name}</p>
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Mail className="w-3 h-3" />
+                                {member.email}
+                              </span>
+                              {member.phone && (
+                                <span className="flex items-center gap-1">
+                                  <Phone className="w-3 h-3" />
+                                  {member.phone}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          {member.role === "RESTAURANT_MANAGER" ? (
+                            <ShieldCheck className="w-4 h-4 text-primary" />
+                          ) : (
+                            <Shield className="w-4 h-4 text-primary" />
+                          )}
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleConfig.color}`}>
+                            {roleConfig.label}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}>
+                          {statusConfig.label}
+                        </span>
+                      </td>
+                      <td className="p-4 text-sm text-muted-foreground">
+                        {formatDate(member.status === "PENDING" ? member.invitedAt : (member.acceptedAt || member.createdAt))}
+                      </td>
+                      <td className="p-4">
+                        <div className="relative">
+                          <button
+                            onClick={() => setSelectedStaff(selectedStaff === member._id ? null : member._id)}
+                            className="p-2 hover:bg-muted rounded-lg transition-colors"
+                          >
+                            <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                          </button>
+                          {selectedStaff === member._id && (
+                            <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
+                              {member.status === "ACTIVE" && (
+                                <button
+                                  onClick={() => {
+                                    setActionModal({
+                                      type: "deactivate",
+                                      staffId: member._id,
+                                      staffName: member.name,
+                                    });
+                                    setSelectedStaff(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-sm text-warning hover:bg-muted transition-colors"
+                                >
+                                  Deactivate
+                                </button>
+                              )}
+                              {member.status === "INACTIVE" && (
+                                <button
+                                  onClick={() => {
+                                    setActionModal({
+                                      type: "reactivate",
+                                      staffId: member._id,
+                                      staffName: member.name,
+                                    });
+                                    setSelectedStaff(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
+                                >
+                                  Reactivate
+                                </button>
+                              )}
+                              <button
+                                onClick={() => {
+                                  setActionModal({
+                                    type: "remove",
+                                    staffId: member._id,
+                                    staffName: member.name,
+                                  });
+                                  setSelectedStaff(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                              >
+                                Remove Permanently
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <div className="bg-card rounded-xl border border-border p-12 text-center">

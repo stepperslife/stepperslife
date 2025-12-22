@@ -175,146 +175,231 @@ export default function DefaultTeamPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted border-b border-border">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Contact
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Commission
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Events
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Total Sales
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Total Earned
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Auto-Assign
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-border">
-                {globalStaff.map((staff) => (
-                  <tr key={staff._id} className="hover:bg-muted">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-foreground">{staff.name}</div>
-                      <div className="text-xs text-muted-foreground">Referral: {staff.referralCode}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <Mail className="w-4 h-4" />
-                          {staff.email}
-                        </div>
-                        {staff.phone && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Phone className="w-4 h-4" />
-                            {staff.phone}
-                          </div>
-                        )}
+        <>
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {globalStaff.map((staff) => (
+              <div key={staff._id} className="bg-white rounded-lg shadow-md p-4 border border-border">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="font-semibold text-foreground">{staff.name}</p>
+                    <p className="text-xs text-muted-foreground">Referral: {staff.referralCode}</p>
+                  </div>
+                  <span className="px-3 py-1 text-xs font-semibold bg-accent text-primary rounded-full">
+                    {staff.role}
+                  </span>
+                </div>
+                <div className="space-y-2 text-sm mb-3">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Mail className="w-4 h-4" />
+                    <span className="truncate">{staff.email}</span>
+                  </div>
+                  {staff.phone && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Phone className="w-4 h-4" />
+                      {staff.phone}
+                    </div>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-sm mb-3 py-3 border-t border-b border-border">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Commission</p>
+                    <p className="font-medium flex items-center gap-1">
+                      {staff.commissionType === "PERCENTAGE" ? (
+                        <><Percent className="w-3 h-3" />{staff.commissionValue}%</>
+                      ) : (
+                        <><DollarSign className="w-3 h-3" />${((staff.commissionValue || 0) / 100).toFixed(2)}</>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Events</p>
+                    <p className="font-medium">{staff.performance?.activeEventCount || 0} active</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Sales</p>
+                    <p className="font-medium">{staff.performance?.totalTicketsSold || 0} tickets</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Earned</p>
+                    <p className="font-medium text-success">${((staff.performance?.totalCommissionEarned || 0) / 100).toFixed(2)}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleToggleAutoAssign(staff._id, staff.autoAssignToNewEvents || false)
+                    }
+                    className="flex items-center gap-2"
+                  >
+                    {staff.autoAssignToNewEvents ? (
+                      <div className="flex items-center gap-2 text-success">
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span className="text-sm font-medium">Auto-assign On</span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-3 py-1 text-xs font-semibold bg-accent text-primary rounded-full">
-                        {staff.role}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1 text-sm text-foreground">
-                        {staff.commissionType === "PERCENTAGE" ? (
-                          <>
-                            <Percent className="w-4 h-4" />
-                            {staff.commissionValue}%
-                          </>
-                        ) : (
-                          <>
-                            <DollarSign className="w-4 h-4" />$
-                            {((staff.commissionValue || 0) / 100).toFixed(2)}
-                          </>
-                        )}
+                    ) : (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <XCircle className="w-5 h-5" />
+                        <span className="text-sm font-medium">Auto-assign Off</span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm">
-                        <div className="font-semibold text-foreground">
-                          {staff.performance?.activeEventCount || 0} active
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {staff.performance?.totalEventCount || 0} total
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm">
-                        <div className="font-semibold text-foreground">
-                          {staff.performance?.totalTicketsSold || 0} tickets
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Avg: {staff.performance?.avgTicketsPerEvent || 0}/event
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-success">
-                        ${((staff.performance?.totalCommissionEarned || 0) / 100).toFixed(2)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Net: ${((staff.performance?.netPayout || 0) / 100).toFixed(2)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleToggleAutoAssign(staff._id, staff.autoAssignToNewEvents || false)
-                        }
-                        className="flex items-center gap-2"
-                      >
-                        {staff.autoAssignToNewEvents ? (
-                          <div className="flex items-center gap-2 text-success">
-                            <CheckCircle2 className="w-5 h-5" />
-                            <span className="text-sm font-medium">Enabled</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <XCircle className="w-5 h-5" />
-                            <span className="text-sm font-medium">Disabled</span>
-                          </div>
-                        )}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveStaff(staff._id)}
-                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                        title="Remove staff member"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveStaff(staff._id)}
+                    className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                    title="Remove staff member"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted border-b border-border">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Contact
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Commission
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Events
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Total Sales
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Total Earned
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Auto-Assign
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-border">
+                  {globalStaff.map((staff) => (
+                    <tr key={staff._id} className="hover:bg-muted">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-medium text-foreground">{staff.name}</div>
+                        <div className="text-xs text-muted-foreground">Referral: {staff.referralCode}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Mail className="w-4 h-4" />
+                            {staff.email}
+                          </div>
+                          {staff.phone && (
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                              <Phone className="w-4 h-4" />
+                              {staff.phone}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-3 py-1 text-xs font-semibold bg-accent text-primary rounded-full">
+                          {staff.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-1 text-sm text-foreground">
+                          {staff.commissionType === "PERCENTAGE" ? (
+                            <>
+                              <Percent className="w-4 h-4" />
+                              {staff.commissionValue}%
+                            </>
+                          ) : (
+                            <>
+                              <DollarSign className="w-4 h-4" />$
+                              {((staff.commissionValue || 0) / 100).toFixed(2)}
+                            </>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm">
+                          <div className="font-semibold text-foreground">
+                            {staff.performance?.activeEventCount || 0} active
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {staff.performance?.totalEventCount || 0} total
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm">
+                          <div className="font-semibold text-foreground">
+                            {staff.performance?.totalTicketsSold || 0} tickets
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Avg: {staff.performance?.avgTicketsPerEvent || 0}/event
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-semibold text-success">
+                          ${((staff.performance?.totalCommissionEarned || 0) / 100).toFixed(2)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Net: ${((staff.performance?.netPayout || 0) / 100).toFixed(2)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleToggleAutoAssign(staff._id, staff.autoAssignToNewEvents || false)
+                          }
+                          className="flex items-center gap-2"
+                        >
+                          {staff.autoAssignToNewEvents ? (
+                            <div className="flex items-center gap-2 text-success">
+                              <CheckCircle2 className="w-5 h-5" />
+                              <span className="text-sm font-medium">Enabled</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                              <XCircle className="w-5 h-5" />
+                              <span className="text-sm font-medium">Disabled</span>
+                            </div>
+                          )}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveStaff(staff._id)}
+                          className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                          title="Remove staff member"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Add Staff Modal */}

@@ -167,127 +167,206 @@ export default function UsersManagementPage() {
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-card rounded-lg shadow-md overflow-hidden">
-        {filteredUsers.length === 0 ? (
-          <div className="text-center py-12">
-            <UsersIcon className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground">No users found</p>
+      {/* Users Table/Cards */}
+      {filteredUsers.length === 0 ? (
+        <div className="bg-card rounded-lg shadow-md text-center py-12">
+          <UsersIcon className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">No users found</p>
+        </div>
+      ) : (
+        <>
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredUsers.map((user) => (
+              <div key={user._id} className="bg-card rounded-lg shadow-md p-4 border border-border">
+                <div className="flex items-start gap-3 mb-3">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      user.role === "admin"
+                        ? "bg-destructive/10 text-destructive"
+                        : user.role === "organizer"
+                          ? "bg-accent text-primary"
+                          : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {user.role === "admin" ? (
+                      <Shield className="w-5 h-5" />
+                    ) : user.role === "organizer" ? (
+                      <Briefcase className="w-5 h-5" />
+                    ) : (
+                      <User className="w-5 h-5" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-foreground truncate">{user.name || "Unnamed User"}</p>
+                    <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
+                      user.role === "admin"
+                        ? "bg-destructive/10 text-destructive"
+                        : user.role === "organizer"
+                          ? "bg-accent text-accent-foreground"
+                          : "bg-muted text-foreground"
+                    }`}
+                  >
+                    {user.role || "user"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    <span>{(user as any).eventCount || 0} events</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <ShoppingCart className="w-4 h-4" />
+                    <span>{(user as any).orderCount || 0} orders</span>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Joined {user.createdAt ? format(new Date(user.createdAt), "MMM d, yyyy") : "N/A"}
+                </p>
+                <div className="flex items-center gap-2 pt-3 border-t border-border">
+                  <select
+                    value={user.role || "user"}
+                    onChange={(e) =>
+                      handleRoleChange(
+                        user._id,
+                        e.target.value as "admin" | "organizer" | "user"
+                      )
+                    }
+                    className="flex-1 px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-card"
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="organizer">Organizer</option>
+                    <option value="user">User</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteUser(user._id, user.name || user.email)}
+                    className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                    title="Delete user"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted border-b border-border">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Activity
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Joined
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filteredUsers.map((user) => (
-                  <tr key={user._id} className="hover:bg-muted">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center ${
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-card rounded-lg shadow-md overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted border-b border-border">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      User
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Activity
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Joined
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {filteredUsers.map((user) => (
+                    <tr key={user._id} className="hover:bg-muted">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                              user.role === "admin"
+                                ? "bg-destructive/10 text-destructive"
+                                : user.role === "organizer"
+                                  ? "bg-accent text-primary"
+                                  : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {user.role === "admin" ? (
+                              <Shield className="w-5 h-5" />
+                            ) : user.role === "organizer" ? (
+                              <Briefcase className="w-5 h-5" />
+                            ) : (
+                              <User className="w-5 h-5" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">{user.name || "Unnamed User"}</p>
+                            <p className="text-sm text-muted-foreground">{user.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                             user.role === "admin"
                               ? "bg-destructive/10 text-destructive"
                               : user.role === "organizer"
-                                ? "bg-accent text-primary"
-                                : "bg-muted text-muted-foreground"
+                                ? "bg-accent text-accent-foreground"
+                                : "bg-muted text-foreground"
                           }`}
                         >
-                          {user.role === "admin" ? (
-                            <Shield className="w-5 h-5" />
-                          ) : user.role === "organizer" ? (
-                            <Briefcase className="w-5 h-5" />
-                          ) : (
-                            <User className="w-5 h-5" />
-                          )}
+                          {user.role || "user"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            <span>{(user as any).eventCount || 0}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <ShoppingCart className="w-4 h-4" />
+                            <span>{(user as any).orderCount || 0}</span>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-foreground">{user.name || "Unnamed User"}</p>
-                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                        {user.createdAt ? format(new Date(user.createdAt), "MMM d, yyyy") : "N/A"}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={user.role || "user"}
+                            onChange={(e) =>
+                              handleRoleChange(
+                                user._id,
+                                e.target.value as "admin" | "organizer" | "user"
+                              )
+                            }
+                            className="px-3 py-1.5 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-card"
+                          >
+                            <option value="admin">Admin</option>
+                            <option value="organizer">Organizer</option>
+                            <option value="user">User</option>
+                          </select>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteUser(user._id, user.name || user.email)}
+                            className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                            title="Delete user"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                          user.role === "admin"
-                            ? "bg-destructive/10 text-destructive"
-                            : user.role === "organizer"
-                              ? "bg-accent text-accent-foreground"
-                              : "bg-muted text-foreground"
-                        }`}
-                      >
-                        {user.role || "user"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>{(user as any).eventCount || 0}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <ShoppingCart className="w-4 h-4" />
-                          <span>{(user as any).orderCount || 0}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                      {user.createdAt ? format(new Date(user.createdAt), "MMM d, yyyy") : "N/A"}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        {/* Role Change Select */}
-                        <select
-                          value={user.role || "user"}
-                          onChange={(e) =>
-                            handleRoleChange(
-                              user._id,
-                              e.target.value as "admin" | "organizer" | "user"
-                            )
-                          }
-                          className="px-3 py-1.5 text-sm border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-card"
-                        >
-                          <option value="admin">Admin</option>
-                          <option value="organizer">Organizer</option>
-                          <option value="user">User</option>
-                        </select>
-
-                        {/* Delete Button */}
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteUser(user._id, user.name || user.email)}
-                          className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                          title="Delete user"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

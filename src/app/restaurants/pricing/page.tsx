@@ -357,84 +357,153 @@ export default function RestaurantPricingPage() {
             </p>
 
             {pricingModel === "A" ? (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left py-4 px-4 font-semibold text-foreground">
-                        Monthly Orders
-                      </th>
-                      <th className="text-center py-4 px-4 font-semibold text-foreground">
-                        Starter (10%)
-                      </th>
-                      <th className="text-center py-4 px-4 font-semibold text-primary">
-                        Growth (6% + $19)
-                      </th>
-                      <th className="text-center py-4 px-4 font-semibold text-foreground">
-                        Pro (4% + $49)
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { orders: "$1,000", starter: "$100", growth: "$79", pro: "$89" },
-                      { orders: "$3,000", starter: "$300", growth: "$199", pro: "$169" },
-                      { orders: "$5,000", starter: "$500", growth: "$319", pro: "$249" },
-                      { orders: "$10,000", starter: "$1,000", growth: "$619", pro: "$449" },
-                    ].map((row, idx) => (
-                      <tr key={idx} className="border-b border-border/50">
-                        <td className="py-4 px-4 font-medium text-foreground">{row.orders}</td>
-                        <td className="py-4 px-4 text-center text-muted-foreground">{row.starter}</td>
-                        <td className="py-4 px-4 text-center text-primary font-medium bg-primary/5 dark:bg-primary/10">
-                          {row.growth}
-                        </td>
-                        <td className="py-4 px-4 text-center text-muted-foreground">{row.pro}</td>
+              <>
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4">
+                  {[
+                    { orders: "$1,000", starter: "$100", growth: "$79", pro: "$89" },
+                    { orders: "$3,000", starter: "$300", growth: "$199", pro: "$169" },
+                    { orders: "$5,000", starter: "$500", growth: "$319", pro: "$249" },
+                    { orders: "$10,000", starter: "$1,000", growth: "$619", pro: "$449" },
+                  ].map((row, idx) => (
+                    <div key={idx} className="border border-border rounded-lg p-4">
+                      <p className="font-semibold text-foreground text-center mb-3">
+                        Monthly Orders: {row.orders}
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center py-2 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground">Starter (10%)</span>
+                          <span className="text-sm text-foreground">{row.starter}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-border/50 bg-primary/5 dark:bg-primary/10 -mx-4 px-4">
+                          <span className="text-sm font-medium text-primary">Growth (6%)</span>
+                          <span className="text-sm font-medium text-primary">{row.growth}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2">
+                          <span className="text-sm text-muted-foreground">Pro (4%)</span>
+                          <span className="text-sm text-foreground">{row.pro}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-4 px-4 font-semibold text-foreground">
+                          Monthly Orders
+                        </th>
+                        <th className="text-center py-4 px-4 font-semibold text-foreground">
+                          Starter (10%)
+                        </th>
+                        <th className="text-center py-4 px-4 font-semibold text-primary">
+                          Growth (6% + $19)
+                        </th>
+                        <th className="text-center py-4 px-4 font-semibold text-foreground">
+                          Pro (4% + $49)
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {[
+                        { orders: "$1,000", starter: "$100", growth: "$79", pro: "$89" },
+                        { orders: "$3,000", starter: "$300", growth: "$199", pro: "$169" },
+                        { orders: "$5,000", starter: "$500", growth: "$319", pro: "$249" },
+                        { orders: "$10,000", starter: "$1,000", growth: "$619", pro: "$449" },
+                      ].map((row, idx) => (
+                        <tr key={idx} className="border-b border-border/50">
+                          <td className="py-4 px-4 font-medium text-foreground">{row.orders}</td>
+                          <td className="py-4 px-4 text-center text-muted-foreground">{row.starter}</td>
+                          <td className="py-4 px-4 text-center text-primary font-medium bg-primary/5 dark:bg-primary/10">
+                            {row.growth}
+                          </td>
+                          <td className="py-4 px-4 text-center text-muted-foreground">{row.pro}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left py-4 px-4 font-semibold text-foreground">
-                        Monthly Orders
-                      </th>
-                      <th className="text-center py-4 px-4 font-semibold text-foreground">
-                        Starter (10%)
-                      </th>
-                      <th className="text-center py-4 px-4 font-semibold text-primary">
-                        Growth (6% + $19)
-                      </th>
-                      <th className="text-center py-4 px-4 font-semibold text-foreground">
-                        Pro (4% + $49)
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { orders: "$1,000", starter: "$100 + $50*", growth: "$79 + $50*", pro: "$89 + $50*" },
-                      { orders: "$3,000", starter: "$300 + $150*", growth: "$199 + $150*", pro: "$169 + $150*" },
-                      { orders: "$5,000", starter: "$500 + $250*", growth: "$319 + $250*", pro: "$249 + $250*" },
-                      { orders: "$10,000", starter: "$1,000 + $500*", growth: "$619 + $500*", pro: "$449 + $500*" },
-                    ].map((row, idx) => (
-                      <tr key={idx} className="border-b border-border/50">
-                        <td className="py-4 px-4 font-medium text-foreground">{row.orders}</td>
-                        <td className="py-4 px-4 text-center text-muted-foreground">{row.starter}</td>
-                        <td className="py-4 px-4 text-center text-primary font-medium bg-primary/5 dark:bg-primary/10">
-                          {row.growth}
-                        </td>
-                        <td className="py-4 px-4 text-center text-muted-foreground">{row.pro}</td>
+              <>
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4">
+                  {[
+                    { orders: "$1,000", starter: "$100 + $50*", growth: "$79 + $50*", pro: "$89 + $50*" },
+                    { orders: "$3,000", starter: "$300 + $150*", growth: "$199 + $150*", pro: "$169 + $150*" },
+                    { orders: "$5,000", starter: "$500 + $250*", growth: "$319 + $250*", pro: "$249 + $250*" },
+                    { orders: "$10,000", starter: "$1,000 + $500*", growth: "$619 + $500*", pro: "$449 + $500*" },
+                  ].map((row, idx) => (
+                    <div key={idx} className="border border-border rounded-lg p-4">
+                      <p className="font-semibold text-foreground text-center mb-3">
+                        Monthly Orders: {row.orders}
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center py-2 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground">Starter (10%)</span>
+                          <span className="text-sm text-foreground">{row.starter}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-border/50 bg-primary/5 dark:bg-primary/10 -mx-4 px-4">
+                          <span className="text-sm font-medium text-primary">Growth (6%)</span>
+                          <span className="text-sm font-medium text-primary">{row.growth}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2">
+                          <span className="text-sm text-muted-foreground">Pro (4%)</span>
+                          <span className="text-sm text-foreground">{row.pro}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <p className="text-xs text-muted-foreground text-center">
+                    * Customer service fee ($0.99/order) is paid by the customer
+                  </p>
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-4 px-4 font-semibold text-foreground">
+                          Monthly Orders
+                        </th>
+                        <th className="text-center py-4 px-4 font-semibold text-foreground">
+                          Starter (10%)
+                        </th>
+                        <th className="text-center py-4 px-4 font-semibold text-primary">
+                          Growth (6% + $19)
+                        </th>
+                        <th className="text-center py-4 px-4 font-semibold text-foreground">
+                          Pro (4% + $49)
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <p className="text-xs text-muted-foreground text-center mt-4">
-                  * Customer service fee ($0.99/order) is paid by the customer, not the restaurant
-                </p>
-              </div>
+                    </thead>
+                    <tbody>
+                      {[
+                        { orders: "$1,000", starter: "$100 + $50*", growth: "$79 + $50*", pro: "$89 + $50*" },
+                        { orders: "$3,000", starter: "$300 + $150*", growth: "$199 + $150*", pro: "$169 + $150*" },
+                        { orders: "$5,000", starter: "$500 + $250*", growth: "$319 + $250*", pro: "$249 + $250*" },
+                        { orders: "$10,000", starter: "$1,000 + $500*", growth: "$619 + $500*", pro: "$449 + $500*" },
+                      ].map((row, idx) => (
+                        <tr key={idx} className="border-b border-border/50">
+                          <td className="py-4 px-4 font-medium text-foreground">{row.orders}</td>
+                          <td className="py-4 px-4 text-center text-muted-foreground">{row.starter}</td>
+                          <td className="py-4 px-4 text-center text-primary font-medium bg-primary/5 dark:bg-primary/10">
+                            {row.growth}
+                          </td>
+                          <td className="py-4 px-4 text-center text-muted-foreground">{row.pro}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p className="text-xs text-muted-foreground text-center mt-4">
+                    * Customer service fee ($0.99/order) is paid by the customer, not the restaurant
+                  </p>
+                </div>
+              </>
             )}
           </div>
         </div>

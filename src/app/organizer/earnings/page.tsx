@@ -224,56 +224,91 @@ export default function EarningsPage() {
           </div>
 
           {events && events.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-border">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Event
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Tickets Sold
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Revenue
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-border">
-                  {events.slice(0, 10).map((event) => {
-                    const revenue = 0; // TODO: Calculate from orders
-                    const ticketsSold = event.ticketsSold || 0;
+            <>
+              {/* Mobile Card View */}
+              <div className="md:hidden divide-y divide-border">
+                {events.slice(0, 10).map((event) => {
+                  const revenue = 0; // TODO: Calculate from orders
+                  const ticketsSold = event.ticketsSold || 0;
 
-                    return (
-                      <tr key={event._id} className="hover:bg-muted">
-                        <td className="px-6 py-4">
-                          <Link
-                            href={`/organizer/events/${event._id}`}
-                            className="text-sm font-medium text-primary hover:underline"
-                          >
-                            {event.name}
-                          </Link>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                          {ticketsSold.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                  return (
+                    <div key={event._id} className="p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <Link
+                          href={`/organizer/events/${event._id}`}
+                          className="text-sm font-medium text-primary hover:underline"
+                        >
+                          {event.name}
+                        </Link>
+                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-warning/10 text-warning">
+                          Pending
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {ticketsSold.toLocaleString()} tickets sold
+                        </span>
+                        <span className="font-medium text-foreground">
                           ${revenue.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-warning/10 text-warning">
-                            Pending
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-muted">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Event
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Tickets Sold
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Revenue
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-border">
+                    {events.slice(0, 10).map((event) => {
+                      const revenue = 0; // TODO: Calculate from orders
+                      const ticketsSold = event.ticketsSold || 0;
+
+                      return (
+                        <tr key={event._id} className="hover:bg-muted">
+                          <td className="px-6 py-4">
+                            <Link
+                              href={`/organizer/events/${event._id}`}
+                              className="text-sm font-medium text-primary hover:underline"
+                            >
+                              {event.name}
+                            </Link>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                            {ticketsSold.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                            ${revenue.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-warning/10 text-warning">
+                              Pending
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           ) : (
             <div className="p-12 text-center">
               <DollarSign className="w-16 h-16 text-muted-foreground mx-auto mb-4" />

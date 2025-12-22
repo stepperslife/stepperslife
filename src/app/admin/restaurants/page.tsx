@@ -235,139 +235,328 @@ export default function AdminRestaurantsPage() {
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>
       ) : filteredRestaurants && filteredRestaurants.length > 0 ? (
-        <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Restaurant</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Location</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Cuisine</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Orders</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Created</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRestaurants.map((restaurant) => {
-                  const status = getRestaurantStatus(restaurant);
-                  const statusConfig = STATUS_CONFIG[status];
-                  const StatusIcon = statusConfig.icon;
+        <>
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredRestaurants.map((restaurant) => {
+              const status = getRestaurantStatus(restaurant);
+              const statusConfig = STATUS_CONFIG[status];
+              const StatusIcon = statusConfig.icon;
 
-                  return (
-                    <tr key={restaurant._id} className="border-b border-border last:border-0">
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          {restaurant.logoUrl ? (
-                            <img
-                              src={restaurant.logoUrl}
-                              alt={restaurant.name}
-                              className="w-10 h-10 rounded-lg object-cover"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
-                              <UtensilsCrossed className="w-5 h-5 text-primary" />
-                            </div>
-                          )}
-                          <div>
-                            <p className="font-medium text-foreground">{restaurant.name}</p>
-                            <p className="text-sm text-muted-foreground">/{restaurant.slug}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2 text-sm text-foreground">
-                          <MapPin className="w-4 h-4 text-muted-foreground" />
-                          {restaurant.city}, {restaurant.state}
-                        </div>
-                        {restaurant.phone && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                            <Phone className="w-4 h-4" />
-                            {restaurant.phone}
+              return (
+                <div key={restaurant._id} className="bg-card rounded-xl border border-border p-4">
+                  <div className="flex items-start gap-3 mb-3">
+                    {restaurant.logoUrl ? (
+                      <img
+                        src={restaurant.logoUrl}
+                        alt={restaurant.name}
+                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <UtensilsCrossed className="w-6 h-6 text-primary" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground truncate">{restaurant.name}</p>
+                      <p className="text-sm text-muted-foreground">/{restaurant.slug}</p>
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium mt-1 ${statusConfig.color}`}
+                      >
+                        <StatusIcon className="w-3 h-3" />
+                        {statusConfig.label}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-sm mb-3">
+                    <div className="flex items-center gap-2 text-foreground">
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                      {restaurant.city}, {restaurant.state}
+                    </div>
+                    {restaurant.phone && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Phone className="w-4 h-4" />
+                        {restaurant.phone}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <ShoppingBag className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-foreground">
+                        Orders: {restaurant.acceptingOrders ? "Active" : "Paused"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {restaurant.cuisine && restaurant.cuisine.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {restaurant.cuisine.slice(0, 3).map((c) => (
+                        <span
+                          key={c}
+                          className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground"
+                        >
+                          {c}
+                        </span>
+                      ))}
+                      {restaurant.cuisine.length > 3 && (
+                        <span className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground">
+                          +{restaurant.cuisine.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between pt-3 border-t border-border">
+                    <span className="text-xs text-muted-foreground">
+                      Created {formatDate(restaurant.createdAt)}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/restaurants/${restaurant.slug}`}
+                        className="p-2 hover:bg-muted rounded-lg transition-colors"
+                        target="_blank"
+                      >
+                        <Eye className="w-4 h-4 text-muted-foreground" />
+                      </Link>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedRestaurant(
+                              selectedRestaurant === restaurant._id ? null : restaurant._id
+                            )
+                          }
+                          className="p-2 hover:bg-muted rounded-lg transition-colors"
+                        >
+                          <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                        </button>
+                        {selectedRestaurant === restaurant._id && (
+                          <div className="absolute right-0 bottom-full mb-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
+                            {status === "pending" && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setActionModal({
+                                      type: "approve",
+                                      restaurantId: restaurant._id,
+                                      restaurantName: restaurant.name,
+                                    });
+                                    setSelectedRestaurant(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setActionModal({
+                                      type: "reject",
+                                      restaurantId: restaurant._id,
+                                      restaurantName: restaurant.name,
+                                    });
+                                    setSelectedRestaurant(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            )}
+                            {status === "active" && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActionModal({
+                                    type: "suspend",
+                                    restaurantId: restaurant._id,
+                                    restaurantName: restaurant.name,
+                                  });
+                                  setSelectedRestaurant(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                              >
+                                Suspend
+                              </button>
+                            )}
+                            {status === "suspended" && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActionModal({
+                                    type: "reactivate",
+                                    restaurantId: restaurant._id,
+                                    restaurantName: restaurant.name,
+                                  });
+                                  setSelectedRestaurant(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
+                              >
+                                Reactivate
+                              </button>
+                            )}
                           </div>
                         )}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex flex-wrap gap-1">
-                          {restaurant.cuisine?.slice(0, 2).map((c) => (
-                            <span
-                              key={c}
-                              className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground"
-                            >
-                              {c}
-                            </span>
-                          ))}
-                          {restaurant.cuisine && restaurant.cuisine.length > 2 && (
-                            <span className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground">
-                              +{restaurant.cuisine.length - 2}
-                            </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-card rounded-xl border border-border overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Restaurant</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Location</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Cuisine</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Orders</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Created</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRestaurants.map((restaurant) => {
+                    const status = getRestaurantStatus(restaurant);
+                    const statusConfig = STATUS_CONFIG[status];
+                    const StatusIcon = statusConfig.icon;
+
+                    return (
+                      <tr key={restaurant._id} className="border-b border-border last:border-0">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            {restaurant.logoUrl ? (
+                              <img
+                                src={restaurant.logoUrl}
+                                alt={restaurant.name}
+                                className="w-10 h-10 rounded-lg object-cover"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
+                                <UtensilsCrossed className="w-5 h-5 text-primary" />
+                              </div>
+                            )}
+                            <div>
+                              <p className="font-medium text-foreground">{restaurant.name}</p>
+                              <p className="text-sm text-muted-foreground">/{restaurant.slug}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2 text-sm text-foreground">
+                            <MapPin className="w-4 h-4 text-muted-foreground" />
+                            {restaurant.city}, {restaurant.state}
+                          </div>
+                          {restaurant.phone && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                              <Phone className="w-4 h-4" />
+                              {restaurant.phone}
+                            </div>
                           )}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <ShoppingBag className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-foreground">
-                            {restaurant.acceptingOrders ? "Active" : "Paused"}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
-                        >
-                          <StatusIcon className="w-3 h-3" />
-                          {statusConfig.label}
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm text-muted-foreground">
-                        {formatDate(restaurant.createdAt)}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <Link
-                            href={`/restaurants/${restaurant.slug}`}
-                            className="p-2 hover:bg-muted rounded-lg transition-colors"
-                            target="_blank"
+                        </td>
+                        <td className="p-4">
+                          <div className="flex flex-wrap gap-1">
+                            {restaurant.cuisine?.slice(0, 2).map((c) => (
+                              <span
+                                key={c}
+                                className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground"
+                              >
+                                {c}
+                              </span>
+                            ))}
+                            {restaurant.cuisine && restaurant.cuisine.length > 2 && (
+                              <span className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground">
+                                +{restaurant.cuisine.length - 2}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
+                            <ShoppingBag className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-foreground">
+                              {restaurant.acceptingOrders ? "Active" : "Paused"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
                           >
-                            <Eye className="w-4 h-4 text-muted-foreground" />
-                          </Link>
-                          <div className="relative">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setSelectedRestaurant(
-                                  selectedRestaurant === restaurant._id ? null : restaurant._id
-                                )
-                              }
+                            <StatusIcon className="w-3 h-3" />
+                            {statusConfig.label}
+                          </span>
+                        </td>
+                        <td className="p-4 text-sm text-muted-foreground">
+                          {formatDate(restaurant.createdAt)}
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
+                            <Link
+                              href={`/restaurants/${restaurant.slug}`}
                               className="p-2 hover:bg-muted rounded-lg transition-colors"
+                              target="_blank"
                             >
-                              <MoreVertical className="w-4 h-4 text-muted-foreground" />
-                            </button>
-                            {selectedRestaurant === restaurant._id && (
-                              <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
-                                {status === "pending" && (
-                                  <>
+                              <Eye className="w-4 h-4 text-muted-foreground" />
+                            </Link>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setSelectedRestaurant(
+                                    selectedRestaurant === restaurant._id ? null : restaurant._id
+                                  )
+                                }
+                                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                              >
+                                <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                              </button>
+                              {selectedRestaurant === restaurant._id && (
+                                <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
+                                  {status === "pending" && (
+                                    <>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActionModal({
+                                            type: "approve",
+                                            restaurantId: restaurant._id,
+                                            restaurantName: restaurant.name,
+                                          });
+                                          setSelectedRestaurant(null);
+                                        }}
+                                        className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
+                                      >
+                                        Approve
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActionModal({
+                                            type: "reject",
+                                            restaurantId: restaurant._id,
+                                            restaurantName: restaurant.name,
+                                          });
+                                          setSelectedRestaurant(null);
+                                        }}
+                                        className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
+                                      >
+                                        Reject
+                                      </button>
+                                    </>
+                                  )}
+                                  {status === "active" && (
                                     <button
                                       type="button"
                                       onClick={() => {
                                         setActionModal({
-                                          type: "approve",
-                                          restaurantId: restaurant._id,
-                                          restaurantName: restaurant.name,
-                                        });
-                                        setSelectedRestaurant(null);
-                                      }}
-                                      className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
-                                    >
-                                      Approve
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setActionModal({
-                                          type: "reject",
+                                          type: "suspend",
                                           restaurantId: restaurant._id,
                                           restaurantName: restaurant.name,
                                         });
@@ -375,54 +564,38 @@ export default function AdminRestaurantsPage() {
                                       }}
                                       className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
                                     >
-                                      Reject
+                                      Suspend
                                     </button>
-                                  </>
-                                )}
-                                {status === "active" && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setActionModal({
-                                        type: "suspend",
-                                        restaurantId: restaurant._id,
-                                        restaurantName: restaurant.name,
-                                      });
-                                      setSelectedRestaurant(null);
-                                    }}
-                                    className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted transition-colors"
-                                  >
-                                    Suspend
-                                  </button>
-                                )}
-                                {status === "suspended" && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setActionModal({
-                                        type: "reactivate",
-                                        restaurantId: restaurant._id,
-                                        restaurantName: restaurant.name,
-                                      });
-                                      setSelectedRestaurant(null);
-                                    }}
-                                    className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
-                                  >
-                                    Reactivate
-                                  </button>
-                                )}
-                              </div>
-                            )}
+                                  )}
+                                  {status === "suspended" && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setActionModal({
+                                          type: "reactivate",
+                                          restaurantId: restaurant._id,
+                                          restaurantName: restaurant.name,
+                                        });
+                                        setSelectedRestaurant(null);
+                                      }}
+                                      className="w-full px-4 py-2 text-left text-sm text-success hover:bg-muted transition-colors"
+                                    >
+                                      Reactivate
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </>
       ) : (
         <div className="bg-card rounded-xl border border-border p-12 text-center">
           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">

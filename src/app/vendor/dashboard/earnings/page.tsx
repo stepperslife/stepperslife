@@ -198,7 +198,46 @@ export default function VendorEarningsPage() {
         </div>
       ) : earnings && earnings.length > 0 ? (
         <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-border">
+            {earnings.map((earning) => {
+              const statusConfig = STATUS_CONFIG[earning.status as EarningStatus];
+              return (
+                <div key={earning._id} className="p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-medium text-foreground">{earning.orderNumber || "-"}</p>
+                      <p className="text-xs text-muted-foreground">{formatDate(earning.createdAt)}</p>
+                    </div>
+                    <span
+                      className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
+                    >
+                      {statusConfig.label}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Sale Amount</p>
+                      <p className="font-medium">{formatCurrency(earning.grossAmount)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Commission</p>
+                      <p className="text-muted-foreground">-{formatCurrency(earning.commissionAmount)} ({earning.commissionRate}%)</p>
+                    </div>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-border">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Your Earnings</span>
+                      <span className="font-bold text-success">{formatCurrency(earning.netAmount)}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border">

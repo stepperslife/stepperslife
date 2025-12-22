@@ -172,134 +172,216 @@ export default function OrdersManagementPage() {
         </div>
       </div>
 
-      {/* Orders Table */}
+      {/* Orders Table/Cards */}
       {allOrders.length === 0 ? (
         <div className="bg-card rounded-lg shadow-md p-12 text-center">
           <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
           <p className="text-muted-foreground">No orders found</p>
         </div>
       ) : (
-        <div className="bg-card rounded-lg shadow-md overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted border-b border-border">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Order #
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Customer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Products
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Total
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Payment
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Fulfillment
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {allOrders.map((order) => (
-                  <tr key={order._id} className="hover:bg-muted">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
-                      {order.orderNumber}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-foreground">
-                      <div>
-                        <p className="font-medium">{order.customerName}</p>
-                        <p className="text-muted-foreground">{order.customerEmail}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground">
-                      {order.items.length} {order.items.length === 1 ? "item" : "items"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
-                      ${(order.totalAmount / 100).toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                          order.paymentStatus === "PAID"
-                            ? "bg-success/10 text-success"
-                            : order.paymentStatus === "PENDING"
-                              ? "bg-warning/10 text-warning"
-                              : "bg-destructive/10 text-destructive"
-                        }`}
-                      >
-                        {order.paymentStatus === "PAID" && <CheckCircle2 className="w-3 h-3" />}
-                        {order.paymentStatus}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                          order.fulfillmentStatus === "DELIVERED"
-                            ? "bg-success/10 text-success"
-                            : order.fulfillmentStatus === "SHIPPED"
-                              ? "bg-accent text-accent-foreground"
-                              : order.fulfillmentStatus === "PROCESSING"
-                                ? "bg-accent text-accent-foreground"
-                                : order.fulfillmentStatus === "CANCELLED"
-                                  ? "bg-destructive/10 text-destructive"
-                                  : "bg-warning/10 text-warning"
-                        }`}
-                      >
-                        {order.fulfillmentStatus}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                      {format(new Date(order.createdAt), "MMM d, yyyy")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <div className="flex items-center gap-2">
-                        {order.fulfillmentStatus === "PENDING" && (
-                          <button
-                            type="button"
-                            onClick={() => handleStatusChange(order._id, "PROCESSING")}
-                            className="px-2 py-1 bg-accent text-primary rounded hover:bg-accent/90 text-xs"
-                          >
-                            Process
-                          </button>
-                        )}
-                        {order.fulfillmentStatus === "PROCESSING" && (
-                          <button
-                            type="button"
-                            onClick={() => setSelectedOrder(order._id)}
-                            className="px-2 py-1 bg-accent text-primary rounded hover:bg-primary/20 text-xs"
-                          >
-                            Ship
-                          </button>
-                        )}
-                        {order.trackingUrl && (
-                          <a
-                            href={order.trackingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1 text-primary hover:bg-accent rounded"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <>
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {allOrders.map((order) => (
+              <div key={order._id} className="bg-card rounded-lg shadow-md p-4 border border-border">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="font-semibold text-foreground">{order.orderNumber}</p>
+                    <p className="text-sm text-muted-foreground">{format(new Date(order.createdAt), "MMM d, yyyy")}</p>
+                  </div>
+                  <p className="text-lg font-bold text-foreground">${(order.totalAmount / 100).toFixed(2)}</p>
+                </div>
+                <div className="space-y-2 mb-3">
+                  <p className="text-sm font-medium text-foreground">{order.customerName}</p>
+                  <p className="text-sm text-muted-foreground">{order.customerEmail}</p>
+                  <p className="text-sm text-muted-foreground">{order.items.length} {order.items.length === 1 ? "item" : "items"}</p>
+                </div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                      order.paymentStatus === "PAID"
+                        ? "bg-success/10 text-success"
+                        : order.paymentStatus === "PENDING"
+                          ? "bg-warning/10 text-warning"
+                          : "bg-destructive/10 text-destructive"
+                    }`}
+                  >
+                    {order.paymentStatus === "PAID" && <CheckCircle2 className="w-3 h-3" />}
+                    {order.paymentStatus}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                      order.fulfillmentStatus === "DELIVERED"
+                        ? "bg-success/10 text-success"
+                        : order.fulfillmentStatus === "SHIPPED"
+                          ? "bg-accent text-accent-foreground"
+                          : order.fulfillmentStatus === "PROCESSING"
+                            ? "bg-accent text-accent-foreground"
+                            : order.fulfillmentStatus === "CANCELLED"
+                              ? "bg-destructive/10 text-destructive"
+                              : "bg-warning/10 text-warning"
+                    }`}
+                  >
+                    {order.fulfillmentStatus}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 pt-3 border-t border-border">
+                  {order.fulfillmentStatus === "PENDING" && (
+                    <button
+                      type="button"
+                      onClick={() => handleStatusChange(order._id, "PROCESSING")}
+                      className="flex-1 px-3 py-2 bg-accent text-primary rounded-lg hover:bg-accent/90 text-sm font-medium"
+                    >
+                      Process
+                    </button>
+                  )}
+                  {order.fulfillmentStatus === "PROCESSING" && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedOrder(order._id)}
+                      className="flex-1 px-3 py-2 bg-accent text-primary rounded-lg hover:bg-primary/20 text-sm font-medium"
+                    >
+                      Ship
+                    </button>
+                  )}
+                  {order.trackingUrl && (
+                    <a
+                      href={order.trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-2 text-primary hover:bg-accent rounded-lg flex items-center gap-1 text-sm"
+                    >
+                      <ExternalLink className="w-4 h-4" /> Track
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-card rounded-lg shadow-md overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted border-b border-border">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Order #
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Customer
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Products
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Total
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Payment
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Fulfillment
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {allOrders.map((order) => (
+                    <tr key={order._id} className="hover:bg-muted">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                        {order.orderNumber}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-foreground">
+                        <div>
+                          <p className="font-medium">{order.customerName}</p>
+                          <p className="text-muted-foreground">{order.customerEmail}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
+                        {order.items.length} {order.items.length === 1 ? "item" : "items"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                        ${(order.totalAmount / 100).toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                            order.paymentStatus === "PAID"
+                              ? "bg-success/10 text-success"
+                              : order.paymentStatus === "PENDING"
+                                ? "bg-warning/10 text-warning"
+                                : "bg-destructive/10 text-destructive"
+                          }`}
+                        >
+                          {order.paymentStatus === "PAID" && <CheckCircle2 className="w-3 h-3" />}
+                          {order.paymentStatus}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                            order.fulfillmentStatus === "DELIVERED"
+                              ? "bg-success/10 text-success"
+                              : order.fulfillmentStatus === "SHIPPED"
+                                ? "bg-accent text-accent-foreground"
+                                : order.fulfillmentStatus === "PROCESSING"
+                                  ? "bg-accent text-accent-foreground"
+                                  : order.fulfillmentStatus === "CANCELLED"
+                                    ? "bg-destructive/10 text-destructive"
+                                    : "bg-warning/10 text-warning"
+                          }`}
+                        >
+                          {order.fulfillmentStatus}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                        {format(new Date(order.createdAt), "MMM d, yyyy")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <div className="flex items-center gap-2">
+                          {order.fulfillmentStatus === "PENDING" && (
+                            <button
+                              type="button"
+                              onClick={() => handleStatusChange(order._id, "PROCESSING")}
+                              className="px-2 py-1 bg-accent text-primary rounded hover:bg-accent/90 text-xs"
+                            >
+                              Process
+                            </button>
+                          )}
+                          {order.fulfillmentStatus === "PROCESSING" && (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedOrder(order._id)}
+                              className="px-2 py-1 bg-accent text-primary rounded hover:bg-primary/20 text-xs"
+                            >
+                              Ship
+                            </button>
+                          )}
+                          {order.trackingUrl && (
+                            <a
+                              href={order.trackingUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1 text-primary hover:bg-accent rounded"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Tracking Modal */}

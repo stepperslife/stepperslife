@@ -66,7 +66,7 @@ export default function FinancialReportsPage() {
           <p className="text-muted-foreground mb-6">
             Comprehensive financial analytics and export options will be available here
           </p>
-          <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
             <div className="bg-success/10 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Total Revenue</p>
               <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>

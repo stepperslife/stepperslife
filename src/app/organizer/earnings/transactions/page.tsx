@@ -101,47 +101,72 @@ export default function TransactionsPage() {
           className="bg-white rounded-lg shadow-md overflow-hidden"
         >
           {filteredTransactions.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-border">
-                <thead className="bg-card">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                      Event
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                      Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                      Amount
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-border">
-                  {filteredTransactions.slice(0, 50).map((transaction) => (
-                    <tr key={transaction.id} className="hover:bg-card">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                        {new Date(transaction.date).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-foreground">
-                        <div className="flex items-center gap-2">
+            <>
+              {/* Mobile Card View */}
+              <div className="md:hidden divide-y divide-border">
+                {filteredTransactions.slice(0, 50).map((transaction) => (
+                  <div key={transaction.id} className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <div className="flex items-center gap-2 text-sm text-foreground">
                           <Calendar className="w-4 h-4 text-muted-foreground" />
                           {transaction.eventTitle}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                        {transaction.type}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-success">
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(transaction.date).toLocaleDateString()} • {transaction.type}
+                        </p>
+                      </div>
+                      <span className="text-sm font-medium text-success">
                         +${transaction.amount.toFixed(2)}
-                      </td>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-card">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                        Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                        Event
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                        Amount
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-border">
+                    {filteredTransactions.slice(0, 50).map((transaction) => (
+                      <tr key={transaction.id} className="hover:bg-card">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                          {new Date(transaction.date).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-muted-foreground" />
+                            {transaction.eventTitle}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                          {transaction.type}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-success">
+                          +${transaction.amount.toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           ) : (
             <div className="p-12 text-center">
               <TrendingUp className="w-16 h-16 text-muted-foreground mx-auto mb-4" />

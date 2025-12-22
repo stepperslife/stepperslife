@@ -173,7 +173,42 @@ export default function AdminDashboard() {
             Recent Orders
           </h2>
         </div>
-        <div className="overflow-x-auto">
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y divide-border">
+          {recentActivity.orders.slice(0, 10).map((order) => (
+            <div key={order._id} className="p-4">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <p className="font-mono text-sm text-foreground">{order._id.slice(0, 8)}...</p>
+                  <p className="text-xs text-muted-foreground">
+                    {format(new Date(order.createdAt), "MMM d, h:mm a")}
+                  </p>
+                </div>
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                    order.status === "COMPLETED"
+                      ? "bg-success/10 text-success"
+                      : order.status === "PENDING"
+                        ? "bg-warning/10 text-warning"
+                        : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {order.status === "COMPLETED" && <CheckCircle2 className="w-3 h-3" />}
+                  {order.status}
+                </span>
+              </div>
+              <p className="text-sm font-medium text-foreground mb-1 truncate">{order.eventName}</p>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{order.buyerName}</span>
+                <span className="font-medium text-foreground">${(order.totalCents / 100).toFixed(2)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted border-b border-border">
               <tr>

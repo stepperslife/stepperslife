@@ -40,7 +40,7 @@ export default function SalesHistoryPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-muted-foreground">Total Sales</span>
@@ -87,7 +87,7 @@ export default function SalesHistoryPage() {
       {/* Sales Breakdown */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <h2 className="text-xl font-bold text-foreground mb-4">Sales by Payment Method</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="text-center p-4 bg-accent rounded-lg">
             <CreditCard className="w-6 h-6 text-primary mx-auto mb-2" />
             <p className="text-2xl font-bold text-foreground">{staffDetails.salesBreakdown.online}</p>
@@ -115,60 +115,94 @@ export default function SalesHistoryPage() {
         </div>
 
         {staffSales.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-card border-b border">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Order ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Tickets
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Payment Method
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Commission
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {staffSales.map((sale) => (
-                  <tr key={sale._id} className="hover:bg-card">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                      {format(new Date(sale.createdAt), "MMM d, yyyy h:mm a")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-muted-foreground">
-                      {sale.orderId.slice(0, 8)}...
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                      {sale.ticketCount}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                          sale.paymentMethod === "CASH"
-                            ? "bg-success/20 text-success"
-                            : sale.paymentMethod === "CASH_APP"
-                              ? "bg-accent text-foreground"
-                              : "bg-accent text-accent-foreground"
-                        }`}
-                      >
-                        {sale.paymentMethod || "ONLINE"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-success">
-                      ${(sale.commissionAmount / 100).toFixed(2)}
-                    </td>
+          <>
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-border">
+              {staffSales.map((sale) => (
+                <div key={sale._id} className="p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-mono text-sm text-muted-foreground">{sale.orderId.slice(0, 8)}...</p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(sale.createdAt), "MMM d, yyyy h:mm a")}
+                      </p>
+                    </div>
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        sale.paymentMethod === "CASH"
+                          ? "bg-success/20 text-success"
+                          : sale.paymentMethod === "CASH_APP"
+                            ? "bg-accent text-foreground"
+                            : "bg-accent text-accent-foreground"
+                      }`}
+                    >
+                      {sale.paymentMethod || "ONLINE"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">{sale.ticketCount} ticket{sale.ticketCount !== 1 ? "s" : ""}</span>
+                    <span className="font-medium text-success">${(sale.commissionAmount / 100).toFixed(2)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-card border-b border">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Order ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Tickets
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Payment Method
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Commission
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {staffSales.map((sale) => (
+                    <tr key={sale._id} className="hover:bg-card">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                        {format(new Date(sale.createdAt), "MMM d, yyyy h:mm a")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-muted-foreground">
+                        {sale.orderId.slice(0, 8)}...
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                        {sale.ticketCount}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            sale.paymentMethod === "CASH"
+                              ? "bg-success/20 text-success"
+                              : sale.paymentMethod === "CASH_APP"
+                                ? "bg-accent text-foreground"
+                                : "bg-accent text-accent-foreground"
+                          }`}
+                        >
+                          {sale.paymentMethod || "ONLINE"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-success">
+                        ${(sale.commissionAmount / 100).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="p-12 text-center">
             <Ticket className="w-16 h-16 text-muted-foreground mx-auto mb-4" />

@@ -73,7 +73,7 @@ export default function ActiveEventsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-4 mt-6 pt-4 border-t">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t">
                   <div>
                     <p className="text-sm text-muted-foreground">Allocated</p>
                     <p className="text-xl font-semibold">{position.allocatedTickets}</p>

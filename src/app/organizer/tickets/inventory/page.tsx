@@ -142,96 +142,164 @@ export default function TicketInventoryPage() {
           className="bg-white rounded-lg shadow-md overflow-hidden"
         >
           {filteredEvents && filteredEvents.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-border">
-                <thead className="bg-card">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Event
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Total Tickets
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Sold
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Available
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-border">
-                  {filteredEvents.map((event) => {
-                    const totalTickets = event.totalTickets || 0;
-                    const ticketsSold = event.ticketsSold || 0;
-                    const available = totalTickets - ticketsSold;
-                    const percentSold = totalTickets > 0 ? (ticketsSold / totalTickets) * 100 : 0;
+            <>
+              {/* Mobile Card View */}
+              <div className="md:hidden divide-y divide-border">
+                {filteredEvents.map((event) => {
+                  const totalTickets = event.totalTickets || 0;
+                  const ticketsSold = event.ticketsSold || 0;
+                  const available = totalTickets - ticketsSold;
+                  const percentSold = totalTickets > 0 ? (ticketsSold / totalTickets) * 100 : 0;
 
-                    return (
-                      <tr key={event._id} className="hover:bg-card">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center">
-                            <Calendar className="w-5 h-5 text-muted-foreground mr-3 flex-shrink-0" />
-                            <div>
-                              <Link
-                                href={`/organizer/events/${event._id}`}
-                                className="text-sm font-medium text-primary hover:underline"
-                              >
-                                {event.name}
-                              </Link>
-                              <div className="text-sm text-muted-foreground">
-                                {event.startDate
-                                  ? new Date(event.startDate).toLocaleDateString()
-                                  : "Date TBD"}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-info/20 text-foreground">
+                  return (
+                    <div key={event._id} className="p-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        <Calendar className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <Link
+                            href={`/organizer/events/${event._id}`}
+                            className="text-sm font-medium text-primary hover:underline block truncate"
+                          >
+                            {event.name}
+                          </Link>
+                          <p className="text-sm text-muted-foreground">
+                            {event.startDate
+                              ? new Date(event.startDate).toLocaleDateString()
+                              : "Date TBD"}
+                          </p>
+                          <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-info/20 text-foreground mt-1">
                             {event.eventType || "Event"}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground font-medium">
-                          {totalTickets.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                          {ticketsSold.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                          {available.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1 bg-muted rounded-full h-2 max-w-[100px]">
-                              <div
-                                className={`h-2 rounded-full ${
-                                  percentSold >= 90
-                                    ? "bg-destructive/100"
-                                    : percentSold >= 70
-                                    ? "bg-warning/100"
-                                    : "bg-success"
-                                }`}
-                                style={{ width: `${Math.min(percentSold, 100)}%` }}
-                              ></div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-sm mb-3">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Total</p>
+                          <p className="font-medium">{totalTickets.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Sold</p>
+                          <p className="font-medium">{ticketsSold.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Available</p>
+                          <p className="font-medium">{available.toLocaleString()}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 bg-muted rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${
+                              percentSold >= 90
+                                ? "bg-destructive/100"
+                                : percentSold >= 70
+                                ? "bg-warning/100"
+                                : "bg-success"
+                            }`}
+                            style={{ width: `${Math.min(percentSold, 100)}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm text-muted-foreground whitespace-nowrap">
+                          {Math.round(percentSold)}% sold
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-card">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Event
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Total Tickets
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Sold
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Available
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-border">
+                    {filteredEvents.map((event) => {
+                      const totalTickets = event.totalTickets || 0;
+                      const ticketsSold = event.ticketsSold || 0;
+                      const available = totalTickets - ticketsSold;
+                      const percentSold = totalTickets > 0 ? (ticketsSold / totalTickets) * 100 : 0;
+
+                      return (
+                        <tr key={event._id} className="hover:bg-card">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center">
+                              <Calendar className="w-5 h-5 text-muted-foreground mr-3 flex-shrink-0" />
+                              <div>
+                                <Link
+                                  href={`/organizer/events/${event._id}`}
+                                  className="text-sm font-medium text-primary hover:underline"
+                                >
+                                  {event.name}
+                                </Link>
+                                <div className="text-sm text-muted-foreground">
+                                  {event.startDate
+                                    ? new Date(event.startDate).toLocaleDateString()
+                                    : "Date TBD"}
+                                </div>
+                              </div>
                             </div>
-                            <span className="text-sm text-muted-foreground whitespace-nowrap">
-                              {Math.round(percentSold)}%
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-info/20 text-foreground">
+                              {event.eventType || "Event"}
                             </span>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground font-medium">
+                            {totalTickets.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                            {ticketsSold.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                            {available.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 bg-muted rounded-full h-2 max-w-[100px]">
+                                <div
+                                  className={`h-2 rounded-full ${
+                                    percentSold >= 90
+                                      ? "bg-destructive/100"
+                                      : percentSold >= 70
+                                      ? "bg-warning/100"
+                                      : "bg-success"
+                                  }`}
+                                  style={{ width: `${Math.min(percentSold, 100)}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-sm text-muted-foreground whitespace-nowrap">
+                                {Math.round(percentSold)}%
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           ) : (
             <div className="p-12 text-center">
               <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />

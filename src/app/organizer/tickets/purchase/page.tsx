@@ -143,7 +143,7 @@ export default function PurchaseTicketsPage() {
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Quick Select
                 </label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {[50, 100, 250, 500].map((qty) => (
                     <button
                       key={qty}

@@ -188,113 +188,198 @@ export default function MyTeamPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-card rounded-lg shadow-md overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted border-b border-border">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Contact
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Commission Split
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Auto-Assign
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-card divide-y divide-border">
-                {myGlobalSubSellers.map((subSeller) => (
-                  <tr key={subSeller._id} className="hover:bg-muted">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-foreground">{subSeller.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        Referral: {subSeller.referralCode}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <Mail className="w-4 h-4" />
-                          {subSeller.email}
-                        </div>
-                        {subSeller.phone && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Phone className="w-4 h-4" />
-                            {subSeller.phone}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-3 py-1 text-xs font-semibold bg-accent text-primary rounded-full">
-                        {subSeller.role}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-foreground">
-                        <div className="flex items-center gap-1">
-                          <Percent className="w-4 h-4 text-success" />
-                          <span className="font-medium">
-                            You: {subSeller.parentCommissionPercent}%
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Percent className="w-4 h-4 text-primary" />
-                          <span>Them: {subSeller.subSellerCommissionPercent}%</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleToggleAutoAssign(
-                            subSeller._id,
-                            subSeller.autoAssignToNewEvents || false
-                          )
-                        }
-                        className="flex items-center gap-2"
-                      >
-                        {subSeller.autoAssignToNewEvents ? (
-                          <div className="flex items-center gap-2 text-success">
-                            <CheckCircle2 className="w-5 h-5" />
-                            <span className="text-sm font-medium">Enabled</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <XCircle className="w-5 h-5" />
-                            <span className="text-sm font-medium">Disabled</span>
-                          </div>
-                        )}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSubSeller(subSeller._id)}
-                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                        title="Remove sub-seller"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <>
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {myGlobalSubSellers.map((subSeller) => (
+              <div key={subSeller._id} className="bg-card rounded-lg shadow-md p-4 border border-border">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="font-medium text-foreground">{subSeller.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Referral: {subSeller.referralCode}
+                    </p>
+                  </div>
+                  <span className="px-3 py-1 text-xs font-semibold bg-accent text-primary rounded-full">
+                    {subSeller.role}
+                  </span>
+                </div>
+
+                <div className="space-y-2 text-sm mb-3">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Mail className="w-4 h-4" />
+                    <span className="truncate">{subSeller.email}</span>
+                  </div>
+                  {subSeller.phone && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Phone className="w-4 h-4" />
+                      {subSeller.phone}
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-sm mb-3 py-3 border-t border-b border-border">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Commission Split</p>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Percent className="w-3 h-3 text-success" />
+                      <span className="font-medium text-sm">You: {subSeller.parentCommissionPercent}%</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Percent className="w-3 h-3 text-primary" />
+                      <span className="text-sm">Them: {subSeller.subSellerCommissionPercent}%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Auto-Assign</p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleToggleAutoAssign(
+                          subSeller._id,
+                          subSeller.autoAssignToNewEvents || false
+                        )
+                      }
+                      className="flex items-center gap-1 mt-1"
+                    >
+                      {subSeller.autoAssignToNewEvents ? (
+                        <span className="flex items-center gap-1 text-success text-sm">
+                          <CheckCircle2 className="w-4 h-4" />
+                          Enabled
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-muted-foreground text-sm">
+                          <XCircle className="w-4 h-4" />
+                          Disabled
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSubSeller(subSeller._id)}
+                    className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                    title="Remove sub-seller"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-card rounded-lg shadow-md overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted border-b border-border">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Contact
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Commission Split
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Auto-Assign
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-card divide-y divide-border">
+                  {myGlobalSubSellers.map((subSeller) => (
+                    <tr key={subSeller._id} className="hover:bg-muted">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-medium text-foreground">{subSeller.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          Referral: {subSeller.referralCode}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Mail className="w-4 h-4" />
+                            {subSeller.email}
+                          </div>
+                          {subSeller.phone && (
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                              <Phone className="w-4 h-4" />
+                              {subSeller.phone}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-3 py-1 text-xs font-semibold bg-accent text-primary rounded-full">
+                          {subSeller.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-foreground">
+                          <div className="flex items-center gap-1">
+                            <Percent className="w-4 h-4 text-success" />
+                            <span className="font-medium">
+                              You: {subSeller.parentCommissionPercent}%
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Percent className="w-4 h-4 text-primary" />
+                            <span>Them: {subSeller.subSellerCommissionPercent}%</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleToggleAutoAssign(
+                              subSeller._id,
+                              subSeller.autoAssignToNewEvents || false
+                            )
+                          }
+                          className="flex items-center gap-2"
+                        >
+                          {subSeller.autoAssignToNewEvents ? (
+                            <div className="flex items-center gap-2 text-success">
+                              <CheckCircle2 className="w-5 h-5" />
+                              <span className="text-sm font-medium">Enabled</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                              <XCircle className="w-5 h-5" />
+                              <span className="text-sm font-medium">Disabled</span>
+                            </div>
+                          )}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSubSeller(subSeller._id)}
+                          className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                          title="Remove sub-seller"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Add Sub-Seller Modal */}

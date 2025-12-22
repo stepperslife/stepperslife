@@ -209,65 +209,104 @@ export default function TicketsPage() {
           </div>
 
           {events && events.length > 0 ? (
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-border">
-                  <thead className="bg-card">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Event
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Total Tickets
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Sold
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Available
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Revenue
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-border">
-                    {events.slice(0, 10).map((event) => {
-                      const available = (event.totalTickets || 0) - (event.ticketsSold || 0);
-                      return (
-                        <tr key={event._id} className="hover:bg-card">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <Calendar className="w-5 h-5 text-muted-foreground mr-3" />
-                              <div>
-                                <div className="text-sm font-medium text-foreground">
-                                  {event.name}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  {event.eventType || "Event"}
+            <>
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4">
+                {events.slice(0, 10).map((event) => {
+                  const available = (event.totalTickets || 0) - (event.ticketsSold || 0);
+                  return (
+                    <div key={event._id} className="bg-white rounded-lg shadow-md p-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        <Calendar className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-foreground">{event.name}</p>
+                          <p className="text-sm text-muted-foreground">{event.eventType || "Event"}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Total</p>
+                          <p className="font-medium">{(event.totalTickets || 0).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Sold</p>
+                          <p className="font-medium">{(event.ticketsSold || 0).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Available</p>
+                          <p className="font-medium">{available.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Revenue</p>
+                          <p className="font-medium">${(event.totalRevenue || 0).toLocaleString()}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-border">
+                    <thead className="bg-card">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Event
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Total Tickets
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Sold
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Available
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Revenue
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-border">
+                      {events.slice(0, 10).map((event) => {
+                        const available = (event.totalTickets || 0) - (event.ticketsSold || 0);
+                        return (
+                          <tr key={event._id} className="hover:bg-card">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <Calendar className="w-5 h-5 text-muted-foreground mr-3" />
+                                <div>
+                                  <div className="text-sm font-medium text-foreground">
+                                    {event.name}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {event.eventType || "Event"}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                            {(event.totalTickets || 0).toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                            {(event.ticketsSold || 0).toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                            {available.toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                            ${(event.totalRevenue || 0).toLocaleString()}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                              {(event.totalTickets || 0).toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                              {(event.ticketsSold || 0).toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                              {available.toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                              ${(event.totalRevenue || 0).toLocaleString()}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+            </>
           ) : (
             <div className="bg-white rounded-lg shadow-md p-12 text-center">
               <Ticket className="w-16 h-16 text-muted-foreground mx-auto mb-4" />

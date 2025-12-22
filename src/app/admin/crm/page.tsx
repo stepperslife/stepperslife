@@ -188,8 +188,109 @@ export default function CRMPage() {
         </div>
       </div>
 
-      {/* Contacts Table */}
-      <div className="bg-card rounded-lg shadow-md overflow-hidden">
+      {/* Contacts - Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {contacts.length === 0 ? (
+          <div className="bg-card rounded-lg shadow-md p-8 text-center">
+            <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground">No contacts found</p>
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="text-primary hover:underline mt-2"
+              >
+                Clear search
+              </button>
+            )}
+          </div>
+        ) : (
+          contacts.map((contact) => (
+            <motion.div
+              key={contact._id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="bg-card rounded-lg shadow-md p-4 border border-border"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
+                    <User className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">{contact.name}</p>
+                    {contact.socialMedia?.instagram && (
+                      <p className="text-xs text-muted-foreground">
+                        @{contact.socialMedia.instagram}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <span
+                  className={`px-2 py-1 text-xs font-medium rounded-full ${
+                    contact.extractedFrom === "FLYER"
+                      ? "bg-success/10 text-success"
+                      : "bg-accent text-accent-foreground"
+                  }`}
+                >
+                  {contact.extractedFrom === "FLYER" ? "Flyer" : "Manual"}
+                </span>
+              </div>
+
+              <div className="space-y-2 text-sm mb-3">
+                {contact.phoneNumber && (
+                  <a
+                    href={`tel:${contact.phoneNumber}`}
+                    className="flex items-center gap-2 text-foreground hover:text-primary"
+                  >
+                    <Phone className="w-4 h-4 text-muted-foreground" />
+                    {contact.phoneNumber}
+                  </a>
+                )}
+                {contact.email && (
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="flex items-center gap-2 text-foreground hover:text-primary"
+                  >
+                    <Mail className="w-4 h-4 text-muted-foreground" />
+                    <span className="truncate">{contact.email}</span>
+                  </a>
+                )}
+                {(contact.role || contact.organization) && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Building className="w-4 h-4" />
+                    <span>
+                      {contact.role}
+                      {contact.role && contact.organization && " - "}
+                      {contact.organization}
+                    </span>
+                  </div>
+                )}
+                {contact.eventName && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Calendar className="w-4 h-4" />
+                    {contact.eventName}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end pt-3 border-t border-border">
+                <button
+                  type="button"
+                  onClick={() => handleDelete(contact._id, contact.name)}
+                  className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                  title="Delete contact"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          ))
+        )}
+      </div>
+
+      {/* Contacts Table - Desktop */}
+      <div className="hidden md:block bg-card rounded-lg shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted border-b border-border">

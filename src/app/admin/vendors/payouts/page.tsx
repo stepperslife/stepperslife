@@ -261,7 +261,115 @@ export default function AdminPayoutsPage() {
         </div>
       ) : filteredPayouts && filteredPayouts.length > 0 ? (
         <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-border">
+            {filteredPayouts.map((payout) => {
+              const vendor = vendorMap[payout.vendorId];
+              const statusConfig = STATUS_CONFIG[payout.status as PayoutStatus];
+              const MethodIcon = PAYOUT_METHOD_ICONS[payout.payoutMethod] || Banknote;
+
+              return (
+                <div key={payout._id} className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <p className="font-medium text-foreground">{payout.payoutNumber}</p>
+                      <p className="text-sm text-muted-foreground">{formatDate(payout.createdAt)}</p>
+                    </div>
+                    <span
+                      className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
+                    >
+                      {statusConfig.label}
+                    </span>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3 mb-3">
+                    <p className="font-medium text-foreground">{vendor?.name || "Unknown"}</p>
+                    <p className="text-sm text-muted-foreground">{vendor?.contactEmail}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm mb-3">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Method</p>
+                      <div className="flex items-center gap-2">
+                        <MethodIcon className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-foreground capitalize">
+                          {payout.payoutMethod.replace("_", " ")}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Amount</p>
+                      <p className="font-bold text-foreground">{formatCurrency(payout.totalAmount)}</p>
+                      <p className="text-xs text-muted-foreground">{payout.earningsCount} earnings</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {payout.status === "PENDING" && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setActionModal({
+                              type: "approve",
+                              payout: {
+                                id: payout._id,
+                                payoutNumber: payout.payoutNumber,
+                                vendorName: vendor?.name,
+                                amount: payout.totalAmount,
+                              },
+                            })
+                          }
+                          className="flex-1 px-3 py-2 bg-success text-white rounded-lg text-sm font-medium hover:bg-success/80 transition-colors"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setActionModal({
+                              type: "reject",
+                              payout: {
+                                id: payout._id,
+                                payoutNumber: payout.payoutNumber,
+                                vendorName: vendor?.name,
+                                amount: payout.totalAmount,
+                              },
+                            })
+                          }
+                          className="flex-1 px-3 py-2 border border-destructive text-destructive rounded-lg text-sm font-medium hover:bg-destructive/10 dark:hover:bg-destructive/20 transition-colors"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                    {payout.status === "APPROVED" && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setActionModal({
+                            type: "process",
+                            payout: {
+                              id: payout._id,
+                              payoutNumber: payout.payoutNumber,
+                              vendorName: vendor?.name,
+                              amount: payout.totalAmount,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                      >
+                        Process
+                      </button>
+                    )}
+                    {(payout.status === "COMPLETED" || payout.status === "FAILED") && (
+                      <span className="text-sm text-muted-foreground">No actions available</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border">

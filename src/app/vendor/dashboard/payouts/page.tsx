@@ -218,47 +218,80 @@ export default function VendorPayoutsPage() {
             <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
           </div>
         ) : payouts && payouts.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Payout #</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Method</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Amount</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {payouts.map((payout) => {
-                  const statusConfig = STATUS_CONFIG[payout.status as PayoutStatus];
-                  const StatusIcon = statusConfig.icon;
-                  const method = PAYOUT_METHODS.find((m) => m.id === payout.payoutMethod);
+          <>
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-border">
+              {payouts.map((payout) => {
+                const statusConfig = STATUS_CONFIG[payout.status as PayoutStatus];
+                const StatusIcon = statusConfig.icon;
+                const method = PAYOUT_METHODS.find((m) => m.id === payout.payoutMethod);
 
-                  return (
-                    <tr key={payout._id} className="border-b border-border last:border-0">
-                      <td className="p-4 text-sm text-foreground">{formatDate(payout.createdAt)}</td>
-                      <td className="p-4 text-sm font-medium text-foreground">
-                        {payout.payoutNumber}
-                      </td>
-                      <td className="p-4 text-sm text-foreground">{method?.name || payout.payoutMethod}</td>
-                      <td className="p-4 text-sm font-bold text-foreground">
-                        {formatCurrency(payout.totalAmount)}
-                      </td>
-                      <td className="p-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
-                        >
-                          <StatusIcon className="w-3 h-3" />
-                          {statusConfig.label}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                return (
+                  <div key={payout._id} className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <p className="font-medium text-foreground">{payout.payoutNumber}</p>
+                        <p className="text-xs text-muted-foreground">{formatDate(payout.createdAt)}</p>
+                      </div>
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
+                      >
+                        <StatusIcon className="w-3 h-3" />
+                        {statusConfig.label}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">{method?.name || payout.payoutMethod}</span>
+                      <span className="font-bold text-foreground">{formatCurrency(payout.totalAmount)}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Date</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Payout #</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Method</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Amount</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payouts.map((payout) => {
+                    const statusConfig = STATUS_CONFIG[payout.status as PayoutStatus];
+                    const StatusIcon = statusConfig.icon;
+                    const method = PAYOUT_METHODS.find((m) => m.id === payout.payoutMethod);
+
+                    return (
+                      <tr key={payout._id} className="border-b border-border last:border-0">
+                        <td className="p-4 text-sm text-foreground">{formatDate(payout.createdAt)}</td>
+                        <td className="p-4 text-sm font-medium text-foreground">
+                          {payout.payoutNumber}
+                        </td>
+                        <td className="p-4 text-sm text-foreground">{method?.name || payout.payoutMethod}</td>
+                        <td className="p-4 text-sm font-bold text-foreground">
+                          {formatCurrency(payout.totalAmount)}
+                        </td>
+                        <td className="p-4">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
+                          >
+                            <StatusIcon className="w-3 h-3" />
+                            {statusConfig.label}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="p-12 text-center">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">

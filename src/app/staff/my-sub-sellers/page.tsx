@@ -228,91 +228,146 @@ export default function MySubSellersPage() {
 
           {/* Sub-Sellers List */}
           {subSellers && subSellers.length > 0 ? (
-            <div className="bg-card rounded-lg shadow-md overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-muted border-b border-border">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Contact
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Allocated
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Sold
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Available
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Commission Split
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Earned
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-card divide-y divide-border">
-                    {subSellers.map((subSeller) => (
-                      <tr key={subSeller._id} className="hover:bg-muted">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-medium text-foreground">{subSeller.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            Level {subSeller.hierarchyLevel}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Mail className="w-4 h-4" />
-                              {subSeller.email}
-                            </div>
-                            {subSeller.phone && (
-                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                <Phone className="w-4 h-4" />
-                                {subSeller.phone}
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-foreground">
-                            {subSeller.allocatedTickets || 0}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-semibold text-foreground">
-                            {subSeller.ticketsSold}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-foreground">
-                            {subSeller.availableTickets}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-foreground">
-                            Parent: {subSeller.parentCommissionPercent}%
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            Sub-seller: {subSeller.subSellerCommissionPercent}%
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-semibold text-success">
-                            ${(subSeller.commissionEarned / 100).toFixed(2)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            <>
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4">
+                {subSellers.map((subSeller) => (
+                  <div key={subSeller._id} className="bg-card rounded-lg shadow-md p-4 border border-border">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <p className="font-medium text-foreground">{subSeller.name}</p>
+                        <p className="text-xs text-muted-foreground">Level {subSeller.hierarchyLevel}</p>
+                      </div>
+                      <span className="text-sm font-semibold text-success">
+                        ${(subSeller.commissionEarned / 100).toFixed(2)}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 text-sm mb-3">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Mail className="w-4 h-4" />
+                        <span className="truncate">{subSeller.email}</span>
+                      </div>
+                      {subSeller.phone && (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Phone className="w-4 h-4" />
+                          {subSeller.phone}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-sm mb-3 py-3 border-t border-b border-border">
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Allocated</p>
+                        <p className="font-medium">{subSeller.allocatedTickets || 0}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Sold</p>
+                        <p className="font-semibold">{subSeller.ticketsSold}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Available</p>
+                        <p className="font-medium">{subSeller.availableTickets}</p>
+                      </div>
+                    </div>
+
+                    <div className="text-sm">
+                      <p className="text-xs text-muted-foreground mb-1">Commission Split</p>
+                      <p className="text-foreground">
+                        Parent: {subSeller.parentCommissionPercent}% / Sub: {subSeller.subSellerCommissionPercent}%
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block bg-card rounded-lg shadow-md overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-muted border-b border-border">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Contact
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Allocated
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Sold
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Available
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Commission Split
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Earned
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-card divide-y divide-border">
+                      {subSellers.map((subSeller) => (
+                        <tr key={subSeller._id} className="hover:bg-muted">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="font-medium text-foreground">{subSeller.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              Level {subSeller.hierarchyLevel}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                <Mail className="w-4 h-4" />
+                                {subSeller.email}
+                              </div>
+                              {subSeller.phone && (
+                                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                  <Phone className="w-4 h-4" />
+                                  {subSeller.phone}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm text-foreground">
+                              {subSeller.allocatedTickets || 0}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm font-semibold text-foreground">
+                              {subSeller.ticketsSold}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm text-foreground">
+                              {subSeller.availableTickets}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-foreground">
+                              Parent: {subSeller.parentCommissionPercent}%
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              Sub-seller: {subSeller.subSellerCommissionPercent}%
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm font-semibold text-success">
+                              ${(subSeller.commissionEarned / 100).toFixed(2)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
           ) : (
             <div className="bg-card rounded-lg shadow-md p-12 text-center">
               <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />

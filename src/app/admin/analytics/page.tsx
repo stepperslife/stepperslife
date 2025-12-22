@@ -275,7 +275,51 @@ export default function PlatformAnalyticsPage() {
             Top Performing Events
           </h2>
         </div>
-        <div className="overflow-x-auto">
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y divide-border">
+          {topEvents.map((event, index) => (
+            <div key={event._id} className="p-4">
+              <div className="flex items-start gap-3 mb-3">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0 ${
+                    index === 0
+                      ? "bg-warning/10 text-warning"
+                      : index === 1
+                        ? "bg-muted text-muted-foreground"
+                        : index === 2
+                          ? "bg-warning/10 text-warning"
+                          : "bg-accent text-primary"
+                  }`}
+                >
+                  {index + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground truncate">{event.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {event.status === "PUBLISHED" ? "Live" : event.status || "Draft"}
+                  </p>
+                </div>
+              </div>
+              <div className="pl-11">
+                <p className="text-sm text-muted-foreground mb-2">{event.organizerName}</p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Tickets</p>
+                    <p className="font-medium text-foreground">{event.ticketCount || 0}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-muted-foreground">Revenue</p>
+                    <p className="font-bold text-success">${((event.revenue || 0) / 100).toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted border-b border-border">
               <tr>

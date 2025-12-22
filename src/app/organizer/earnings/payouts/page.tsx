@@ -106,7 +106,27 @@ export default function PayoutsPage() {
           transition={{ duration: 0.5 }}
           className="bg-white rounded-lg shadow-md overflow-hidden"
         >
-          <div className="overflow-x-auto">
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-border">
+            {mockPayouts.map((payout) => (
+              <div key={payout.id} className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="font-medium text-foreground">
+                      ${payout.amount.toLocaleString()}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(payout.date).toLocaleDateString()} • {payout.method}
+                    </p>
+                  </div>
+                  {getStatusBadge(payout.status)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-border">
               <thead className="bg-card">
                 <tr>
