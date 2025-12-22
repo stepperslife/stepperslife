@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import {
@@ -28,7 +29,45 @@ import {
   Clock,
   MapPin,
   Heart,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+
+// Hero slides data
+const heroSlides = [
+  {
+    image: "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=1920&q=80",
+    title: "Sell Out Your Events",
+    subtitle: "Professional ticketing and QR scanning for stepping events",
+    cta: "Create Event",
+    href: "/organizer/events/create",
+    accent: "primary",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1547153760-18fc86324498?w=1920&q=80",
+    title: "Teach Dance Classes",
+    subtitle: "Manage enrollments, payments, and build your student community",
+    cta: "Start Teaching",
+    href: "/organizer/classes/create",
+    accent: "warning",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1920&q=80",
+    title: "Serve Soul Food",
+    subtitle: "Online ordering and menu management for restaurants",
+    cta: "List Restaurant",
+    href: "/restaurants/apply",
+    accent: "success",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80",
+    title: "Sell to Steppers",
+    subtitle: "Open your store and reach the stepping community",
+    cta: "Open Store",
+    href: "/vendor/apply",
+    accent: "purple",
+  },
+];
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -45,43 +84,146 @@ const staggerContainer = {
 };
 
 export default function FeaturesPage() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Auto-advance slides
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+
   return (
     <>
       <PublicHeader />
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
-        <div className="container mx-auto px-4 relative z-10">
+      {/* Hero Slider Section */}
+      <section className="relative h-[600px] md:h-[700px] overflow-hidden">
+        {/* Background Images */}
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto text-center"
+            key={currentSlide}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.7 }}
+            className="absolute inset-0"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Everything You Need to
-              <span className="block text-warning">Grow Your Community</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-white/90 mb-8">
-              SteppersLife is the all-in-one platform for event organizers, dance instructors,
-              restaurant owners, and vendors in the stepping community.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link
-                href="/register"
-                className="px-8 py-4 bg-warning text-white font-bold rounded-lg hover:bg-warning/90 transition-all transform hover:scale-105 shadow-lg"
-              >
-                Get Started Free
-              </Link>
-              <Link
-                href="#products"
-                className="px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-lg hover:bg-white/20 transition-all border border-white/30"
-              >
-                Explore Features
-              </Link>
-            </div>
+            <Image
+              src={heroSlides[currentSlide].image}
+              alt={heroSlides[currentSlide].title}
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30" />
           </motion.div>
+        </AnimatePresence>
+
+        {/* Content */}
+        <div className="container mx-auto px-4 h-full flex items-center relative z-10">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.5 }}
+              className="max-w-2xl text-white"
+            >
+              <motion.h1
+                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                {heroSlides[currentSlide].title}
+              </motion.h1>
+              <motion.p
+                className="text-xl md:text-2xl text-white/90 mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                {heroSlides[currentSlide].subtitle}
+              </motion.p>
+              <motion.div
+                className="flex flex-wrap gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Link
+                  href={heroSlides[currentSlide].href}
+                  className={`px-8 py-4 font-bold rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center gap-2 ${
+                    heroSlides[currentSlide].accent === "primary" ? "bg-primary hover:bg-primary/90" :
+                    heroSlides[currentSlide].accent === "warning" ? "bg-warning hover:bg-warning/90" :
+                    heroSlides[currentSlide].accent === "success" ? "bg-success hover:bg-success/90" :
+                    "bg-purple-500 hover:bg-purple-600"
+                  } text-white`}
+                >
+                  {heroSlides[currentSlide].cta}
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link
+                  href="#products"
+                  className="px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-lg hover:bg-white/20 transition-all border border-white/30"
+                >
+                  Explore Features
+                </Link>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+
+        {/* Slide Indicators */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+          {heroSlides.map((slide, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`transition-all ${
+                index === currentSlide
+                  ? "w-8 h-3 bg-white rounded-full"
+                  : "w-3 h-3 bg-white/50 rounded-full hover:bg-white/70"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Slide Labels */}
+        <div className="absolute bottom-8 right-8 hidden md:flex gap-2 z-20">
+          {heroSlides.map((slide, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                index === currentSlide
+                  ? "bg-white text-black"
+                  : "bg-white/10 text-white hover:bg-white/20"
+              }`}
+            >
+              {index === 0 ? "Events" : index === 1 ? "Classes" : index === 2 ? "Food" : "Shop"}
+            </button>
+          ))}
         </div>
       </section>
 
@@ -189,7 +331,21 @@ export default function FeaturesPage() {
               </div>
 
               <div className="relative">
-                <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8">
+                <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-4 overflow-hidden">
+                  {/* Event Image */}
+                  <div className="relative h-48 rounded-xl overflow-hidden mb-4">
+                    <Image
+                      src="https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=800&q=80"
+                      alt="Elegant dancing event"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <p className="text-white font-bold">Chicago Steppers Ball</p>
+                      <p className="text-white/80 text-sm">Sat, Jan 15 • 8PM</p>
+                    </div>
+                  </div>
                   <div className="bg-card rounded-xl shadow-xl p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Total Sales</span>
@@ -228,7 +384,20 @@ export default function FeaturesPage() {
           >
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="order-2 lg:order-1">
-                <div className="bg-gradient-to-br from-warning/5 to-warning/10 rounded-2xl p-8">
+                <div className="bg-gradient-to-br from-warning/5 to-warning/10 rounded-2xl p-4 overflow-hidden">
+                  {/* Dance Class Image */}
+                  <div className="relative h-48 rounded-xl overflow-hidden mb-4">
+                    <Image
+                      src="https://images.unsplash.com/photo-1547153760-18fc86324498?w=800&q=80"
+                      alt="Couple dancing elegantly"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-3 left-3">
+                      <span className="bg-warning text-white px-2 py-1 rounded-full text-xs font-semibold">Live Class</span>
+                    </div>
+                  </div>
                   <div className="bg-card rounded-xl shadow-xl p-6">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-16 h-16 bg-warning/10 rounded-full flex items-center justify-center">
@@ -376,7 +545,26 @@ export default function FeaturesPage() {
               </div>
 
               <div className="relative">
-                <div className="bg-gradient-to-br from-success/5 to-success/10 rounded-2xl p-8">
+                <div className="bg-gradient-to-br from-success/5 to-success/10 rounded-2xl p-4 overflow-hidden">
+                  {/* Soul Food Image */}
+                  <div className="relative h-48 rounded-xl overflow-hidden mb-4">
+                    <Image
+                      src="https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=800&q=80"
+                      alt="Delicious fried chicken dinner"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end">
+                      <div>
+                        <p className="text-white font-bold">Soul Kitchen</p>
+                        <p className="text-white/80 text-sm flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-current text-warning" /> 4.9
+                        </p>
+                      </div>
+                      <span className="bg-success text-white px-2 py-1 rounded-full text-xs font-semibold">Open Now</span>
+                    </div>
+                  </div>
                   <div className="bg-card rounded-xl shadow-xl overflow-hidden">
                     <div className="bg-success/10 p-4">
                       <h4 className="font-bold text-foreground">Today&apos;s Orders</h4>
@@ -415,20 +603,25 @@ export default function FeaturesPage() {
           >
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="order-2 lg:order-1">
-                <div className="bg-gradient-to-br from-purple-500/5 to-purple-500/10 rounded-2xl p-8">
+                <div className="bg-gradient-to-br from-purple-500/5 to-purple-500/10 rounded-2xl p-4 overflow-hidden">
                   <div className="grid grid-cols-2 gap-4">
                     {[
-                      { name: "Steppin Hoodie", price: "$59.99", sold: "124 sold" },
-                      { name: "Dance Shoes", price: "$89.99", sold: "87 sold" },
-                      { name: "Custom T-Shirt", price: "$29.99", sold: "256 sold" },
-                      { name: "Accessories Kit", price: "$45.99", sold: "63 sold" },
+                      { name: "Steppin Hoodie", price: "$59.99", sold: "124 sold", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&q=80" },
+                      { name: "Dance Heels", price: "$89.99", sold: "87 sold", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&q=80" },
+                      { name: "Silk Dress", price: "$129.99", sold: "256 sold", image: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=200&q=80" },
+                      { name: "Gold Earrings", price: "$45.99", sold: "63 sold", image: "https://images.unsplash.com/photo-1630019852942-f89202989a59?w=200&q=80" },
                     ].map((product, index) => (
-                      <div key={index} className="bg-card rounded-lg p-4 shadow-md">
-                        <div className="w-full h-20 bg-muted rounded mb-3 flex items-center justify-center">
-                          <ShoppingBag className="w-8 h-8 text-muted-foreground" />
+                      <div key={index} className="bg-card rounded-lg p-3 shadow-md">
+                        <div className="w-full h-24 rounded mb-3 overflow-hidden relative">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                          />
                         </div>
                         <h5 className="font-medium text-foreground text-sm">{product.name}</h5>
-                        <p className="text-primary font-bold">{product.price}</p>
+                        <p className="text-purple-500 font-bold">{product.price}</p>
                         <p className="text-xs text-muted-foreground">{product.sold}</p>
                       </div>
                     ))}
