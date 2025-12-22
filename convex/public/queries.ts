@@ -552,11 +552,13 @@ export const getPublishedClasses = query({
   args: {
     limit: v.optional(v.number()),
     category: v.optional(v.string()), // Legacy single category (backwards compat)
-    categories: v.optional(v.array(v.string())), // Multi-select class types
+    categories: v.optional(v.array(v.string())), // Multi-select class types (Steppin, Line Dancing, Walking)
     searchTerm: v.optional(v.string()),
     includePast: v.optional(v.boolean()),
     dayOfWeek: v.optional(v.number()), // Legacy single day (backwards compat)
     daysOfWeek: v.optional(v.array(v.number())), // Multi-select days: 0=Sun, 1=Mon, etc.
+    level: v.optional(v.string()), // Single level filter (backwards compat)
+    levels: v.optional(v.array(v.string())), // Multi-select levels: Beginner, Intermediate, Advanced
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -581,6 +583,7 @@ export const getPublishedClasses = query({
     }
 
     // Filter by categories (multi-select) - class must have at least one of the selected categories
+    // Categories = Class Types: Steppin, Line Dancing, Walking
     if (args.categories && args.categories.length > 0) {
       classes = classes.filter((e) =>
         e.categories?.some((cat) => args.categories!.includes(cat))
@@ -588,6 +591,14 @@ export const getPublishedClasses = query({
     } else if (args.category) {
       // Legacy single category filter (backwards compatibility)
       classes = classes.filter((e) => e.categories?.includes(args.category!));
+    }
+
+    // Filter by skill levels (multi-select) - Beginner, Intermediate, Advanced
+    if (args.levels && args.levels.length > 0) {
+      classes = classes.filter((e) => e.classLevel && args.levels!.includes(e.classLevel));
+    } else if (args.level) {
+      // Legacy single level filter (backwards compatibility)
+      classes = classes.filter((e) => e.classLevel === args.level);
     }
 
     // Filter by search term if specified

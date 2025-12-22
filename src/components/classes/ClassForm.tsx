@@ -53,7 +53,8 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
   // Basic Information
   const [className, setClassName] = useState("");
   const [description, setDescription] = useState("");
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]); // Class types: Steppin, Line Dancing, Walking
+  const [classLevel, setClassLevel] = useState<string>(""); // Skill level: Beginner, Intermediate, Advanced
   const [classDays, setClassDays] = useState<number[]>([]); // Days the class occurs (0=Sun, 6=Sat)
 
   // Date & Time
@@ -85,6 +86,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
       setClassName(existingClass.name || "");
       setDescription(existingClass.description || "");
       setCategories(existingClass.categories || []);
+      setClassLevel(existingClass.classLevel || "");
 
       // Format dates for datetime-local input
       if (existingClass.startDate) {
@@ -210,6 +212,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
           eventType: "CLASS" as const,
           description,
           categories,
+          classLevel: classLevel || undefined,
           classDays: classDays.length > 0 ? classDays : undefined,
           startDate: startDateUTC,
           endDate: endDateUTC,
@@ -237,6 +240,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
           name: className,
           description,
           categories,
+          classLevel: classLevel || undefined,
           classDays: classDays.length > 0 ? classDays : undefined,
           startDate: startDateUTC,
           endDate: endDateUTC,
@@ -368,20 +372,21 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                 </div>
               </div>
 
-              {/* Skill Level */}
+              {/* Skill Level (Single Select) */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Skill Level
                 </label>
+                <p className="text-xs text-muted-foreground mb-2">Select the difficulty level for this class</p>
                 <div className="flex flex-wrap gap-2">
                   {SKILL_LEVELS.map((level) => (
                     <button
                       key={level}
                       type="button"
-                      onClick={() => handleCategoryToggle(level)}
+                      onClick={() => setClassLevel(classLevel === level ? "" : level)}
                       className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                        categories.includes(level)
-                          ? "bg-primary text-white"
+                        classLevel === level
+                          ? "bg-warning text-white"
                           : "bg-muted text-foreground hover:bg-accent"
                       }`}
                       data-testid={`class-level-${level.toLowerCase()}`}
@@ -390,6 +395,11 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                     </button>
                   ))}
                 </div>
+                {classLevel && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Selected: {classLevel}
+                  </p>
+                )}
               </div>
 
               {/* Day(s) of the Week */}

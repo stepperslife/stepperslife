@@ -109,6 +109,9 @@ export default defineSchema({
     // Class-specific: Days of the week (0=Sunday, 1=Monday, ... 6=Saturday)
     classDays: v.optional(v.array(v.number())),
 
+    // Class-specific: Skill level (Beginner, Intermediate, Advanced)
+    classLevel: v.optional(v.string()),
+
     // Status
     status: v.optional(
       v.union(

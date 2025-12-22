@@ -42,6 +42,7 @@ export const createEvent = mutation({
     images: v.optional(v.array(v.id("_storage"))),
     // Class-specific fields
     classDays: v.optional(v.array(v.number())), // Days of week: 0=Sun, 1=Mon, ... 6=Sat
+    classLevel: v.optional(v.string()), // Skill level: Beginner, Intermediate, Advanced
   },
   handler: async (ctx, args) => {
     try {
@@ -90,8 +91,9 @@ export const createEvent = mutation({
         doorPrice: args.doorPrice,
         imageUrl: args.imageUrl,
         images: args.images || [],
-        // Class-specific: days of the week
+        // Class-specific: days of the week and skill level
         classDays: args.classDays,
+        classLevel: args.classLevel,
         // PRODUCTION: Create events as DRAFT by default
         // Organizers must explicitly publish events after setup
         status: "DRAFT",
@@ -467,6 +469,7 @@ export const updateEvent = mutation({
     images: v.optional(v.array(v.id("_storage"))),
     // Class-specific fields
     classDays: v.optional(v.array(v.number())), // Days of week: 0=Sun, 1=Mon, ... 6=Sat
+    classLevel: v.optional(v.string()), // Skill level: Beginner, Intermediate, Advanced
     status: v.optional(
       v.union(
         v.literal("DRAFT"),
@@ -562,6 +565,7 @@ export const updateEvent = mutation({
 
     // Handle class-specific fields
     if (args.classDays) updates.classDays = args.classDays;
+    if (args.classLevel !== undefined) updates.classLevel = args.classLevel;
 
     // Handle status changes
     if (args.status) updates.status = args.status;

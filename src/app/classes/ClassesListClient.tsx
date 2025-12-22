@@ -13,24 +13,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
 import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
 
-// Class type options for filtering (3 types + 3 skill levels)
-// Includes legacy names for backwards compatibility with existing classes
-const CLASS_TYPES = [
-  "Steppin",
-  "Stepping", // Legacy name
-  "Chicago Stepping", // Legacy name
-  "Line Dancing",
-  "Line Dance", // Legacy name
-  "Walkin",
-  "Walking", // Legacy name
-  "Beginner",
-  "Intermediate",
-  "Advanced",
-];
+// Class types for filtering (only 3 main types)
+const CLASS_TYPES = ["Steppin", "Line Dancing", "Walking"];
+
+// Skill levels for filtering (separate from class type)
+const LEVEL_TYPES = ["Beginner", "Intermediate", "Advanced"];
 
 export default function ClassesListClient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [showPastClasses, setShowPastClasses] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
@@ -41,6 +33,7 @@ export default function ClassesListClient() {
   const classes = useQuery(api.public.queries.getPublishedClasses, {
     searchTerm: searchTerm || undefined,
     categories: selectedTypes.length > 0 ? selectedTypes : undefined,
+    levels: selectedLevels.length > 0 ? selectedLevels : undefined,
     includePast: showPastClasses,
     daysOfWeek: selectedDays.length > 0 ? selectedDays : undefined,
   });
@@ -51,6 +44,13 @@ export default function ClassesListClient() {
   const toggleType = (type: string) => {
     setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  // Toggle a skill level in the multi-select
+  const toggleLevel = (level: string) => {
+    setSelectedLevels((prev) =>
+      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
     );
   };
 
@@ -462,6 +462,39 @@ export default function ClassesListClient() {
               </div>
             </div>
 
+            {/* Skill Level Filter (Multi-select) */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Award className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">Skill Level:</span>
+                {selectedLevels.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedLevels([])}
+                    className="text-xs text-primary hover:text-primary/80"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {LEVEL_TYPES.map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => toggleLevel(level)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedLevels.includes(level)
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Day of Week Filter (Multi-select) */}
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -496,7 +529,7 @@ export default function ClassesListClient() {
             </div>
 
             {/* Active Filters Display */}
-            {(searchTerm || selectedTypes.length > 0 || selectedDays.length > 0) && (
+            {(searchTerm || selectedTypes.length > 0 || selectedLevels.length > 0 || selectedDays.length > 0) && (
               <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border">
                 <span className="text-sm text-muted-foreground">Active:</span>
                 {searchTerm && (
@@ -520,6 +553,19 @@ export default function ClassesListClient() {
                       onClick={() => toggleType(type)}
                       className="ml-2 hover:text-primary/80"
                       aria-label={`Remove ${type} filter`}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+                {selectedLevels.map((level) => (
+                  <span key={level} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-warning/10 text-warning">
+                    {level}
+                    <button
+                      type="button"
+                      onClick={() => toggleLevel(level)}
+                      className="ml-2 hover:text-warning/80"
+                      aria-label={`Remove ${level} filter`}
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -563,7 +609,7 @@ export default function ClassesListClient() {
                 No classes found
               </h3>
               <p className="text-muted-foreground">
-                {searchTerm || selectedCategory
+                {searchTerm || selectedTypes.length > 0 || selectedLevels.length > 0 || selectedDays.length > 0
                   ? "Try adjusting your filters to find more classes"
                   : "Check back soon for upcoming classes!"}
               </p>
