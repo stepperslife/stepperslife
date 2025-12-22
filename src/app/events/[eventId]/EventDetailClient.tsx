@@ -68,6 +68,13 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [showFlyerModal]);
 
+  // Redirect CLASS events to their dedicated page
+  useEffect(() => {
+    if (eventDetails && eventDetails.eventType === "CLASS") {
+      router.replace(`/classes/${eventId}`);
+    }
+  }, [eventDetails, eventId, router]);
+
   if (eventDetails === undefined) {
     return (
       <div className="min-h-screen bg-muted">
@@ -75,6 +82,20 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
           <div className="text-center">
             <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             <p className="mt-4 text-muted-foreground">Loading event...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading while redirecting class
+  if (eventDetails?.eventType === "CLASS") {
+    return (
+      <div className="min-h-screen bg-muted">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center">
+            <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <p className="mt-4 text-muted-foreground">Redirecting to class...</p>
           </div>
         </div>
       </div>
@@ -177,13 +198,27 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
       <header className="bg-card shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to Events</span>
-            </Link>
+            {/* Left: Logo + Back */}
+            <div className="flex items-center gap-4">
+              {/* Logo - Home Link */}
+              <Link href="/" className="flex-shrink-0">
+                <Image
+                  src="/logo.png"
+                  alt="SteppersLife"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10"
+                />
+              </Link>
+
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="font-medium hidden sm:inline">Back to Events</span>
+              </Link>
+            </div>
 
             <button
               type="button"
