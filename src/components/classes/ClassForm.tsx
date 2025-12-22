@@ -11,17 +11,38 @@ import { getTimezoneFromLocation, getTimezoneName } from "@/lib/timezone";
 import { Id } from "@/convex/_generated/dataModel";
 import { format as formatDate } from "date-fns";
 
-const CLASS_CATEGORIES = [
-  "Beginner",
-  "Intermediate",
-  "Advanced",
-  "Workshop",
-  "Private Lesson",
-  "Group Class",
+// Class types (dance styles)
+const CLASS_TYPES = [
   "Chicago Stepping",
   "Detroit Ballroom",
   "Line Dance",
   "Hand Dance",
+  "Walking",
+];
+
+// Skill levels
+const SKILL_LEVELS = [
+  "Beginner",
+  "Intermediate",
+  "Advanced",
+];
+
+// Class formats
+const CLASS_FORMATS = [
+  "Workshop",
+  "Private Lesson",
+  "Group Class",
+];
+
+// Days of the week
+const DAY_OPTIONS = [
+  { value: 0, label: "Sunday", short: "Sun" },
+  { value: 1, label: "Monday", short: "Mon" },
+  { value: 2, label: "Tuesday", short: "Tue" },
+  { value: 3, label: "Wednesday", short: "Wed" },
+  { value: 4, label: "Thursday", short: "Thu" },
+  { value: 5, label: "Friday", short: "Fri" },
+  { value: 6, label: "Saturday", short: "Sat" },
 ];
 
 interface ClassFormProps {
@@ -42,6 +63,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
   const [className, setClassName] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
+  const [classDays, setClassDays] = useState<number[]>([]); // Days the class occurs (0=Sun, 6=Sat)
 
   // Date & Time
   const [startDate, setStartDate] = useState("");
@@ -101,6 +123,11 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
       if (existingClass.images && existingClass.images.length > 0) {
         setUploadedImageId(existingClass.images[0]);
       }
+
+      // Class days
+      if (existingClass.classDays) {
+        setClassDays(existingClass.classDays);
+      }
     }
   }, [mode, existingClass]);
 
@@ -118,6 +145,14 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
       setCategories(categories.filter((c) => c !== category));
     } else {
       setCategories([...categories, category]);
+    }
+  };
+
+  const handleDayToggle = (day: number) => {
+    if (classDays.includes(day)) {
+      setClassDays(classDays.filter((d) => d !== day));
+    } else {
+      setClassDays([...classDays, day].sort((a, b) => a - b));
     }
   };
 
@@ -184,6 +219,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
           eventType: "CLASS" as const,
           description,
           categories,
+          classDays: classDays.length > 0 ? classDays : undefined,
           startDate: startDateUTC,
           endDate: endDateUTC,
           timezone,
@@ -210,6 +246,7 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
           name: className,
           description,
           categories,
+          classDays: classDays.length > 0 ? classDays : undefined,
           startDate: startDateUTC,
           endDate: endDateUTC,
           timezone,
@@ -315,27 +352,107 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                 />
               </div>
 
+              {/* Class Type (Dance Style) */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Categories
+                  Class Type *
                 </label>
+                <p className="text-xs text-muted-foreground mb-2">Select the dance style(s) for this class</p>
                 <div className="flex flex-wrap gap-2">
-                  {CLASS_CATEGORIES.map((category) => (
+                  {CLASS_TYPES.map((type) => (
                     <button
-                      key={category}
+                      key={type}
                       type="button"
-                      onClick={() => handleCategoryToggle(category)}
+                      onClick={() => handleCategoryToggle(type)}
                       className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                        categories.includes(category)
+                        categories.includes(type)
                           ? "bg-primary text-white"
                           : "bg-muted text-foreground hover:bg-accent"
                       }`}
-                      data-testid={`class-category-${category.toLowerCase().replace(/\s+/g, "-")}`}
+                      data-testid={`class-type-${type.toLowerCase().replace(/\s+/g, "-")}`}
                     >
-                      {category}
+                      {type}
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Skill Level */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Skill Level
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {SKILL_LEVELS.map((level) => (
+                    <button
+                      key={level}
+                      type="button"
+                      onClick={() => handleCategoryToggle(level)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        categories.includes(level)
+                          ? "bg-primary text-white"
+                          : "bg-muted text-foreground hover:bg-accent"
+                      }`}
+                      data-testid={`class-level-${level.toLowerCase()}`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Class Format */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Class Format
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {CLASS_FORMATS.map((format) => (
+                    <button
+                      key={format}
+                      type="button"
+                      onClick={() => handleCategoryToggle(format)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        categories.includes(format)
+                          ? "bg-primary text-white"
+                          : "bg-muted text-foreground hover:bg-accent"
+                      }`}
+                      data-testid={`class-format-${format.toLowerCase().replace(/\s+/g, "-")}`}
+                    >
+                      {format}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Day(s) of the Week */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Day(s) of the Week *
+                </label>
+                <p className="text-xs text-muted-foreground mb-2">Select all days this class occurs</p>
+                <div className="flex flex-wrap gap-2">
+                  {DAY_OPTIONS.map((day) => (
+                    <button
+                      key={day.value}
+                      type="button"
+                      onClick={() => handleDayToggle(day.value)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        classDays.includes(day.value)
+                          ? "bg-primary text-white"
+                          : "bg-muted text-foreground hover:bg-accent"
+                      }`}
+                      data-testid={`class-day-${day.short.toLowerCase()}`}
+                    >
+                      {day.short}
+                    </button>
+                  ))}
+                </div>
+                {classDays.length > 0 && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Selected: {classDays.map(d => DAY_OPTIONS.find(o => o.value === d)?.label).join(", ")}
+                  </p>
+                )}
               </div>
             </div>
           </div>

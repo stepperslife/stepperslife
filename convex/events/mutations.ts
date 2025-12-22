@@ -40,6 +40,8 @@ export const createEvent = mutation({
     doorPrice: v.optional(v.string()),
     imageUrl: v.optional(v.string()),
     images: v.optional(v.array(v.id("_storage"))),
+    // Class-specific fields
+    classDays: v.optional(v.array(v.number())), // Days of week: 0=Sun, 1=Mon, ... 6=Sat
   },
   handler: async (ctx, args) => {
     try {
@@ -88,6 +90,8 @@ export const createEvent = mutation({
         doorPrice: args.doorPrice,
         imageUrl: args.imageUrl,
         images: args.images || [],
+        // Class-specific: days of the week
+        classDays: args.classDays,
         // PRODUCTION: Create events as DRAFT by default
         // Organizers must explicitly publish events after setup
         status: "DRAFT",
@@ -461,6 +465,8 @@ export const updateEvent = mutation({
     capacity: v.optional(v.number()),
     imageUrl: v.optional(v.string()),
     images: v.optional(v.array(v.id("_storage"))),
+    // Class-specific fields
+    classDays: v.optional(v.array(v.number())), // Days of week: 0=Sun, 1=Mon, ... 6=Sat
     status: v.optional(
       v.union(
         v.literal("DRAFT"),
@@ -553,6 +559,9 @@ export const updateEvent = mutation({
     if (args.eventDateLiteral) updates.eventDateLiteral = args.eventDateLiteral;
     if (args.eventTimeLiteral) updates.eventTimeLiteral = args.eventTimeLiteral;
     if (args.eventTimezone) updates.eventTimezone = args.eventTimezone;
+
+    // Handle class-specific fields
+    if (args.classDays) updates.classDays = args.classDays;
 
     // Handle status changes
     if (args.status) updates.status = args.status;

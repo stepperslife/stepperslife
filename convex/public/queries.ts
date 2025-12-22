@@ -604,9 +604,14 @@ export const getPublishedClasses = query({
       );
     }
 
-    // Filter by days of week (multi-select)
+    // Filter by days of week (multi-select) - uses classDays field stored on the class
     if (args.daysOfWeek && args.daysOfWeek.length > 0) {
       classes = classes.filter((e) => {
+        // Use classDays field if available (preferred)
+        if (e.classDays && e.classDays.length > 0) {
+          return e.classDays.some((day: number) => args.daysOfWeek!.includes(day));
+        }
+        // Fallback to startDate day for backwards compatibility
         if (!e.startDate) return false;
         const date = new Date(e.startDate);
         return args.daysOfWeek!.includes(date.getDay());
@@ -614,6 +619,11 @@ export const getPublishedClasses = query({
     } else if (args.dayOfWeek !== undefined) {
       // Legacy single day filter (backwards compatibility)
       classes = classes.filter((e) => {
+        // Use classDays field if available (preferred)
+        if (e.classDays && e.classDays.length > 0) {
+          return e.classDays.includes(args.dayOfWeek!);
+        }
+        // Fallback to startDate day for backwards compatibility
         if (!e.startDate) return false;
         const date = new Date(e.startDate);
         return date.getDay() === args.dayOfWeek;

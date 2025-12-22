@@ -106,6 +106,9 @@ export default defineSchema({
     // Categories
     categories: v.optional(v.array(v.string())),
 
+    // Class-specific: Days of the week (0=Sunday, 1=Monday, ... 6=Saturday)
+    classDays: v.optional(v.array(v.number())),
+
     // Status
     status: v.optional(
       v.union(
