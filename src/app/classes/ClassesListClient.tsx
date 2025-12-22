@@ -571,7 +571,7 @@ export default function ClassesListClient() {
           ) : (
             <>
               {viewMode === "masonry" ? (
-                /* Masonry View - 4 columns stacked */
+                /* Masonry View - 4 columns stacked with details */
                 <div data-testid="classes-grid" className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[0, 1, 2, 3].map((columnIndex) => (
                     <div key={columnIndex} className="grid gap-4">
@@ -582,19 +582,40 @@ export default function ClassesListClient() {
                             <Link
                               href={`/classes/${classItem._id}`}
                               data-testid={`class-card-${classItem._id}`}
-                              className="group block"
+                              className="group block bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
                             >
                               {classItem.imageUrl ? (
                                 <img
                                   src={classItem.imageUrl}
                                   alt={classItem.name}
-                                  className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
+                                  className="h-auto max-w-full w-full group-hover:scale-[1.02] transition-transform duration-300"
                                 />
                               ) : (
-                                <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                                <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
                                   <BookOpen className="w-16 h-16 text-white opacity-50" />
                                 </div>
                               )}
+                              <div className="p-3 space-y-2">
+                                <h3 className="font-semibold text-foreground line-clamp-2 text-sm">{classItem.name}</h3>
+                                {classItem.categories && classItem.categories.length > 0 && (
+                                  <div className="flex flex-wrap gap-1">
+                                    {classItem.categories.slice(0, 2).map((cat: string) => (
+                                      <span key={cat} className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs">
+                                        {cat}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Calendar className="w-3 h-3" />
+                                  <span>{classItem.eventDateLiteral || (classItem.startDate && formatClassDate(classItem.startDate, classItem.timezone))}</span>
+                                </div>
+                                {classItem.eventTimeLiteral && (
+                                  <div className="text-xs text-muted-foreground">
+                                    {classItem.eventTimeLiteral}
+                                  </div>
+                                )}
+                              </div>
                             </Link>
                           </div>
                         ))}
@@ -602,50 +623,111 @@ export default function ClassesListClient() {
                   ))}
                 </div>
               ) : viewMode === "list" ? (
-                /* List View - Single column large images */
-                <div data-testid="classes-grid" className="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
+                /* List View - Single column with full details */
+                <div data-testid="classes-grid" className="grid grid-cols-1 gap-6 max-w-2xl mx-auto">
                   {classes.map((classItem) => (
                     <Link
                       key={classItem._id}
                       href={`/classes/${classItem._id}`}
                       data-testid={`class-card-${classItem._id}`}
-                      className="group block"
+                      className="group block bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
                     >
                       {classItem.imageUrl ? (
                         <img
                           src={classItem.imageUrl}
                           alt={classItem.name}
-                          className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
+                          className="h-auto max-w-full w-full group-hover:scale-[1.02] transition-transform duration-300"
                         />
                       ) : (
-                        <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                        <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
                           <BookOpen className="w-16 h-16 text-white opacity-50" />
                         </div>
                       )}
+                      <div className="p-4 space-y-3">
+                        <h3 className="font-semibold text-lg text-foreground">{classItem.name}</h3>
+                        {classItem.categories && classItem.categories.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {classItem.categories.map((cat: string) => (
+                              <span key={cat} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
+                                {cat}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            <span>{classItem.eventDateLiteral || (classItem.startDate && formatClassDate(classItem.startDate, classItem.timezone))}</span>
+                          </div>
+                          {classItem.eventTimeLiteral && (
+                            <span>{classItem.eventTimeLiteral}</span>
+                          )}
+                        </div>
+                        {classItem.location && typeof classItem.location === "object" && classItem.location.city && (
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <MapPin className="w-4 h-4" />
+                            <span>{classItem.location.city}, {classItem.location.state}</span>
+                          </div>
+                        )}
+                      </div>
                     </Link>
                   ))}
                 </div>
               ) : (
-                /* Default Grid View - 2x3 columns */
-                <div data-testid="classes-grid" className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                /* Default Grid View - 2x3 columns with details */
+                <div data-testid="classes-grid" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {classes.map((classItem) => (
                     <Link
                       key={classItem._id}
                       href={`/classes/${classItem._id}`}
                       data-testid={`class-card-${classItem._id}`}
-                      className="group block"
+                      className="group block bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
                     >
                       {classItem.imageUrl ? (
-                        <img
-                          src={classItem.imageUrl}
-                          alt={classItem.name}
-                          className="h-auto max-w-full w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
-                        />
+                        <div className="aspect-[4/3] overflow-hidden">
+                          <img
+                            src={classItem.imageUrl}
+                            alt={classItem.name}
+                            className="h-full w-full object-cover group-hover:scale-[1.05] transition-transform duration-300"
+                          />
+                        </div>
                       ) : (
-                        <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-                          <BookOpen className="w-16 h-16 text-white opacity-50" />
+                        <div className="aspect-[4/3] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
+                          <BookOpen className="w-12 h-12 text-white opacity-50" />
                         </div>
                       )}
+                      <div className="p-4 space-y-2">
+                        <h3 className="font-semibold text-foreground line-clamp-2">{classItem.name}</h3>
+                        {classItem.categories && classItem.categories.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {classItem.categories.slice(0, 3).map((cat: string) => (
+                              <span key={cat} className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs">
+                                {cat}
+                              </span>
+                            ))}
+                            {classItem.categories.length > 3 && (
+                              <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded-full text-xs">
+                                +{classItem.categories.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Calendar className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{classItem.eventDateLiteral || (classItem.startDate && formatClassDate(classItem.startDate, classItem.timezone))}</span>
+                        </div>
+                        {classItem.eventTimeLiteral && (
+                          <div className="text-sm text-muted-foreground">
+                            {classItem.eventTimeLiteral}
+                          </div>
+                        )}
+                        {classItem.location && typeof classItem.location === "object" && classItem.location.city && (
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <MapPin className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">{classItem.location.city}, {classItem.location.state}</span>
+                          </div>
+                        )}
+                      </div>
                     </Link>
                   ))}
                 </div>
