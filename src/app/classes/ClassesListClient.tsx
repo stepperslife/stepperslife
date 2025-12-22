@@ -16,7 +16,8 @@ import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/po
 // Class type options for filtering (3 types + 3 skill levels)
 // Includes legacy names for backwards compatibility with existing classes
 const CLASS_TYPES = [
-  "Stepping",
+  "Steppin",
+  "Stepping", // Legacy name
   "Chicago Stepping", // Legacy name
   "Line Dancing",
   "Line Dance", // Legacy name

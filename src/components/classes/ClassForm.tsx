@@ -13,7 +13,7 @@ import { format as formatDate } from "date-fns";
 
 // Class types (dance styles) - only 3 options
 const CLASS_TYPES = [
-  "Stepping",
+  "Steppin",
   "Line Dancing",
   "Walkin",
 ];
