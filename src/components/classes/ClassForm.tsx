@@ -15,7 +15,7 @@ import { format as formatDate } from "date-fns";
 const CLASS_TYPES = [
   "Stepping",
   "Line Dancing",
-  "Walking",
+  "Walkin",
 ];
 
 // Skill levels

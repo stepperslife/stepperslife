@@ -20,7 +20,8 @@ const CLASS_TYPES = [
   "Chicago Stepping", // Legacy name
   "Line Dancing",
   "Line Dance", // Legacy name
-  "Walking",
+  "Walkin",
+  "Walking", // Legacy name
   "Beginner",
   "Intermediate",
   "Advanced",
