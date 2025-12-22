@@ -299,6 +299,55 @@ export const updateCategory = mutation({
   },
 });
 
+// Duplicate menu item
+export const duplicate = mutation({
+  args: { id: v.id("menuItems") },
+  handler: async (ctx, args) => {
+    const item = await ctx.db.get(args.id);
+    if (!item) throw new Error("Menu item not found");
+
+    // Verify ownership
+    const isOwner = await verifyRestaurantOwnership(ctx, item.restaurantId);
+    if (!isOwner) {
+      throw new Error("Unauthorized: You do not own this restaurant");
+    }
+
+    // Check subscription plan limits
+    const restaurant = await ctx.db.get(item.restaurantId);
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
+
+    // Get current menu item count
+    const existingItems = await ctx.db
+      .query("menuItems")
+      .withIndex("by_restaurant", (q) => q.eq("restaurantId", item.restaurantId))
+      .collect();
+
+    // Check if plan allows adding more items
+    const planTier = (restaurant.subscriptionTier || getDefaultPlanTier()) as RestaurantPlanTier;
+    const planCheck = canAddMenuItem(planTier, existingItems.length);
+
+    if (!planCheck.allowed) {
+      throw new Error(planCheck.message || `Menu item limit reached for your plan. Upgrade to add more items.`);
+    }
+
+    const now = Date.now();
+    return await ctx.db.insert("menuItems", {
+      restaurantId: item.restaurantId,
+      categoryId: item.categoryId,
+      name: `${item.name} (Copy)`,
+      description: item.description,
+      price: item.price,
+      imageUrl: item.imageUrl,
+      sortOrder: item.sortOrder + 1,
+      isAvailable: false, // Start as unavailable so they can review before publishing
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
 // Delete menu category
 export const removeCategory = mutation({
   args: { id: v.id("menuCategories") },

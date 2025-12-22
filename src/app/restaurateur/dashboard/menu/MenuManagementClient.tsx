@@ -25,6 +25,7 @@ import {
   LogIn,
   AlertCircle,
   X,
+  Copy,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -64,6 +65,7 @@ export default function MenuManagementClient() {
   const updateItem = useMutation(api.menuItems.update);
   const removeItem = useMutation(api.menuItems.remove);
   const toggleAvailability = useMutation(api.menuItems.toggleAvailability);
+  const duplicateItem = useMutation(api.menuItems.duplicate);
 
   // UI State
   const [showCategoryForm, setShowCategoryForm] = useState(false);
@@ -74,6 +76,7 @@ export default function MenuManagementClient() {
   const [itemForm, setItemForm] = useState<ItemFormData>({ name: "", description: "", price: "", categoryId: "", imageUrl: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [duplicatingId, setDuplicatingId] = useState<Id<"menuItems"> | null>(null);
 
   // Loading state
   if (currentUser === undefined) {
@@ -313,6 +316,17 @@ export default function MenuManagementClient() {
     }
   };
 
+  const handleDuplicateItem = async (itemId: Id<"menuItems">) => {
+    setDuplicatingId(itemId);
+    try {
+      await duplicateItem({ id: itemId });
+    } catch (err: any) {
+      alert(err.message || "Failed to duplicate item");
+    } finally {
+      setDuplicatingId(null);
+    }
+  };
+
   return (
     <>
       <PublicHeader />
@@ -485,6 +499,19 @@ export default function MenuManagementClient() {
                               <Button
                                 size="sm"
                                 variant="ghost"
+                                onClick={() => handleDuplicateItem(item._id)}
+                                disabled={duplicatingId === item._id}
+                                title="Duplicate item"
+                              >
+                                {duplicatingId === item._id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Copy className="w-4 h-4" />
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
                                 className="text-destructive hover:text-destructive"
                                 onClick={() => handleDeleteItem(item._id)}
                               >
@@ -559,6 +586,19 @@ export default function MenuManagementClient() {
                             onClick={() => handleEditItem(item)}
                           >
                             <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDuplicateItem(item._id)}
+                            disabled={duplicatingId === item._id}
+                            title="Duplicate item"
+                          >
+                            {duplicatingId === item._id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
                           </Button>
                           <Button
                             size="sm"

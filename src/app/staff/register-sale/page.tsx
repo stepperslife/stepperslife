@@ -205,7 +205,7 @@ export default function RegisterSalePage() {
             <h3 className="font-semibold text-foreground mb-4">Select Your Position</h3>
             <div className="space-y-3">
               {staffPositions
-                .filter((p) => p.event)
+                .filter((p) => p.event && p.event.eventType !== "CLASS")
                 .map((position) => (
                   <button
                     type="button"
@@ -228,6 +228,11 @@ export default function RegisterSalePage() {
                     </p>
                   </button>
                 ))}
+              {staffPositions.filter((p) => p.event && p.event.eventType !== "CLASS").length === 0 && (
+                <p className="text-center text-muted-foreground py-4">
+                  No events available. Classes are managed separately.
+                </p>
+              )}
             </div>
           </div>
 

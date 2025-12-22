@@ -53,6 +53,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return new NextResponse("Event or image not found", { status: 404 });
     }
 
+    // CLASS events should not use this OG image route - they have their own /classes/:id pages
+    if (eventDetails.eventType === "CLASS") {
+      return new NextResponse("Classes have their own pages", { status: 404 });
+    }
+
     // Fetch the original image using centralized domain config
     const imageUrl = eventDetails.imageUrl.startsWith("http")
       ? eventDetails.imageUrl
