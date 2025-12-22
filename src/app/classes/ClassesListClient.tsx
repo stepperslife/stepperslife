@@ -16,14 +16,18 @@ import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/po
 export default function ClassesListClient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [selectedDay, setSelectedDay] = useState<number | undefined>(undefined);
   const [showPastClasses, setShowPastClasses] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+
+  const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   const classes = useQuery(api.public.queries.getPublishedClasses, {
     searchTerm: searchTerm || undefined,
     category: selectedCategory,
     includePast: showPastClasses,
+    dayOfWeek: selectedDay,
   });
 
   const categories = useQuery(api.public.queries.getClassCategories, {});
@@ -397,6 +401,28 @@ export default function ClassesListClient() {
                 </select>
               </div>
 
+              {/* Day of Week Filter */}
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <label htmlFor="day-filter" className="sr-only">Filter by day of week</label>
+                <select
+                  id="day-filter"
+                  value={selectedDay ?? ""}
+                  onChange={(e) => setSelectedDay(e.target.value ? Number(e.target.value) : undefined)}
+                  data-testid="classes-day-filter"
+                  className="pl-10 pr-10 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent appearance-none bg-background text-foreground"
+                >
+                  <option value="">Any Day</option>
+                  <option value="0">Sunday</option>
+                  <option value="1">Monday</option>
+                  <option value="2">Tuesday</option>
+                  <option value="3">Wednesday</option>
+                  <option value="4">Thursday</option>
+                  <option value="5">Friday</option>
+                  <option value="6">Saturday</option>
+                </select>
+              </div>
+
               {/* Past Classes Toggle */}
               <label className="flex items-center gap-2 cursor-pointer px-4 py-2 bg-muted rounded-lg hover:bg-accent transition-colors">
                 <input
@@ -416,8 +442,8 @@ export default function ClassesListClient() {
             </div>
 
             {/* Active Filters Display */}
-            {(searchTerm || selectedCategory) && (
-              <div className="mt-3 flex items-center gap-2">
+            {(searchTerm || selectedCategory || selectedDay !== undefined) && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
                 <span className="text-sm text-muted-foreground">Active filters:</span>
                 {searchTerm && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
@@ -440,6 +466,19 @@ export default function ClassesListClient() {
                       onClick={() => setSelectedCategory(undefined)}
                       className="ml-2 text-primary hover:text-primary/80"
                       aria-label="Clear category filter"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                {selectedDay !== undefined && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
+                    Day: {DAY_NAMES[selectedDay]}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedDay(undefined)}
+                      className="ml-2 text-primary hover:text-primary/80"
+                      aria-label="Clear day filter"
                     >
                       ×
                     </button>

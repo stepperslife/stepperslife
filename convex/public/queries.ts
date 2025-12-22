@@ -531,6 +531,7 @@ export const getPublishedClasses = query({
     category: v.optional(v.string()),
     searchTerm: v.optional(v.string()),
     includePast: v.optional(v.boolean()),
+    dayOfWeek: v.optional(v.number()), // 0 = Sunday, 1 = Monday, ... 6 = Saturday
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -571,6 +572,15 @@ export const getPublishedClasses = query({
             e.location.city &&
             e.location.city.toLowerCase().includes(searchLower))
       );
+    }
+
+    // Filter by day of week if specified
+    if (args.dayOfWeek !== undefined) {
+      classes = classes.filter((e) => {
+        if (!e.startDate) return false;
+        const date = new Date(e.startDate);
+        return date.getDay() === args.dayOfWeek;
+      });
     }
 
     // Sort by date in chronological order (oldest to newest)
