@@ -89,6 +89,7 @@ export const getPublishedEvents = query({
 
 /**
  * Get upcoming published events (for homepage feed)
+ * Excludes CLASS type events - classes have their own dedicated queries
  */
 export const getUpcomingEvents = query({
   args: {
@@ -97,12 +98,15 @@ export const getUpcomingEvents = query({
   handler: async (ctx, args) => {
     const now = Date.now();
 
-    const events = await ctx.db
+    const allEvents = await ctx.db
       .query("events")
       .withIndex("by_published", (q) => q.eq("status", "PUBLISHED"))
       .filter((q) => q.gte(q.field("startDate"), now))
       .order("asc")
-      .take(args.limit || 20);
+      .take((args.limit || 20) * 2); // Fetch extra to account for filtered classes
+
+    // Filter out CLASS events - classes have their own dedicated queries
+    const events = allEvents.filter((e) => e.eventType !== "CLASS").slice(0, args.limit || 20);
 
     return events;
   },
@@ -110,6 +114,7 @@ export const getUpcomingEvents = query({
 
 /**
  * Get past published events (events that have already occurred)
+ * Excludes CLASS type events - classes have their own dedicated queries
  */
 export const getPastEvents = query({
   args: {
@@ -126,6 +131,9 @@ export const getPastEvents = query({
       .order("desc");
 
     let events = await eventsQuery.collect();
+
+    // Filter out CLASS events - classes have their own dedicated queries
+    events = events.filter((e) => e.eventType !== "CLASS");
 
     // Only show past events (where endDate or startDate < now)
     events = events.filter((e) => {
@@ -354,6 +362,7 @@ export const getPublicEventDetails = query({
 
 /**
  * Search events by query
+ * Excludes CLASS type events - classes have their own dedicated queries
  */
 export const searchEvents = query({
   args: {
@@ -368,19 +377,21 @@ export const searchEvents = query({
       .withIndex("by_status", (q) => q.eq("status", "PUBLISHED"))
       .collect();
 
+    // Filter out CLASS events and apply search
     const filtered = allEvents.filter(
       (e) =>
-        e.name.toLowerCase().includes(searchLower) ||
-        e.description.toLowerCase().includes(searchLower) ||
-        (e.location &&
-          typeof e.location === "object" &&
-          e.location.city &&
-          e.location.city.toLowerCase().includes(searchLower)) ||
-        (e.location &&
-          typeof e.location === "object" &&
-          e.location.state &&
-          e.location.state.toLowerCase().includes(searchLower)) ||
-        (e.categories && e.categories.some((c) => c.toLowerCase().includes(searchLower)))
+        e.eventType !== "CLASS" &&
+        (e.name.toLowerCase().includes(searchLower) ||
+          e.description.toLowerCase().includes(searchLower) ||
+          (e.location &&
+            typeof e.location === "object" &&
+            e.location.city &&
+            e.location.city.toLowerCase().includes(searchLower)) ||
+          (e.location &&
+            typeof e.location === "object" &&
+            e.location.state &&
+            e.location.state.toLowerCase().includes(searchLower)) ||
+          (e.categories && e.categories.some((c) => c.toLowerCase().includes(searchLower))))
     );
 
     const limited = args.limit ? filtered.slice(0, args.limit) : filtered;
@@ -391,6 +402,7 @@ export const searchEvents = query({
 
 /**
  * Get events by category
+ * Excludes CLASS type events - classes have their own dedicated queries
  */
 export const getEventsByCategory = query({
   args: {
@@ -403,7 +415,10 @@ export const getEventsByCategory = query({
       .withIndex("by_status", (q) => q.eq("status", "PUBLISHED"))
       .collect();
 
-    const filtered = allEvents.filter((e) => e.categories?.includes(args.category));
+    // Filter out CLASS events and filter by category
+    const filtered = allEvents.filter(
+      (e) => e.eventType !== "CLASS" && e.categories?.includes(args.category)
+    );
 
     const limited = args.limit ? filtered.slice(0, args.limit) : filtered;
 
@@ -413,6 +428,7 @@ export const getEventsByCategory = query({
 
 /**
  * Get events by location (city or state)
+ * Excludes CLASS type events - classes have their own dedicated queries
  */
 export const getEventsByLocation = query({
   args: {
@@ -426,7 +442,8 @@ export const getEventsByLocation = query({
       .withIndex("by_status", (q) => q.eq("status", "PUBLISHED"))
       .collect();
 
-    let filtered = allEvents;
+    // Filter out CLASS events first
+    let filtered = allEvents.filter((e) => e.eventType !== "CLASS");
 
     if (args.city) {
       filtered = filtered.filter(
@@ -456,6 +473,7 @@ export const getEventsByLocation = query({
 
 /**
  * Get featured events (for homepage carousel)
+ * Excludes CLASS type events - classes have their own dedicated queries
  */
 export const getFeaturedEvents = query({
   args: {
@@ -470,7 +488,7 @@ export const getFeaturedEvents = query({
       .collect();
 
     const upcoming = events
-      .filter((e) => e.startDate && e.startDate >= Date.now())
+      .filter((e) => e.eventType !== "CLASS" && e.startDate && e.startDate >= Date.now())
       .sort((a, b) => (b.socialShareCount || 0) - (a.socialShareCount || 0))
       .slice(0, args.limit || 10);
 
@@ -480,14 +498,18 @@ export const getFeaturedEvents = query({
 
 /**
  * Get event categories with counts
+ * Excludes CLASS type events - classes have their own dedicated queries
  */
 export const getCategories = query({
   args: {},
   handler: async (ctx) => {
-    const events = await ctx.db
+    const allEvents = await ctx.db
       .query("events")
       .withIndex("by_status", (q) => q.eq("status", "PUBLISHED"))
       .collect();
+
+    // Filter out CLASS events
+    const events = allEvents.filter((e) => e.eventType !== "CLASS");
 
     // Count events per category
     const categoryCounts = new Map<string, number>();
@@ -524,14 +546,17 @@ export const getActiveRestaurants = query({
 
 /**
  * Get all published classes (eventType: CLASS)
+ * Supports multi-select filtering by class types and days of the week
  */
 export const getPublishedClasses = query({
   args: {
     limit: v.optional(v.number()),
-    category: v.optional(v.string()),
+    category: v.optional(v.string()), // Legacy single category (backwards compat)
+    categories: v.optional(v.array(v.string())), // Multi-select class types
     searchTerm: v.optional(v.string()),
     includePast: v.optional(v.boolean()),
-    dayOfWeek: v.optional(v.number()), // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+    dayOfWeek: v.optional(v.number()), // Legacy single day (backwards compat)
+    daysOfWeek: v.optional(v.array(v.number())), // Multi-select days: 0=Sun, 1=Mon, etc.
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -555,8 +580,13 @@ export const getPublishedClasses = query({
       });
     }
 
-    // Filter by category if specified
-    if (args.category) {
+    // Filter by categories (multi-select) - class must have at least one of the selected categories
+    if (args.categories && args.categories.length > 0) {
+      classes = classes.filter((e) =>
+        e.categories?.some((cat) => args.categories!.includes(cat))
+      );
+    } else if (args.category) {
+      // Legacy single category filter (backwards compatibility)
       classes = classes.filter((e) => e.categories?.includes(args.category!));
     }
 
@@ -574,8 +604,15 @@ export const getPublishedClasses = query({
       );
     }
 
-    // Filter by day of week if specified
-    if (args.dayOfWeek !== undefined) {
+    // Filter by days of week (multi-select)
+    if (args.daysOfWeek && args.daysOfWeek.length > 0) {
+      classes = classes.filter((e) => {
+        if (!e.startDate) return false;
+        const date = new Date(e.startDate);
+        return args.daysOfWeek!.includes(date.getDay());
+      });
+    } else if (args.dayOfWeek !== undefined) {
+      // Legacy single day filter (backwards compatibility)
       classes = classes.filter((e) => {
         if (!e.startDate) return false;
         const date = new Date(e.startDate);

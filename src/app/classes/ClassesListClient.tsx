@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
-import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen, GraduationCap, Music, Users, Award, Sparkles } from "lucide-react";
+import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen, GraduationCap, Music, Users, Award, Sparkles, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -13,10 +13,25 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
 import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
 
+// Class type options for filtering
+const CLASS_TYPES = [
+  "Chicago Stepping",
+  "Detroit Ballroom",
+  "Line Dance",
+  "Hand Dance",
+  "Walking",
+  "Beginner",
+  "Intermediate",
+  "Advanced",
+  "Workshop",
+  "Private Lesson",
+  "Group Class",
+];
+
 export default function ClassesListClient() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
-  const [selectedDay, setSelectedDay] = useState<number | undefined>(undefined);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [showPastClasses, setShowPastClasses] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -25,12 +40,26 @@ export default function ClassesListClient() {
 
   const classes = useQuery(api.public.queries.getPublishedClasses, {
     searchTerm: searchTerm || undefined,
-    category: selectedCategory,
+    categories: selectedTypes.length > 0 ? selectedTypes : undefined,
     includePast: showPastClasses,
-    dayOfWeek: selectedDay,
+    daysOfWeek: selectedDays.length > 0 ? selectedDays : undefined,
   });
 
   const categories = useQuery(api.public.queries.getClassCategories, {});
+
+  // Toggle a class type in the multi-select
+  const toggleType = (type: string) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  // Toggle a day in the multi-select
+  const toggleDay = (day: number) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
 
   // Timeout fallback - after 10 seconds, show error state
   useEffect(() => {
@@ -364,7 +393,8 @@ export default function ClassesListClient() {
 
         {/* Filters */}
         <div className="bg-card border-b border-border sticky top-0 z-10">
-          <div className="container mx-auto px-4 py-4">
+          <div className="container mx-auto px-4 py-4 space-y-4">
+            {/* Top Row: Search and View Toggle */}
             <div className="flex flex-col md:flex-row gap-4">
               {/* Search */}
               <div className="flex-1 relative">
@@ -381,48 +411,6 @@ export default function ClassesListClient() {
                 />
               </div>
 
-              {/* Category Filter */}
-              <div className="relative">
-                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <label htmlFor="category-filter" className="sr-only">Filter by category</label>
-                <select
-                  id="category-filter"
-                  value={selectedCategory || ""}
-                  onChange={(e) => setSelectedCategory(e.target.value || undefined)}
-                  data-testid="classes-category-filter"
-                  className="pl-10 pr-10 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent appearance-none bg-background text-foreground"
-                >
-                  <option value="">All Categories</option>
-                  {categories?.map((cat) => (
-                    <option key={cat.name} value={cat.name}>
-                      {cat.name} ({cat.count})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Day of Week Filter */}
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <label htmlFor="day-filter" className="sr-only">Filter by day of week</label>
-                <select
-                  id="day-filter"
-                  value={selectedDay ?? ""}
-                  onChange={(e) => setSelectedDay(e.target.value ? Number(e.target.value) : undefined)}
-                  data-testid="classes-day-filter"
-                  className="pl-10 pr-10 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent appearance-none bg-background text-foreground"
-                >
-                  <option value="">Any Day</option>
-                  <option value="0">Sunday</option>
-                  <option value="1">Monday</option>
-                  <option value="2">Tuesday</option>
-                  <option value="3">Wednesday</option>
-                  <option value="4">Thursday</option>
-                  <option value="5">Friday</option>
-                  <option value="6">Saturday</option>
-                </select>
-              </div>
-
               {/* Past Classes Toggle */}
               <label className="flex items-center gap-2 cursor-pointer px-4 py-2 bg-muted rounded-lg hover:bg-accent transition-colors">
                 <input
@@ -433,7 +421,7 @@ export default function ClassesListClient() {
                   className="w-4 h-4 text-primary border-input rounded focus:ring-ring"
                 />
                 <span className="text-sm font-medium text-foreground">
-                  Show past classes
+                  Show past
                 </span>
               </label>
 
@@ -441,49 +429,115 @@ export default function ClassesListClient() {
               <ViewToggle view={viewMode} onViewChange={setViewMode} />
             </div>
 
+            {/* Class Type Filter (Multi-select) */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Tag className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">Class Type:</span>
+                {selectedTypes.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTypes([])}
+                    className="text-xs text-primary hover:text-primary/80"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {CLASS_TYPES.map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => toggleType(type)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedTypes.includes(type)
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Day of Week Filter (Multi-select) */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Calendar className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">Day:</span>
+                {selectedDays.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDays([])}
+                    className="text-xs text-primary hover:text-primary/80"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {DAY_NAMES.map((day, index) => (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => toggleDay(index)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedDays.includes(index)
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    }`}
+                  >
+                    {day.slice(0, 3)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Active Filters Display */}
-            {(searchTerm || selectedCategory || selectedDay !== undefined) && (
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="text-sm text-muted-foreground">Active filters:</span>
+            {(searchTerm || selectedTypes.length > 0 || selectedDays.length > 0) && (
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border">
+                <span className="text-sm text-muted-foreground">Active:</span>
                 {searchTerm && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
-                    Search: {searchTerm}
+                    &quot;{searchTerm}&quot;
                     <button
                       type="button"
                       onClick={() => setSearchTerm("")}
                       className="ml-2 text-primary hover:text-primary/80"
                       aria-label="Clear search term"
                     >
-                      ×
+                      <X className="w-3 h-3" />
                     </button>
                   </span>
                 )}
-                {selectedCategory && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
-                    Category: {selectedCategory}
+                {selectedTypes.map((type) => (
+                  <span key={type} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary">
+                    {type}
                     <button
                       type="button"
-                      onClick={() => setSelectedCategory(undefined)}
-                      className="ml-2 text-primary hover:text-primary/80"
-                      aria-label="Clear category filter"
+                      onClick={() => toggleType(type)}
+                      className="ml-2 hover:text-primary/80"
+                      aria-label={`Remove ${type} filter`}
                     >
-                      ×
+                      <X className="w-3 h-3" />
                     </button>
                   </span>
-                )}
-                {selectedDay !== undefined && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
-                    Day: {DAY_NAMES[selectedDay]}
+                ))}
+                {selectedDays.map((day) => (
+                  <span key={day} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary">
+                    {DAY_NAMES[day]}
                     <button
                       type="button"
-                      onClick={() => setSelectedDay(undefined)}
-                      className="ml-2 text-primary hover:text-primary/80"
-                      aria-label="Clear day filter"
+                      onClick={() => toggleDay(day)}
+                      className="ml-2 hover:text-primary/80"
+                      aria-label={`Remove ${DAY_NAMES[day]} filter`}
                     >
-                      ×
+                      <X className="w-3 h-3" />
                     </button>
                   </span>
-                )}
+                ))}
               </div>
             )}
           </div>
