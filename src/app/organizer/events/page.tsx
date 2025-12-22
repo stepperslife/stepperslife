@@ -142,7 +142,11 @@ export default function OrganizerEventsPage() {
   }
 
   // Filter events based on status
+  // IMPORTANT: Exclude classes - they have their own page at /organizer/classes
   const filteredEvents = events?.filter((event) => {
+    // First, exclude classes from this page
+    if (event.eventType === "CLASS") return false;
+
     if (statusFilter === "all") return true;
     if (statusFilter === "active") {
       // Active events are those that haven't happened yet
@@ -532,7 +536,7 @@ export default function OrganizerEventsPage() {
                   <div className="min-w-0">
                     <p className="text-xs md:text-sm text-muted-foreground">Active Events</p>
                     <p className="text-xl md:text-2xl font-bold text-foreground">
-                      {events?.length || 0}
+                      {events?.filter(e => e.eventType !== "CLASS").length || 0}
                     </p>
                   </div>
                 </div>
@@ -608,7 +612,7 @@ export default function OrganizerEventsPage() {
           </div>
 
           {/* Quick Select Buttons - Mobile Optimized */}
-          {events.length > 0 && (
+          {filteredEvents.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-3 md:mb-4 p-3 md:p-4 bg-white rounded-lg border border-border">
               <span className="text-xs md:text-sm font-medium text-foreground w-full sm:w-auto mb-1 sm:mb-0">
                 Quick Select:
@@ -618,21 +622,21 @@ export default function OrganizerEventsPage() {
                 onClick={selectAllEvents}
                 className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-accent text-primary rounded-md hover:bg-primary/20 transition-colors"
               >
-                All ({events.length})
+                All ({filteredEvents.length})
               </button>
               <button
                 type="button"
                 onClick={selectEventsWithTickets}
                 className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-success/10 text-success rounded-md hover:bg-success/20 transition-colors"
               >
-                With Tickets ({events.filter((e) => hasTicketsSold(e)).length})
+                With Tickets ({filteredEvents.filter((e) => hasTicketsSold(e)).length})
               </button>
               <button
                 type="button"
                 onClick={selectEventsWithoutTickets}
                 className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-muted text-foreground rounded-md hover:bg-muted/80 transition-colors"
               >
-                No Tickets ({events.filter((e) => !hasTicketsSold(e)).length})
+                No Tickets ({filteredEvents.filter((e) => !hasTicketsSold(e)).length})
               </button>
               <button
                 type="button"
@@ -650,7 +654,7 @@ export default function OrganizerEventsPage() {
           )}
         </div>
 
-        {events.length === 0 ? (
+        {filteredEvents.length === 0 ? (
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

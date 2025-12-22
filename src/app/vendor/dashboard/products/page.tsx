@@ -16,6 +16,7 @@ import {
   EyeOff,
   MoreHorizontal,
   Filter,
+  Copy,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -43,8 +44,25 @@ export default function VendorProductsPage() {
     vendor?._id ? { vendorId: vendor._id } : "skip"
   );
 
-  // Delete mutation
+  // Mutations
   const deleteProduct = useMutation(api.products.mutations.deleteVendorProduct);
+  const duplicateProduct = useMutation(api.products.mutations.duplicateProduct);
+
+  // Duplicate state
+  const [duplicatingId, setDuplicatingId] = useState<Id<"products"> | null>(null);
+
+  const handleDuplicate = async (productId: Id<"products">) => {
+    setDuplicatingId(productId);
+    try {
+      await duplicateProduct({ productId });
+      toast.success("Product duplicated! It's now in draft status.");
+    } catch (error) {
+      console.error("Duplicate error:", error);
+      toast.error("Failed to duplicate product");
+    } finally {
+      setDuplicatingId(null);
+    }
+  };
 
   const handleDelete = async () => {
     if (!deleteProductId || !vendor?._id) return;
@@ -192,6 +210,19 @@ export default function VendorProductsPage() {
                   </Link>
                   <button
                     type="button"
+                    onClick={() => handleDuplicate(product._id)}
+                    disabled={duplicatingId === product._id}
+                    className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors disabled:opacity-50"
+                    title="Duplicate product"
+                  >
+                    {duplicatingId === product._id ? (
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setDeleteProductId(product._id)}
                     className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg transition-colors"
                     title="Delete product"
@@ -288,6 +319,19 @@ export default function VendorProductsPage() {
                           >
                             <Edit className="w-4 h-4" />
                           </Link>
+                          <button
+                            type="button"
+                            onClick={() => handleDuplicate(product._id)}
+                            disabled={duplicatingId === product._id}
+                            className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors disabled:opacity-50"
+                            title="Duplicate product"
+                          >
+                            {duplicatingId === product._id ? (
+                              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </button>
                           <button
                             type="button"
                             onClick={() => setDeleteProductId(product._id)}
