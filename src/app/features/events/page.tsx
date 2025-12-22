@@ -50,8 +50,8 @@ export default function EventsFeaturesPage() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1920&q=80"
-            alt="Event crowd with lights"
+            src="https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=1920&q=80"
+            alt="Elegant ballroom dancing event"
             fill
             className="object-cover"
             priority

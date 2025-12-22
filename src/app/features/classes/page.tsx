@@ -47,8 +47,8 @@ export default function ClassesFeaturesPage() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=1920&q=80"
-            alt="Dance class in action"
+            src="https://images.unsplash.com/photo-1547153760-18fc86324498?w=1920&q=80"
+            alt="Couple dancing elegantly"
             fill
             className="object-cover"
             priority
@@ -222,21 +222,21 @@ export default function ClassesFeaturesPage() {
                 description: "The smooth, gliding dance that brings couples together on the floor.",
                 levels: ["Beginner", "Intermediate", "Advanced"],
                 color: "from-warning to-orange-500",
-                image: "https://images.unsplash.com/photo-1504609813442-a8c3232e1bfe?w=400&q=80",
+                image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=80",
               },
               {
                 title: "Line Dancing",
                 description: "Group dances that get everyone moving with choreographed steps.",
                 levels: ["Beginner", "Intermediate", "Advanced"],
                 color: "from-primary to-blue-500",
-                image: "https://images.unsplash.com/photo-1545959570-a94084071b5d?w=400&q=80",
+                image: "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?w=400&q=80",
               },
               {
                 title: "Walking / Boppin",
                 description: "The classic walk and bop moves that define the culture.",
                 levels: ["Beginner", "Intermediate", "Advanced"],
                 color: "from-success to-emerald-500",
-                image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80",
+                image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80",
               },
             ].map((style, index) => (
               <motion.div

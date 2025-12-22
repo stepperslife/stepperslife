@@ -188,8 +188,8 @@ export default function RestaurantsFeaturesPage() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920&q=80"
-            alt="Delicious soul food spread"
+            src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1920&q=80"
+            alt="Soul food platter with fried chicken"
             fill
             className="object-cover"
             priority
@@ -542,7 +542,7 @@ export default function RestaurantsFeaturesPage() {
               >
                 <div className="h-48 relative">
                   <Image
-                    src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80"
+                    src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80"
                     alt="Soul food restaurant"
                     fill
                     className="object-cover"
@@ -562,9 +562,9 @@ export default function RestaurantsFeaturesPage() {
                 </div>
                 <div className="p-6 space-y-4">
                   {[
-                    { name: "Fried Chicken Dinner", price: "$15.99", popular: true, image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=100&q=80" },
-                    { name: "Mac & Cheese", price: "$6.99", popular: false, image: "https://images.unsplash.com/photo-1543339494-b4cd4f7ba686?w=100&q=80" },
-                    { name: "Collard Greens", price: "$5.99", popular: true, image: "https://images.unsplash.com/photo-1574484284002-952d92456975?w=100&q=80" },
+                    { name: "Fried Chicken Dinner", price: "$15.99", popular: true, image: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=100&q=80" },
+                    { name: "Mac & Cheese", price: "$6.99", popular: false, image: "https://images.unsplash.com/photo-1612152328957-56e1a4d8a6f9?w=100&q=80" },
+                    { name: "Collard Greens", price: "$5.99", popular: true, image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=100&q=80" },
                   ].map((item, i) => (
                     <motion.div
                       key={i}

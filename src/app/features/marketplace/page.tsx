@@ -160,12 +160,12 @@ export default function MarketplaceFeaturesPage() {
   ];
 
   const productCategories = [
-    { name: "Apparel & Fashion", icon: "👗", count: "500+ items", image: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&q=80" },
-    { name: "Accessories", icon: "👜", count: "300+ items", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80" },
-    { name: "Dance Shoes", icon: "👠", count: "200+ items", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=80" },
-    { name: "Jewelry", icon: "💍", count: "150+ items", image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80" },
-    { name: "Home Decor", icon: "🏠", count: "100+ items", image: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?w=400&q=80" },
-    { name: "Art & Prints", icon: "🎨", count: "250+ items", image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80" },
+    { name: "Apparel & Fashion", icon: "👗", count: "500+ items", image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80" },
+    { name: "Accessories", icon: "👜", count: "300+ items", image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&q=80" },
+    { name: "Dance Shoes", icon: "👠", count: "200+ items", image: "https://images.unsplash.com/photo-1518049362265-d5b2a6467c28?w=400&q=80" },
+    { name: "Jewelry", icon: "💍", count: "150+ items", image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80" },
+    { name: "Home Decor", icon: "🏠", count: "100+ items", image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80" },
+    { name: "Art & Prints", icon: "🎨", count: "250+ items", image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80" },
   ];
 
   const sellingSteps = [
@@ -201,8 +201,8 @@ export default function MarketplaceFeaturesPage() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
-            alt="Fashion retail store"
+            src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80"
+            alt="Fashion boutique display"
             fill
             className="object-cover"
             priority
@@ -595,7 +595,7 @@ export default function MarketplaceFeaturesPage() {
               >
                 <div className="h-32 relative">
                   <Image
-                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"
+                    src="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&q=80"
                     alt="Boutique store banner"
                     fill
                     className="object-cover"
@@ -605,7 +605,7 @@ export default function MarketplaceFeaturesPage() {
                 <div className="px-6 -mt-8 relative z-10">
                   <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center mb-4 overflow-hidden relative">
                     <Image
-                      src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=100&q=80"
+                      src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&q=80"
                       alt="Store logo"
                       fill
                       className="object-cover"
@@ -622,10 +622,10 @@ export default function MarketplaceFeaturesPage() {
 
                 <div className="p-6 grid grid-cols-2 gap-4">
                   {[
-                    { name: "Silk Dress", price: "$89.99", tag: "New", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80" },
+                    { name: "Silk Dress", price: "$89.99", tag: "New", image: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=200&q=80" },
                     { name: "Dance Heels", price: "$149.99", tag: "Hot", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&q=80" },
-                    { name: "Clutch Bag", price: "$45.99", tag: null, image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&q=80" },
-                    { name: "Earrings", price: "$32.99", tag: "Sale", image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=200&q=80" },
+                    { name: "Clutch Bag", price: "$45.99", tag: null, image: "https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=200&q=80" },
+                    { name: "Earrings", price: "$32.99", tag: "Sale", image: "https://images.unsplash.com/photo-1630019852942-f89202989a59?w=200&q=80" },
                   ].map((product, i) => (
                     <motion.div
                       key={i}
