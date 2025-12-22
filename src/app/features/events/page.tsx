@@ -4,8 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { formatDate } from "date-fns";
 import {
   Calendar,
   Ticket,
@@ -29,6 +32,7 @@ import {
   Clock,
   Gift,
   Award,
+  MapPin,
 } from "lucide-react";
 
 export default function EventsFeaturesPage() {
@@ -40,6 +44,9 @@ export default function EventsFeaturesPage() {
 
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+
+  // Fetch upcoming events
+  const upcomingEvents = useQuery(api.public.queries.getUpcomingEvents, { limit: 6 });
 
   return (
     <div ref={containerRef}>
@@ -188,6 +195,100 @@ export default function EventsFeaturesPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Upcoming Events Section */}
+      {upcomingEvents && upcomingEvents.length > 0 && (
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Upcoming <span className="text-primary">Events</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                See what&apos;s happening in the stepping community
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {upcomingEvents.slice(0, 6).map((event, index) => (
+                <motion.div
+                  key={event._id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="group"
+                >
+                  <Link href={`/events/${event._id}`}>
+                    <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border h-full">
+                      {/* Event Image */}
+                      <div className="relative h-48 overflow-hidden">
+                        {event.imageUrl ? (
+                          <Image
+                            src={event.imageUrl}
+                            alt={event.title}
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                            <Calendar className="w-16 h-16 text-primary/40" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <div className="flex items-center gap-2 text-white/90 text-sm">
+                            <Calendar className="w-4 h-4" />
+                            <span>{formatDate(new Date(event.startDate), "MMM d, yyyy")}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Event Details */}
+                      <div className="p-5">
+                        <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                          {event.title}
+                        </h3>
+                        {event.venue && (
+                          <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
+                            <MapPin className="w-4 h-4 flex-shrink-0" />
+                            <span className="line-clamp-1">{event.venue}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <span className="text-primary font-semibold">
+                            {event.lowestPrice === 0 ? "Free" : `From $${(event.lowestPrice / 100).toFixed(0)}`}
+                          </span>
+                          <span className="text-sm text-muted-foreground flex items-center gap-1">
+                            <Users className="w-4 h-4" />
+                            {event.ticketsSold || 0} attending
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link
+                href="/events"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all"
+              >
+                View All Events
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Stats Section */}
       <section className="py-20 bg-background relative overflow-hidden">
