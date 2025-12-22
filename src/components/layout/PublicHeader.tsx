@@ -72,22 +72,35 @@ export function PublicHeader({
   // Context-aware CTA - changes based on current section
   const getHeaderCTA = () => {
     if (pathname?.startsWith("/restaurants") || pathname?.startsWith("/restaurateur")) {
-      return { 
-        href: "/restaurateur/apply", 
-        label: "Add Restaurant", 
+      return {
+        href: "/restaurateur/apply",
+        label: "Add Restaurant",
         shortLabel: "Add",
-        icon: ChefHat 
+        icon: ChefHat
       };
     }
-    if (pathname?.startsWith("/marketplace")) {
-      return null; // No CTA for marketplace (admin-managed)
+    if (pathname?.startsWith("/marketplace") || pathname?.startsWith("/vendor")) {
+      return {
+        href: "/vendor/apply",
+        label: "Create Store",
+        shortLabel: "Store",
+        icon: ShoppingBag
+      };
+    }
+    if (pathname?.startsWith("/classes")) {
+      return {
+        href: "/organizer/classes/create",
+        label: "Create Class",
+        shortLabel: "Class",
+        icon: BookOpen
+      };
     }
     // Default: events and home
-    return { 
-      href: "/organizer/events/create", 
-      label: "Create Event", 
+    return {
+      href: "/organizer/events/create",
+      label: "Create Event",
       shortLabel: "Create",
-      icon: Plus 
+      icon: Plus
     };
   };
 
