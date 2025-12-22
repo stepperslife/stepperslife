@@ -160,12 +160,12 @@ export default function MarketplaceFeaturesPage() {
   ];
 
   const productCategories = [
-    { name: "Apparel & Fashion", icon: "👗", count: "500+ items" },
-    { name: "Accessories", icon: "👜", count: "300+ items" },
-    { name: "Dance Shoes", icon: "👠", count: "200+ items" },
-    { name: "Jewelry", icon: "💍", count: "150+ items" },
-    { name: "Home Decor", icon: "🏠", count: "100+ items" },
-    { name: "Art & Prints", icon: "🎨", count: "250+ items" },
+    { name: "Apparel & Fashion", icon: "👗", count: "500+ items", image: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&q=80" },
+    { name: "Accessories", icon: "👜", count: "300+ items", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80" },
+    { name: "Dance Shoes", icon: "👠", count: "200+ items", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&q=80" },
+    { name: "Jewelry", icon: "💍", count: "150+ items", image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80" },
+    { name: "Home Decor", icon: "🏠", count: "100+ items", image: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?w=400&q=80" },
+    { name: "Art & Prints", icon: "🎨", count: "250+ items", image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80" },
   ];
 
   const sellingSteps = [
@@ -196,8 +196,20 @@ export default function MarketplaceFeaturesPage() {
       {/* Hero Section */}
       <motion.section
         style={{ y: heroY, opacity: heroOpacity }}
-        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600"
+        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
       >
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
+            alt="Fashion retail store"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-600/90 via-indigo-600/85 to-blue-600/80" />
+        </div>
+
         <FloatingProducts />
 
         {/* Animated Background */}
@@ -378,22 +390,33 @@ export default function MarketplaceFeaturesPage() {
                 transition={{ duration: 0.4, delay: index * 0.1 }}
               >
                 <motion.div
-                  className="bg-card rounded-2xl p-6 border border-border text-center h-full"
+                  className="bg-card rounded-2xl overflow-hidden border border-border h-full group"
                   whileHover={{
                     scale: 1.05,
                     boxShadow: "0 20px 40px rgba(139,92,246,0.1)",
                   }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <motion.div
-                    className="text-5xl mb-4"
-                    whileHover={{ scale: 1.2, rotate: 10 }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                  >
-                    {category.icon}
-                  </motion.div>
-                  <h3 className="text-lg font-bold text-foreground mb-1">{category.name}</h3>
-                  <p className="text-sm text-muted-foreground">{category.count}</p>
+                  <div className="relative h-32">
+                    <Image
+                      src={category.image}
+                      alt={category.name}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <motion.div
+                      className="absolute bottom-2 left-2 text-3xl"
+                      whileHover={{ scale: 1.2, rotate: 10 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      {category.icon}
+                    </motion.div>
+                  </div>
+                  <div className="p-4 text-center">
+                    <h3 className="text-lg font-bold text-foreground mb-1">{category.name}</h3>
+                    <p className="text-sm text-muted-foreground">{category.count}</p>
+                  </div>
                 </motion.div>
               </motion.div>
             ))}
@@ -570,14 +593,23 @@ export default function MarketplaceFeaturesPage() {
                 whileHover={{ y: -10 }}
                 transition={{ type: "spring", stiffness: 200 }}
               >
-                <div className="h-32 bg-gradient-to-br from-purple-400 to-indigo-500 relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Palette className="w-20 h-20 text-white/30" />
-                  </div>
+                <div className="h-32 relative">
+                  <Image
+                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"
+                    alt="Boutique store banner"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400/60 to-indigo-500/60" />
                 </div>
                 <div className="px-6 -mt-8 relative z-10">
-                  <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center mb-4">
-                    <Store className="w-8 h-8 text-purple-500" />
+                  <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center mb-4 overflow-hidden relative">
+                    <Image
+                      src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=100&q=80"
+                      alt="Store logo"
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                   <h3 className="text-xl font-bold text-foreground">Stepping Style Boutique</h3>
                   <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
@@ -590,10 +622,10 @@ export default function MarketplaceFeaturesPage() {
 
                 <div className="p-6 grid grid-cols-2 gap-4">
                   {[
-                    { name: "Silk Dress", price: "$89.99", tag: "New" },
-                    { name: "Dance Heels", price: "$149.99", tag: "Hot" },
-                    { name: "Clutch Bag", price: "$45.99", tag: null },
-                    { name: "Earrings", price: "$32.99", tag: "Sale" },
+                    { name: "Silk Dress", price: "$89.99", tag: "New", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80" },
+                    { name: "Dance Heels", price: "$149.99", tag: "Hot", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&q=80" },
+                    { name: "Clutch Bag", price: "$45.99", tag: null, image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&q=80" },
+                    { name: "Earrings", price: "$32.99", tag: "Sale", image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=200&q=80" },
                   ].map((product, i) => (
                     <motion.div
                       key={i}
@@ -603,7 +635,9 @@ export default function MarketplaceFeaturesPage() {
                       viewport={{ once: true }}
                       transition={{ delay: 0.3 + i * 0.1 }}
                     >
-                      <div className="w-full aspect-square rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900 dark:to-indigo-900 mb-2" />
+                      <div className="w-full aspect-square rounded-lg overflow-hidden relative mb-2">
+                        <Image src={product.image} alt={product.name} fill className="object-cover" />
+                      </div>
                       <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
                       <p className="text-sm font-bold text-purple-500">{product.price}</p>
                       {product.tag && (

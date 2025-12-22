@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -45,20 +46,32 @@ export default function EventsFeaturesPage() {
       <PublicHeader />
 
       {/* Hero Section with Parallax */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/80">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1920&q=80"
+            alt="Event crowd with lights"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/70" />
+        </div>
+
         {/* Animated Background Elements */}
         <motion.div
           style={{ y: backgroundY }}
           className="absolute inset-0 overflow-hidden"
         >
           {/* Floating Circles */}
-          {[...Array(20)].map((_, i) => (
+          {[...Array(15)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute rounded-full bg-white/5"
+              className="absolute rounded-full bg-white/10"
               style={{
-                width: Math.random() * 300 + 50,
-                height: Math.random() * 300 + 50,
+                width: Math.random() * 200 + 50,
+                height: Math.random() * 200 + 50,
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
               }}
@@ -77,7 +90,7 @@ export default function EventsFeaturesPage() {
         </motion.div>
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-primary/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
         <div className="container mx-auto px-4 relative z-10 text-center text-white">
           <motion.div

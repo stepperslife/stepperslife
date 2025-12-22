@@ -183,13 +183,24 @@ export default function RestaurantsFeaturesPage() {
       {/* Hero Section */}
       <motion.section
         style={{ y: heroY, opacity: heroOpacity }}
-        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-orange-600 via-red-600 to-amber-600"
+        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
       >
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920&q=80"
+            alt="Delicious soul food spread"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-600/90 via-red-600/85 to-amber-600/80" />
+        </div>
+
         <FloatingFoodIcons />
 
         {/* Animated Background Pattern */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
           {/* Warm glow circles */}
           <motion.div
             className="absolute w-[600px] h-[600px] rounded-full bg-yellow-400/20 blur-3xl"
@@ -529,10 +540,14 @@ export default function RestaurantsFeaturesPage() {
                 whileHover={{ y: -10 }}
                 transition={{ type: "spring", stiffness: 200 }}
               >
-                <div className="h-48 bg-gradient-to-br from-orange-400 to-red-500 relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <ChefHat className="w-24 h-24 text-white/30" />
-                  </div>
+                <div className="h-48 relative">
+                  <Image
+                    src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80"
+                    alt="Soul food restaurant"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="bg-black/40 backdrop-blur-sm rounded-xl p-3">
                       <h3 className="text-white font-bold text-lg">Soul Kitchen</h3>
@@ -547,9 +562,9 @@ export default function RestaurantsFeaturesPage() {
                 </div>
                 <div className="p-6 space-y-4">
                   {[
-                    { name: "Fried Chicken Dinner", price: "$15.99", popular: true },
-                    { name: "Mac & Cheese", price: "$6.99", popular: false },
-                    { name: "Collard Greens", price: "$5.99", popular: true },
+                    { name: "Fried Chicken Dinner", price: "$15.99", popular: true, image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=100&q=80" },
+                    { name: "Mac & Cheese", price: "$6.99", popular: false, image: "https://images.unsplash.com/photo-1543339494-b4cd4f7ba686?w=100&q=80" },
+                    { name: "Collard Greens", price: "$5.99", popular: true, image: "https://images.unsplash.com/photo-1574484284002-952d92456975?w=100&q=80" },
                   ].map((item, i) => (
                     <motion.div
                       key={i}
@@ -560,7 +575,9 @@ export default function RestaurantsFeaturesPage() {
                       transition={{ delay: 0.3 + i * 0.1 }}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-200 to-red-200 dark:from-orange-800 dark:to-red-800" />
+                        <div className="w-12 h-12 rounded-lg overflow-hidden relative">
+                          <Image src={item.image} alt={item.name} fill className="object-cover" />
+                        </div>
                         <div>
                           <p className="font-medium text-foreground">{item.name}</p>
                           {item.popular && (

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -42,7 +43,19 @@ export default function ClassesFeaturesPage() {
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-warning via-warning/95 to-orange-500">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=1920&q=80"
+            alt="Dance class in action"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-warning/90 via-warning/80 to-orange-500/70" />
+        </div>
+
         {/* Animated Dance Floor Pattern */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 opacity-10">
@@ -209,18 +222,21 @@ export default function ClassesFeaturesPage() {
                 description: "The smooth, gliding dance that brings couples together on the floor.",
                 levels: ["Beginner", "Intermediate", "Advanced"],
                 color: "from-warning to-orange-500",
+                image: "https://images.unsplash.com/photo-1504609813442-a8c3232e1bfe?w=400&q=80",
               },
               {
                 title: "Line Dancing",
                 description: "Group dances that get everyone moving with choreographed steps.",
                 levels: ["Beginner", "Intermediate", "Advanced"],
                 color: "from-primary to-blue-500",
+                image: "https://images.unsplash.com/photo-1545959570-a94084071b5d?w=400&q=80",
               },
               {
                 title: "Walking / Boppin",
                 description: "The classic walk and bop moves that define the culture.",
                 levels: ["Beginner", "Intermediate", "Advanced"],
                 color: "from-success to-emerald-500",
+                image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80",
               },
             ].map((style, index) => (
               <motion.div
@@ -233,25 +249,36 @@ export default function ClassesFeaturesPage() {
                 className="relative group"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${style.color} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl`} />
-                <div className="relative bg-card rounded-2xl p-8 border border-border hover:border-warning transition-colors h-full">
-                  <motion.div
-                    animate={{ rotate: [0, 5, -5, 0] }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                    className="text-6xl mb-4"
-                  >
-                    💃
-                  </motion.div>
-                  <h3 className="text-2xl font-bold text-foreground mb-3">{style.title}</h3>
-                  <p className="text-muted-foreground mb-4">{style.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {style.levels.map((level) => (
-                      <span
-                        key={level}
-                        className="px-3 py-1 bg-warning/10 text-warning rounded-full text-sm font-medium"
-                      >
-                        {level}
-                      </span>
-                    ))}
+                <div className="relative bg-card rounded-2xl overflow-hidden border border-border hover:border-warning transition-colors h-full">
+                  <div className="relative h-48">
+                    <Image
+                      src={style.image}
+                      alt={style.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${style.color} opacity-60`} />
+                    <motion.div
+                      animate={{ rotate: [0, 5, -5, 0] }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                      className="absolute bottom-4 left-4 text-5xl"
+                    >
+                      💃
+                    </motion.div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-2xl font-bold text-foreground mb-3">{style.title}</h3>
+                    <p className="text-muted-foreground mb-4">{style.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {style.levels.map((level) => (
+                        <span
+                          key={level}
+                          className="px-3 py-1 bg-warning/10 text-warning rounded-full text-sm font-medium"
+                        >
+                          {level}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </motion.div>
