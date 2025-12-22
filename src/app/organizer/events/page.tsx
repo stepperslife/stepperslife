@@ -47,6 +47,7 @@ export default function OrganizerEventsPage() {
 
   const credits = useQuery(api.credits.queries.getMyCredits);
   const bulkDeleteEvents = useMutation(api.events.mutations.bulkDeleteEvents);
+  const deleteEvent = useMutation(api.events.mutations.deleteEvent);
   const publishEvent = useMutation(api.events.mutations.publishEvent);
   const unpublishEvent = useMutation(api.events.mutations.updateEvent);
   const duplicateEvent = useMutation(api.events.mutations.duplicateEvent);
@@ -69,6 +70,10 @@ export default function OrganizerEventsPage() {
     failedCount: number;
     failedEvents: Array<{ eventId: string; reason: string }>;
   } | null>(null);
+
+  // Single event delete state
+  const [showSingleDeleteConfirm, setShowSingleDeleteConfirm] = useState<Id<"events"> | null>(null);
+  const [deletingEventId, setDeletingEventId] = useState<Id<"events"> | null>(null);
 
   // Duplicate event state
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
@@ -257,6 +262,20 @@ export default function OrganizerEventsPage() {
       alert(`Error deleting events: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  // Handle single event delete
+  const handleSingleDelete = async (eventId: Id<"events">) => {
+    setDeletingEventId(eventId);
+    try {
+      await deleteEvent({ eventId });
+      setShowSingleDeleteConfirm(null);
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+      alert(error instanceof Error ? error.message : "Failed to delete event");
+    } finally {
+      setDeletingEventId(null);
     }
   };
 
@@ -812,6 +831,16 @@ export default function OrganizerEventsPage() {
                           <span>Duplicate</span>
                         </button>
 
+                        {/* Delete Event Button */}
+                        <button
+                          type="button"
+                          onClick={() => setShowSingleDeleteConfirm(event._id)}
+                          className="flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-destructive text-destructive rounded-lg hover:bg-destructive/10 transition-colors flex-1 sm:flex-none"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                          <span>Delete</span>
+                        </button>
+
                         {/* Setup Payment - Prominent if needed */}
                         {!event.paymentModelSelected && event.eventType === "TICKETED_EVENT" && (
                           <Link
@@ -1040,6 +1069,64 @@ export default function OrganizerEventsPage() {
                     <>
                       <Copy className="w-4 h-4" />
                       Duplicate Event
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Single Event Delete Confirmation Dialog */}
+        {showSingleDeleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Trash2 className="w-6 h-6 text-destructive" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-foreground mb-2">Delete Event?</h3>
+                  <p className="text-muted-foreground text-sm">
+                    This will permanently delete this event and all associated data (tickets, staff, bundles, seating charts, etc.).
+                  </p>
+                  <p className="text-destructive text-sm font-semibold mt-2">
+                    This action cannot be undone!
+                  </p>
+                  <p className="text-muted-foreground text-xs mt-2">
+                    Note: Events with sold tickets cannot be deleted.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowSingleDeleteConfirm(null)}
+                  disabled={deletingEventId !== null}
+                  className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSingleDelete(showSingleDeleteConfirm)}
+                  disabled={deletingEventId !== null}
+                  className="px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {deletingEventId === showSingleDeleteConfirm ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      Delete Event
                     </>
                   )}
                 </button>

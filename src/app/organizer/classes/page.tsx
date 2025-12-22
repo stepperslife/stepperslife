@@ -13,13 +13,16 @@ import {
   EyeOff,
   MapPin,
   GraduationCap,
+  Copy,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
 import { useState } from "react";
 import { Id } from "@/convex/_generated/dataModel";
+import { useRouter } from "next/navigation";
 
 export default function OrganizerClassesPage() {
+  const router = useRouter();
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const classes = useQuery(api.events.queries.getOrganizerClasses, {
     userId: currentUser?._id,
@@ -28,9 +31,20 @@ export default function OrganizerClassesPage() {
   const publishEvent = useMutation(api.events.mutations.publishEvent);
   const unpublishEvent = useMutation(api.events.mutations.updateEvent);
   const deleteEvent = useMutation(api.events.mutations.deleteEvent);
+  const duplicateEvent = useMutation(api.events.mutations.duplicateEvent);
 
   const [deletingId, setDeletingId] = useState<Id<"events"> | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<Id<"events"> | null>(null);
+
+  // Duplicate class state
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [duplicatingClassId, setDuplicatingClassId] = useState<Id<"events"> | null>(null);
+  const [duplicateOptions, setDuplicateOptions] = useState({
+    newName: "",
+    copyTickets: true,
+    copyStaff: true,
+  });
+  const [isDuplicating, setIsDuplicating] = useState(false);
 
   // Show loading while queries are loading
   if (currentUser === undefined || classes === undefined) {
@@ -72,6 +86,46 @@ export default function OrganizerClassesPage() {
       alert(error instanceof Error ? error.message : "Failed to delete class");
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  // Handle opening duplicate dialog
+  const handleOpenDuplicate = (classId: Id<"events">, className: string) => {
+    setDuplicatingClassId(classId);
+    setDuplicateOptions({
+      newName: `${className} (Copy)`,
+      copyTickets: true,
+      copyStaff: true,
+    });
+    setShowDuplicateDialog(true);
+  };
+
+  // Handle duplicate class
+  const handleDuplicateClass = async () => {
+    if (!duplicatingClassId) return;
+
+    setIsDuplicating(true);
+    try {
+      const result = await duplicateEvent({
+        eventId: duplicatingClassId,
+        options: {
+          newName: duplicateOptions.newName || undefined,
+          copyTickets: duplicateOptions.copyTickets,
+          copySeating: false, // Classes don't have seating
+          copyStaff: duplicateOptions.copyStaff,
+        },
+      });
+
+      setShowDuplicateDialog(false);
+      setDuplicatingClassId(null);
+
+      // Navigate to the new class edit page
+      router.push(`/organizer/classes/${result.newEventId}/edit`);
+    } catch (error) {
+      console.error("Error duplicating class:", error);
+      alert(`Error duplicating class: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setIsDuplicating(false);
     }
   };
 
@@ -263,6 +317,7 @@ export default function OrganizerClassesPage() {
 
                       {/* Action Buttons */}
                       <div className="flex flex-wrap gap-2 md:gap-3">
+                        {/* Edit - Primary Action */}
                         <Link
                           href={`/organizer/classes/${classItem._id}/edit`}
                           className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
@@ -272,6 +327,28 @@ export default function OrganizerClassesPage() {
                           Edit
                         </Link>
 
+                        {/* Duplicate - Secondary Action */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenDuplicate(classItem._id, classItem.name)}
+                          className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-primary/30 bg-primary/5 text-primary rounded-lg hover:bg-primary/10 transition-colors"
+                          data-testid={`class-duplicate-btn-${classItem._id}`}
+                        >
+                          <Copy className="w-4 h-4" />
+                          Duplicate
+                        </button>
+
+                        {/* View - Navigate to public page */}
+                        <Link
+                          href={`/classes/${classItem._id}`}
+                          className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-border rounded-lg hover:bg-muted transition-colors"
+                          data-testid={`class-view-btn-${classItem._id}`}
+                        >
+                          <Eye className="w-4 h-4" />
+                          View
+                        </Link>
+
+                        {/* Publish/Unpublish - Status control */}
                         <button
                           type="button"
                           onClick={() => handleTogglePublish(classItem._id, classItem.status || "DRAFT")}
@@ -295,15 +372,7 @@ export default function OrganizerClassesPage() {
                           )}
                         </button>
 
-                        <Link
-                          href={`/classes/${classItem._id}`}
-                          className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-border rounded-lg hover:bg-muted transition-colors"
-                          data-testid={`class-view-btn-${classItem._id}`}
-                        >
-                          <Eye className="w-4 h-4" />
-                          View
-                        </Link>
-
+                        {/* Delete - Destructive action (always last) */}
                         <button
                           type="button"
                           onClick={() => setShowDeleteConfirm(classItem._id)}
@@ -368,6 +437,112 @@ export default function OrganizerClassesPage() {
                     <>
                       <Trash2 className="w-4 h-4" />
                       Delete
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Duplicate Class Dialog */}
+        {showDuplicateDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Copy className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-foreground mb-2">Duplicate Class</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Create a copy of this class with all its configurations.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    New Class Name
+                  </label>
+                  <input
+                    type="text"
+                    value={duplicateOptions.newName}
+                    onChange={(e) =>
+                      setDuplicateOptions({ ...duplicateOptions, newName: e.target.value })
+                    }
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    placeholder="Class name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    What to Copy
+                  </label>
+                  <label className="flex items-center gap-3 p-3 bg-muted rounded-lg cursor-pointer hover:bg-muted/80">
+                    <input
+                      type="checkbox"
+                      checked={duplicateOptions.copyTickets}
+                      onChange={(e) =>
+                        setDuplicateOptions({ ...duplicateOptions, copyTickets: e.target.checked })
+                      }
+                      className="w-4 h-4 text-primary rounded focus:ring-primary"
+                    />
+                    <div>
+                      <span className="font-medium text-foreground">Enrollment Tiers</span>
+                      <p className="text-xs text-muted-foreground">Copy all enrollment types and pricing</p>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 bg-muted rounded-lg cursor-pointer hover:bg-muted/80">
+                    <input
+                      type="checkbox"
+                      checked={duplicateOptions.copyStaff}
+                      onChange={(e) =>
+                        setDuplicateOptions({ ...duplicateOptions, copyStaff: e.target.checked })
+                      }
+                      className="w-4 h-4 text-primary rounded focus:ring-primary"
+                    />
+                    <div>
+                      <span className="font-medium text-foreground">Staff Members</span>
+                      <p className="text-xs text-muted-foreground">Copy instructor and assistant assignments</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDuplicateDialog(false);
+                    setDuplicatingClassId(null);
+                  }}
+                  disabled={isDuplicating}
+                  className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDuplicateClass}
+                  disabled={isDuplicating}
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isDuplicating ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      Duplicating...
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      Duplicate Class
                     </>
                   )}
                 </button>
