@@ -13,19 +13,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
 import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
 
-// Class type options for filtering
+// Class type options for filtering (3 types + 3 skill levels)
 const CLASS_TYPES = [
-  "Chicago Stepping",
-  "Detroit Ballroom",
-  "Line Dance",
-  "Hand Dance",
+  "Stepping",
+  "Line Dancing",
   "Walking",
   "Beginner",
   "Intermediate",
   "Advanced",
-  "Workshop",
-  "Private Lesson",
-  "Group Class",
 ];
 
 export default function ClassesListClient() {

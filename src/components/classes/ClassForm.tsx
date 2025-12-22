@@ -11,12 +11,10 @@ import { getTimezoneFromLocation, getTimezoneName } from "@/lib/timezone";
 import { Id } from "@/convex/_generated/dataModel";
 import { format as formatDate } from "date-fns";
 
-// Class types (dance styles)
+// Class types (dance styles) - only 3 options
 const CLASS_TYPES = [
-  "Chicago Stepping",
-  "Detroit Ballroom",
-  "Line Dance",
-  "Hand Dance",
+  "Stepping",
+  "Line Dancing",
   "Walking",
 ];
 
@@ -25,13 +23,6 @@ const SKILL_LEVELS = [
   "Beginner",
   "Intermediate",
   "Advanced",
-];
-
-// Class formats
-const CLASS_FORMATS = [
-  "Workshop",
-  "Private Lesson",
-  "Group Class",
 ];
 
 // Days of the week
@@ -396,30 +387,6 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
                       data-testid={`class-level-${level.toLowerCase()}`}
                     >
                       {level}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Class Format */}
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Class Format
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {CLASS_FORMATS.map((format) => (
-                    <button
-                      key={format}
-                      type="button"
-                      onClick={() => handleCategoryToggle(format)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                        categories.includes(format)
-                          ? "bg-primary text-white"
-                          : "bg-muted text-foreground hover:bg-accent"
-                      }`}
-                      data-testid={`class-format-${format.toLowerCase().replace(/\s+/g, "-")}`}
-                    >
-                      {format}
                     </button>
                   ))}
                 </div>
