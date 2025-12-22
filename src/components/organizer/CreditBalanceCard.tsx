@@ -109,7 +109,7 @@ export function CreditBalanceCard() {
             </Button>
           </Link>
           {creditsRemaining < 500 && (
-            <Link href="/organizer/credits/purchase" className="flex-1">
+            <Link href="/organizer/credits" className="flex-1">
               <Button className="w-full" variant="outline" size="sm">
                 Buy More
               </Button>

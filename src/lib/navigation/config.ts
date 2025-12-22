@@ -784,22 +784,10 @@ export const restaurateurNavigation: RoleNavigation = {
       showDivider: true,
       items: [
         {
-          label: "Reviews",
-          href: "/restaurateur/dashboard/reviews",
-          icon: MessageSquare,
-          description: "Customer reviews",
-        },
-        {
           label: "Settings",
           href: "/restaurateur/dashboard/settings",
           icon: Settings,
           description: "Restaurant settings",
-        },
-        {
-          label: "Support",
-          href: "/restaurateur/dashboard/support",
-          icon: MessageSquare,
-          description: "Get help",
         },
       ],
     },

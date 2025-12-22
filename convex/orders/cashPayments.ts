@@ -114,6 +114,29 @@ export const createCashOrder = mutation({
     });
 
 
+    // CRITICAL FIX: Reserve inventory BEFORE creating tickets
+    // This prevents multiple staff from overselling the same tickets
+    // Check availability and increment sold count atomically
+    for (const detail of ticketDetails) {
+      const tier = await ctx.db.get(detail.tierId);
+      if (!tier) {
+        throw new Error(`Ticket tier ${detail.tierId} not found`);
+      }
+
+      // Check if enough tickets are available
+      const available = tier.quantity - tier.sold;
+      if (available < detail.quantity) {
+        throw new Error(
+          `Not enough ${tier.name} tickets available. Only ${available} remaining.`
+        );
+      }
+
+      // Reserve inventory by incrementing sold count NOW (not when approved)
+      await ctx.db.patch(detail.tierId, {
+        sold: tier.sold + detail.quantity,
+      });
+    }
+
     // Create ticket placeholders (not activated yet)
     const ticketIds = [];
     for (const detail of ticketDetails) {
@@ -351,23 +374,8 @@ export const organizerApproveCashOrder = mutation({
       });
     }
 
-    // Update ticket tier sold counts
-    const tierUpdates = new Map<string, number>();
-    for (const ticket of tickets) {
-      if (ticket.ticketTierId) {
-        const tierId = ticket.ticketTierId.toString();
-        tierUpdates.set(tierId, (tierUpdates.get(tierId) || 0) + 1);
-      }
-    }
-
-    for (const [tierId, count] of tierUpdates) {
-      const tier = await ctx.db.get(tierId as Id<"ticketTiers">);
-      if (tier) {
-        await ctx.db.patch(tier._id, {
-          sold: tier.sold + count,
-        });
-      }
-    }
+    // NOTE: Inventory (ticketTiers.sold) was already incremented when cash order was created
+    // No need to increment again here - that would cause double-counting
 
     // Send confirmation email with QR codes to customer
     // Only send if customer has a valid email address

@@ -393,6 +393,15 @@ export const createOrder = mutation({
     const ticketTier = await ctx.db.get(args.ticketTierId);
     if (!ticketTier) throw new Error("Ticket tier not found");
 
+    // Validate tier sale dates
+    const now = Date.now();
+    if (ticketTier.saleStart && ticketTier.saleStart > now) {
+      throw new Error("Ticket sales have not started yet for this tier");
+    }
+    if (ticketTier.saleEnd && ticketTier.saleEnd < now) {
+      throw new Error("Ticket sales have ended for this tier");
+    }
+
     // Look up staff member if referral code provided
     let staffMember = null;
     if (args.referralCode && args.referralCode.length > 0) {
@@ -409,13 +418,30 @@ export const createOrder = mutation({
     // Verify and increment discount code usage if provided
     if (args.discountCodeId && args.discountAmountCents) {
       const discountCode = await ctx.db.get(args.discountCodeId);
-      if (discountCode && discountCode.isActive) {
-        // Increment usage count
-        await ctx.db.patch(args.discountCodeId, {
-          usedCount: discountCode.usedCount + 1,
-          updatedAt: Date.now(),
-        });
+      if (!discountCode) {
+        throw new Error("Discount code not found");
       }
+
+      if (!discountCode.isActive) {
+        throw new Error("This discount code is no longer active");
+      }
+
+      // Check if discount code has expired
+      const now = Date.now();
+      if (discountCode.validUntil && discountCode.validUntil < now) {
+        throw new Error("This discount code has expired");
+      }
+
+      // Check if discount code has reached max uses
+      if (discountCode.maxUses && discountCode.usedCount >= discountCode.maxUses) {
+        throw new Error("This discount code has reached its usage limit");
+      }
+
+      // Increment usage count
+      await ctx.db.patch(args.discountCodeId, {
+        usedCount: discountCode.usedCount + 1,
+        updatedAt: now,
+      });
     }
 
     // Validate seat selection if seating chart exists
@@ -578,6 +604,29 @@ export const completeOrder = mutation({
     // Track sold count per tier
     const tierSoldCount = new Map<string, number>();
 
+    // CRITICAL FIX: Count tickets per tier FIRST, then validate availability BEFORE creating tickets
+    for (const item of orderItems) {
+      const currentCount = tierSoldCount.get(item.ticketTierId) || 0;
+      tierSoldCount.set(item.ticketTierId, currentCount + 1);
+    }
+
+    // Validate availability BEFORE creating any tickets
+    for (const [tierId, count] of Array.from(tierSoldCount.entries())) {
+      const tier = await ctx.db.get(tierId as Id<"ticketTiers">);
+      if (!tier) {
+        throw new Error(`Ticket tier not found: ${tierId}`);
+      }
+
+      const newSold = tier.sold + count;
+      if (newSold > tier.quantity) {
+        throw new Error(
+          `Tickets sold out during checkout. "${tier.name}" only has ` +
+            `${tier.quantity - tier.sold} tickets remaining, but ${count} were requested. ` +
+            `Please try again with fewer tickets or choose a different tier.`
+        );
+      }
+    }
+
     // Get seating chart if seats were selected
     let seatingChart = null;
     if (order.selectedSeats && order.selectedSeats.length > 0) {
@@ -633,10 +682,6 @@ export const completeOrder = mutation({
 
         seatIndex++;
       }
-
-      // Count tickets per tier
-      const currentCount = tierSoldCount.get(item.ticketTierId) || 0;
-      tierSoldCount.set(item.ticketTierId, currentCount + 1);
     }
 
     // Update reserved seats count on seating chart if seats were reserved
@@ -646,23 +691,13 @@ export const completeOrder = mutation({
       });
     }
 
-    // PRODUCTION: Update sold count with optimistic locking to prevent race conditions
+    // Update sold count - availability was already validated above
     const now = Date.now();
     for (const [tierId, count] of Array.from(tierSoldCount.entries())) {
       const tier = await ctx.db.get(tierId as Id<"ticketTiers">);
       if (tier && "sold" in tier) {
         const currentVersion = tier.version || 0;
         const newSold = tier.sold + count;
-
-        // CRITICAL: Validate availability BEFORE updating
-        // This prevents overselling even if multiple requests arrive simultaneously
-        if (newSold > tier.quantity) {
-          throw new Error(
-            `Tickets sold out during checkout. Tier "${tier.name}" only has ` +
-              `${tier.quantity - tier.sold} tickets remaining, but ${count} were requested. ` +
-              `Please try again with fewer tickets or choose a different tier.`
-          );
-        }
 
         const updates: Record<string, unknown> = {
           sold: newSold,
@@ -677,7 +712,6 @@ export const completeOrder = mutation({
 
         // Atomic update with version check
         await ctx.db.patch(tierId as Id<"ticketTiers">, updates);
-
       }
     }
 

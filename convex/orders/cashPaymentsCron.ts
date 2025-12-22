@@ -4,6 +4,7 @@
  */
 
 import { internalMutation } from "../_generated/server";
+import { Id } from "../_generated/dataModel";
 
 /**
  * Expire cash orders that have passed their 30-minute hold
@@ -33,6 +34,31 @@ export const expireCashOrders = internalMutation({
     let ticketsReleasedCount = 0;
 
     for (const order of expiredOrders) {
+      // Get all tickets FIRST to release inventory
+      const tickets = await ctx.db
+        .query("tickets")
+        .withIndex("by_order", (q) => q.eq("orderId", order._id))
+        .collect();
+
+      // CRITICAL FIX: Release inventory by decrementing ticketTiers.sold count
+      // This prevents "permanent inventory loss" when cash orders expire
+      const tierUpdates = new Map<string, number>();
+      for (const ticket of tickets) {
+        if (ticket.ticketTierId) {
+          const tierId = ticket.ticketTierId.toString();
+          tierUpdates.set(tierId, (tierUpdates.get(tierId) || 0) + 1);
+        }
+      }
+
+      for (const [tierId, count] of tierUpdates) {
+        const tier = await ctx.db.get(tierId as Id<"ticketTiers">);
+        if (tier && tier.sold >= count) {
+          await ctx.db.patch(tier._id, {
+            sold: tier.sold - count,
+          });
+        }
+      }
+
       // Update order status to CANCELLED (no EXPIRED status in schema)
       await ctx.db.patch(order._id, {
         status: "CANCELLED",
@@ -40,11 +66,6 @@ export const expireCashOrders = internalMutation({
       });
 
       // Update all tickets to CANCELLED status (no EXPIRED status in schema)
-      const tickets = await ctx.db
-        .query("tickets")
-        .withIndex("by_order", (q) => q.eq("orderId", order._id))
-        .collect();
-
       for (const ticket of tickets) {
         await ctx.db.patch(ticket._id, {
           status: "CANCELLED",
