@@ -194,7 +194,7 @@ export default function RestaurantsFeaturesPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-600/90 via-red-600/85 to-amber-600/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
 
         <FloatingFoodIcons />

@@ -53,7 +53,7 @@ export default function ClassesFeaturesPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-warning/90 via-warning/80 to-orange-500/70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
 
         {/* Animated Dance Floor Pattern */}

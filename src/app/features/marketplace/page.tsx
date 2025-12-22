@@ -207,7 +207,7 @@ export default function MarketplaceFeaturesPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-600/90 via-indigo-600/85 to-blue-600/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
 
         <FloatingProducts />
