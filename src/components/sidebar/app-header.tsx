@@ -12,7 +12,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, User, Settings, Ticket, Calendar, BookOpen, Utensils, ShieldCheck, Package, ShoppingBag } from "lucide-react";
+import { LogOut, User, Settings, Ticket, Calendar, BookOpen, Utensils, ShieldCheck, Package, ShoppingBag, Home } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,6 +100,20 @@ export function AppHeader() {
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 bg-background z-10">
       <SidebarTrigger className="-ml-1" />
+      <Separator className="mr-2 h-4" orientation="vertical" />
+
+      {/* Home Link with Logo */}
+      <Link href="/" className="flex items-center gap-2 mr-2 hover:opacity-80 transition-opacity" title="Go to Homepage">
+        <Image
+          src="/logo.png"
+          alt="SteppersLife"
+          width={28}
+          height={28}
+          className="w-7 h-7"
+        />
+        <Home className="w-4 h-4 text-muted-foreground" />
+      </Link>
+
       <Separator className="mr-2 h-4" orientation="vertical" />
       <Breadcrumb>
         <BreadcrumbList>
