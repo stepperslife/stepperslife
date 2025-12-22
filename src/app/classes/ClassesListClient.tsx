@@ -7,6 +7,7 @@ import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen, Graduatio
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { ClassesSubNav } from "@/components/layout/ClassesSubNav";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
@@ -56,6 +57,7 @@ export default function ClassesListClient() {
     return (
       <>
         <PublicHeader />
+        <ClassesSubNav />
         <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-12">
             <motion.div
@@ -97,6 +99,7 @@ export default function ClassesListClient() {
     return (
       <>
         <PublicHeader />
+        <ClassesSubNav />
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
             <motion.div
@@ -122,6 +125,7 @@ export default function ClassesListClient() {
   return (
     <>
       <PublicHeader />
+      <ClassesSubNav />
       <div data-testid="classes-page" className="min-h-screen bg-background">
         {/* EPIC Hero Section */}
         <section className="relative min-h-[500px] md:min-h-[600px] w-full overflow-hidden">

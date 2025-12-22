@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Package, HelpCircle, DollarSign, Store } from "lucide-react";
+import { BookOpen, Plus, DollarSign } from "lucide-react";
 
-export function MarketplaceSubNav() {
+export function ClassesSubNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/marketplace", label: "Browse Products", icon: ShoppingBag },
-    { href: "/vendor/apply", label: "Create Store", icon: Store },
-    { href: "/marketplace/pricing", label: "Pricing", icon: DollarSign },
+    { href: "/classes", label: "Browse Classes", icon: BookOpen },
+    { href: "/organizer/classes/create", label: "Create Class", icon: Plus },
+    { href: "/pricing", label: "Pricing", icon: DollarSign },
   ];
 
   return (
@@ -19,9 +19,9 @@ export function MarketplaceSubNav() {
         <nav className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || 
-              (item.href === "/marketplace" && pathname?.startsWith("/marketplace"));
-            
+            const isActive = pathname === item.href ||
+              (item.href === "/classes" && pathname?.startsWith("/classes"));
+
             return (
               <Link
                 key={item.href}
