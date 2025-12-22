@@ -1,11 +1,12 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { generateUserInitials } from "@/lib/navigation/utils";
+import Link from "next/link";
 
 interface WorkspaceHeaderProps {
   /** Whether the sidebar is collapsed to icon-only mode */
@@ -46,13 +47,14 @@ export function WorkspaceHeader({ isCollapsed = false }: WorkspaceHeaderProps) {
   if (isCollapsed) {
     return (
       <div className="flex flex-col items-center gap-2 py-3">
-        {/* User Avatar */}
-        <Avatar className="w-8 h-8">
-          <AvatarImage src={user.avatar} alt={user.name || user.email} />
-          <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
-            {userInitials}
-          </AvatarFallback>
-        </Avatar>
+        {/* Home Link */}
+        <Link
+          href="/"
+          className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-accent transition-colors"
+          title="Go to Homepage"
+        >
+          <Home className="w-4 h-4 text-sidebar-foreground/60" />
+        </Link>
 
         {/* Workspace Icon Button */}
         {hasMultipleWorkspaces ? (
@@ -90,25 +92,36 @@ export function WorkspaceHeader({ isCollapsed = false }: WorkspaceHeaderProps) {
   // Expanded state - full header with workspace info
   return (
     <div className="px-4 py-3">
-      {/* User Info Row */}
+      {/* User Info Row with Home Link */}
       <div className="flex items-center gap-3 mb-3">
-        <Avatar className="w-10 h-10">
-          <AvatarImage src={user.avatar} alt={user.name || user.email} />
-          <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-            {userInitials}
-          </AvatarFallback>
-        </Avatar>
+        <Link
+          href="/"
+          className="flex items-center gap-3 flex-1 min-w-0 group"
+          title="Go to Homepage"
+        >
+          <div className="relative">
+            <Avatar className="w-10 h-10 group-hover:ring-2 group-hover:ring-primary/50 transition-all">
+              <AvatarImage src={user.avatar} alt={user.name || user.email} />
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+                {userInitials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute -bottom-0.5 -right-0.5 bg-background rounded-full p-0.5">
+              <Home className="w-3 h-3 text-primary" />
+            </div>
+          </div>
 
-        <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-sidebar-foreground truncate">
-            SteppersLife
-          </h2>
-          {user.name && (
-            <p className="text-xs text-sidebar-foreground/80 truncate">
-              {user.name}
-            </p>
-          )}
-        </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-bold text-sidebar-foreground truncate group-hover:text-primary transition-colors">
+              SteppersLife
+            </h2>
+            {user.name && (
+              <p className="text-xs text-sidebar-foreground/80 truncate">
+                {user.name}
+              </p>
+            )}
+          </div>
+        </Link>
       </div>
 
       {/* Workspace Switcher */}

@@ -48,9 +48,15 @@ export const adminNavigation: RoleNavigation = {
   dashboardTitle: "Admin",
   roleDescription: "Platform Administrator",
   sections: [
-    // Dashboard - always visible
+    // Home & Dashboard - always visible
     {
       items: [
+        {
+          label: "Home",
+          href: "/",
+          icon: Home,
+          description: "Return to main site",
+        },
         {
           label: "Dashboard",
           href: "/admin",
@@ -171,9 +177,15 @@ export const organizerNavigation: RoleNavigation = {
   dashboardTitle: "Organizer",
   roleDescription: "Event Organizer",
   sections: [
-    // Overview
+    // Home & Overview
     {
       items: [
+        {
+          label: "Home",
+          href: "/",
+          icon: Home,
+          description: "Return to main site",
+        },
         {
           label: "Dashboard",
           href: "/organizer/dashboard",
@@ -423,6 +435,12 @@ export const staffNavigation: RoleNavigation = {
     {
       items: [
         {
+          label: "Home",
+          href: "/",
+          icon: Home,
+          description: "Return to main site",
+        },
+        {
           label: "Register Sale",
           href: "/staff/register-sale",
           icon: DollarSign,
@@ -511,9 +529,15 @@ export const teamMemberNavigation: RoleNavigation = {
   dashboardTitle: "Team Member",
   roleDescription: "Team Member",
   sections: [
-    // Dashboard
+    // Home & Dashboard
     {
       items: [
+        {
+          label: "Home",
+          href: "/",
+          icon: Home,
+          description: "Return to main site",
+        },
         {
           label: "Dashboard",
           href: "/team/dashboard",
@@ -625,6 +649,12 @@ export const associateNavigation: RoleNavigation = {
     {
       items: [
         {
+          label: "Home",
+          href: "/",
+          icon: Home,
+          description: "Return to main site",
+        },
+        {
           label: "Dashboard",
           href: "/associate/dashboard",
           icon: LayoutDashboard,
@@ -704,6 +734,12 @@ export const restaurateurNavigation: RoleNavigation = {
       title: "Restaurant",
       icon: UtensilsCrossed,
       items: [
+        {
+          label: "Home",
+          href: "/",
+          icon: Home,
+          description: "Return to main site",
+        },
         {
           label: "Menu",
           href: "/restaurateur/dashboard/menu",
