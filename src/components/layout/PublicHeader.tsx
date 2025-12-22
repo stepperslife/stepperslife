@@ -22,6 +22,7 @@ import {
   ShoppingBag,
   Package,
   Sparkles,
+  Store,
 } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -273,6 +274,22 @@ export function PublicHeader({
                           </>
                         )}
 
+                        {/* Vendor links - for vendors/admins */}
+                        {(user?.role === "vendor" || user?.role === "admin") && (
+                          <>
+                            <div className="border-t border-border my-1" />
+                            <Link
+                              href="/vendor/dashboard"
+                              onClick={() => setIsProfileOpen(false)}
+                              data-testid="menu-my-store"
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                            >
+                              <Store className="w-4 h-4 text-muted-foreground" />
+                              My Store
+                            </Link>
+                          </>
+                        )}
+
                         {/* Admin-only links */}
                         {user?.role === "admin" && (
                           <>
@@ -453,6 +470,21 @@ export function PublicHeader({
                       >
                         <BookOpen className="w-4 h-4" />
                         My Classes
+                      </Link>
+                    </>
+                  )}
+
+                  {/* Vendor links - for vendors/admins */}
+                  {(user?.role === "vendor" || user?.role === "admin") && (
+                    <>
+                      <div className="border-t border-border my-2" />
+                      <Link
+                        href="/vendor/dashboard"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg transition-colors"
+                      >
+                        <Store className="w-4 h-4" />
+                        My Store
                       </Link>
                     </>
                   )}
