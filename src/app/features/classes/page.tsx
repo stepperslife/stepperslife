@@ -318,7 +318,10 @@ export default function ClassesFeaturesPage() {
                 // Get the image URL - prefer imageUrl, then check images array for Convex storage URLs
                 const classImageUrl = classItem.imageUrl ||
                   (classItem.images && classItem.images[0] ? `https://expert-vulture-775.convex.cloud/api/storage/${classItem.images[0]}` : null);
-                const venueName = classItem.location?.venueName || classItem.location?.city;
+                // Handle location which can be string or object
+                const venueName = typeof classItem.location === 'string'
+                  ? classItem.location
+                  : (classItem.location?.venueName || classItem.location?.city);
 
                 // Get day names from classDays array
                 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

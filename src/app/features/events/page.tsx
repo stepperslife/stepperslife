@@ -219,7 +219,10 @@ export default function EventsFeaturesPage() {
                 // Get the image URL - prefer imageUrl, then check images array for Convex storage URLs
                 const eventImageUrl = event.imageUrl ||
                   (event.images && event.images[0] ? `https://expert-vulture-775.convex.cloud/api/storage/${event.images[0]}` : null);
-                const venueName = event.location?.venueName || event.location?.city;
+                // Handle location which can be string or object
+                const venueName = typeof event.location === 'string'
+                  ? event.location
+                  : (event.location?.venueName || event.location?.city);
 
                 return (
                   <motion.div
@@ -251,7 +254,7 @@ export default function EventsFeaturesPage() {
                           <div className="absolute bottom-4 left-4 right-4">
                             <div className="flex items-center gap-2 text-white/90 text-sm">
                               <Calendar className="w-4 h-4" />
-                              <span>{formatDate(new Date(event.startDate), "MMM d, yyyy")}</span>
+                              <span>{event.startDate ? formatDate(new Date(event.startDate), "MMM d, yyyy") : "Date TBA"}</span>
                             </div>
                           </div>
                         </div>

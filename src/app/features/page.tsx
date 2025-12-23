@@ -362,9 +362,9 @@ export default function FeaturesPage() {
                     <div className="absolute bottom-3 left-3 right-3">
                       <p className="text-white font-bold">{featuredEvent?.name || "Chicago Steppers Ball"}</p>
                       <p className="text-white/80 text-sm">
-                        {featuredEvent?.eventDateLiteral || featuredEvent?.startDate
+                        {featuredEvent?.eventDateLiteral || (featuredEvent?.startDate
                           ? format(new Date(featuredEvent.startDate), "EEE, MMM d • h:mma")
-                          : "Sat, Jan 15 • 8PM"}
+                          : "Sat, Jan 15 • 8PM")}
                       </p>
                     </div>
                   </div>
