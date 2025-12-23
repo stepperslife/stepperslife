@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useAuth } from "@/hooks/useAuth";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
@@ -44,20 +45,27 @@ const paymentStatusConfig: Record<PaymentStatus, { label: string; color: string 
 export default function MyOrdersPage() {
   const searchParams = useSearchParams();
   const emailFromUrl = searchParams.get("email");
+  const { user, isAuthenticated } = useAuth();
 
   const [email, setEmail] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
 
-  // Auto-search when email is provided in URL
+  // Auto-search when user is logged in or email is provided in URL
   useEffect(() => {
+    // Priority: URL email > logged in user's email
     if (emailFromUrl) {
       const normalizedEmail = emailFromUrl.toLowerCase().trim();
       setEmail(normalizedEmail);
       setSearchEmail(normalizedEmail);
       setHasSearched(true);
+    } else if (isAuthenticated && user?.email) {
+      const normalizedEmail = user.email.toLowerCase().trim();
+      setEmail(normalizedEmail);
+      setSearchEmail(normalizedEmail);
+      setHasSearched(true);
     }
-  }, [emailFromUrl]);
+  }, [emailFromUrl, isAuthenticated, user?.email]);
 
   const orders = useQuery(
     api.productOrders.queries.getOrdersByEmail,
@@ -93,7 +101,10 @@ export default function MyOrdersPage() {
             <Package className="w-16 h-16 text-primary mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-foreground mb-2">My Orders</h1>
             <p className="text-muted-foreground">
-              Enter your email address to view your order history
+              {isAuthenticated
+                ? "View your order history and track your purchases"
+                : "Enter your email address to view your order history"
+              }
             </p>
           </div>
 
