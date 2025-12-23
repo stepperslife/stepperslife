@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
-import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen, GraduationCap, Music, Users, Award, Sparkles, X } from "lucide-react";
+import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen, GraduationCap, Music, Users, Award, Sparkles, X, ChevronDown, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
 import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Class types for filtering (only 3 main types)
 const CLASS_TYPES = ["Steppin", "Line Dancing", "Walking"];
@@ -391,199 +393,230 @@ export default function ClassesListClient() {
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
         </section>
 
-        {/* Filters */}
+        {/* Compact Filter Bar */}
         <div className="bg-card border-b border-border sticky top-0 z-10">
-          <div className="container mx-auto px-4 py-4 space-y-4">
-            {/* Top Row: Search and View Toggle */}
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Search */}
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <label htmlFor="classes-search" className="sr-only">Search classes by name, description, or location</label>
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              {/* Search - flexible width */}
+              <div className="relative flex-1 min-w-[200px] max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <label htmlFor="classes-search" className="sr-only">Search classes</label>
                 <input
                   id="classes-search"
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search classes by name, description, or location..."
+                  placeholder="Search classes..."
                   data-testid="classes-search-input"
-                  className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground placeholder-muted-foreground"
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground placeholder-muted-foreground"
                 />
               </div>
 
-              {/* Past Classes Toggle */}
-              <label className="flex items-center gap-2 cursor-pointer px-4 py-2 bg-muted rounded-lg hover:bg-accent transition-colors">
-                <input
-                  type="checkbox"
-                  checked={showPastClasses}
-                  onChange={(e) => setShowPastClasses(e.target.checked)}
-                  data-testid="classes-past-toggle"
-                  className="w-4 h-4 text-primary border-input rounded focus:ring-ring"
-                />
-                <span className="text-sm font-medium text-foreground">
-                  Show past
-                </span>
-              </label>
-
-              {/* View Toggle */}
-              <ViewToggle view={viewMode} onViewChange={setViewMode} />
-            </div>
-
-            {/* Class Type Filter (Multi-select) */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Tag className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">Class Type:</span>
-                {selectedTypes.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedTypes([])}
-                    className="text-xs text-primary hover:text-primary/80"
-                  >
-                    Clear all
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {CLASS_TYPES.map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => toggleType(type)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      selectedTypes.includes(type)
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Skill Level Filter (Multi-select) */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Award className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">Skill Level:</span>
-                {selectedLevels.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedLevels([])}
-                    className="text-xs text-primary hover:text-primary/80"
-                  >
-                    Clear all
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {LEVEL_TYPES.map((level) => (
-                  <button
-                    key={level}
-                    type="button"
-                    onClick={() => toggleLevel(level)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      selectedLevels.includes(level)
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    }`}
-                  >
-                    {level}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Day of Week Filter (Multi-select) */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">Day:</span>
-                {selectedDays.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedDays([])}
-                    className="text-xs text-primary hover:text-primary/80"
-                  >
-                    Clear all
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {DAY_NAMES.map((day, index) => (
-                  <button
-                    key={day}
-                    type="button"
-                    onClick={() => toggleDay(index)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      selectedDays.includes(index)
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    }`}
-                  >
-                    {day.slice(0, 3)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Active Filters Display */}
-            {(searchTerm || selectedTypes.length > 0 || selectedLevels.length > 0 || selectedDays.length > 0) && (
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border">
-                <span className="text-sm text-muted-foreground">Active:</span>
-                {searchTerm && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground">
-                    &quot;{searchTerm}&quot;
-                    <button
-                      type="button"
-                      onClick={() => setSearchTerm("")}
-                      className="ml-2 text-primary hover:text-primary/80"
-                      aria-label="Clear search term"
+              {/* Filter Dropdowns */}
+              <div className="flex items-center gap-2">
+                {/* Type Filter Dropdown */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={`h-9 gap-1 ${selectedTypes.length > 0 ? "border-primary text-primary" : ""}`}
                     >
+                      <Tag className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Type</span>
+                      {selectedTypes.length > 0 && (
+                        <span className="ml-1 rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
+                          {selectedTypes.length}
+                        </span>
+                      )}
+                      <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-2" align="start">
+                    <div className="space-y-1">
+                      {CLASS_TYPES.map((type) => (
+                        <label
+                          key={type}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selectedTypes.includes(type)}
+                            onCheckedChange={() => toggleType(type)}
+                          />
+                          <span className="text-sm">{type}</span>
+                        </label>
+                      ))}
+                      {selectedTypes.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedTypes([])}
+                          className="w-full text-xs text-muted-foreground hover:text-foreground py-1 mt-1 border-t border-border"
+                        >
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {/* Level Filter Dropdown */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={`h-9 gap-1 ${selectedLevels.length > 0 ? "border-primary text-primary" : ""}`}
+                    >
+                      <Award className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Level</span>
+                      {selectedLevels.length > 0 && (
+                        <span className="ml-1 rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
+                          {selectedLevels.length}
+                        </span>
+                      )}
+                      <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-2" align="start">
+                    <div className="space-y-1">
+                      {LEVEL_TYPES.map((level) => (
+                        <label
+                          key={level}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selectedLevels.includes(level)}
+                            onCheckedChange={() => toggleLevel(level)}
+                          />
+                          <span className="text-sm">{level}</span>
+                        </label>
+                      ))}
+                      {selectedLevels.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedLevels([])}
+                          className="w-full text-xs text-muted-foreground hover:text-foreground py-1 mt-1 border-t border-border"
+                        >
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {/* Day Filter Dropdown */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={`h-9 gap-1 ${selectedDays.length > 0 ? "border-primary text-primary" : ""}`}
+                    >
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Day</span>
+                      {selectedDays.length > 0 && (
+                        <span className="ml-1 rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
+                          {selectedDays.length}
+                        </span>
+                      )}
+                      <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-2" align="start">
+                    <div className="space-y-1">
+                      {DAY_NAMES.map((day, index) => (
+                        <label
+                          key={day}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selectedDays.includes(index)}
+                            onCheckedChange={() => toggleDay(index)}
+                          />
+                          <span className="text-sm">{day}</span>
+                        </label>
+                      ))}
+                      {selectedDays.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedDays([])}
+                          className="w-full text-xs text-muted-foreground hover:text-foreground py-1 mt-1 border-t border-border"
+                        >
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {/* Divider */}
+                <div className="hidden md:block w-px h-6 bg-border" />
+
+                {/* Past Classes Toggle */}
+                <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground hover:text-foreground">
+                  <Checkbox
+                    checked={showPastClasses}
+                    onCheckedChange={(checked) => setShowPastClasses(checked === true)}
+                    data-testid="classes-past-toggle"
+                  />
+                  <span className="hidden sm:inline">Past</span>
+                </label>
+
+                {/* Divider */}
+                <div className="hidden md:block w-px h-6 bg-border" />
+
+                {/* View Toggle */}
+                <ViewToggle view={viewMode} onViewChange={setViewMode} />
+              </div>
+            </div>
+
+            {/* Active Filters Pills - only show when filters are active */}
+            {(searchTerm || selectedTypes.length > 0 || selectedLevels.length > 0 || selectedDays.length > 0) && (
+              <div className="flex flex-wrap items-center gap-1.5 mt-2 pt-2 border-t border-border">
+                {searchTerm && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-accent text-accent-foreground">
+                    &quot;{searchTerm}&quot;
+                    <button type="button" onClick={() => setSearchTerm("")} className="hover:text-foreground" aria-label="Clear search">
                       <X className="w-3 h-3" />
                     </button>
                   </span>
                 )}
                 {selectedTypes.map((type) => (
-                  <span key={type} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary">
+                  <span key={type} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary">
                     {type}
-                    <button
-                      type="button"
-                      onClick={() => toggleType(type)}
-                      className="ml-2 hover:text-primary/80"
-                      aria-label={`Remove ${type} filter`}
-                    >
+                    <button type="button" onClick={() => toggleType(type)} className="hover:text-primary/70" aria-label={`Remove ${type}`}>
                       <X className="w-3 h-3" />
                     </button>
                   </span>
                 ))}
                 {selectedLevels.map((level) => (
-                  <span key={level} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-warning/10 text-warning">
+                  <span key={level} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-warning/10 text-warning">
                     {level}
-                    <button
-                      type="button"
-                      onClick={() => toggleLevel(level)}
-                      className="ml-2 hover:text-warning/80"
-                      aria-label={`Remove ${level} filter`}
-                    >
+                    <button type="button" onClick={() => toggleLevel(level)} className="hover:text-warning/70" aria-label={`Remove ${level}`}>
                       <X className="w-3 h-3" />
                     </button>
                   </span>
                 ))}
                 {selectedDays.map((day) => (
-                  <span key={day} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary">
-                    {DAY_NAMES[day]}
-                    <button
-                      type="button"
-                      onClick={() => toggleDay(day)}
-                      className="ml-2 hover:text-primary/80"
-                      aria-label={`Remove ${DAY_NAMES[day]} filter`}
-                    >
+                  <span key={day} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary">
+                    {DAY_NAMES[day].slice(0, 3)}
+                    <button type="button" onClick={() => toggleDay(day)} className="hover:text-primary/70" aria-label={`Remove ${DAY_NAMES[day]}`}>
                       <X className="w-3 h-3" />
                     </button>
                   </span>
                 ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedTypes([]);
+                    setSelectedLevels([]);
+                    setSelectedDays([]);
+                  }}
+                  className="text-xs text-muted-foreground hover:text-foreground ml-1"
+                >
+                  Clear all
+                </button>
               </div>
             )}
           </div>
