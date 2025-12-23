@@ -15,6 +15,9 @@ export const EVENT_CATEGORIES = [
   "Outdoors Steppin",
   "Holiday Event",
   "Weekend Event",
+  "Comedy Shows",
+  "Trips",
+  "Concerts",
 ] as const;
 
 export type EventCategory = (typeof EVENT_CATEGORIES)[number];
