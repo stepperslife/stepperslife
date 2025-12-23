@@ -7,9 +7,13 @@ import { ReactNode, useMemo, useCallback, useState, useEffect } from "react";
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!;
 
 // Auth hook that fetches Convex token from our API
+// IMPORTANT: isLoading is set to false initially so public queries work immediately
+// while auth is being resolved in the background
 function useAuthFromToken() {
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Start with isLoading: false so queries work immediately
+  // Auth will be resolved in the background
+  const [isLoading, setIsLoading] = useState(false);
 
   // Fetch token on mount and when session changes
   useEffect(() => {
@@ -27,8 +31,6 @@ function useAuthFromToken() {
       } catch (error) {
         console.error("[ConvexAuth] Error fetching token:", error);
         setToken(null);
-      } finally {
-        setIsLoading(false);
       }
     };
 

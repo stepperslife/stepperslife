@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SteppersLife Video Course System Plan</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #8b5cf6;
+            --accent-light: #a78bfa;
+            --success: #10b981;
+            --border: #475569;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+            color: var(--accent-light);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .decisions {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .decisions strong {
+            color: var(--accent-light);
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+        }
+
+        code {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            color: #e879f9;
+        }
+
+        pre code {
+            color: var(--text-secondary);
+        }
+
+        .comment {
+            color: #6b7280;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .highlight {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .checkbox-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checkbox-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .checkbox-list li::before {
+            content: "☐";
+            color: var(--accent);
+            font-size: 1.25rem;
+        }
+
+        .section-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+        }
+
+        .prompt-box {
+            background: #1a1a2e;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-purple {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-light);
+        }
+
+        .badge-green {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: var(--border);
+            margin: 2rem 0;
+        }
+
+        .toc {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5);
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+            pre, .section-card, .decisions, .highlight {
+                background: #f5f5f5;
+                border-color: #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video Class System Integration Plan</h1>
+        <p style="font-size: 1.25rem; color: var(--text-primary);">SteppersLife - Skool.com Alternative</p>
+
+        <div class="decisions">
+            <p><strong>Confirmed Decisions:</strong></p>
+            <ul style="margin-bottom: 0;">
+                <li><strong>Video Hosting:</strong> Native upload via Mux (professional streaming)</li>
+                <li><strong>Architecture:</strong> Separate "Courses" section (distinct from in-person classes)</li>
+                <li><strong>Pricing:</strong> Both one-time purchases AND subscription memberships</li>
+                <li><strong>Scope:</strong> Tier 3 - Full courses with modules and progress tracking</li>
+            </ul>
+        </div>
+
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+                <li><a href="#current-state">Current State Analysis</a></li>
+                <li><a href="#tier3-schema">Tier 3: Database Schema</a></li>
+                <li><a href="#mux">Mux Integration</a></li>
+                <li><a href="#convex">Convex Functions</a></li>
+                <li><a href="#components">UI Components</a></li>
+                <li><a href="#pages">Pages</a></li>
+                <li><a href="#comparison">Skool.com Comparison</a></li>
+                <li><a href="#pricing">Mux Pricing</a></li>
+                <li><a href="#tier4">Tier 4: Future Phase</a></li>
+                <li><a href="#roadmap">Implementation Roadmap</a></li>
+                <li><a href="#prompt">Implementation Prompt</a></li>
+            </ol>
+        </div>
+
+        <h2 id="current-state">Current State Analysis</h2>
+
+        <div class="section-card">
+            <h3>What Already Exists</h3>
+            <ul>
+                <li><strong>CLASS event type</strong> with classDays, classLevel (Beginner/Intermediate/Advanced)</li>
+                <li><strong>Categories:</strong> Steppin, Line Dancing, Walking</li>
+                <li><strong>Image upload</strong> infrastructure (Convex storage, compression, drag & drop)</li>
+                <li><strong>Instructor (Organizer) role</strong> with dashboard and management</li>
+                <li><strong>Payment system:</strong> Stripe Connect, PayPal, credits system</li>
+                <li><strong>Subscription model:</strong> Tiered plans already built for restaurants (reusable pattern)</li>
+                <li><strong>Enrollment/ticketing</strong> for classes</li>
+            </ul>
+        </div>
+
+        <div class="section-card">
+            <h3>What's Missing for Video Classes</h3>
+            <ul>
+                <li>Video upload/storage infrastructure</li>
+                <li>Video player component</li>
+                <li>Course/curriculum structure (modules, lessons)</li>
+                <li>Progress tracking for students</li>
+                <li>Video-specific schema fields</li>
+                <li>Subscription/membership for content access</li>
+            </ul>
+        </div>
+
+        <h2 id="tier3-schema">Tier 3: Database Schema</h2>
+        <p>Add these 7 new tables to <code>convex/schema.ts</code>:</p>
+
+        <h3>1. Video Courses - Main course container</h3>
+        <pre><code>videoCourses: defineTable({
+  instructorId: v.id("users"),
+  title: v.string(),
+  slug: v.string(),                              <span class="comment">// URL-friendly slug</span>
+  description: v.string(),
+  shortDescription: v.optional(v.string()),      <span class="comment">// For cards</span>
+  category: v.union(v.literal("Steppin"), v.literal("Line Dancing"), v.literal("Walking")),
+  level: v.union(v.literal("Beginner"), v.literal("Intermediate"), v.literal("Advanced")),
+  thumbnailStorageId: v.optional(v.id("_storage")),
+  thumbnailUrl: v.optional(v.string()),
+  promoVideoUrl: v.optional(v.string()),         <span class="comment">// Free preview video</span>
+
+  <span class="comment">// Pricing</span>
+  priceCents: v.number(),                        <span class="comment">// 0 = free, else one-time price</span>
+  hasSubscription: v.boolean(),                  <span class="comment">// Whether subscription access available</span>
+
+  <span class="comment">// Status</span>
+  status: v.union(v.literal("draft"), v.literal("published"), v.literal("archived")),
+
+  <span class="comment">// Computed/cached</span>
+  totalDurationSeconds: v.optional(v.number()),
+  lessonCount: v.optional(v.number()),
+  enrollmentCount: v.optional(v.number()),
+  averageRating: v.optional(v.number()),
+
+  createdAt: v.number(),
+  updatedAt: v.number(),
+  publishedAt: v.optional(v.number()),
+})
+.index("by_instructor", ["instructorId"])
+.index("by_slug", ["slug"])
+.index("by_category", ["category"])
+.index("by_status", ["status"])</code></pre>
+
+        <h3>2. Course Modules - Chapter groupings</h3>
+        <pre><code>courseModules: defineTable({
+  courseId: v.id("videoCourses"),
+  title: v.string(),
+  description: v.optional(v.string()),
+  order: v.number(),
+  createdAt: v.number(),
+})
+.index("by_course", ["courseId"])</code></pre>
+
+        <h3>3. Video Lessons - Individual videos</h3>
+        <pre><code>videoLessons: defineTable({
+  courseId: v.id("videoCourses"),
+  moduleId: v.optional(v.id("courseModules")),
+  title: v.string(),
+  description: v.optional(v.string()),
+
+  <span class="comment">// Video data (Mux)</span>
+  muxAssetId: v.optional(v.string()),
+  muxPlaybackId: v.optional(v.string()),
+  muxUploadId: v.optional(v.string()),           <span class="comment">// For tracking upload</span>
+  processingStatus: v.union(
+    v.literal("waiting"),
+    v.literal("processing"),
+    v.literal("ready"),
+    v.literal("error")
+  ),
+
+  <span class="comment">// Metadata</span>
+  durationSeconds: v.optional(v.number()),
+  thumbnailUrl: v.optional(v.string()),          <span class="comment">// Auto-generated by Mux</span>
+
+  <span class="comment">// Settings</span>
+  order: v.number(),
+  isFreePreview: v.boolean(),                    <span class="comment">// Free to watch without purchase</span>
+  isPublished: v.boolean(),
+
+  createdAt: v.number(),
+  updatedAt: v.number(),
+})
+.index("by_course", ["courseId"])
+.index("by_module", ["moduleId"])</code></pre>
+
+        <h3>4. Course Enrollments - Purchase records</h3>
+        <pre><code>courseEnrollments: defineTable({
+  userId: v.id("users"),
+  courseId: v.id("videoCourses"),
+
+  <span class="comment">// Access type</span>
+  accessType: v.union(
+    v.literal("purchase"),                       <span class="comment">// One-time buy</span>
+    v.literal("subscription"),                   <span class="comment">// Via membership</span>
+    v.literal("free")                            <span class="comment">// Free course</span>
+  ),
+
+  <span class="comment">// Payment</span>
+  pricePaidCents: v.optional(v.number()),
+  stripePaymentIntentId: v.optional(v.string()),
+
+  <span class="comment">// Status</span>
+  status: v.union(
+    v.literal("active"),
+    v.literal("expired"),
+    v.literal("refunded")
+  ),
+
+  enrolledAt: v.number(),
+  expiresAt: v.optional(v.number()),             <span class="comment">// For subscription access</span>
+})
+.index("by_user", ["userId"])
+.index("by_course", ["courseId"])
+.index("by_user_course", ["userId", "courseId"])</code></pre>
+
+        <h3>5. Student Progress - Video watch tracking</h3>
+        <pre><code>studentProgress: defineTable({
+  userId: v.id("users"),
+  courseId: v.id("videoCourses"),
+  lessonId: v.id("videoLessons"),
+
+  watchedSeconds: v.number(),                    <span class="comment">// Current position</span>
+  totalSeconds: v.number(),                      <span class="comment">// Video duration</span>
+  percentComplete: v.number(),                   <span class="comment">// 0-100</span>
+
+  isCompleted: v.boolean(),
+  completedAt: v.optional(v.number()),
+  lastWatchedAt: v.number(),
+})
+.index("by_user_course", ["userId", "courseId"])
+.index("by_user_lesson", ["userId", "lessonId"])</code></pre>
+
+        <h3>6. Instructor Memberships - Subscription plans</h3>
+        <pre><code>instructorMemberships: defineTable({
+  instructorId: v.id("users"),
+  name: v.string(),                              <span class="comment">// "Monthly Access", "Annual Pass"</span>
+  description: v.string(),
+
+  priceCents: v.number(),
+  interval: v.union(
+    v.literal("monthly"),
+    v.literal("yearly"),
+    v.literal("lifetime")
+  ),
+
+  <span class="comment">// What's included</span>
+  includesAllCourses: v.boolean(),
+  includedCourseIds: v.optional(v.array(v.id("videoCourses"))),
+
+  <span class="comment">// Stripe</span>
+  stripePriceId: v.optional(v.string()),
+  stripeProductId: v.optional(v.string()),
+
+  isActive: v.boolean(),
+  createdAt: v.number(),
+})
+.index("by_instructor", ["instructorId"])</code></pre>
+
+        <h3>7. Student Membership Subscriptions</h3>
+        <pre><code>studentMembershipSubscriptions: defineTable({
+  userId: v.id("users"),
+  membershipId: v.id("instructorMemberships"),
+  instructorId: v.id("users"),
+
+  status: v.union(
+    v.literal("active"),
+    v.literal("past_due"),
+    v.literal("cancelled"),
+    v.literal("expired")
+  ),
+
+  stripeSubscriptionId: v.optional(v.string()),
+  currentPeriodStart: v.number(),
+  currentPeriodEnd: v.number(),
+  cancelledAt: v.optional(v.number()),
+
+  createdAt: v.number(),
+})
+.index("by_user", ["userId"])
+.index("by_instructor", ["instructorId"])</code></pre>
+
+        <h2 id="mux">Mux Integration</h2>
+
+        <div class="section-card">
+            <h3>Install Dependencies</h3>
+            <pre><code>npm install @mux/mux-node @mux/mux-player-react</code></pre>
+
+            <h3>Environment Variables</h3>
+            <pre><code>MUX_TOKEN_ID=xxx
+MUX_TOKEN_SECRET=xxx
+MUX_WEBHOOK_SECRET=xxx</code></pre>
+
+            <h3>API Routes to Create</h3>
+            <ul>
+                <li><code>src/app/api/mux/upload-url/route.ts</code> - Generate direct upload URL</li>
+                <li><code>src/app/api/mux/webhook/route.ts</code> - Handle Mux webhooks (video ready, etc.)</li>
+            </ul>
+        </div>
+
+        <h2 id="convex">Convex Functions</h2>
+
+        <div class="section-card">
+            <h3>Queries (convex/videoCourses/)</h3>
+            <ul>
+                <li><code>getPublishedCourses</code> - Public catalog with filters</li>
+                <li><code>getCourseBySlug</code> - Single course details</li>
+                <li><code>getCourseWithLessons</code> - Full course curriculum</li>
+                <li><code>getInstructorCourses</code> - Instructor's courses</li>
+                <li><code>getEnrolledCourses</code> - Student's purchased courses</li>
+                <li><code>getCourseProgress</code> - Student progress for a course</li>
+            </ul>
+
+            <h3>Mutations (convex/videoCourses/)</h3>
+            <ul>
+                <li><code>createCourse</code> - New course (draft)</li>
+                <li><code>updateCourse</code> - Edit course details</li>
+                <li><code>publishCourse</code> - Make live</li>
+                <li><code>archiveCourse</code> - Hide from catalog</li>
+            </ul>
+
+            <h3>Mutations (convex/videoLessons/)</h3>
+            <ul>
+                <li><code>createLesson</code> - Add lesson to course</li>
+                <li><code>updateLesson</code> - Edit lesson details</li>
+                <li><code>reorderLessons</code> - Drag & drop reorder</li>
+                <li><code>deleteLesson</code> - Remove lesson</li>
+            </ul>
+
+            <h3>Mutations (convex/studentProgress/)</h3>
+            <ul>
+                <li><code>updateProgress</code> - Save watch position</li>
+                <li><code>markCompleted</code> - Mark lesson done</li>
+                <li><code>resetProgress</code> - Start over</li>
+            </ul>
+        </div>
+
+        <h2 id="components">UI Components</h2>
+
+        <div class="section-card">
+            <h3>Video Components</h3>
+            <ul>
+                <li><code>src/components/video/MuxPlayer.tsx</code> - Video player wrapper</li>
+                <li><code>src/components/video/MuxUploader.tsx</code> - Direct upload component</li>
+                <li><code>src/components/video/VideoProcessingStatus.tsx</code> - Upload progress</li>
+            </ul>
+
+            <h3>Course Components</h3>
+            <ul>
+                <li><code>src/components/courses/CourseCard.tsx</code> - Catalog card</li>
+                <li><code>src/components/courses/CourseForm.tsx</code> - Create/edit form</li>
+                <li><code>src/components/courses/ModuleList.tsx</code> - Chapter organizer</li>
+                <li><code>src/components/courses/LessonList.tsx</code> - Lesson list with drag/drop</li>
+                <li><code>src/components/courses/CurriculumEditor.tsx</code> - Full curriculum builder</li>
+                <li><code>src/components/courses/ProgressBar.tsx</code> - Completion progress</li>
+                <li><code>src/components/courses/EnrollButton.tsx</code> - Purchase/enroll CTA</li>
+            </ul>
+        </div>
+
+        <h2 id="pages">Pages</h2>
+
+        <div class="section-card">
+            <h3>Public Pages</h3>
+            <ul>
+                <li><code>src/app/courses/page.tsx</code> - Course catalog</li>
+                <li><code>src/app/courses/[slug]/page.tsx</code> - Course landing page</li>
+                <li><code>src/app/courses/[slug]/learn/page.tsx</code> - Video player + curriculum</li>
+                <li><code>src/app/courses/[slug]/learn/[lessonId]/page.tsx</code> - Specific lesson</li>
+            </ul>
+
+            <h3>Instructor Pages</h3>
+            <ul>
+                <li><code>src/app/organizer/courses/page.tsx</code> - Course management list</li>
+                <li><code>src/app/organizer/courses/create/page.tsx</code> - New course</li>
+                <li><code>src/app/organizer/courses/[courseId]/edit/page.tsx</code> - Edit course</li>
+                <li><code>src/app/organizer/courses/[courseId]/curriculum/page.tsx</code> - Manage lessons</li>
+                <li><code>src/app/organizer/courses/[courseId]/analytics/page.tsx</code> - Views, revenue</li>
+            </ul>
+
+            <h3>Student Pages</h3>
+            <ul>
+                <li><code>src/app/dashboard/courses/page.tsx</code> - My enrolled courses</li>
+                <li><code>src/app/dashboard/courses/[courseId]/page.tsx</code> - Course progress</li>
+                <li><code>src/app/dashboard/learning/page.tsx</code> - Continue learning</li>
+            </ul>
+        </div>
+
+        <h2 id="comparison">SteppersLife vs Skool.com</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Skool ($99/mo)</th>
+                    <th>SteppersLife (Built-in)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Video hosting</td>
+                    <td>Yes</td>
+                    <td>Yes (Mux)</td>
+                </tr>
+                <tr>
+                    <td>Course structure</td>
+                    <td>Yes</td>
+                    <td>Yes (modules/lessons)</td>
+                </tr>
+                <tr>
+                    <td>Progress tracking</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>One-time purchases</td>
+                    <td>No</td>
+                    <td><strong>Yes</strong></td>
+                </tr>
+                <tr>
+                    <td>Subscriptions</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>Community</td>
+                    <td>Yes</td>
+                    <td>Future (Tier 4)</td>
+                </tr>
+                <tr>
+                    <td>Gamification</td>
+                    <td>Yes</td>
+                    <td>Future (Tier 4)</td>
+                </tr>
+                <tr>
+                    <td>Dance-specific</td>
+                    <td>No</td>
+                    <td><strong>Yes (categories, levels)</strong></td>
+                </tr>
+                <tr>
+                    <td>Integrated with events</td>
+                    <td>No</td>
+                    <td><strong>Yes (same platform)</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="highlight">
+            <strong>Your advantage:</strong> Instructors can offer both in-person classes AND video courses on one platform, with integrated payments and student management.
+        </div>
+
+        <h2 id="pricing">Mux Pricing Estimate</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Usage</th>
+                    <th>Cost</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Video encoding</td>
+                    <td>$0.015/min</td>
+                    <td>10 hours of video = $9</td>
+                </tr>
+                <tr>
+                    <td>Video storage</td>
+                    <td>$0.007/GB/mo</td>
+                    <td>50GB = $3.50/mo</td>
+                </tr>
+                <tr>
+                    <td>Video delivery</td>
+                    <td>$0.005/min streamed</td>
+                    <td>1000 views of 10-min video = $50</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="highlight">
+            <p><strong>Startup estimate:</strong> $50-100/month with moderate usage</p>
+            <p style="margin-bottom: 0;"><strong>Scale:</strong> Costs grow with views, not uploads - good for growth</p>
+        </div>
+
+        <h2 id="tier4">Tier 4: Full Skool-like Platform (Future Phase)</h2>
+
+        <div class="section-card">
+            <h3>Community & Engagement</h3>
+            <ul>
+                <li>Discussion boards per course</li>
+                <li>Q&A on individual video lessons</li>
+                <li>Community post feed (announcements, polls, challenges)</li>
+                <li>Comment threading and replies</li>
+                <li>Like/react functionality</li>
+            </ul>
+
+            <h3>Gamification</h3>
+            <ul>
+                <li>Achievement badges (first course, streaks, milestones)</li>
+                <li>Learning streaks with daily tracking</li>
+                <li>Points system and leaderboards</li>
+                <li>Weekly activity heatmaps</li>
+            </ul>
+
+            <h3>Certificates</h3>
+            <ul>
+                <li>Auto-generated PDF certificates on course completion</li>
+                <li>Unique certificate numbers for verification</li>
+                <li>Shareable links</li>
+            </ul>
+
+            <h3>Instructor Profiles</h3>
+            <ul>
+                <li>Rich bio with specialties and credentials</li>
+                <li>Social media links</li>
+                <li>Intro video</li>
+                <li>Verified badge for established instructors</li>
+                <li>Total students/courses/ratings stats</li>
+            </ul>
+
+            <h3>Reviews & Ratings</h3>
+            <ul>
+                <li>Star ratings (1-5)</li>
+                <li>Written reviews with titles</li>
+                <li>Instructor reply capability</li>
+                <li>Moderation for inappropriate content</li>
+            </ul>
+
+            <h3>Referral/Affiliate</h3>
+            <ul>
+                <li>Custom referral codes per instructor</li>
+                <li>Configurable discount for referred users</li>
+                <li>Commission tracking and payouts</li>
+                <li>Conversion analytics</li>
+            </ul>
+        </div>
+
+        <h2 id="roadmap">Implementation Roadmap</h2>
+
+        <div class="section-card">
+            <h3>Phase 1: Foundation</h3>
+            <ul class="checkbox-list">
+                <li>Add Tier 3 schema to convex/schema.ts</li>
+                <li>Set up Mux account and environment variables</li>
+                <li>Create upload URL and webhook API routes</li>
+                <li>Build MuxUploader component</li>
+                <li>Build MuxPlayer component</li>
+            </ul>
+
+            <h3>Phase 2: Course CRUD</h3>
+            <ul class="checkbox-list">
+                <li>Create videoCourses queries and mutations</li>
+                <li>Create courseModules queries and mutations</li>
+                <li>Create videoLessons queries and mutations</li>
+                <li>Build CourseForm component</li>
+                <li>Build CurriculumEditor component</li>
+                <li>Create instructor course pages</li>
+            </ul>
+
+            <h3>Phase 3: Public Experience</h3>
+            <ul class="checkbox-list">
+                <li>Build CourseCard component</li>
+                <li>Create course catalog page with filters</li>
+                <li>Create course detail/landing page</li>
+                <li>Build video player page with curriculum sidebar</li>
+                <li>Add progress tracking mutations</li>
+            </ul>
+
+            <h3>Phase 4: Payments</h3>
+            <ul class="checkbox-list">
+                <li>Create courseEnrollments queries/mutations</li>
+                <li>Integrate Stripe checkout for course purchases</li>
+                <li>Build instructor membership system</li>
+                <li>Create subscription checkout flow</li>
+                <li>Add enrollment verification to video access</li>
+            </ul>
+
+            <h3>Phase 5: Student Dashboard</h3>
+            <ul class="checkbox-list">
+                <li>Create student progress queries</li>
+                <li>Build "My Courses" page</li>
+                <li>Build "Continue Learning" widget</li>
+                <li>Add completion percentage tracking</li>
+            </ul>
+
+            <h3>Phase 6: Polish & Launch</h3>
+            <ul class="checkbox-list">
+                <li>Navigation updates (add Courses to header)</li>
+                <li>Mobile responsiveness testing</li>
+                <li>Error handling and edge cases</li>
+                <li>Playwright tests for critical flows</li>
+            </ul>
+        </div>
+
+        <h2 id="prompt">Implementation Prompt</h2>
+        <p>Copy and paste this prompt when you're ready to build:</p>
+
+        <div class="prompt-box">
+            <pre><code>I want to implement a video course system for SteppersLife similar to Skool.com.
+
+Here are my confirmed decisions:
+- Video Hosting: Native upload via Mux (professional streaming)
+- Architecture: Separate "Courses" section (distinct from in-person classes)
+- Pricing: Both one-time purchases AND subscription memberships
+- Scope: Tier 3 - Full courses with modules and progress tracking
+
+Implementation order:
+1. First, add the schema tables to convex/schema.ts (videoCourses, courseModules,
+   videoLessons, courseEnrollments, studentProgress, instructorMemberships,
+   studentMembershipSubscriptions)
+2. Then set up Mux integration with API routes for upload URL and webhooks
+3. Create Convex queries and mutations for all course operations
+4. Build UI components (MuxPlayer, MuxUploader, CourseCard, CourseForm, CurriculumEditor)
+5. Create pages (course catalog, course details, video player, instructor dashboard,
+   student dashboard)
+6. Integrate Stripe for course purchases and subscription memberships
+7. Add progress tracking and "continue learning" functionality
+
+The schema for these tables is documented in the plan file at:
+/Users/irawatkins/.claude/plans/rippling-waddling-owl.md
+
+Start with Phase 1: Add all the Tier 3 schema tables to convex/schema.ts.
+Follow the exact field definitions in the plan.</code></pre>
+        </div>
+
+        <hr>
+
+        <h2>Quick Reference Card</h2>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td><strong>Plan Location</strong></td>
+                    <td><code>/Users/irawatkins/.claude/plans/rippling-waddling-owl.md</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Mux Sign Up</strong></td>
+                    <td><a href="https://dashboard.mux.com/signup" style="color: var(--accent-light);">https://dashboard.mux.com/signup</a></td>
+                </tr>
+                <tr>
+                    <td><strong>Mux Docs</strong></td>
+                    <td><a href="https://docs.mux.com/guides/video/upload-files-directly" style="color: var(--accent-light);">https://docs.mux.com/guides/video/upload-files-directly</a></td>
+                </tr>
+                <tr>
+                    <td><strong>New Tables</strong></td>
+                    <td>7 (Tier 3) + 11 (Tier 4) = 18 total</td>
+                </tr>
+                <tr>
+                    <td><strong>New Pages</strong></td>
+                    <td>~15 (Tier 3) + ~10 (Tier 4) = ~25 total</td>
+                </tr>
+                <tr>
+                    <td><strong>New Components</strong></td>
+                    <td>~15 (Tier 3) + ~15 (Tier 4) = ~30 total</td>
+                </tr>
+                <tr>
+                    <td><strong>Estimated Cost</strong></td>
+                    <td>$50-100/mo Mux at launch</td>
+                </tr>
+                <tr>
+                    <td><strong>Competitor</strong></td>
+                    <td>Skool.com ($99/mo per community)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr>
+
+        <p style="text-align: center; color: var(--text-secondary);">
+            <strong>Generated:</strong> December 2024 | <strong>Project:</strong> SteppersLife Video Course System | <strong>Version:</strong> 1.0
+        </p>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">Print / Save PDF</button>
+</body>
+</html>
