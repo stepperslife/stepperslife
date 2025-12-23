@@ -8,6 +8,7 @@ import { EventsGrid } from "@/components/home/EventsGrid";
 import { RestaurantsShowcase } from "@/components/home/RestaurantsShowcase";
 import { ClassesSpotlight } from "@/components/home/ClassesSpotlight";
 import { ProductsSection } from "@/components/homepage/ProductsSection";
+import { TodaysEventsCard } from "@/components/home/TodaysEventsCard";
 
 // Initialize Convex client for server-side data fetching
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!;
@@ -62,6 +63,11 @@ export default async function HomePage() {
       <main className="min-h-screen bg-background">
         {/* Hero Section - Main Landing */}
         <HeroSection />
+
+        {/* Staff/Organizer Quick Access - Today's Events to Scan */}
+        <div className="container mx-auto px-4 pt-8">
+          <TodaysEventsCard />
+        </div>
 
         {/* 1. Events Section - /events */}
         <Suspense fallback={<SectionSkeleton title="Upcoming Events" />}>

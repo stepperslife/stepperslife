@@ -279,3 +279,114 @@ export const getMyScannableEvents = query({
       });
   },
 });
+
+/**
+ * Get events happening TODAY that current user can scan for
+ * Used for homepage quick access and FAB badge count
+ */
+export const getTodaysScannableEvents = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      return [];
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
+
+    if (!user) return [];
+
+    // Calculate today's date range (midnight to midnight in local time)
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const todayEnd = todayStart + 24 * 60 * 60 * 1000; // 24 hours later
+
+    const eventIds: Set<string> = new Set();
+
+    // If admin, can scan all events
+    if (user.role === "admin") {
+      const allEvents = await ctx.db
+        .query("events")
+        .withIndex("by_status", (q) => q.eq("status", "PUBLISHED"))
+        .collect();
+      allEvents
+        .filter((e) => e.startDate && e.startDate >= todayStart && e.startDate < todayEnd)
+        .forEach((e) => eventIds.add(e._id));
+    } else {
+      // Get events where user is organizer
+      const organizedEvents = await ctx.db
+        .query("events")
+        .withIndex("by_organizer", (q) => q.eq("organizerId", user._id))
+        .filter((q) => q.eq(q.field("status"), "PUBLISHED"))
+        .collect();
+      organizedEvents
+        .filter((e) => e.startDate && e.startDate >= todayStart && e.startDate < todayEnd)
+        .forEach((e) => eventIds.add(e._id));
+
+      // Get events where user is staff with scanning permission
+      const staffRecords = await ctx.db
+        .query("eventStaff")
+        .withIndex("by_staff_user", (q) => q.eq("staffUserId", user._id))
+        .filter((q) => q.eq(q.field("isActive"), true))
+        .collect();
+
+      for (const staff of staffRecords) {
+        const canScan =
+          staff.role === "STAFF" ||
+          (staff.role === "TEAM_MEMBERS" && staff.canScan === true) ||
+          (staff.role === "ASSOCIATES" && staff.canScan === true);
+
+        if (canScan) {
+          if (staff.eventId) {
+            // Check if this specific event is today
+            const event = await ctx.db.get(staff.eventId);
+            if (event && event.startDate && event.startDate >= todayStart && event.startDate < todayEnd && event.status === "PUBLISHED") {
+              eventIds.add(staff.eventId);
+            }
+          } else {
+            // Staff for all events under this organizer - get today's events
+            const organizerEvents = await ctx.db
+              .query("events")
+              .withIndex("by_organizer", (q) => q.eq("organizerId", staff.organizerId))
+              .filter((q) => q.eq(q.field("status"), "PUBLISHED"))
+              .collect();
+            organizerEvents
+              .filter((e) => e.startDate && e.startDate >= todayStart && e.startDate < todayEnd)
+              .forEach((e) => eventIds.add(e._id));
+          }
+        }
+      }
+    }
+
+    // Get full event details
+    const events = await Promise.all(
+      Array.from(eventIds).map(async (eventId) => {
+        const event: any = await ctx.db.get(eventId as any);
+        if (!event || !("name" in event)) return null;
+
+        return {
+          _id: event._id,
+          name: event.name,
+          startDate: event.startDate,
+          endDate: event.endDate,
+          location: event.location,
+          venue: event.venue,
+          imageUrl: event.imageUrl,
+          slug: event.slug,
+        };
+      })
+    );
+
+    return events
+      .filter((e) => e !== null)
+      .sort((a, b) => {
+        if (!a.startDate) return 1;
+        if (!b.startDate) return -1;
+        return a.startDate - b.startDate;
+      });
+  },
+});
