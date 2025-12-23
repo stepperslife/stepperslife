@@ -191,10 +191,10 @@ export default function RestaurateurApplyClient() {
       });
 
       setSubmitted(true);
-      toast.success("Application submitted successfully!");
+      toast.success("Restaurant added successfully!");
     } catch (error) {
       console.error("Submission error:", error);
-      toast.error("Failed to submit application. Please try again.");
+      toast.error("Failed to add restaurant. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -226,10 +226,10 @@ export default function RestaurateurApplyClient() {
                 <LogIn className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
-                Sign In to Register Your Restaurant
+                Sign In to Add Your Restaurant
               </h1>
               <p className="text-muted-foreground mb-8">
-                Create an account or sign in to submit your restaurant application and join the SteppersLife network.
+                Create an account or sign in to add your restaurant to the SteppersLife network. Basic listing is free!
               </p>
               <Link
                 href={`/login?redirect=${encodeURIComponent("/restaurateur/apply")}`}
@@ -248,7 +248,7 @@ export default function RestaurateurApplyClient() {
     );
   }
 
-  // Application submitted successfully
+  // Restaurant created successfully
   if (submitted) {
     return (
       <>
@@ -261,30 +261,39 @@ export default function RestaurateurApplyClient() {
                 <CheckCircle className="w-8 h-8 text-success" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">
-                Application Submitted!
+                Restaurant Added!
               </h1>
               <p className="text-muted-foreground mb-6">
-                Thank you for applying to join the SteppersLife restaurant network.
-                We'll review your application and get back to you within 48 hours.
+                Your restaurant is now listed on SteppersLife.
+                Head to your dashboard to add your menu and start receiving orders.
               </p>
               <div className="bg-muted/50 rounded-lg p-4 mb-6">
                 <p className="text-sm text-foreground">
-                  <strong>What's Next?</strong>
+                  <strong>Get Started</strong>
                 </p>
                 <ul className="text-sm text-muted-foreground mt-2 space-y-1 text-left">
-                  <li>• We'll review your application</li>
-                  <li>• A team member may reach out for more info</li>
-                  <li>• Once approved, you can set up your menu</li>
+                  <li>• Add your menu items (paid feature)</li>
+                  <li>• Set your operating hours</li>
+                  <li>• Upload photos of your food</li>
                   <li>• Start receiving orders!</li>
                 </ul>
               </div>
-              <button
-                type="button"
-                onClick={() => router.push("/restaurants")}
-                className="w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
-              >
-                Browse Restaurants
-              </button>
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => router.push("/restaurateur/dashboard")}
+                  className="w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+                >
+                  Go to Dashboard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push("/restaurants")}
+                  className="w-full px-6 py-3 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted/80 transition-colors"
+                >
+                  View Restaurant Listings
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -305,13 +314,13 @@ export default function RestaurateurApplyClient() {
             <div className="max-w-2xl">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4">
                 <ChefHat className="h-4 w-4" />
-                Restaurant Application
+                Free Restaurant Listing
               </span>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 Add Your Restaurant
               </h1>
               <p className="text-white/90">
-                Join our network and reach thousands of customers in the stepping community.
+                List your restaurant for free and reach thousands of customers in the stepping community.
               </p>
             </div>
           </div>
@@ -625,12 +634,12 @@ export default function RestaurateurApplyClient() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Submitting...
+                    Adding Restaurant...
                   </>
                 ) : (
                   <>
                     <ChefHat className="w-5 h-5" />
-                    Submit Application
+                    Add Restaurant
                   </>
                 )}
               </button>

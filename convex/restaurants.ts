@@ -383,7 +383,7 @@ export const apply = mutation({
         operatingHours: args.hoursOfOperation,
         acceptingOrders: false,
         estimatedPickupTime: args.estimatedPickupTime || 30,
-        isActive: false, // Pending approval
+        isActive: true, // Auto-approved - listing is free
         // Subscription: Selected plan is auto-activated
         subscriptionTier: subscriptionTier,
         subscriptionStatus: "ACTIVE",
