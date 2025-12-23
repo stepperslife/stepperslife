@@ -46,19 +46,23 @@ export default function VendorProductsPage() {
 
   // Mutations
   const deleteProduct = useMutation(api.products.mutations.deleteVendorProduct);
-  const duplicateProduct = useMutation(api.products.mutations.duplicateProduct);
+  const duplicateProduct = useMutation(api.products.mutations.duplicateVendorProduct);
 
   // Duplicate state
   const [duplicatingId, setDuplicatingId] = useState<Id<"products"> | null>(null);
 
   const handleDuplicate = async (productId: Id<"products">) => {
+    if (!vendor?._id) {
+      toast.error("Vendor not found");
+      return;
+    }
     setDuplicatingId(productId);
     try {
-      await duplicateProduct({ productId });
+      await duplicateProduct({ productId, vendorId: vendor._id });
       toast.success("Product duplicated! It's now in draft status.");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Duplicate error:", error);
-      toast.error("Failed to duplicate product");
+      toast.error(error?.message || "Failed to duplicate product");
     } finally {
       setDuplicatingId(null);
     }

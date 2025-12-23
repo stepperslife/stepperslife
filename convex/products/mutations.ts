@@ -270,12 +270,13 @@ export const duplicateProduct = mutation({
     }
 
     // Create a duplicate with modified name and SKU
+    // Preserve vendorId and vendorName if this is a vendor product
     const duplicatedProductId = await ctx.db.insert("products", {
       name: `${product.name} (Copy)`,
       description: product.description,
       price: product.price,
       compareAtPrice: product.compareAtPrice,
-      sku: product.sku ? `${product.sku}-COPY` : undefined,
+      sku: product.sku ? `${product.sku}-COPY-${Date.now()}` : undefined,
       inventoryQuantity: product.inventoryQuantity,
       trackInventory: product.trackInventory,
       allowBackorder: product.allowBackorder,
@@ -289,8 +290,88 @@ export const duplicateProduct = mutation({
       weight: product.weight,
       shippingPrice: product.shippingPrice,
       status: "DRAFT", // Always create duplicates as drafts
+      // Preserve vendor association if exists
+      vendorId: product.vendorId,
+      vendorName: product.vendorName,
       createdBy: user._id,
       createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    // Update vendor product count if this is a vendor product
+    if (product.vendorId) {
+      const vendor = await ctx.db.get(product.vendorId);
+      if (vendor) {
+        await ctx.db.patch(product.vendorId, {
+          totalProducts: (vendor.totalProducts || 0) + 1,
+          updatedAt: Date.now(),
+        });
+      }
+    }
+
+    return duplicatedProductId;
+  },
+});
+
+// Duplicate a vendor product (with proper ownership verification)
+export const duplicateVendorProduct = mutation({
+  args: {
+    productId: v.id("products"),
+    vendorId: v.id("vendors"),
+  },
+  handler: async (ctx, args) => {
+    // Get the original product
+    const product = await ctx.db.get(args.productId);
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    // Verify product belongs to this vendor
+    if (product.vendorId?.toString() !== args.vendorId.toString()) {
+      throw new Error("You can only duplicate your own products");
+    }
+
+    // Get vendor
+    const vendor = await ctx.db.get(args.vendorId);
+    if (!vendor) {
+      throw new Error("Vendor not found");
+    }
+
+    // Check vendor is approved and active
+    if (vendor.status !== "APPROVED" || !vendor.isActive) {
+      throw new Error("Vendor account is not active");
+    }
+
+    // Create a duplicate with modified name and SKU
+    const duplicatedProductId = await ctx.db.insert("products", {
+      name: `${product.name} (Copy)`,
+      description: product.description,
+      price: product.price,
+      compareAtPrice: product.compareAtPrice,
+      sku: product.sku ? `${product.sku}-COPY-${Date.now()}` : undefined,
+      inventoryQuantity: product.inventoryQuantity,
+      trackInventory: product.trackInventory,
+      allowBackorder: product.allowBackorder,
+      category: product.category,
+      tags: product.tags,
+      images: product.images,
+      primaryImage: product.primaryImage,
+      hasVariants: product.hasVariants,
+      variants: product.variants,
+      requiresShipping: product.requiresShipping,
+      weight: product.weight,
+      shippingPrice: product.shippingPrice,
+      status: "DRAFT", // Always create duplicates as drafts
+      vendorId: vendor._id,
+      vendorName: vendor.name,
+      createdBy: vendor.ownerId,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    // Update vendor product count
+    await ctx.db.patch(args.vendorId, {
+      totalProducts: (vendor.totalProducts || 0) + 1,
       updatedAt: Date.now(),
     });
 
