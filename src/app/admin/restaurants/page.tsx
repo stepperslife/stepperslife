@@ -19,7 +19,8 @@ import {
   Phone,
   ShoppingBag,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 type RestaurantStatus = "pending" | "active" | "suspended";
 
@@ -231,9 +232,7 @@ export default function AdminRestaurantsPage() {
 
       {/* Restaurants List */}
       {restaurants === undefined ? (
-        <div className="bg-card rounded-xl border border-border p-8 flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        </div>
+        <LoadingSpinner fullPage text="Loading restaurants..." />
       ) : filteredRestaurants && filteredRestaurants.length > 0 ? (
         <>
           {/* Mobile Card View */}

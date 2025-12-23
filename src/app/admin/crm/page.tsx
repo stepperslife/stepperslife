@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function CRMPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,16 +36,15 @@ export default function CRMPage() {
   const handleDelete = async (contactId: Id<"eventContacts">, name: string) => {
     try {
       await deleteContact({ contactId });
+      toast.success(`Contact "${name}" deleted`);
     } catch (error) {
-      alert(
-        "Failed to delete contact: " + (error instanceof Error ? error.message : "Unknown error")
-      );
+      toast.error("Failed to delete contact: " + (error instanceof Error ? error.message : "Unknown error"));
     }
   };
 
   const exportToCSV = () => {
     if (!contacts || contacts.length === 0) {
-      alert("No contacts to export");
+      toast.error("No contacts to export");
       return;
     }
 
@@ -72,11 +73,7 @@ export default function CRMPage() {
   };
 
   if (!contacts || !crmStats) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading contacts..." />;
   }
 
   return (

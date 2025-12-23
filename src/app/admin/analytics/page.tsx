@@ -14,6 +14,7 @@ import {
   PieChart,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function PlatformAnalyticsPage() {
   const analytics = useQuery(api.adminPanel.queries.getPlatformAnalytics, {});
@@ -21,11 +22,7 @@ export default function PlatformAnalyticsPage() {
   const allUsers = useQuery(api.adminPanel.queries.getAllUsers, {});
 
   if (!analytics || !allEvents || !allUsers) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin w-8 h-8 border-4 border-destructive border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading analytics..." />;
   }
 
   // Calculate top performing events

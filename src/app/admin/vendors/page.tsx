@@ -20,8 +20,9 @@ import {
   Crown,
   BadgeCheck,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { VendorTierBadge, getTierDisplayName, getTierCommission } from "@/components/marketplace/VendorTierBadge";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 type VendorStatus = "PENDING" | "APPROVED" | "SUSPENDED" | "REJECTED";
 type VendorTier = "BASIC" | "VERIFIED" | "PREMIUM";
@@ -247,9 +248,7 @@ export default function AdminVendorsPage() {
 
       {/* Vendors List */}
       {vendors === undefined ? (
-        <div className="bg-card rounded-xl border border-border p-8 flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        </div>
+        <LoadingSpinner fullPage text="Loading vendors..." />
       ) : filteredVendors && filteredVendors.length > 0 ? (
         <>
           {/* Mobile Card View */}

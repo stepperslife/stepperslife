@@ -31,7 +31,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { useState, useEffect } from "react";
 import { formatEventLocation } from "@/lib/location-format";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { TodayTicketPrompt } from "@/components/tickets/TodayTicketPrompt";

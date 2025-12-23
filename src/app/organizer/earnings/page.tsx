@@ -12,6 +12,7 @@ import {
   Download,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function EarningsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
@@ -23,14 +24,7 @@ export default function EarningsPage() {
 
   // Show loading while Convex queries are loading
   if (isLoading || currentUser === null) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading earnings...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading earnings..." />;
   }
 
   // Calculate earnings

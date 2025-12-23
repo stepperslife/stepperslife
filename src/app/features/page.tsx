@@ -90,12 +90,9 @@ export default function FeaturesPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Fetch real data from database
-  const upcomingEvents = useQuery(api.public.queries.getUpcomingEvents, { limit: 3 });
+  const upcomingEvents = useQuery(api.public.queries.getUpcomingEvents, { limit: 4 });
   const upcomingClasses = useQuery(api.public.queries.getPublishedClasses, { includePast: false });
-
-  // Get first event and class for the preview sections
-  const featuredEvent = upcomingEvents?.[0];
-  const featuredClass = upcomingClasses?.[0];
+  const restaurants = useQuery(api.restaurants.getAll, {});
 
   // Helper to get image URL from event/class
   const getImageUrl = (item: { imageUrl?: string; images?: string[] } | undefined) => {
@@ -138,7 +135,7 @@ export default function FeaturesPage() {
               className="object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent" />
           </motion.div>
         </AnimatePresence>
 
@@ -350,47 +347,60 @@ export default function FeaturesPage() {
 
               <div className="relative">
                 <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-4 overflow-hidden">
-                  {/* Event Image - Use real event if available */}
-                  <div className="relative h-48 rounded-xl overflow-hidden mb-4">
-                    <Image
-                      src={getImageUrl(featuredEvent) || "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=800&q=80"}
-                      alt={featuredEvent?.name || "Stepping event"}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <p className="text-white font-bold">{featuredEvent?.name || "Chicago Steppers Ball"}</p>
-                      <p className="text-white/80 text-sm">
-                        {featuredEvent?.eventDateLiteral || (featuredEvent?.startDate
-                          ? format(new Date(featuredEvent.startDate), "EEE, MMM d • h:mma")
-                          : "Sat, Jan 15 • 8PM")}
-                      </p>
-                    </div>
+                  {/* 4-Item Event Grid - Show real events */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {(upcomingEvents?.slice(0, 4) || []).map((event, index) => (
+                      <Link
+                        key={event._id || index}
+                        href={`/events/${event.slug || event._id}`}
+                        className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                      >
+                        <div className="relative h-32">
+                          <Image
+                            src={getImageUrl(event) || "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=400&q=80"}
+                            alt={event.name}
+                            fill
+                            className="object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                          <div className="absolute bottom-2 left-2 right-2">
+                            <p className="text-white font-semibold text-sm line-clamp-1">{event.name}</p>
+                          </div>
+                        </div>
+                        <div className="p-3">
+                          <p className="text-xs text-muted-foreground line-clamp-1">
+                            {event.eventDateLiteral || (event.startDate
+                              ? format(new Date(event.startDate), "EEE, MMM d • h:mma")
+                              : "Coming Soon")}
+                          </p>
+                          <p className="text-xs text-primary font-medium mt-1">
+                            {event.ticketsSold || 0} tickets sold
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                    {/* Fallback cards if no events */}
+                    {(!upcomingEvents || upcomingEvents.length === 0) && (
+                      <>
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="bg-card rounded-lg overflow-hidden shadow-md animate-pulse">
+                            <div className="h-32 bg-muted" />
+                            <div className="p-3 space-y-2">
+                              <div className="h-3 bg-muted rounded w-3/4" />
+                              <div className="h-3 bg-muted rounded w-1/2" />
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
                   </div>
-                  <div className="bg-card rounded-xl shadow-xl p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Total Sales</span>
-                      <TrendingUp className="w-4 h-4 text-success" />
-                    </div>
-                    <p className="text-3xl font-bold text-foreground">$12,450</p>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full w-3/4 bg-primary rounded-full"></div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{featuredEvent?.ticketsSold || 342}</p>
-                        <p className="text-xs text-muted-foreground">Tickets Sold</p>
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">12</p>
-                        <p className="text-xs text-muted-foreground">Staff</p>
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">89%</p>
-                        <p className="text-xs text-muted-foreground">Check-in Rate</p>
-                      </div>
-                    </div>
+                  <div className="mt-4 text-center">
+                    <Link
+                      href="/events"
+                      className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                    >
+                      View all events <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -407,51 +417,65 @@ export default function FeaturesPage() {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="order-2 lg:order-1">
                 <div className="bg-gradient-to-br from-warning/5 to-warning/10 rounded-2xl p-4 overflow-hidden">
-                  {/* Dance Class Image - Use real class if available */}
-                  <div className="relative h-48 rounded-xl overflow-hidden mb-4">
-                    <Image
-                      src={getImageUrl(featuredClass) || "https://images.unsplash.com/photo-1547153760-18fc86324498?w=800&q=80"}
-                      alt={featuredClass?.name || "Dance class"}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-3 left-3">
-                      <span className="bg-warning text-white px-2 py-1 rounded-full text-xs font-semibold">
-                        {featuredClass?.categories?.[0] || "Live Class"}
-                      </span>
-                    </div>
+                  {/* 4-Item Class Grid - Show real classes */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {(upcomingClasses?.slice(0, 4) || []).map((classItem, index) => (
+                      <Link
+                        key={classItem._id || index}
+                        href={`/classes/${classItem.slug || classItem._id}`}
+                        className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                      >
+                        <div className="relative h-32">
+                          <Image
+                            src={getImageUrl(classItem) || "https://images.unsplash.com/photo-1547153760-18fc86324498?w=400&q=80"}
+                            alt={classItem.name}
+                            fill
+                            className="object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                          <div className="absolute top-2 left-2">
+                            <span className="bg-warning text-white px-2 py-0.5 rounded-full text-xs font-semibold">
+                              {classItem.categories?.[0] || "Class"}
+                            </span>
+                          </div>
+                          <div className="absolute bottom-2 left-2 right-2">
+                            <p className="text-white font-semibold text-sm line-clamp-1">{classItem.name}</p>
+                          </div>
+                        </div>
+                        <div className="p-3">
+                          <p className="text-xs text-muted-foreground line-clamp-1">
+                            {classItem.classDays && classItem.classDays.length > 0
+                              ? `Every ${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][classItem.classDays[0]]}`
+                              : classItem.eventDateLiteral || "Ongoing"}
+                          </p>
+                          <p className="text-xs text-warning font-medium mt-1">
+                            {classItem.ticketsSold || 0}/{classItem.capacity || "∞"} enrolled
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                    {/* Fallback cards if no classes */}
+                    {(!upcomingClasses || upcomingClasses.length === 0) && (
+                      <>
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="bg-card rounded-lg overflow-hidden shadow-md animate-pulse">
+                            <div className="h-32 bg-muted" />
+                            <div className="p-3 space-y-2">
+                              <div className="h-3 bg-muted rounded w-3/4" />
+                              <div className="h-3 bg-muted rounded w-1/2" />
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
                   </div>
-                  <div className="bg-card rounded-xl shadow-xl p-6">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-16 h-16 bg-warning/10 rounded-full flex items-center justify-center">
-                        <BookOpen className="w-8 h-8 text-warning" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-foreground">{featuredClass?.name || "Beginner Steppin"}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {featuredClass?.classDays
-                            ? `Every ${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][featuredClass.classDays[0]]}`
-                            : "Every Tuesday 7PM"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Enrolled</span>
-                        <span className="font-semibold text-foreground">{featuredClass?.ticketsSold || 24}/{featuredClass?.capacity || 30}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Revenue</span>
-                        <span className="font-semibold text-success">$1,200/month</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Rating</span>
-                        <span className="font-semibold text-warning flex items-center gap-1">
-                          <Star className="w-4 h-4 fill-current" /> 4.9
-                        </span>
-                      </div>
-                    </div>
+                  <div className="mt-4 text-center">
+                    <Link
+                      href="/classes"
+                      className="text-sm text-warning hover:underline inline-flex items-center gap-1"
+                    >
+                      View all classes <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -574,48 +598,65 @@ export default function FeaturesPage() {
 
               <div className="relative">
                 <div className="bg-gradient-to-br from-success/5 to-success/10 rounded-2xl p-4 overflow-hidden">
-                  {/* Soul Food Image */}
-                  <div className="relative h-48 rounded-xl overflow-hidden mb-4">
-                    <Image
-                      src="https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=800&q=80"
-                      alt="Delicious fried chicken dinner"
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end">
-                      <div>
-                        <p className="text-white font-bold">Soul Kitchen</p>
-                        <p className="text-white/80 text-sm flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-current text-warning" /> 4.9
-                        </p>
-                      </div>
-                      <span className="bg-success text-white px-2 py-1 rounded-full text-xs font-semibold">Open Now</span>
-                    </div>
-                  </div>
-                  <div className="bg-card rounded-xl shadow-xl overflow-hidden">
-                    <div className="bg-success/10 p-4">
-                      <h4 className="font-bold text-foreground">Today&apos;s Orders</h4>
-                    </div>
-                    <div className="p-4 space-y-3">
-                      {[
-                        { item: "Fried Chicken Dinner", qty: 3, status: "Ready" },
-                        { item: "Mac & Cheese (Large)", qty: 2, status: "Preparing" },
-                        { item: "Sweet Tea (Gallon)", qty: 1, status: "Ready" },
-                      ].map((order, index) => (
-                        <div key={index} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                          <div>
-                            <p className="font-medium text-foreground">{order.item}</p>
-                            <p className="text-xs text-muted-foreground">Qty: {order.qty}</p>
+                  {/* 4-Item Restaurant Grid - Show real restaurants */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {(restaurants?.slice(0, 4) || []).map((restaurant, index) => (
+                      <Link
+                        key={restaurant._id || index}
+                        href={`/restaurants/${restaurant.slug || restaurant._id}`}
+                        className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                      >
+                        <div className="relative h-32">
+                          <Image
+                            src={restaurant.coverImageUrl || restaurant.imageUrl || "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400&q=80"}
+                            alt={restaurant.name}
+                            fill
+                            className="object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                          <div className="absolute top-2 right-2">
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                              restaurant.isAcceptingOrders ? "bg-success text-white" : "bg-muted text-muted-foreground"
+                            }`}>
+                              {restaurant.isAcceptingOrders ? "Open" : "Closed"}
+                            </span>
                           </div>
-                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            order.status === "Ready" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
-                          }`}>
-                            {order.status}
-                          </span>
+                          <div className="absolute bottom-2 left-2 right-2">
+                            <p className="text-white font-semibold text-sm line-clamp-1">{restaurant.name}</p>
+                          </div>
                         </div>
-                      ))}
-                    </div>
+                        <div className="p-3">
+                          <p className="text-xs text-muted-foreground line-clamp-1">
+                            {restaurant.cuisine || "Soul Food"}
+                          </p>
+                          <p className="text-xs text-success font-medium mt-1 flex items-center gap-1">
+                            <Star className="w-3 h-3 fill-current" /> 4.9
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                    {/* Fallback cards if no restaurants */}
+                    {(!restaurants || restaurants.length === 0) && (
+                      <>
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="bg-card rounded-lg overflow-hidden shadow-md animate-pulse">
+                            <div className="h-32 bg-muted" />
+                            <div className="p-3 space-y-2">
+                              <div className="h-3 bg-muted rounded w-3/4" />
+                              <div className="h-3 bg-muted rounded w-1/2" />
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                  <div className="mt-4 text-center">
+                    <Link
+                      href="/restaurants"
+                      className="text-sm text-success hover:underline inline-flex items-center gap-1"
+                    >
+                      View all restaurants <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </div>
                 </div>
               </div>

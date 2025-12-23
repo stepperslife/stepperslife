@@ -4,6 +4,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import {
@@ -103,6 +105,9 @@ export default function RestaurantsFeaturesPage() {
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -100]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.3]);
 
+  // Fetch real restaurants
+  const restaurants = useQuery(api.restaurants.getAll, {});
+
   const stats = [
     { value: "50+", label: "Active Restaurants", icon: ChefHat },
     { value: "$2M+", label: "Orders Processed", icon: DollarSign },
@@ -194,7 +199,7 @@ export default function RestaurantsFeaturesPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-black/10 to-transparent" />
         </div>
 
         <FloatingFoodIcons />
@@ -356,6 +361,90 @@ export default function RestaurantsFeaturesPage() {
           </div>
         </div>
       </section>
+
+      {/* Featured Restaurants Section */}
+      {restaurants && restaurants.length > 0 && (
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">Restaurants</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Discover amazing soul food from our partner restaurants
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {restaurants.slice(0, 4).map((restaurant, index) => (
+                <motion.div
+                  key={restaurant._id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="group"
+                >
+                  <Link href={`/restaurants/${restaurant.slug || restaurant._id}`}>
+                    <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border h-full">
+                      {/* Restaurant Image */}
+                      <div className="relative h-40 overflow-hidden">
+                        <Image
+                          src={restaurant.coverImageUrl || restaurant.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&q=80"}
+                          alt={restaurant.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        <div className="absolute top-3 right-3">
+                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                            restaurant.isAcceptingOrders ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"
+                          }`}>
+                            {restaurant.isAcceptingOrders ? "Open" : "Closed"}
+                          </span>
+                        </div>
+                        <div className="absolute bottom-3 left-3 right-3">
+                          <p className="text-white font-bold line-clamp-1">{restaurant.name}</p>
+                        </div>
+                      </div>
+
+                      {/* Restaurant Details */}
+                      <div className="p-4">
+                        <div className="flex items-center gap-2 text-muted-foreground text-sm mb-2">
+                          <MapPin className="w-4 h-4 flex-shrink-0" />
+                          <span className="line-clamp-1">{restaurant.cuisine || "Soul Food"}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-orange-500 font-semibold flex items-center gap-1">
+                            <Star className="w-4 h-4 fill-current" /> 4.9
+                          </span>
+                          <span className="text-sm text-muted-foreground">Order Now</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link
+                href="/restaurants"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-xl hover:opacity-90 transition-all"
+              >
+                View All Restaurants
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Features Grid */}
       <section className="py-24 bg-background">

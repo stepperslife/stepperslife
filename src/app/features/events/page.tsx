@@ -63,7 +63,7 @@ export default function EventsFeaturesPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-black/10 to-transparent" />
         </div>
 
         {/* Animated Background Elements */}
@@ -97,7 +97,7 @@ export default function EventsFeaturesPage() {
         </motion.div>
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
         <div className="container mx-auto px-4 relative z-10 text-center text-white">
           <motion.div

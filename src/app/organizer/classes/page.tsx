@@ -20,6 +20,8 @@ import { formatEventDate } from "@/lib/date-format";
 import { useState } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function OrganizerClassesPage() {
   const router = useRouter();
@@ -48,14 +50,7 @@ export default function OrganizerClassesPage() {
 
   // Show loading while queries are loading
   if (currentUser === undefined || classes === undefined) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading your classes...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading your classes..." />;
   }
 
   // Handle publish/unpublish
@@ -66,12 +61,14 @@ export default function OrganizerClassesPage() {
           eventId: classId,
           status: "DRAFT",
         });
+        toast.success("Class unpublished");
       } else {
         await publishEvent({ eventId: classId });
+        toast.success("Class published!");
       }
     } catch (error) {
       console.error("Failed to toggle publish status:", error);
-      alert(error instanceof Error ? error.message : "Failed to update class status");
+      toast.error(error instanceof Error ? error.message : "Failed to update class status");
     }
   };
 
@@ -81,9 +78,10 @@ export default function OrganizerClassesPage() {
     try {
       await deleteEvent({ eventId: classId });
       setShowDeleteConfirm(null);
+      toast.success("Class deleted");
     } catch (error) {
       console.error("Failed to delete class:", error);
-      alert(error instanceof Error ? error.message : "Failed to delete class");
+      toast.error(error instanceof Error ? error.message : "Failed to delete class");
     } finally {
       setDeletingId(null);
     }
@@ -123,7 +121,7 @@ export default function OrganizerClassesPage() {
       router.push(`/organizer/classes/${result.newEventId}/edit`);
     } catch (error) {
       console.error("Error duplicating class:", error);
-      alert(`Error duplicating class: ${error instanceof Error ? error.message : "Unknown error"}`);
+      toast.error(`Error duplicating class: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setIsDuplicating(false);
     }

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function OrganizerDashboardPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
@@ -43,11 +44,7 @@ export default function OrganizerDashboardPage() {
   const recentEvents = events?.slice(0, 5) || [];
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-muted flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading dashboard..." />;
   }
 
   return (

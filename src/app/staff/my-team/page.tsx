@@ -17,6 +17,8 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 type StaffRole = "STAFF" | "TEAM_MEMBERS";
 
@@ -98,25 +100,23 @@ export default function MyTeamPage() {
         staffId,
         autoAssignToNewEvents: !currentValue,
       });
+      toast.success("Auto-assign setting updated");
     } catch (err: any) {
-      alert(err.message || "Failed to toggle auto-assign");
+      toast.error(err.message || "Failed to toggle auto-assign");
     }
   };
 
   const handleRemoveSubSeller = async (staffId: Id<"eventStaff">) => {
     try {
       await removeStaff({ staffId });
+      toast.success("Sub-seller removed");
     } catch (err: any) {
-      alert(err.message || "Failed to remove sub-seller");
+      toast.error(err.message || "Failed to remove sub-seller");
     }
   };
 
   if (myGlobalSubSellers === undefined) {
-    return (
-      <div className="min-h-screen bg-muted flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading team..." />;
   }
 
   return (

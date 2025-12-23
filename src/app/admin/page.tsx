@@ -15,17 +15,14 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { format } from "date-fns";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function AdminDashboard() {
   const analytics = useQuery(api.adminPanel.queries.getPlatformAnalytics, {});
   const recentActivity = useQuery(api.adminPanel.queries.getRecentActivity, {});
 
   if (!analytics || !recentActivity) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading dashboard..." />;
   }
 
   const stats = [

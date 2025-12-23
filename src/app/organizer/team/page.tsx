@@ -16,6 +16,8 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 type StaffRole = "TEAM_MEMBERS" | "STAFF";
 
@@ -89,25 +91,23 @@ export default function DefaultTeamPage() {
         staffId,
         autoAssignToNewEvents: !currentValue,
       });
+      toast.success("Auto-assign setting updated");
     } catch (err: any) {
-      alert(err.message || "Failed to toggle auto-assign");
+      toast.error(err.message || "Failed to toggle auto-assign");
     }
   };
 
   const handleRemoveStaff = async (staffId: Id<"eventStaff">) => {
     try {
       await removeStaff({ staffId });
+      toast.success("Staff member removed");
     } catch (err: any) {
-      alert(err.message || "Failed to remove staff member");
+      toast.error(err.message || "Failed to remove staff member");
     }
   };
 
   if (!globalStaffWithPerformance) {
-    return (
-      <div className="min-h-screen bg-muted flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading team..." />;
   }
 
   const globalStaff = globalStaffWithPerformance;

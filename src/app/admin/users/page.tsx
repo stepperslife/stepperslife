@@ -15,6 +15,9 @@ import {
 import { useState } from "react";
 import { format } from "date-fns";
 import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ConfirmDialog, useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 export default function UsersManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,25 +43,23 @@ export default function UsersManagementPage() {
   const handleRoleChange = async (userId: Id<"users">, newRole: "admin" | "organizer" | "user") => {
     try {
       await updateUserRole({ userId, role: newRole });
+      toast.success("User role updated successfully");
     } catch (error: unknown) {
-      alert(`Failed to update role: ${error instanceof Error ? error.message : String(error)}`);
+      toast.error(`Failed to update role: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
-  const handleDeleteUser = async (userId: Id<"users">, userName: string) => {
+  const handleDeleteUser = async (userId: Id<"users">) => {
     try {
       await deleteUser({ userId });
+      toast.success("User deleted successfully");
     } catch (error: unknown) {
-      alert(`Failed to delete user: ${error instanceof Error ? error.message : String(error)}`);
+      toast.error(`Failed to delete user: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
   if (!filteredUsers) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading users..." />;
   }
 
   const stats = {

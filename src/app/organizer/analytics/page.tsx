@@ -5,6 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { DollarSign, Ticket, Calendar, TrendingUp, Users, BarChart3, Eye } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function AnalyticsPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
@@ -15,11 +16,7 @@ export default function AnalyticsPage() {
 
   // Check if still loading
   if (userEvents === undefined) {
-    return (
-      <div className="min-h-screen bg-muted flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading analytics..." />;
   }
 
   // Calculate overall statistics

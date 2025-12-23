@@ -15,6 +15,8 @@ import {
 import { useState } from "react";
 import { format } from "date-fns";
 import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 type FulfillmentStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 
@@ -36,8 +38,9 @@ export default function OrdersManagementPage() {
         orderId,
         fulfillmentStatus: newStatus,
       });
+      toast.success("Order status updated");
     } catch (error: unknown) {
-      alert(`Failed to update status: ${error instanceof Error ? error.message : String(error)}`);
+      toast.error(`Failed to update status: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
@@ -53,17 +56,14 @@ export default function OrdersManagementPage() {
       });
       setSelectedOrder(null);
       setTrackingInfo({ number: "", url: "" });
+      toast.success("Tracking information added");
     } catch (error: unknown) {
-      alert(`Failed to add tracking: ${error instanceof Error ? error.message : String(error)}`);
+      toast.error(`Failed to add tracking: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
   if (!allOrders) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading orders..." />;
   }
 
   const stats = {
