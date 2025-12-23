@@ -65,6 +65,7 @@ import type * as notifications_ticketNotifications from "../notifications/ticket
 import type * as orders_cashPayments from "../orders/cashPayments.js";
 import type * as orders_cashPaymentsCron from "../orders/cashPaymentsCron.js";
 import type * as orders_mutations from "../orders/mutations.js";
+import type * as orders_queries from "../orders/queries.js";
 import type * as paymentConfig_mutations from "../paymentConfig/mutations.js";
 import type * as paymentConfig_queries from "../paymentConfig/queries.js";
 import type * as payments_actions from "../payments/actions.js";
@@ -179,6 +180,7 @@ declare const fullApi: ApiFromModules<{
   "orders/cashPayments": typeof orders_cashPayments;
   "orders/cashPaymentsCron": typeof orders_cashPaymentsCron;
   "orders/mutations": typeof orders_mutations;
+  "orders/queries": typeof orders_queries;
   "paymentConfig/mutations": typeof paymentConfig_mutations;
   "paymentConfig/queries": typeof paymentConfig_queries;
   "payments/actions": typeof payments_actions;

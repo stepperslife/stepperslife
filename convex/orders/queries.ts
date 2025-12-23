@@ -46,13 +46,18 @@ export const getOrderByPaymentIntent = query({
       }
     }
 
+    // Use stripePaymentIntentId as order number if available, otherwise use _id
+    const orderNumber = order.stripePaymentIntentId
+      ? order.stripePaymentIntentId.substring(3, 15).toUpperCase()
+      : String(order._id).substring(0, 12).toUpperCase();
+
     return {
       _id: order._id,
       email: buyerEmail,
       buyerName: buyerName,
       eventName: eventName,
       eventDate: eventDate,
-      orderNumber: order.orderNumber || order._id.toString().substring(0, 12).toUpperCase(),
+      orderNumber: orderNumber,
       totalCents: order.totalCents,
       status: order.status,
     };
