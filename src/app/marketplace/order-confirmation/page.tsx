@@ -271,7 +271,7 @@ export default function OrderConfirmationPage() {
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href="/marketplace/orders"
+              href={`/marketplace/orders?email=${encodeURIComponent(order.customerEmail)}`}
               className="flex-1 px-6 py-3 bg-primary text-white rounded-lg font-semibold text-center hover:bg-primary/90 transition-colors"
             >
               View My Orders

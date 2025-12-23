@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -41,9 +42,22 @@ const paymentStatusConfig: Record<PaymentStatus, { label: string; color: string 
 };
 
 export default function MyOrdersPage() {
+  const searchParams = useSearchParams();
+  const emailFromUrl = searchParams.get("email");
+
   const [email, setEmail] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+
+  // Auto-search when email is provided in URL
+  useEffect(() => {
+    if (emailFromUrl) {
+      const normalizedEmail = emailFromUrl.toLowerCase().trim();
+      setEmail(normalizedEmail);
+      setSearchEmail(normalizedEmail);
+      setHasSearched(true);
+    }
+  }, [emailFromUrl]);
 
   const orders = useQuery(
     api.productOrders.queries.getOrdersByEmail,
