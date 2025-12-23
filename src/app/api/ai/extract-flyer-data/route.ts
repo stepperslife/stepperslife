@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { jwtVerify } from "jose";
+import { getJwtSecretEncoded } from "@/lib/auth/jwt-secret";
+
+const JWT_SECRET = getJwtSecretEncoded();
 
 // Initialize Gemini AI (if API key is available)
 const genAI = process.env.GEMINI_API_KEY
@@ -188,6 +192,24 @@ CRITICAL RULES:
 ✅ Use \\n for line breaks in description, NOT actual newlines
 
 BEGIN TWO-PHASE EXTRACTION NOW.`;
+
+/**
+ * Verify user is authenticated and is an admin or organizer
+ */
+async function verifyAuth(request: NextRequest): Promise<{ userId: string; role: string } | null> {
+  const token = request.cookies.get("session_token")?.value || request.cookies.get("auth-token")?.value;
+  if (!token) return null;
+
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const role = payload.role as string;
+    // Allow admin and organizer roles to use AI extraction
+    if (role !== "admin" && role !== "organizer") return null;
+    return { userId: payload.userId as string, role };
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Get the base path for flyer storage
@@ -396,6 +418,15 @@ async function extractWithGemini(
  */
 export async function POST(request: NextRequest) {
   try {
+    // Verify authentication - admin/organizer only
+    const auth = await verifyAuth(request);
+    if (!auth) {
+      return NextResponse.json(
+        { error: "Unauthorized - Admin or organizer access required" },
+        { status: 401 }
+      );
+    }
+
     const { filepath } = await request.json();
 
     if (!filepath) {

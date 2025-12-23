@@ -1,11 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { jwtVerify } from "jose";
+import { getJwtSecretEncoded } from "@/lib/auth/jwt-secret";
+
+const JWT_SECRET = getJwtSecretEncoded();
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
+/**
+ * Verify user is authenticated and is an admin or organizer
+ */
+async function verifyAuth(request: NextRequest): Promise<{ userId: string; role: string } | null> {
+  const token = request.cookies.get("session_token")?.value || request.cookies.get("auth-token")?.value;
+  if (!token) return null;
+
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const role = payload.role as string;
+    // Allow admin and organizer roles to use AI extraction
+    if (role !== "admin" && role !== "organizer") return null;
+    return { userId: payload.userId as string, role };
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
+    // Verify authentication - admin/organizer only
+    const auth = await verifyAuth(request);
+    if (!auth) {
+      return NextResponse.json(
+        { error: "Unauthorized - Admin or organizer access required" },
+        { status: 401 }
+      );
+    }
+
     const { filepath, imageBase64, mimeType } = await request.json();
 
     if (!filepath && !imageBase64) {
