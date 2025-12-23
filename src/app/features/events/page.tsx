@@ -215,66 +215,73 @@ export default function EventsFeaturesPage() {
             </motion.div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {upcomingEvents.slice(0, 6).map((event, index) => (
-                <motion.div
-                  key={event._id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  className="group"
-                >
-                  <Link href={`/events/${event._id}`}>
-                    <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border h-full">
-                      {/* Event Image */}
-                      <div className="relative h-48 overflow-hidden">
-                        {event.imageUrl ? (
-                          <Image
-                            src={event.imageUrl}
-                            alt={event.title}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                            <Calendar className="w-16 h-16 text-primary/40" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                        <div className="absolute bottom-4 left-4 right-4">
-                          <div className="flex items-center gap-2 text-white/90 text-sm">
-                            <Calendar className="w-4 h-4" />
-                            <span>{formatDate(new Date(event.startDate), "MMM d, yyyy")}</span>
-                          </div>
-                        </div>
-                      </div>
+              {upcomingEvents.slice(0, 6).map((event, index) => {
+                // Get the image URL - prefer imageUrl, then check images array for Convex storage URLs
+                const eventImageUrl = event.imageUrl ||
+                  (event.images && event.images[0] ? `https://expert-vulture-775.convex.cloud/api/storage/${event.images[0]}` : null);
+                const venueName = event.location?.venueName || event.location?.city;
 
-                      {/* Event Details */}
-                      <div className="p-5">
-                        <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                          {event.title}
-                        </h3>
-                        {event.venue && (
-                          <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
-                            <MapPin className="w-4 h-4 flex-shrink-0" />
-                            <span className="line-clamp-1">{event.venue}</span>
+                return (
+                  <motion.div
+                    key={event._id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -5 }}
+                    className="group"
+                  >
+                    <Link href={`/events/${event._id}`}>
+                      <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border h-full">
+                        {/* Event Image */}
+                        <div className="relative h-48 overflow-hidden">
+                          {eventImageUrl ? (
+                            <Image
+                              src={eventImageUrl}
+                              alt={event.name}
+                              fill
+                              className="object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                              <Calendar className="w-16 h-16 text-primary/40" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          <div className="absolute bottom-4 left-4 right-4">
+                            <div className="flex items-center gap-2 text-white/90 text-sm">
+                              <Calendar className="w-4 h-4" />
+                              <span>{formatDate(new Date(event.startDate), "MMM d, yyyy")}</span>
+                            </div>
                           </div>
-                        )}
-                        <div className="flex items-center justify-between">
-                          <span className="text-primary font-semibold">
-                            {event.lowestPrice === 0 ? "Free" : `From $${(event.lowestPrice / 100).toFixed(0)}`}
-                          </span>
-                          <span className="text-sm text-muted-foreground flex items-center gap-1">
-                            <Users className="w-4 h-4" />
-                            {event.ticketsSold || 0} attending
-                          </span>
+                        </div>
+
+                        {/* Event Details */}
+                        <div className="p-5">
+                          <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                            {event.name}
+                          </h3>
+                          {venueName && (
+                            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
+                              <MapPin className="w-4 h-4 flex-shrink-0" />
+                              <span className="line-clamp-1">{venueName}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between">
+                            <span className="text-primary font-semibold">
+                              {event.ticketsVisible ? "Tickets Available" : "Coming Soon"}
+                            </span>
+                            <span className="text-sm text-muted-foreground flex items-center gap-1">
+                              <Users className="w-4 h-4" />
+                              {event.ticketsSold || 0} attending
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </div>
 
             <div className="text-center">

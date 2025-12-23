@@ -314,81 +314,92 @@ export default function ClassesFeaturesPage() {
             </motion.div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {upcomingClasses.slice(0, 6).map((classItem, index) => (
-                <motion.div
-                  key={classItem._id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  className="group"
-                >
-                  <Link href={`/classes/${classItem._id}`}>
-                    <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border h-full">
-                      {/* Class Image */}
-                      <div className="relative h-48 overflow-hidden">
-                        {classItem.imageUrl ? (
-                          <Image
-                            src={classItem.imageUrl}
-                            alt={classItem.title}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-warning/20 to-warning/10 flex items-center justify-center">
-                            <BookOpen className="w-16 h-16 text-warning/40" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                        {classItem.categories && classItem.categories[0] && (
-                          <div className="absolute top-4 left-4">
-                            <span className="px-3 py-1 bg-warning text-white text-sm font-medium rounded-full">
-                              {classItem.categories[0]}
-                            </span>
-                          </div>
-                        )}
-                        <div className="absolute bottom-4 left-4 right-4">
-                          <div className="flex items-center gap-2 text-white/90 text-sm">
-                            <Clock className="w-4 h-4" />
-                            <span>
-                              {classItem.schedule?.dayOfWeek || ""} {classItem.schedule?.startTime || ""}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+              {upcomingClasses.slice(0, 6).map((classItem, index) => {
+                // Get the image URL - prefer imageUrl, then check images array for Convex storage URLs
+                const classImageUrl = classItem.imageUrl ||
+                  (classItem.images && classItem.images[0] ? `https://expert-vulture-775.convex.cloud/api/storage/${classItem.images[0]}` : null);
+                const venueName = classItem.location?.venueName || classItem.location?.city;
 
-                      {/* Class Details */}
-                      <div className="p-5">
-                        <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-warning transition-colors">
-                          {classItem.title}
-                        </h3>
-                        {classItem.venue && (
-                          <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
-                            <MapPin className="w-4 h-4 flex-shrink-0" />
-                            <span className="line-clamp-1">{classItem.venue}</span>
+                // Get day names from classDays array
+                const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                const classDaysText = classItem.classDays?.map((d: number) => dayNames[d]).join(", ");
+
+                return (
+                  <motion.div
+                    key={classItem._id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -5 }}
+                    className="group"
+                  >
+                    <Link href={`/classes/${classItem._id}`}>
+                      <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border h-full">
+                        {/* Class Image */}
+                        <div className="relative h-48 overflow-hidden">
+                          {classImageUrl ? (
+                            <Image
+                              src={classImageUrl}
+                              alt={classItem.name}
+                              fill
+                              className="object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-warning/20 to-warning/10 flex items-center justify-center">
+                              <BookOpen className="w-16 h-16 text-warning/40" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          {classItem.categories && classItem.categories[0] && (
+                            <div className="absolute top-4 left-4">
+                              <span className="px-3 py-1 bg-warning text-white text-sm font-medium rounded-full">
+                                {classItem.categories[0]}
+                              </span>
+                            </div>
+                          )}
+                          <div className="absolute bottom-4 left-4 right-4">
+                            <div className="flex items-center gap-2 text-white/90 text-sm">
+                              <Clock className="w-4 h-4" />
+                              <span>
+                                {classDaysText || classItem.eventTimeLiteral || "See details"}
+                              </span>
+                            </div>
                           </div>
-                        )}
-                        {classItem.instructorName && (
-                          <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
-                            <Users className="w-4 h-4 flex-shrink-0" />
-                            <span className="line-clamp-1">{classItem.instructorName}</span>
+                        </div>
+
+                        {/* Class Details */}
+                        <div className="p-5">
+                          <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-warning transition-colors">
+                            {classItem.name}
+                          </h3>
+                          {venueName && (
+                            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
+                              <MapPin className="w-4 h-4 flex-shrink-0" />
+                              <span className="line-clamp-1">{venueName}</span>
+                            </div>
+                          )}
+                          {classItem.organizerName && (
+                            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
+                              <Users className="w-4 h-4 flex-shrink-0" />
+                              <span className="line-clamp-1">{classItem.organizerName}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between">
+                            <span className="text-warning font-semibold">
+                              {classItem.ticketsVisible ? "Enrolling Now" : "Coming Soon"}
+                            </span>
+                            <span className="text-sm text-muted-foreground flex items-center gap-1">
+                              <Users className="w-4 h-4" />
+                              {classItem.ticketsSold || 0} enrolled
+                            </span>
                           </div>
-                        )}
-                        <div className="flex items-center justify-between">
-                          <span className="text-warning font-semibold">
-                            {classItem.lowestPrice === 0 ? "Free" : `From $${(classItem.lowestPrice / 100).toFixed(0)}`}
-                          </span>
-                          <span className="text-sm text-muted-foreground flex items-center gap-1">
-                            <Users className="w-4 h-4" />
-                            {classItem.ticketsSold || 0} enrolled
-                          </span>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </div>
 
             <div className="text-center">
