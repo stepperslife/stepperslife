@@ -1,9 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { ConvexHttpClient } from "convex/browser";
+import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-
-const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL!;
-const convex = new ConvexHttpClient(CONVEX_URL);
 
 /**
  * Connect/Save PayPal Account for Organizer
@@ -14,18 +11,14 @@ const convex = new ConvexHttpClient(CONVEX_URL);
  *
  * This is a simple flow that accepts PayPal email/merchant ID directly
  * and stores it for split payment purposes.
+ *
+ * SECURITY: The mutation now uses authentication to identify the user,
+ * so no userId parameter is needed - only authenticated users can update their own account.
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, paypalEmail, paypalMerchantId } = body;
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
-    }
+    const { paypalEmail, paypalMerchantId } = body;
 
     // Require either email or merchant ID
     if (!paypalEmail && !paypalMerchantId) {
@@ -50,14 +43,13 @@ export async function POST(request: NextRequest) {
     // Use email as the merchant ID if no explicit merchant ID provided
     const merchantIdToStore = paypalMerchantId || paypalEmail;
 
-    await convex.mutation(api.payments.mutations.savePayPalAccount, {
-      userId: userId as any,
+    // The mutation now uses authentication - it will identify the user from the auth context
+    await fetchMutation(api.payments.mutations.savePayPalAccount, {
       paypalMerchantId: merchantIdToStore,
       paypalEmail: paypalEmail || undefined,
     });
 
     console.log("[PayPal Connect] Account saved:", {
-      userId,
       merchantId: merchantIdToStore,
       hasEmail: !!paypalEmail,
     });
@@ -97,7 +89,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's PayPal status from Convex
-    const user = await convex.query(api.users.queries.getUserById, {
+    const user = await fetchQuery(api.users.queries.getUserById, {
       userId: userId as any,
     });
 
@@ -130,25 +122,16 @@ export async function GET(request: NextRequest) {
 /**
  * Disconnect PayPal Account
  * DELETE /api/paypal/connect-account
+ *
+ * SECURITY: The mutation now uses authentication to identify the user,
+ * so no userId parameter is needed - only authenticated users can disconnect their own account.
  */
 export async function DELETE(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { userId } = body;
+    // The mutation now uses authentication - it will identify the user from the auth context
+    await fetchMutation(api.payments.mutations.disconnectPayPalAccount, {});
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
-    }
-
-    // Remove PayPal account from Convex
-    await convex.mutation(api.payments.mutations.disconnectPayPalAccount, {
-      userId: userId as any,
-    });
-
-    console.log("[PayPal Connect] Account disconnected:", { userId });
+    console.log("[PayPal Connect] Account disconnected");
 
     return NextResponse.json({
       success: true,

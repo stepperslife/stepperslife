@@ -1,27 +1,56 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Mail, Phone, Calendar } from "lucide-react";
+import { User, Mail, Phone, Calendar, Loader2, Check } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function PersonalInfoPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const updateProfile = useMutation(api.users.mutations.updateProfile);
 
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    name: currentUser?.name || "",
-    email: currentUser?.email || "",
+    name: "",
+    email: "",
     phone: "",
     dateOfBirth: "",
   });
 
-  const handleSave = () => {
-    // TODO: Implement save functionality with Convex
+  // Update form data when user data loads
+  useEffect(() => {
+    if (currentUser) {
+      setFormData({
+        name: currentUser.name || "",
+        email: currentUser.email || "",
+        phone: (currentUser as any).phone || "",
+        dateOfBirth: (currentUser as any).dateOfBirth || "",
+      });
+    }
+  }, [currentUser]);
+
+  const handleSave = async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        name: formData.name,
+        phone: formData.phone,
+        dateOfBirth: formData.dateOfBirth,
+      });
+      toast.success("Profile updated successfully");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -156,8 +185,31 @@ export default function PersonalInfoPage() {
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button onClick={handleSave}>Save Changes</Button>
-            <Button variant="outline">Cancel</Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Check className="mr-2 h-4 w-4" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+            <Button variant="outline" onClick={() => {
+              if (currentUser) {
+                setFormData({
+                  name: currentUser.name || "",
+                  email: currentUser.email || "",
+                  phone: (currentUser as any).phone || "",
+                  dateOfBirth: (currentUser as any).dateOfBirth || "",
+                });
+              }
+            }}>
+              Cancel
+            </Button>
           </div>
         </CardContent>
       </Card>

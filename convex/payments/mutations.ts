@@ -89,26 +89,35 @@ export const saveStripeConnectAccount = mutation({
  */
 export const savePayPalAccount = mutation({
   args: {
-    userId: v.id("users"),
     paypalMerchantId: v.string(), // Email or merchant ID
     paypalEmail: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.db.get(args.userId);
+    // SECURITY: Require authentication and only allow users to update their own account
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity?.email) {
+      throw new Error("Authentication required. Please sign in to connect PayPal.");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("User account not found. Please contact support.");
     }
 
     // Update user with PayPal account
-    await ctx.db.patch(args.userId, {
+    await ctx.db.patch(user._id, {
       paypalMerchantId: args.paypalMerchantId,
       paypalAccountSetupComplete: true,
       acceptsPaypalPayments: true,
       updatedAt: Date.now(),
     });
 
-    console.log(`[PayPal] Account saved for user ${args.userId}: ${args.paypalMerchantId}`);
+    console.log(`[PayPal] Account saved for user ${user._id}: ${args.paypalMerchantId}`);
 
     return { success: true };
   },
@@ -118,25 +127,33 @@ export const savePayPalAccount = mutation({
  * Disconnect PayPal account from organizer
  */
 export const disconnectPayPalAccount = mutation({
-  args: {
-    userId: v.id("users"),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db.get(args.userId);
+  args: {},
+  handler: async (ctx) => {
+    // SECURITY: Require authentication and only allow users to disconnect their own account
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity?.email) {
+      throw new Error("Authentication required. Please sign in to disconnect PayPal.");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("User account not found. Please contact support.");
     }
 
     // Remove PayPal account info
-    await ctx.db.patch(args.userId, {
+    await ctx.db.patch(user._id, {
       paypalMerchantId: undefined,
       paypalAccountSetupComplete: false,
       acceptsPaypalPayments: false,
       updatedAt: Date.now(),
     });
 
-    console.log(`[PayPal] Account disconnected for user ${args.userId}`);
+    console.log(`[PayPal] Account disconnected for user ${user._id}`);
 
     return { success: true };
   },

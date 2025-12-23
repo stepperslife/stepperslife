@@ -91,6 +91,24 @@ export const createOrder = mutation({
     customerNote: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // CRITICAL: Validate inventory bounds BEFORE creating order
+    // This prevents negative inventory and overselling
+    for (const item of args.items) {
+      const product = await ctx.db.get(item.productId);
+      if (!product) {
+        throw new Error(`Product not found: ${item.productName}`);
+      }
+      if (product.trackInventory) {
+        const available = product.inventoryQuantity ?? 0;
+        if (available < item.quantity) {
+          throw new Error(
+            `Insufficient inventory for "${item.productName}". ` +
+            `Requested: ${item.quantity}, Available: ${available}`
+          );
+        }
+      }
+    }
+
     // Generate order number
     const orderCount = await ctx.db.query("productOrders").collect();
     const orderNumber = `ORD-${new Date().getFullYear()}-${String(orderCount.length + 1).padStart(4, "0")}`;
@@ -106,12 +124,13 @@ export const createOrder = mutation({
       updatedAt: Date.now(),
     });
 
-    // Update inventory for each item
+    // Update inventory for each item (already validated above)
     for (const item of args.items) {
       const product = await ctx.db.get(item.productId);
       if (product && product.trackInventory) {
+        const currentQuantity = product.inventoryQuantity ?? 0;
         await ctx.db.patch(item.productId, {
-          inventoryQuantity: product.inventoryQuantity - item.quantity,
+          inventoryQuantity: currentQuantity - item.quantity,
           updatedAt: Date.now(),
         });
       }

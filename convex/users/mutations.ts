@@ -51,6 +51,52 @@ export const upsertUserFromAuth = mutation({
 });
 
 /**
+ * Update the current user's profile information
+ * Allows users to update their own name, phone, and date of birth
+ */
+export const updateProfile = mutation({
+  args: {
+    name: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    dateOfBirth: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Build updates object with only provided fields
+    const updates: Record<string, unknown> = {
+      updatedAt: Date.now(),
+    };
+
+    if (args.name !== undefined) {
+      updates.name = args.name.trim();
+    }
+    if (args.phone !== undefined) {
+      updates.phone = args.phone.trim() || undefined;
+    }
+    if (args.dateOfBirth !== undefined) {
+      updates.dateOfBirth = args.dateOfBirth || undefined;
+    }
+
+    await ctx.db.patch(user._id, updates);
+
+    return { success: true };
+  },
+});
+
+/**
  * Mark the welcome popup as shown for the current user
  */
 export const markWelcomePopupShown = mutation({
