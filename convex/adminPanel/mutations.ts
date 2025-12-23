@@ -695,3 +695,30 @@ export const fixEventTimestamps = mutation({
     };
   },
 });
+
+/**
+ * Update event categories (internal mutation for data cleanup)
+ * Used to fix events with incorrect category values
+ */
+export const updateEventCategories = internalMutation({
+  args: {
+    eventId: v.id("events"),
+    categories: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const event = await ctx.db.get(args.eventId);
+    if (!event) throw new Error("Event not found");
+
+    await ctx.db.patch(args.eventId, {
+      categories: args.categories,
+      updatedAt: Date.now(),
+    });
+
+    return {
+      success: true,
+      eventName: event.name,
+      oldCategories: event.categories,
+      newCategories: args.categories,
+    };
+  },
+});

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "../_generated/server";
+import { EVENT_CATEGORIES } from "../../src/lib/constants";
 
 /**
  * Get all published events (public API for stepperslife.com)
@@ -498,6 +499,7 @@ export const getFeaturedEvents = query({
 
 /**
  * Get event categories with counts
+ * Returns all 10 approved categories from EVENT_CATEGORIES constant
  * Excludes CLASS type events - classes have their own dedicated queries
  */
 export const getCategories = query({
@@ -511,21 +513,24 @@ export const getCategories = query({
     // Filter out CLASS events
     const events = allEvents.filter((e) => e.eventType !== "CLASS");
 
-    // Count events per category
+    // Initialize counts for all approved categories
     const categoryCounts = new Map<string, number>();
+    EVENT_CATEGORIES.forEach((cat) => categoryCounts.set(cat, 0));
 
+    // Count events per category (only count if it's a valid category)
     events.forEach((event) => {
       event.categories?.forEach((category) => {
-        categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1);
+        if (categoryCounts.has(category)) {
+          categoryCounts.set(category, categoryCounts.get(category)! + 1);
+        }
       });
     });
 
-    // Convert to array and sort by count
-    const categories = Array.from(categoryCounts.entries())
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count);
-
-    return categories;
+    // Return all approved categories with their counts
+    return EVENT_CATEGORIES.map((name) => ({
+      name,
+      count: categoryCounts.get(name) || 0,
+    }));
   },
 });
 
