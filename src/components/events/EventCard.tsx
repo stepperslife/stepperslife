@@ -35,7 +35,7 @@ export function EventCard({ event }: EventCardProps) {
 
   return (
     <Link href={`/events/${event._id}`} className="group block cursor-pointer">
-      <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 bg-white cursor-pointer">
+      <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 bg-card cursor-pointer">
         {/* Event Image */}
         <div className="relative aspect-[4/5] overflow-hidden bg-muted">
           <Image
@@ -51,7 +51,7 @@ export function EventCard({ event }: EventCardProps) {
 
           {/* Event Type Badge */}
           <div className="absolute top-3 left-3">
-            <span className="px-3 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm rounded-full shadow-sm">
+            <span className="px-3 py-1 text-xs font-semibold bg-card/90 backdrop-blur-sm rounded-full shadow-sm">
               {event.eventType.replace("_", " ")}
             </span>
           </div>
@@ -59,7 +59,7 @@ export function EventCard({ event }: EventCardProps) {
           {/* Tickets Available Badge */}
           {event.ticketsVisible && (
             <div className="absolute top-3 right-3">
-              <div className="flex items-center gap-1 px-2 py-1 bg-success text-white text-xs font-semibold rounded-full shadow-sm">
+              <div className="flex items-center gap-1 px-2 py-1 bg-success text-success-foreground text-xs font-semibold rounded-full shadow-sm">
                 <Ticket className="w-3 h-3" />
                 <span>Available</span>
               </div>

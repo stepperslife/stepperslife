@@ -97,12 +97,12 @@ export default function LoginPage() {
       <PublicHeader showCreateButton={false} />
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="w-full max-w-md">
-          <div data-testid="login-form-container" className="bg-white dark:bg-card rounded-2xl shadow-xl p-8">
+          <div data-testid="login-form-container" className="bg-card rounded-2xl shadow-xl p-8">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-foreground dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-foreground mb-2">
                 Welcome Back
               </h1>
-              <p className="text-muted-foreground dark:text-muted-foreground">Sign in to your account</p>
+              <p className="text-muted-foreground">Sign in to your account</p>
             </div>
 
             {/* Error and Success Messages */}
@@ -126,7 +126,7 @@ export default function LoginPage() {
                   window.location.href = `/api/auth/google?callbackUrl=${callbackUrl}`;
                 }}
                 data-testid="google-login-button"
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-card border-2 border dark:border rounded-lg hover:bg-card dark:hover:bg-muted transition-colors font-medium text-foreground dark:text-white shadow-sm"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-card border-2 border-input rounded-lg hover:bg-muted transition-colors font-medium text-foreground shadow-sm"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -152,10 +152,10 @@ export default function LoginPage() {
               {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border dark:border"></div>
+                  <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white dark:bg-card text-muted-foreground dark:text-muted-foreground">
+                  <span className="px-2 bg-card text-muted-foreground">
                     or
                   </span>
                 </div>
@@ -166,7 +166,7 @@ export default function LoginPage() {
                 <div>
                   <label
                     htmlFor="magic-email"
-                    className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
+                    className="block text-sm font-medium text-foreground mb-2"
                   >
                     Email Address
                   </label>
@@ -176,7 +176,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     data-testid="email-input"
-                    className="w-full px-4 py-3 rounded-lg border border dark:border bg-white dark:bg-card text-foreground dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -191,36 +191,36 @@ export default function LoginPage() {
                   onClick={handleMagicLink}
                   disabled={isMagicLinkLoading}
                   data-testid="magic-link-button"
-                  className="w-full py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isMagicLinkLoading ? "Sending link..." : "Send Magic Link"}
                 </Button>
               </div>
 
               {/* 3. Traditional Login - Dropdown/Collapsible */}
-              <div className="border border dark:border rounded-lg overflow-hidden">
+              <div className="border border-input rounded-lg overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setShowTraditionalLogin(!showTraditionalLogin)}
                   data-testid="password-login-toggle"
-                  className="w-full flex items-center justify-between px-4 py-3 bg-card dark:bg-card hover:bg-muted dark:hover:bg-muted transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 bg-card hover:bg-muted transition-colors"
                 >
-                  <span className="text-sm font-medium text-foreground dark:text-muted-foreground">
+                  <span className="text-sm font-medium text-foreground">
                     Sign in with password
                   </span>
                   {showTraditionalLogin ? (
-                    <ChevronUp className="w-5 h-5 text-muted-foreground dark:text-muted-foreground" />
+                    <ChevronUp className="w-5 h-5 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-muted-foreground dark:text-muted-foreground" />
+                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
                   )}
                 </button>
 
                 {showTraditionalLogin && (
-                  <form onSubmit={handleSubmit} data-testid="password-login-form" className="p-4 space-y-4 bg-white dark:bg-card">
+                  <form onSubmit={handleSubmit} data-testid="password-login-form" className="p-4 space-y-4 bg-card">
                     <div>
                       <label
                         htmlFor="email"
-                        className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
+                        className="block text-sm font-medium text-foreground mb-2"
                       >
                         Email Address
                       </label>
@@ -231,7 +231,7 @@ export default function LoginPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         data-testid="login-email"
-                        className="w-full px-4 py-3 rounded-lg border border dark:border bg-white dark:bg-card text-foreground dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                         placeholder="you@example.com"
                       />
                     </div>
@@ -239,7 +239,7 @@ export default function LoginPage() {
                     <div>
                       <label
                         htmlFor="password"
-                        className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
+                        className="block text-sm font-medium text-foreground mb-2"
                       >
                         Password
                       </label>
@@ -251,14 +251,14 @@ export default function LoginPage() {
                           onChange={(e) => setPassword(e.target.value)}
                           required
                           data-testid="login-password"
-                          className="w-full px-4 py-3 pr-12 rounded-lg border border dark:border bg-white dark:bg-card text-foreground dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                          className="w-full px-4 py-3 pr-12 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                           placeholder="Enter your password"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
                           data-testid="toggle-password-visibility"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground transition-colors"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                           aria-label={showPassword ? "Hide password" : "Show password"}
                         >
                           {showPassword ? (
@@ -284,7 +284,7 @@ export default function LoginPage() {
                       type="submit"
                       disabled={isLoading}
                       data-testid="login-submit"
-                      className="w-full py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
@@ -297,10 +297,10 @@ export default function LoginPage() {
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border dark:border"></div>
+                  <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white dark:bg-card text-muted-foreground dark:text-muted-foreground">
+                  <span className="px-2 bg-card text-muted-foreground">
                     Don't have an account?
                   </span>
                 </div>
@@ -310,7 +310,7 @@ export default function LoginPage() {
                 <Link
                   href="/register"
                   data-testid="create-account-link"
-                  className="w-full flex justify-center py-3 px-6 border border-primary rounded-lg text-primary hover:bg-primary hover:text-white transition-colors font-medium"
+                  className="w-full flex justify-center py-3 px-6 border border-primary rounded-lg text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-medium"
                 >
                   Create Account
                 </Link>

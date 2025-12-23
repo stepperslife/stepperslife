@@ -15,7 +15,7 @@ export function WelcomePopup({ open, onClose, creditsRemaining }: WelcomePopupPr
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden">
         {/* Header with gradient */}
-        <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 p-8 text-white text-center">
+        <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 p-8 text-primary-foreground text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-2">Welcome to SteppersLife!</h2>
           <div className="text-5xl md:text-6xl mb-3">🎉</div>
           <p className="text-lg md:text-xl">
@@ -53,7 +53,7 @@ export function WelcomePopup({ open, onClose, creditsRemaining }: WelcomePopupPr
           {/* CTA Button */}
           <Button
             onClick={onClose}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-6 text-lg"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg"
           >
             Get Started
           </Button>

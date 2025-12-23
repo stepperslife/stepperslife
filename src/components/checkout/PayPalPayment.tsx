@@ -179,7 +179,7 @@ export function PayPalPayment({
       )}
 
       {isProcessing && (
-        <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-card/80 flex items-center justify-center z-10">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <span className="ml-2 text-muted-foreground">Processing payment...</span>
         </div>

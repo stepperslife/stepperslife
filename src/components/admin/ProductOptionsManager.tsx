@@ -176,7 +176,7 @@ export default function ProductOptionsManager({
         <button
           type="button"
           onClick={() => setIsAddingOption(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add Option
@@ -226,7 +226,7 @@ export default function ProductOptionsManager({
           <button
             type="button"
             onClick={() => setIsAddingOption(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
           >
             <Plus className="w-5 h-5" />
             Add Your First Option
@@ -275,7 +275,7 @@ function OptionCard({
   }
 
   return (
-    <div className="border border rounded-lg bg-white overflow-hidden">
+    <div className="border border rounded-lg bg-card overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 hover:bg-card transition-colors">
         <button
@@ -350,7 +350,7 @@ function OptionCard({
                 {option.choices.map((choice) => (
                   <div
                     key={choice.id}
-                    className="flex items-center justify-between bg-white p-2 rounded border border"
+                    className="flex items-center justify-between bg-card p-2 rounded border border"
                   >
                     <div className="flex items-center gap-2">
                       {choice.image && (
@@ -514,7 +514,7 @@ function AddOptionForm({
   };
 
   return (
-    <div className="border border rounded-lg bg-white p-6">
+    <div className="border border rounded-lg bg-card p-6">
       <h4 className="text-lg font-semibold text-foreground mb-4">Add New Option</h4>
       <div className="space-y-4">
         {/* Option Type Selection */}
@@ -592,7 +592,7 @@ function AddOptionForm({
               <button
                 type="button"
                 onClick={addChoice}
-                className="flex items-center gap-1 px-3 py-1 text-sm bg-primary text-white rounded hover:bg-primary/90 transition-colors"
+                className="flex items-center gap-1 px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Choice
@@ -764,7 +764,7 @@ function AddOptionForm({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex-1 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Adding..." : "Add Option"}
           </button>
@@ -883,7 +883,7 @@ function EditOptionForm({
   };
 
   return (
-    <div className="border border-primary rounded-lg bg-white p-6">
+    <div className="border border-primary rounded-lg bg-card p-6">
       <h4 className="text-lg font-semibold text-foreground mb-4">Edit Option: {option.name}</h4>
       <div className="space-y-4">
         {/* Option Name */}
@@ -933,7 +933,7 @@ function EditOptionForm({
               <button
                 type="button"
                 onClick={addChoice}
-                className="flex items-center gap-1 px-3 py-1 text-sm bg-primary text-white rounded hover:bg-primary/90 transition-colors"
+                className="flex items-center gap-1 px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Choice
@@ -1103,7 +1103,7 @@ function EditOptionForm({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex-1 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </button>

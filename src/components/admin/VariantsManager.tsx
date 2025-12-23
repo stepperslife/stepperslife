@@ -183,7 +183,7 @@ export default function VariantsManager({
   return (
     <div className="space-y-6">
       {/* Variant Generator */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-card rounded-lg shadow-md p-6">
         <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
           <Package className="w-5 h-5" />
           Generate Variant Combinations
@@ -223,7 +223,7 @@ export default function VariantsManager({
           type="button"
           onClick={handleGenerateCombinations}
           disabled={isGenerating || !colors.trim() || !sizes.trim()}
-          className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isGenerating ? (
             <>
@@ -250,7 +250,7 @@ export default function VariantsManager({
 
       {/* Variants Table */}
       {variants.length > 0 && (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
           <div className="p-4 border-b border">
             <h3 className="text-lg font-bold text-foreground">
               Product Variants ({variants.length})
@@ -303,8 +303,8 @@ export default function VariantsManager({
                             <Package className="w-6 h-6 text-muted-foreground" />
                           </div>
                         )}
-                        <label className="absolute inset-0 cursor-pointer hover:bg-black hover:bg-opacity-20 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                          <Upload className="w-5 h-5 text-white" />
+                        <label className="absolute inset-0 cursor-pointer hover:bg-foreground/20 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                          <Upload className="w-5 h-5 text-primary-foreground" />
                           <input
                             type="file"
                             accept="image/*"

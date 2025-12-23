@@ -68,7 +68,7 @@ export function SocialShareButtons({
       <button
         type="button"
         onClick={() => handleShare("facebook")}
-        className="flex items-center gap-2 px-3 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#166fe5] transition-colors text-sm font-medium"
+        className="flex items-center gap-2 px-3 py-2 bg-brand-facebook text-primary-foreground rounded-lg hover:bg-brand-facebook-hover transition-colors text-sm font-medium"
         aria-label="Share on Facebook"
       >
         <Facebook className="w-4 h-4" />
@@ -78,7 +78,7 @@ export function SocialShareButtons({
       <button
         type="button"
         onClick={() => handleShare("twitter")}
-        className="flex items-center gap-2 px-3 py-2 bg-black text-white rounded-lg hover:bg-accent transition-colors text-sm font-medium"
+        className="flex items-center gap-2 px-3 py-2 bg-brand-twitter text-primary-foreground rounded-lg hover:bg-accent transition-colors text-sm font-medium"
         aria-label="Share on X (Twitter)"
       >
         <Twitter className="w-4 h-4" />
@@ -88,7 +88,7 @@ export function SocialShareButtons({
       <button
         type="button"
         onClick={handleInstagramShare}
-        className="flex items-center gap-2 px-3 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
+        className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
         aria-label="Share on Instagram"
       >
         <Instagram className="w-4 h-4" />
@@ -99,7 +99,7 @@ export function SocialShareButtons({
         type="button"
         onClick={handleCopyLink}
         className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
-          copied ? "bg-success text-white" : "bg-muted text-foreground hover:bg-muted"
+          copied ? "bg-success text-success-foreground" : "bg-muted text-foreground hover:bg-muted"
         }`}
         aria-label="Copy link"
       >

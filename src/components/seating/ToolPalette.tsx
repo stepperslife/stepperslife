@@ -127,7 +127,7 @@ export default function ToolPalette({
             ${
               isActive
                 ? "bg-accent border-2 border-primary text-primary shadow-sm"
-                : "bg-white hover:bg-card border border text-foreground"
+                : "bg-card hover:bg-muted border border text-foreground"
             }
           `}
           title={`${tool.label} (${tool.shortcut || ""})`}
@@ -138,7 +138,7 @@ export default function ToolPalette({
           {isActive && (
             <motion.div
               layoutId="active-tool-indicator"
-              className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-white"
+              className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-card"
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             />
           )}
@@ -152,7 +152,7 @@ export default function ToolPalette({
             exit={{ opacity: 0 }}
             className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 pointer-events-none"
           >
-            <div className="bg-foreground text-white px-3 py-1.5 rounded-lg shadow-lg text-xs font-medium whitespace-nowrap">
+            <div className="bg-foreground text-background px-3 py-1.5 rounded-lg shadow-lg text-xs font-medium whitespace-nowrap">
               {tool.label}
               {tool.shortcut && <span className="ml-2 opacity-70">({tool.shortcut})</span>}
               <div className="absolute right-full top-1/2 -translate-y-1/2 mr-[-1px]">

@@ -70,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {/* Header with Logo */}
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-2 px-2 py-1.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Ticket className="h-5 w-5" />
           </div>
           <span className="font-semibold text-lg group-data-[state=collapsed]/sidebar-wrapper:hidden">

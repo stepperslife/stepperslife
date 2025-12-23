@@ -23,7 +23,7 @@ export function ShoppingCart() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+        className="fixed inset-0 bg-foreground/50 z-40 transition-opacity"
         onClick={() => setIsCartOpen(false)}
         role="button"
         tabIndex={0}
@@ -68,7 +68,7 @@ export function ShoppingCart() {
               <Link
                 href="/marketplace"
                 onClick={() => setIsCartOpen(false)}
-                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 Browse Products
               </Link>
@@ -176,7 +176,7 @@ export function ShoppingCart() {
             <button
               type="button"
               onClick={handleCheckout}
-              className="w-full px-6 py-4 bg-primary text-white text-lg font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+              className="w-full px-6 py-4 bg-primary text-primary-foreground text-lg font-semibold rounded-lg hover:bg-primary/90 transition-colors"
             >
               Proceed to Checkout
             </button>

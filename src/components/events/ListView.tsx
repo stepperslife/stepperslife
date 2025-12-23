@@ -24,7 +24,7 @@ export function ListView({ events }: ListViewProps) {
         <Link
           key={event._id}
           href={`/events/${event._id}`}
-          className="block bg-white rounded-lg shadow-sm border border hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+          className="block bg-card rounded-lg shadow-sm border border hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
         >
           <div className="flex flex-col sm:flex-row">
             {/* Event Image */}
@@ -40,7 +40,7 @@ export function ListView({ events }: ListViewProps) {
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-primary">
-                  <Calendar className="w-12 h-12 text-white opacity-50" />
+                  <Calendar className="w-12 h-12 text-primary-foreground opacity-50" />
                 </div>
               )}
             </div>

@@ -15,7 +15,7 @@ export function ViewToggle({ currentView, onViewChange }: ViewToggleProps) {
   ];
 
   return (
-    <div className="flex items-center gap-1 bg-white rounded-lg border border p-1">
+    <div className="flex items-center gap-1 bg-card rounded-lg border border p-1">
       {views.map((view) => {
         const Icon = view.icon;
         const isActive = currentView === view.id;
@@ -26,7 +26,7 @@ export function ViewToggle({ currentView, onViewChange }: ViewToggleProps) {
             key={view.id}
             onClick={() => onViewChange(view.id)}
             className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
-              isActive ? "bg-primary text-white" : "text-muted-foreground hover:bg-muted"
+              isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
             }`}
             aria-label={view.label}
           >

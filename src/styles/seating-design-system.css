@@ -133,7 +133,7 @@
 
 .seating-btn-primary {
   background: var(--seating-gradient);
-  color: white;
+  color: var(--primary-foreground);
 }
 
 .seating-btn-primary:hover {
@@ -148,12 +148,12 @@
 
 .seating-btn-secondary:hover {
   border-color: var(--seating-primary);
-  background: white;
+  background: var(--card);
 }
 
 .seating-btn-danger {
   background: var(--seating-blocked);
-  color: white;
+  color: var(--destructive-foreground);
 }
 
 .seating-btn-danger:hover {
@@ -176,7 +176,7 @@
    =========================== */
 
 .seating-card {
-  background: var(--card, white);
+  background: var(--card);
   border: 2px solid var(--seating-neutral-300);
   border-radius: var(--seating-radius-xl);
   padding: var(--seating-space-md);
@@ -211,7 +211,7 @@
    =========================== */
 
 .seating-library-item {
-  background: var(--card, white);
+  background: var(--card);
   border: 2px solid var(--seating-neutral-300);
   border-radius: var(--seating-radius-lg);
   padding: 15px;
@@ -250,7 +250,7 @@
    =========================== */
 
 .seating-stats-panel {
-  background: var(--card, white);
+  background: var(--card);
   border: 1px solid var(--seating-neutral-200);
   border-radius: var(--seating-radius-md);
   padding: var(--seating-space-sm);
@@ -285,7 +285,7 @@
 
 .seating-header-gradient {
   background: var(--seating-gradient);
-  color: white;
+  color: var(--primary-foreground);
   padding: var(--seating-space-lg);
   text-align: center;
   border-radius: var(--seating-radius-2xl) var(--seating-radius-2xl) 0 0;
@@ -365,7 +365,7 @@
   top: -12px;
   right: -12px;
   background: var(--seating-blocked);
-  color: white;
+  color: var(--destructive-foreground);
   border: none;
   border-radius: 50%;
   width: 28px;
@@ -522,7 +522,7 @@
 .seating-container {
   max-width: 1900px;
   margin: 0 auto;
-  background: var(--card, white);
+  background: var(--card);
   border-radius: var(--seating-radius-2xl);
   box-shadow: var(--seating-shadow-xl);
   overflow: hidden;
@@ -555,7 +555,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  background: var(--card, white);
+  background: var(--card);
   border-radius: var(--seating-radius-lg);
   border: 2px solid var(--seating-neutral-300);
   flex-wrap: wrap;
@@ -582,9 +582,9 @@
 
 .seating-mode-btn {
   padding: 12px 30px;
-  background: rgba(255,255,255,0.2);
-  color: white;
-  border: 2px solid white;
+  background: color-mix(in srgb, var(--primary-foreground) 20%, transparent);
+  color: var(--primary-foreground);
+  border: 2px solid var(--primary-foreground);
   border-radius: var(--seating-radius-lg);
   cursor: pointer;
   font-weight: 600;
@@ -593,11 +593,11 @@
 }
 
 .seating-mode-btn:hover {
-  background: rgba(255,255,255,0.3);
+  background: color-mix(in srgb, var(--primary-foreground) 30%, transparent);
   transform: translateY(-2px);
 }
 
 .seating-mode-btn.active {
-  background: white;
+  background: var(--primary-foreground);
   color: var(--seating-primary);
 }

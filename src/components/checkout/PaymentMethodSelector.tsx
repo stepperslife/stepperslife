@@ -132,7 +132,7 @@ export function PaymentMethodSelector({
                 <div
                   className={`
                     w-12 h-12 rounded-lg flex items-center justify-center shrink-0
-                    ${isSelected ? "bg-primary text-white" : "bg-muted text-muted-foreground"}
+                    ${isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}
                   `}
                 >
                   <Icon className="w-6 h-6" />
@@ -147,7 +147,7 @@ export function PaymentMethodSelector({
                       {getPaymentMethodDisplayName(method)}
                     </h4>
                     {isSelected && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary text-white">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary text-primary-foreground">
                         Selected
                       </span>
                     )}
@@ -165,8 +165,8 @@ export function PaymentMethodSelector({
                   {/* PayPal-specific info */}
                   {method === "paypal" && (
                     <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="text-[#003087] font-semibold">Pay</span>
-                      <span className="text-[#0070BA] font-semibold">Pal</span>
+                      <span className="text-brand-paypal-primary font-semibold">Pay</span>
+                      <span className="text-brand-paypal-secondary font-semibold">Pal</span>
                       <span>checkout</span>
                     </div>
                   )}

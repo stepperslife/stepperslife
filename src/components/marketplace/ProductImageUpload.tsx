@@ -231,12 +231,12 @@ export function ProductImageUpload({
                     : "border-border"
                 }`}
               />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+              <div className="absolute inset-0 bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
                 {primaryImage !== img && (
                   <button
                     type="button"
                     onClick={() => setPrimary(img)}
-                    className="px-2 py-1 bg-white/90 rounded text-xs font-medium hover:bg-white transition-colors"
+                    className="px-2 py-1 bg-card/90 rounded text-xs font-medium hover:bg-card transition-colors"
                   >
                     Set Primary
                   </button>
@@ -244,13 +244,13 @@ export function ProductImageUpload({
                 <button
                   type="button"
                   onClick={() => removeImage(img)}
-                  className="p-1.5 bg-destructive/100 text-white rounded hover:bg-destructive transition-colors"
+                  className="p-1.5 bg-destructive/100 text-destructive-foreground rounded hover:bg-destructive transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
               {primaryImage === img && (
-                <span className="absolute top-2 left-2 px-2 py-1 bg-primary text-white text-xs font-medium rounded">
+                <span className="absolute top-2 left-2 px-2 py-1 bg-primary text-primary-foreground text-xs font-medium rounded">
                   Primary
                 </span>
               )}

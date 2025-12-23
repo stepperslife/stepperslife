@@ -79,7 +79,7 @@ function CheckoutForm({
         </Alert>
       )}
 
-      <div className="bg-white dark:bg-gray-900 rounded-lg border border-border p-4">
+      <div className="bg-card rounded-lg border border-border p-4">
         <PaymentElement
           options={{
             layout: "tabs",

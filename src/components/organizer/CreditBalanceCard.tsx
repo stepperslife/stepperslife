@@ -27,11 +27,11 @@ export function CreditBalanceCard() {
   const usagePercentage = creditsTotal > 0 ? (creditsUsed / creditsTotal) * 100 : 0;
 
   return (
-    <Card className="border-2 border-primary/20 bg-gradient-to-br from-white to-primary/5">
+    <Card className="border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Ticket className="w-5 h-5 text-white" />
+            <Ticket className="w-5 h-5 text-primary-foreground" />
           </div>
           Ticket Credits
         </CardTitle>

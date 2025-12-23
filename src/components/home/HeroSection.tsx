@@ -88,7 +88,7 @@ export function HeroSection() {
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              <Button asChild size="lg" variant="outline" className="text-lg bg-card/10 border-white text-white hover:bg-card/20">
+              <Button asChild size="lg" variant="outline" className="text-lg bg-card/10 border-primary-foreground text-primary-foreground hover:bg-card/20">
                 <Link href="/marketplace">Browse Marketplace</Link>
               </Button>
             </motion.div>

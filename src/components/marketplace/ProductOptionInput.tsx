@@ -319,7 +319,7 @@ export default function ProductOptionInput({ option, value, onChange }: ProductO
                     <span className="text-xs text-muted-foreground text-center p-2">{choice.label}</span>
                   </div>
                 )}
-                <div className="absolute bottom-0 left-0 right-0 bg-foreground/60 text-white p-2">
+                <div className="absolute bottom-0 left-0 right-0 bg-foreground/60 text-background p-2">
                   <p className="text-xs font-medium truncate">{choice.label}</p>
                   {choice.priceModifier !== 0 && (
                     <p className="text-xs">
@@ -365,7 +365,7 @@ export default function ProductOptionInput({ option, value, onChange }: ProductO
                 handleTextChange(file.name);
               }
             }}
-            className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
+            className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
           />
           <p className="text-xs text-muted-foreground mt-2">
             Note: File uploads will be handled during checkout

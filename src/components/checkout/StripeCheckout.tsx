@@ -84,7 +84,7 @@ function CheckoutForm({
         </Alert>
       )}
 
-      <div className="bg-white rounded-lg border border p-4">
+      <div className="bg-card rounded-lg border border p-4">
         <PaymentElement />
       </div>
 

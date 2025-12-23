@@ -213,7 +213,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
+                className="block text-sm font-medium text-foreground mb-2"
               >
                 Email Address
               </label>
@@ -230,7 +230,7 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   data-testid="register-email"
-                  className="block w-full pl-12 pr-4 py-3 sm:py-3.5 border border dark:border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-card text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-muted-foreground text-base"
+                  className="block w-full pl-12 pr-4 py-3 sm:py-3.5 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder-muted-foreground text-base"
                   placeholder="john@example.com"
                 />
               </div>
@@ -240,7 +240,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
+                className="block text-sm font-medium text-foreground mb-2"
               >
                 Password
               </label>
@@ -257,7 +257,7 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={(e) => handlePasswordChange(e.target.value)}
                   data-testid="register-password"
-                  className="block w-full pl-12 pr-12 py-3 sm:py-3.5 border border dark:border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-card text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-muted-foreground text-base"
+                  className="block w-full pl-12 pr-12 py-3 sm:py-3.5 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder-muted-foreground text-base"
                   placeholder="••••••••"
                 />
                 <button
@@ -266,9 +266,9 @@ export default function RegisterPage() {
                   className="absolute inset-y-0 right-0 pr-4 flex items-center touch-manipulation min-w-[48px] min-h-[48px] justify-center"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground" />
+                    <EyeOff className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                   ) : (
-                    <Eye className="h-5 w-5 text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground" />
+                    <Eye className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                   )}
                 </button>
               </div>
@@ -277,17 +277,17 @@ export default function RegisterPage() {
               {formData.password && (
                 <div className="mt-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <div className="flex-1 bg-muted dark:bg-card rounded-full h-2">
+                    <div className="flex-1 bg-muted rounded-full h-2">
                       <div
                         className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
                         style={{ width: `${(passwordStrength / 5) * 100}%` }}
                       ></div>
                     </div>
-                    <span className="text-xs font-medium text-muted-foreground dark:text-muted-foreground min-w-[60px]">
+                    <span className="text-xs font-medium text-muted-foreground min-w-[60px]">
                       {getPasswordStrengthText()}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     Use 8+ characters with uppercase, lowercase, numbers, and symbols
                   </p>
                 </div>
@@ -298,7 +298,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-2"
+                className="block text-sm font-medium text-foreground mb-2"
               >
                 Confirm Password
               </label>
@@ -315,7 +315,7 @@ export default function RegisterPage() {
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   data-testid="register-confirm-password"
-                  className="block w-full pl-12 pr-12 py-3 sm:py-3.5 border border dark:border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-card text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-muted-foreground text-base"
+                  className="block w-full pl-12 pr-12 py-3 sm:py-3.5 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder-muted-foreground text-base"
                   placeholder="••••••••"
                 />
                 <button
@@ -324,20 +324,20 @@ export default function RegisterPage() {
                   className="absolute inset-y-0 right-0 pr-4 flex items-center touch-manipulation min-w-[48px] min-h-[48px] justify-center"
                 >
                   {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5 text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground" />
+                    <EyeOff className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                   ) : (
-                    <Eye className="h-5 w-5 text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground" />
+                    <Eye className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                   )}
                 </button>
               </div>
               {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="mt-1 text-xs text-destructive dark:text-destructive flex items-center gap-1">
+                <p className="mt-1 text-xs text-destructive flex items-center gap-1">
                   <XCircle className="w-3 h-3" />
                   Passwords do not match
                 </p>
               )}
               {formData.confirmPassword && formData.password === formData.confirmPassword && (
-                <p className="mt-1 text-xs text-success dark:text-success flex items-center gap-1">
+                <p className="mt-1 text-xs text-success flex items-center gap-1">
                   <CheckCircle className="w-3 h-3" />
                   Passwords match
                 </p>
@@ -354,13 +354,13 @@ export default function RegisterPage() {
                   checked={formData.agreeToTerms}
                   onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
                   data-testid="register-agree-terms"
-                  className="h-5 w-5 text-primary focus:ring-primary border dark:border rounded cursor-pointer touch-manipulation"
+                  className="h-5 w-5 text-primary focus:ring-primary border border-input rounded cursor-pointer touch-manipulation"
                 />
               </div>
               <div className="ml-3">
                 <label
                   htmlFor="agree-to-terms"
-                  className="text-sm text-foreground dark:text-muted-foreground cursor-pointer"
+                  className="text-sm text-foreground cursor-pointer"
                 >
                   I agree to the{" "}
                   <Link
@@ -387,7 +387,7 @@ export default function RegisterPage() {
               type="submit"
               disabled={isLoading}
               data-testid="register-submit"
-              className="w-full flex justify-center items-center gap-2 py-3.5 sm:py-4 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[48px] touch-manipulation"
+              className="w-full flex justify-center items-center gap-2 py-3.5 sm:py-4 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[48px] touch-manipulation"
             >
               {isLoading ? (
                 <>
@@ -404,10 +404,10 @@ export default function RegisterPage() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border dark:border"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-card text-muted-foreground dark:text-muted-foreground">
+                <span className="px-2 bg-card text-muted-foreground">
                   Already have an account?
                 </span>
               </div>
@@ -416,7 +416,7 @@ export default function RegisterPage() {
             <div className="mt-6">
               <Link
                 href="/login"
-                className="w-full flex justify-center py-3.5 sm:py-4 px-4 border border dark:border rounded-lg shadow-sm text-base font-medium text-foreground dark:text-muted-foreground bg-white dark:bg-card hover:bg-card dark:hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors min-h-[48px] touch-manipulation"
+                className="w-full flex justify-center py-3.5 sm:py-4 px-4 border border-input rounded-lg shadow-sm text-base font-medium text-foreground bg-card hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors min-h-[48px] touch-manipulation"
               >
                 Sign in to your account
               </Link>
@@ -426,7 +426,7 @@ export default function RegisterPage() {
 
         {/* Footer Links */}
         <div className="mt-6 text-center">
-          <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             By creating an account, you agree to receive emails about events, updates, and
             promotional offers.
           </p>

@@ -143,7 +143,7 @@ function CreditPurchaseForm({
         <button
           type="submit"
           disabled={isProcessing || !stripe || !elements}
-          className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
         >
           {isProcessing ? (
             <>
@@ -223,11 +223,11 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-lg shadow-xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto"
       >
         <div className="text-center mb-6">
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-            <ShoppingCart className="w-8 h-8 text-white" />
+            <ShoppingCart className="w-8 h-8 text-primary-foreground" />
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-2">Purchase More Credits</h2>
           <p className="text-muted-foreground">Choose the package that fits your needs</p>
@@ -247,7 +247,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
               }`}
             >
               {pkg.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
                   POPULAR
                 </div>
               )}
@@ -257,7 +257,7 @@ export function PurchaseCreditsModal({ onClose, onSuccess }: PurchaseCreditsModa
               <p className="text-xs text-muted-foreground">$0.30 per ticket</p>
               {selectedPackage.credits === pkg.credits && (
                 <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <Check className="w-4 h-4 text-white" />
+                  <Check className="w-4 h-4 text-primary-foreground" />
                 </div>
               )}
             </button>

@@ -114,7 +114,7 @@ export default function TableShapePalette({
                   layoutId="selected-table-shape"
                   className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center"
                 >
-                  <div className="w-2 h-2 bg-white rounded-full" />
+                  <div className="w-2 h-2 bg-primary-foreground rounded-full" />
                 </motion.div>
               )}
 

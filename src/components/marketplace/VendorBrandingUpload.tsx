@@ -159,17 +159,17 @@ export function VendorBrandingUpload({
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+          <div className="absolute inset-0 bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
             <label
               htmlFor={`vendor-branding-upload-${label.toLowerCase().replace(/\s/g, "-")}`}
-              className="px-3 py-1.5 bg-white/90 rounded text-sm font-medium hover:bg-white transition-colors cursor-pointer"
+              className="px-3 py-1.5 bg-card/90 rounded text-sm font-medium hover:bg-card transition-colors cursor-pointer"
             >
               Replace
             </label>
             <button
               type="button"
               onClick={removeImage}
-              className="p-2 bg-destructive/100 text-white rounded hover:bg-destructive transition-colors"
+              className="p-2 bg-destructive/100 text-destructive-foreground rounded hover:bg-destructive transition-colors"
             >
               <X className="w-4 h-4" />
             </button>

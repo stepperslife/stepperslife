@@ -125,14 +125,14 @@ export function CapacityAwareTicketEditor({
           />
 
           {/* Ticket Breakdown Summary */}
-          <div className="mt-4 p-4 bg-card dark:bg-card rounded-lg">
-            <h4 className="text-sm font-semibold text-foreground dark:text-white mb-2">
+          <div className="mt-4 p-4 bg-card rounded-lg">
+            <h4 className="text-sm font-semibold text-foreground mb-2">
               Ticket Breakdown:
             </h4>
-            <div className="space-y-1 text-sm text-muted-foreground dark:text-muted-foreground">
+            <div className="space-y-1 text-sm text-muted-foreground">
               <div className="flex justify-between">
                 <span>Total Capacity:</span>
-                <span className="font-semibold text-foreground dark:text-white">
+                <span className="font-semibold text-foreground">
                   {totalAllocated} tickets
                 </span>
               </div>
@@ -158,7 +158,7 @@ export function CapacityAwareTicketEditor({
       {/* Quick Add Presets */}
       {showPresets && tiers.length === 0 && (
         <div className="bg-accent border border-primary/20 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-foreground dark:text-white mb-3">Quick Start:</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-3">Quick Start:</h3>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -169,7 +169,7 @@ export function CapacityAwareTicketEditor({
                   quantity: capacity > 0 ? Math.floor(capacity * 0.7).toString() : "100",
                 })
               }
-              className="px-3 py-2 text-sm bg-white dark:bg-card border border dark:border rounded-lg hover:bg-card dark:hover:bg-muted transition-colors"
+              className="px-3 py-2 text-sm bg-card border border rounded-lg hover:bg-muted transition-colors"
             >
               General Admission
             </button>
@@ -182,7 +182,7 @@ export function CapacityAwareTicketEditor({
                   quantity: capacity > 0 ? Math.floor(capacity * 0.3).toString() : "50",
                 })
               }
-              className="px-3 py-2 text-sm bg-white dark:bg-card border border dark:border rounded-lg hover:bg-card dark:hover:bg-muted transition-colors"
+              className="px-3 py-2 text-sm bg-card border border rounded-lg hover:bg-muted transition-colors"
             >
               VIP
             </button>
@@ -200,11 +200,11 @@ export function CapacityAwareTicketEditor({
           return (
             <div
               key={tier.id}
-              className="border border dark:border rounded-lg overflow-hidden bg-white dark:bg-card"
+              className="border border rounded-lg overflow-hidden bg-card"
             >
               {/* Tier Header */}
               <div
-                className="p-4 cursor-pointer hover:bg-card dark:hover:bg-muted transition-colors"
+                className="p-4 cursor-pointer hover:bg-muted transition-colors"
                 onClick={() => toggleExpanded(tier.id)}
               >
                 <div className="flex items-center justify-between">
@@ -213,10 +213,10 @@ export function CapacityAwareTicketEditor({
                       <Ticket className="w-4 h-4 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-foreground dark:text-white truncate">
+                      <h4 className="font-semibold text-foreground truncate">
                         {tier.name || `Untitled Tier ${index + 1}`}
                       </h4>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground dark:text-muted-foreground mt-1">
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
                         {tierCapacity > 0 && (
                           <div className="flex items-center gap-1">
                             <Users className="w-3.5 h-3.5" />
@@ -243,7 +243,7 @@ export function CapacityAwareTicketEditor({
                         e.stopPropagation();
                         removeTier(tier.id);
                       }}
-                      className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded-lg transition-colors"
+                      className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                       title="Delete tier"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -259,10 +259,10 @@ export function CapacityAwareTicketEditor({
 
               {/* Tier Details (Expanded) */}
               {isExpanded && (
-                <div className="border-t border dark:border p-4 space-y-4 bg-card dark:bg-background">
+                <div className="border-t border p-4 space-y-4 bg-card">
                   {/* Name */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-1">
+                    <label className="block text-sm font-medium text-foreground mb-1">
                       Ticket Name *
                     </label>
                     <input
@@ -270,13 +270,13 @@ export function CapacityAwareTicketEditor({
                       value={tier.name}
                       onChange={(e) => updateTier(tier.id, "name", e.target.value)}
                       placeholder="e.g., General Admission, VIP, Early Bird"
-                      className="w-full px-3 py-2 border border dark:border bg-white dark:bg-card text-foreground dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-full px-3 py-2 border border bg-card text-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
                   </div>
 
                   {/* Description */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-1">
+                    <label className="block text-sm font-medium text-foreground mb-1">
                       Description (Optional)
                     </label>
                     <textarea
@@ -284,14 +284,14 @@ export function CapacityAwareTicketEditor({
                       onChange={(e) => updateTier(tier.id, "description", e.target.value)}
                       placeholder="Describe what's included with this ticket..."
                       rows={2}
-                      className="w-full px-3 py-2 border border dark:border bg-white dark:bg-card text-foreground dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-full px-3 py-2 border border bg-card text-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
                   </div>
 
                   {/* Price & Quantity */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Price *
                       </label>
                       <div className="relative">
@@ -305,16 +305,16 @@ export function CapacityAwareTicketEditor({
                           placeholder="25.00"
                           step="0.01"
                           min="0"
-                          className="w-full pl-8 pr-3 py-2 border border dark:border bg-white dark:bg-card text-foreground dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                          className="w-full pl-8 pr-3 py-2 border border bg-card text-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                         />
                       </div>
-                      <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Price per ticket
                       </p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Quantity *
                       </label>
                       <input
@@ -323,16 +323,16 @@ export function CapacityAwareTicketEditor({
                         onChange={(e) => updateTier(tier.id, "quantity", e.target.value)}
                         placeholder="100"
                         min="1"
-                        className="w-full px-3 py-2 border border dark:border bg-white dark:bg-card text-foreground dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="w-full px-3 py-2 border border bg-card text-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                       />
-                      <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {tier.isTablePackage ? "Number of tables" : "Number of tickets"}
                       </p>
                     </div>
                   </div>
 
                   {/* Table Package Checkbox */}
-                  <div className="border border dark:border rounded-lg p-4 bg-white dark:bg-card">
+                  <div className="border border rounded-lg p-4 bg-card">
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
@@ -346,10 +346,10 @@ export function CapacityAwareTicketEditor({
                         className="mt-0.5 w-5 h-5 text-primary focus:ring-2 focus:ring-primary rounded"
                       />
                       <div className="flex-1">
-                        <div className="text-sm font-medium text-foreground dark:text-white">
+                        <div className="text-sm font-medium text-foreground">
                           This is a table package
                         </div>
-                        <div className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
+                        <div className="text-xs text-muted-foreground mt-1">
                           Sell complete tables instead of individual tickets
                         </div>
                       </div>
@@ -358,7 +358,7 @@ export function CapacityAwareTicketEditor({
                     {/* Seats per Table (if table package) */}
                     {tier.isTablePackage && (
                       <div className="mt-4">
-                        <label className="block text-sm font-medium text-foreground dark:text-muted-foreground mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                           Seats per Table *
                         </label>
                         <select
@@ -366,7 +366,7 @@ export function CapacityAwareTicketEditor({
                           onChange={(e) =>
                             updateTier(tier.id, "seatsPerTable", parseInt(e.target.value))
                           }
-                          className="w-full px-3 py-2 border border dark:border bg-white dark:bg-card text-foreground dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                          className="w-full px-3 py-2 border border bg-card text-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                         >
                           <option value="2">2 seats per table</option>
                           <option value="4">4 seats per table</option>
@@ -375,7 +375,7 @@ export function CapacityAwareTicketEditor({
                           <option value="10">10 seats per table</option>
                           <option value="12">12 seats per table</option>
                         </select>
-                        <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           = {getTierCapacity(tier)} total seats ({tier.quantity} tables ×{" "}
                           {tier.seatsPerTable} seats)
                         </p>
@@ -384,7 +384,7 @@ export function CapacityAwareTicketEditor({
                   </div>
 
                   {/* Early Bird Pricing Section */}
-                  <div className="mt-4 pt-4 border-t border dark:border">
+                  <div className="mt-4 pt-4 border-t border">
                     <PricingTierForm
                       tiers={tier.pricingTiers || []}
                       onChange={(pricingTiers) => updateTierPricing(tier.id, pricingTiers)}
@@ -403,7 +403,7 @@ export function CapacityAwareTicketEditor({
         <button
           type="button"
           onClick={addTier}
-          className="w-full py-3 border-2 border-dashed border dark:border rounded-lg hover:border-primary hover:bg-accent transition-colors flex items-center justify-center gap-2 text-muted-foreground dark:text-muted-foreground hover:text-primary font-medium"
+          className="w-full py-3 border-2 border-dashed border rounded-lg hover:border-primary hover:bg-accent transition-colors flex items-center justify-center gap-2 text-muted-foreground hover:text-primary font-medium"
         >
           <Plus className="w-5 h-5" />
           Add Ticket Tier
