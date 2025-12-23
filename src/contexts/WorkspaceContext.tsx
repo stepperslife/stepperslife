@@ -238,6 +238,7 @@ export function WorkspaceProvider({
         admin: "/admin",
         organizer: "/organizer/dashboard",
         restaurateur: "/restaurateur/dashboard",
+        vendor: "/vendor/dashboard",
         user: "/user/dashboard",
         STAFF: "/staff/dashboard",
         TEAM_MEMBERS: "/team/dashboard",

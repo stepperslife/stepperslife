@@ -39,6 +39,9 @@ export interface Workspace {
 
   /** Description shown in workspace switcher */
   description: string;
+
+  /** Whether to exclude this workspace from admin view */
+  excludeFromAdmin?: boolean;
 }
 
 /**
@@ -75,20 +78,22 @@ export const WORKSPACES: Workspace[] = [
     bgColor: "bg-green-500",
     textColor: "text-green-500",
     borderColor: "border-green-500",
-    roles: [], // Vendor role coming soon
+    roles: ["vendor"],
     defaultPath: "/vendor/dashboard",
     description: "Manage products & sales",
   },
   {
     id: "customer",
-    name: "Customer",
+    name: "My Account",
     icon: User,
     bgColor: "bg-blue-500",
     textColor: "text-blue-500",
     borderColor: "border-blue-500",
     roles: ["user"],
     defaultPath: "/user/dashboard",
-    description: "Browse events & tickets",
+    description: "My tickets & orders",
+    // Note: This workspace is for regular users only, not admin
+    excludeFromAdmin: true,
   },
   {
     id: "admin",
@@ -128,9 +133,9 @@ export function getUserWorkspaces(user: NavUser): Workspace[] {
     user.staffRoles.forEach((role) => userRoles.add(role));
   }
 
-  // Admin has access to all workspaces
+  // Admin has access to all workspaces except those marked excludeFromAdmin
   if (user.role === "admin") {
-    return WORKSPACES.filter((ws) => ws.roles.length > 0);
+    return WORKSPACES.filter((ws) => ws.roles.length > 0 && !ws.excludeFromAdmin);
   }
 
   // Filter workspaces where user has at least one role
@@ -180,6 +185,7 @@ export function getWorkspaceDefaultPath(
     admin: "/admin",
     organizer: "/organizer/dashboard",
     restaurateur: "/restaurateur/dashboard",
+    vendor: "/vendor/dashboard",
     user: "/user/dashboard",
     STAFF: "/staff/dashboard",
     TEAM_MEMBERS: "/team/dashboard",
@@ -205,6 +211,7 @@ export function getRoleDisplayName(role: AllRoles): string {
     admin: "Administrator",
     organizer: "Event Organizer",
     restaurateur: "Restaurant Partner",
+    vendor: "Store Owner",
     user: "Customer",
     STAFF: "Event Staff",
     TEAM_MEMBERS: "Team Member",
@@ -221,6 +228,7 @@ export function getRoleDescription(role: AllRoles): string {
     admin: "Full platform access",
     organizer: "Create and manage events",
     restaurateur: "Manage restaurant orders",
+    vendor: "Manage products & sales",
     user: "Browse and purchase tickets",
     STAFF: "Scan tickets at events",
     TEAM_MEMBERS: "Distribute tickets to team",
