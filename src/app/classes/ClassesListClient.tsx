@@ -415,136 +415,177 @@ export default function ClassesListClient() {
               {/* Filter Dropdowns */}
               <div className="flex items-center gap-2">
                 {/* Type Filter Dropdown */}
+                {/* Type Filter - Inline Pills */}
+                <div className="hidden sm:flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                  {CLASS_TYPES.map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => toggleType(type)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                        selectedTypes.includes(type)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Type Filter - Mobile Dropdown */}
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      className={`h-9 gap-1 ${selectedTypes.length > 0 ? "border-primary text-primary" : ""}`}
+                      className={`h-9 gap-1 sm:hidden ${selectedTypes.length > 0 ? "border-primary text-primary" : ""}`}
                     >
                       <Tag className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Type</span>
                       {selectedTypes.length > 0 && (
-                        <span className="ml-1 rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
+                        <span className="rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
                           {selectedTypes.length}
                         </span>
                       )}
                       <ChevronDown className="w-3.5 h-3.5 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-48 p-2" align="start">
-                    <div className="space-y-1">
+                  <PopoverContent className="w-auto p-2" align="start">
+                    <div className="flex flex-wrap gap-1.5">
                       {CLASS_TYPES.map((type) => (
-                        <label
-                          key={type}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer"
-                        >
-                          <Checkbox
-                            checked={selectedTypes.includes(type)}
-                            onCheckedChange={() => toggleType(type)}
-                          />
-                          <span className="text-sm">{type}</span>
-                        </label>
-                      ))}
-                      {selectedTypes.length > 0 && (
                         <button
+                          key={type}
                           type="button"
-                          onClick={() => setSelectedTypes([])}
-                          className="w-full text-xs text-muted-foreground hover:text-foreground py-1 mt-1 border-t border-border"
+                          onClick={() => toggleType(type)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                            selectedTypes.includes(type)
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-accent"
+                          }`}
                         >
-                          Clear all
+                          {type}
                         </button>
-                      )}
+                      ))}
                     </div>
                   </PopoverContent>
                 </Popover>
 
-                {/* Level Filter Dropdown */}
+                {/* Divider */}
+                <div className="hidden sm:block w-px h-6 bg-border" />
+
+                {/* Level Filter - Inline Pills */}
+                <div className="hidden sm:flex items-center gap-1.5">
+                  <Award className="w-3.5 h-3.5 text-muted-foreground" />
+                  {LEVEL_TYPES.map((level) => (
+                    <button
+                      key={level}
+                      type="button"
+                      onClick={() => toggleLevel(level)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                        selectedLevels.includes(level)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Level Filter - Mobile Dropdown */}
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      className={`h-9 gap-1 ${selectedLevels.length > 0 ? "border-primary text-primary" : ""}`}
+                      className={`h-9 gap-1 sm:hidden ${selectedLevels.length > 0 ? "border-primary text-primary" : ""}`}
                     >
                       <Award className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Level</span>
                       {selectedLevels.length > 0 && (
-                        <span className="ml-1 rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
+                        <span className="rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
                           {selectedLevels.length}
                         </span>
                       )}
                       <ChevronDown className="w-3.5 h-3.5 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-48 p-2" align="start">
-                    <div className="space-y-1">
+                  <PopoverContent className="w-auto p-2" align="start">
+                    <div className="flex flex-wrap gap-1.5">
                       {LEVEL_TYPES.map((level) => (
-                        <label
-                          key={level}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer"
-                        >
-                          <Checkbox
-                            checked={selectedLevels.includes(level)}
-                            onCheckedChange={() => toggleLevel(level)}
-                          />
-                          <span className="text-sm">{level}</span>
-                        </label>
-                      ))}
-                      {selectedLevels.length > 0 && (
                         <button
+                          key={level}
                           type="button"
-                          onClick={() => setSelectedLevels([])}
-                          className="w-full text-xs text-muted-foreground hover:text-foreground py-1 mt-1 border-t border-border"
+                          onClick={() => toggleLevel(level)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                            selectedLevels.includes(level)
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-accent"
+                          }`}
                         >
-                          Clear all
+                          {level}
                         </button>
-                      )}
+                      ))}
                     </div>
                   </PopoverContent>
                 </Popover>
 
-                {/* Day Filter Dropdown */}
+                {/* Divider */}
+                <div className="hidden sm:block w-px h-6 bg-border" />
+
+                {/* Day Filter - Inline Pills */}
+                <div className="hidden md:flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                  {DAY_NAMES.map((day, index) => (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => toggleDay(index)}
+                      className={`w-8 h-7 rounded-md text-xs font-medium transition-colors ${
+                        selectedDays.includes(index)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      }`}
+                    >
+                      {day.slice(0, 2)}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Day Filter - Tablet/Mobile Dropdown */}
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      className={`h-9 gap-1 ${selectedDays.length > 0 ? "border-primary text-primary" : ""}`}
+                      className={`h-9 gap-1 md:hidden ${selectedDays.length > 0 ? "border-primary text-primary" : ""}`}
                     >
                       <Calendar className="w-3.5 h-3.5" />
                       <span className="hidden sm:inline">Day</span>
                       {selectedDays.length > 0 && (
-                        <span className="ml-1 rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
+                        <span className="rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
                           {selectedDays.length}
                         </span>
                       )}
                       <ChevronDown className="w-3.5 h-3.5 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-48 p-2" align="start">
-                    <div className="space-y-1">
+                  <PopoverContent className="w-auto p-2" align="start">
+                    <div className="flex flex-wrap gap-1.5">
                       {DAY_NAMES.map((day, index) => (
-                        <label
-                          key={day}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer"
-                        >
-                          <Checkbox
-                            checked={selectedDays.includes(index)}
-                            onCheckedChange={() => toggleDay(index)}
-                          />
-                          <span className="text-sm">{day}</span>
-                        </label>
-                      ))}
-                      {selectedDays.length > 0 && (
                         <button
+                          key={day}
                           type="button"
-                          onClick={() => setSelectedDays([])}
-                          className="w-full text-xs text-muted-foreground hover:text-foreground py-1 mt-1 border-t border-border"
+                          onClick={() => toggleDay(index)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                            selectedDays.includes(index)
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-accent"
+                          }`}
                         >
-                          Clear all
+                          {day.slice(0, 3)}
                         </button>
-                      )}
+                      ))}
                     </div>
                   </PopoverContent>
                 </Popover>
