@@ -122,7 +122,7 @@ export default function EventsFeaturesPage() {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
             >
-              Sell Out Your
+              Stop Leaving Money
               <motion.span
                 className="block text-warning"
                 animate={{
@@ -134,7 +134,7 @@ export default function EventsFeaturesPage() {
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                Events
+                at the Door
               </motion.span>
             </motion.h1>
 
@@ -144,8 +144,7 @@ export default function EventsFeaturesPage() {
               transition={{ delay: 0.5, duration: 0.8 }}
               className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-12"
             >
-              Professional ticketing, QR code scanning, staff management, and real-time analytics.
-              Everything you need to host unforgettable stepping events.
+              Tickets sell while you sleep. Guests scan in seconds. You keep the money.
             </motion.p>
 
             <motion.div
@@ -367,56 +366,56 @@ export default function EventsFeaturesPage() {
             {[
               {
                 icon: Ticket,
-                title: "Online Ticket Sales",
-                description: "Sell tickets 24/7. Instant digital delivery. No more lost tickets or long lines.",
+                title: "Tickets Sell While You Sleep",
+                description: "No more ticket tables. Guests buy at 2am and you wake up to money.",
                 color: "bg-primary",
               },
               {
                 icon: QrCode,
-                title: "QR Code Check-in",
-                description: "Scan tickets at the door in seconds. Know exactly who's there in real-time.",
+                title: "2-Second Check-ins",
+                description: "Say goodbye to clipboards and long lines. Scan, beep, done.",
                 color: "bg-success",
               },
               {
                 icon: Users,
-                title: "Staff Management",
-                description: "Add ticket sellers with unique codes. Track sales and commissions automatically.",
+                title: "Your Team Sells For You",
+                description: "Give sellers their own links. Track every sale. Pay commissions automatically.",
                 color: "bg-warning",
               },
               {
                 icon: CreditCard,
-                title: "Multiple Payment Options",
-                description: "Accept Stripe, PayPal, and cash. Customers pay how they want.",
+                title: "Never Turn Down Money",
+                description: "Stripe, PayPal, cash at the door—customers pay how they want.",
                 color: "bg-purple-500",
               },
               {
                 icon: BarChart3,
-                title: "Real-Time Analytics",
-                description: "Watch sales happen live. Know your best sellers. Make smarter decisions.",
+                title: "Know Your Numbers Instantly",
+                description: "See exactly how your event is selling, right now, from your phone.",
                 color: "bg-pink-500",
               },
               {
                 icon: Bell,
-                title: "Automated Emails",
-                description: "Confirmation emails, reminders, and receipts sent automatically.",
+                title: "Never Chase Tickets Again",
+                description: "Confirmations, reminders, receipts—all sent automatically.",
                 color: "bg-cyan-500",
               },
               {
                 icon: Globe,
-                title: "Public Event Pages",
-                description: "Beautiful event pages that look great when shared on social media.",
+                title: "Share Once, Sell Forever",
+                description: "One link that looks amazing on Instagram, Facebook, or text.",
                 color: "bg-orange-500",
               },
               {
                 icon: Gift,
-                title: "Bundle Deals",
-                description: "Create ticket bundles and group discounts to boost sales.",
+                title: "Sell More Per Transaction",
+                description: "VIP tables, group deals, early bird—boost your average sale.",
                 color: "bg-red-500",
               },
               {
                 icon: Target,
-                title: "Waitlist Management",
-                description: "Capture interest when sold out. Notify when spots open up.",
+                title: "Sold Out? Keep Selling",
+                description: "Capture emails when you sell out. Notify them when spots open.",
                 color: "bg-emerald-500",
               },
             ].map((feature, index) => (
@@ -464,18 +463,18 @@ export default function EventsFeaturesPage() {
             {[
               {
                 step: "01",
-                title: "Create Your Event",
-                description: "Add your event details, upload your flyer, and set your ticket prices. Takes about 5 minutes.",
+                title: "5 Minutes to Your First Sale",
+                description: "Upload your flyer, set your price, and you're live.",
               },
               {
                 step: "02",
-                title: "Share Your Link",
-                description: "Get a custom event page you can share on social media, text, or email. Tickets sell 24/7.",
+                title: "One Link Does It All",
+                description: "Share on IG, text it, email it. Tickets sell 24/7.",
               },
               {
                 step: "03",
-                title: "Check-in & Get Paid",
-                description: "Scan tickets at the door with your phone. Money goes directly to your account.",
+                title: "Money Hits Your Account",
+                description: "Scan guests with your phone. Money goes straight to you.",
               },
             ].map((item, index) => (
               <motion.div
@@ -512,10 +511,10 @@ export default function EventsFeaturesPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Simple, Fair <span className="text-primary">Pricing</span>
+              Pay Only When <span className="text-primary">You Sell</span>
             </h2>
             <p className="text-xl text-muted-foreground">
-              No monthly fees. Only pay when you sell tickets.
+              Zero upfront cost. Zero monthly fees. We only make money when you do.
             </p>
           </motion.div>
 
@@ -645,11 +644,10 @@ export default function EventsFeaturesPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              Ready to Sell Out Your Next Event?
+              Your Next Sold-Out Event Starts Here
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Join hundreds of promoters who trust SteppersLife for their events.
-              Start free today.
+              500+ promoters already moved on from clipboards and cash boxes. It's your turn.
             </p>
             <motion.div
               whileHover={{ scale: 1.05 }}

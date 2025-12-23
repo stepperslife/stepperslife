@@ -139,12 +139,12 @@ export default function ClassesFeaturesPage() {
               transition={{ delay: 0.3 }}
               className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
             >
-              Teach What You
+              Get Paid to Share
               <motion.span
                 className="block text-white"
                 style={{ textShadow: "0 0 40px rgba(255,255,255,0.5)" }}
               >
-                Love
+                Your Gift
               </motion.span>
             </motion.h1>
 
@@ -154,8 +154,7 @@ export default function ClassesFeaturesPage() {
               transition={{ delay: 0.5 }}
               className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-12"
             >
-              Manage your steppin, line dancing, or walking classes with ease.
-              Online registration, automatic payments, and student management all in one place.
+              Students sign up online. Payments hit your account automatically. You just show up and teach.
             </motion.p>
 
             <motion.div
@@ -428,10 +427,10 @@ export default function ClassesFeaturesPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Focus on Teaching, <span className="text-warning">Not Admin</span>
+              Stop Being <span className="text-warning">Your Own Secretary</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              We handle the business side so you can focus on what you love—teaching dance.
+              No more spreadsheets. No more payment chasing. Just teaching.
             </p>
           </motion.div>
 
@@ -439,48 +438,48 @@ export default function ClassesFeaturesPage() {
             {[
               {
                 icon: Calendar,
-                title: "Recurring Schedules",
-                description: "Set your class for every Tuesday at 7PM. Students know exactly when to show up.",
+                title: "Set It Once, Teach Forever",
+                description: "Every Tuesday at 7PM? Done. Students always know when to show up.",
               },
               {
                 icon: Users,
-                title: "Student Management",
-                description: "Track enrollments, attendance, and student progress all in one dashboard.",
+                title: "Know Your Students",
+                description: "See who's enrolled, who shows up, and who's ready for the next level.",
               },
               {
                 icon: CreditCard,
-                title: "Online Payments",
-                description: "Students pay online when they register. No more chasing down payments.",
+                title: "Get Paid Upfront, Every Time",
+                description: "Students pay when they sign up. No awkward money conversations.",
               },
               {
                 icon: Bell,
-                title: "Class Reminders",
-                description: "Automatic email reminders so students never forget class.",
+                title: "Fill Every Class",
+                description: "Automatic reminders mean fewer no-shows and fuller dance floors.",
               },
               {
                 icon: MapPin,
-                title: "Venue Listings",
-                description: "Show your location with maps so students can find you easily.",
+                title: "Students Find You",
+                description: "Your studio on the map. No more \"where do I go?\" texts.",
               },
               {
                 icon: Repeat,
-                title: "Drop-in or Series",
-                description: "Offer single classes or multi-week series. You choose.",
+                title: "Flexible Income Streams",
+                description: "Single drop-ins or 8-week series. Stack your income your way.",
               },
               {
                 icon: BarChart3,
-                title: "Revenue Tracking",
-                description: "See how much you're earning. Track your most popular classes.",
+                title: "See What's Working",
+                description: "Know which classes make money and which students come back.",
               },
               {
                 icon: Star,
-                title: "Build Your Rep",
-                description: "Collect reviews and build your reputation as an instructor.",
+                title: "Let Your Students Sell For You",
+                description: "Reviews from happy students bring in new dancers automatically.",
               },
               {
                 icon: MessageSquare,
-                title: "Student Communication",
-                description: "Send updates and announcements to all your students at once.",
+                title: "One Message, All Students",
+                description: "Class moved? Room change? Tell everyone in one click.",
               },
             ].map((feature, index) => (
               <motion.div
@@ -525,9 +524,9 @@ export default function ClassesFeaturesPage() {
 
               <div className="space-y-6">
                 {[
-                  { metric: "$3,200", label: "Average monthly revenue for active instructors" },
-                  { metric: "24", label: "Average students per class" },
-                  { metric: "85%", label: "Student retention rate" },
+                  { metric: "$3,200/mo", label: "From teaching what you love" },
+                  { metric: "24", label: "Students per class—that's community" },
+                  { metric: "85%", label: "Come back—because you're that good" },
                 ].map((stat, index) => (
                   <motion.div
                     key={stat.label}
@@ -706,10 +705,10 @@ export default function ClassesFeaturesPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              Your Students Are Waiting
+              Your Future Students Are Already Looking
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Start your class today and share your love of dance with the community.
+              Somewhere right now, someone wants to learn what you teach. Help them find you.
             </p>
             <motion.div
               whileHover={{ scale: 1.05 }}

@@ -117,44 +117,44 @@ export default function MarketplaceFeaturesPage() {
   const features = [
     {
       icon: Store,
-      title: "Your Own Storefront",
+      title: "Your Brand, Front and Center",
       description:
-        "Create a beautiful branded store page with your logo, banner, and custom colors.",
+        "Your logo. Your colors. Your story. Customers see YOU—not a generic marketplace.",
       color: "from-purple-500 to-indigo-500",
     },
     {
       icon: Package,
-      title: "Product Management",
+      title: "List Everything You Sell",
       description:
-        "List unlimited products with variants, inventory tracking, and bulk editing.",
+        "Dresses, shoes, accessories—add unlimited products in minutes, not hours.",
       color: "from-blue-500 to-cyan-500",
     },
     {
       icon: Truck,
-      title: "Flexible Shipping",
+      title: "Ship Your Way",
       description:
-        "Set flat rates, free shipping thresholds, or calculate rates by weight and distance.",
+        "Flat rate, free over $50, calculated by weight—you set the rules.",
       color: "from-green-500 to-emerald-500",
     },
     {
       icon: CreditCard,
-      title: "Instant Payouts",
+      title: "Money When You Need It",
       description:
-        "Get paid directly to your bank account with fast, secure Stripe payments.",
+        "Sales hit your bank account fast. No waiting around for your money.",
       color: "from-orange-500 to-red-500",
     },
     {
       icon: BarChart3,
-      title: "Sales Analytics",
+      title: "See What's Selling",
       description:
-        "Track views, conversions, best sellers, and revenue with detailed dashboards.",
+        "Know your bestsellers. Spot trends. Double down on what works.",
       color: "from-pink-500 to-rose-500",
     },
     {
       icon: Shield,
-      title: "Seller Protection",
+      title: "Sell Without Worry",
       description:
-        "Secure transactions, dispute resolution, and fraud prevention built-in.",
+        "Secure payments. Fraud protection. We've got your back so you can focus on selling.",
       color: "from-indigo-500 to-purple-500",
     },
   ];
@@ -254,10 +254,10 @@ export default function MarketplaceFeaturesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Sell to the{" "}
+              Your Customers Are{" "}
               <span className="relative">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300">
-                  Stepping Community
+                  Already Here
                 </span>
                 <motion.span
                   className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 rounded-full"
@@ -274,8 +274,7 @@ export default function MarketplaceFeaturesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Open your own storefront on the #1 marketplace for steppers.
-              Sell fashion, accessories, dance shoes, and more to a passionate community.
+              25,000+ buyers who love stepping. Your store right in front of them. No marketing required.
             </motion.p>
 
             <motion.div
@@ -434,10 +433,10 @@ export default function MarketplaceFeaturesPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Powerful Seller Tools
+              Run Your Store Like a Pro
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to build and grow your online business
+              No e-commerce experience required. We handle the tech—you handle the products.
             </p>
           </motion.div>
 
@@ -701,10 +700,10 @@ export default function MarketplaceFeaturesPage() {
             className="text-center mb-12"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Fair & Transparent Pricing
+              Keep 90% of Every Sale
             </h2>
             <p className="text-xl text-white/80">
-              Low fees so you keep more of what you earn
+              Low 10% commission. No hidden fees. No monthly charges.
             </p>
           </motion.div>
 
@@ -864,11 +863,10 @@ export default function MarketplaceFeaturesPage() {
             </motion.div>
 
             <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              Ready to Start Selling?
+              Your First Sale Could Be Today
             </h2>
             <p className="text-xl text-white/80 mb-10">
-              Join hundreds of vendors making sales to the stepping community.
-              Your next customer is waiting.
+              Right now, someone is looking for exactly what you sell. Get your store in front of them.
             </p>
 
             <motion.div

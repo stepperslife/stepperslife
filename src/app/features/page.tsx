@@ -40,32 +40,32 @@ import {
 const heroSlides = [
   {
     image: "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=1920&q=80",
-    title: "Sell Out Your Events",
-    subtitle: "Professional ticketing and QR scanning for stepping events",
+    title: "Fill Every Seat, Every Time",
+    subtitle: "Stop worrying about door chaos—sell tickets online and scan guests in seconds",
     cta: "Create Event",
     href: "/organizer/events/create",
     accent: "primary",
   },
   {
     image: "https://images.unsplash.com/photo-1547153760-18fc86324498?w=1920&q=80",
-    title: "Teach Dance Classes",
-    subtitle: "Manage enrollments, payments, and build your student community",
+    title: "Turn Your Passion Into Steady Income",
+    subtitle: "Get paid automatically while you focus on what you love—teaching",
     cta: "Start Teaching",
     href: "/organizer/classes/create",
     accent: "warning",
   },
   {
     image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1920&q=80",
-    title: "Serve Soul Food",
-    subtitle: "Online ordering and menu management for restaurants",
+    title: "More Orders, Less Hassle",
+    subtitle: "Customers order from their phones. You just cook.",
     cta: "List Restaurant",
     href: "/restaurants/apply",
     accent: "success",
   },
   {
     image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80",
-    title: "Sell to Steppers",
-    subtitle: "Open your store and reach the stepping community",
+    title: "Reach Thousands of Ready Buyers",
+    subtitle: "Your products in front of customers who actually want them",
     cta: "Open Store",
     href: "/vendor/apply",
     accent: "purple",
@@ -277,10 +277,10 @@ export default function FeaturesPage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Four Powerful Products, One Platform
+              Everything You Need to Succeed—All in One Place
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Choose the tools that fit your needs, or use them all together for the ultimate community experience.
+              Stop juggling multiple apps. Run your entire business from one dashboard.
             </p>
           </motion.div>
 
@@ -305,12 +305,12 @@ export default function FeaturesPage() {
 
                 <div className="space-y-4 mb-8">
                   {[
-                    { icon: Ticket, text: "Sell tickets online with instant delivery" },
-                    { icon: QrCode, text: "QR code scanning for fast check-in" },
-                    { icon: Users, text: "Manage staff and ticket sellers with commissions" },
-                    { icon: CreditCard, text: "Accept payments via Stripe & PayPal" },
-                    { icon: BarChart3, text: "Real-time sales analytics and reports" },
-                    { icon: Bell, text: "Automated email confirmations" },
+                    { icon: Ticket, text: "Sell tickets 24/7—even while you sleep" },
+                    { icon: QrCode, text: "No more clipboards—scan guests in 2 seconds flat" },
+                    { icon: Users, text: "Let your team sell for you and track every dollar automatically" },
+                    { icon: CreditCard, text: "Get paid your way—customers choose how to pay" },
+                    { icon: BarChart3, text: "Know exactly how your event is selling, right now" },
+                    { icon: Bell, text: "Never chase down tickets again—they're sent automatically" },
                   ].map((feature, index) => (
                     <motion.div
                       key={index}
@@ -493,12 +493,12 @@ export default function FeaturesPage() {
 
                 <div className="space-y-4 mb-8">
                   {[
-                    { icon: Calendar, text: "Schedule recurring classes by day of week" },
-                    { icon: Users, text: "Manage student enrollments and payments" },
-                    { icon: DollarSign, text: "Set your own pricing and enrollment limits" },
-                    { icon: Bell, text: "Send class reminders automatically" },
-                    { icon: MapPin, text: "List your venue location with maps" },
-                    { icon: Star, text: "Build your reputation with student reviews" },
+                    { icon: Calendar, text: "Set it once, students know exactly when to show up" },
+                    { icon: Users, text: "No more chasing payments—get paid when students sign up" },
+                    { icon: DollarSign, text: "You're in control—charge what you're worth" },
+                    { icon: Bell, text: "Empty classes? Not anymore—reminders sent automatically" },
+                    { icon: MapPin, text: "Students find you easily—no more lost dancers" },
+                    { icon: Star, text: "Let happy students sell your classes for you" },
                   ].map((feature, index) => (
                     <motion.div
                       key={index}
@@ -556,12 +556,12 @@ export default function FeaturesPage() {
 
                 <div className="space-y-4 mb-8">
                   {[
-                    { icon: Smartphone, text: "Mobile-friendly online ordering" },
-                    { icon: Clock, text: "Real-time order management dashboard" },
-                    { icon: DollarSign, text: "Keep 100% of your sales (minus processing)" },
-                    { icon: Bell, text: "Instant order notifications" },
-                    { icon: BarChart3, text: "Sales reports and popular item tracking" },
-                    { icon: Users, text: "Customer order history and repeat orders" },
+                    { icon: Smartphone, text: "Customers order from their couch—you just cook" },
+                    { icon: Clock, text: "See orders the second they come in" },
+                    { icon: DollarSign, text: "Keep more of what you earn—no hidden fees" },
+                    { icon: Bell, text: "Never miss an order—get alerts on your phone" },
+                    { icon: BarChart3, text: "Know what's selling and what's not" },
+                    { icon: Users, text: "Turn first-timers into regulars automatically" },
                   ].map((feature, index) => (
                     <motion.div
                       key={index}
@@ -711,12 +711,12 @@ export default function FeaturesPage() {
 
                 <div className="space-y-4 mb-8">
                   {[
-                    { icon: Globe, text: "Reach customers across the stepping community" },
-                    { icon: CreditCard, text: "Secure payments with buyer protection" },
-                    { icon: DollarSign, text: "Low 5% platform fee on sales" },
-                    { icon: BarChart3, text: "Track inventory and sales analytics" },
-                    { icon: Bell, text: "Order notifications and fulfillment tracking" },
-                    { icon: Shield, text: "Vendor verification for trust" },
+                    { icon: Globe, text: "Get in front of customers who already love what you sell" },
+                    { icon: CreditCard, text: "Safe transactions for you and your customers" },
+                    { icon: DollarSign, text: "Keep 95% of every sale you make" },
+                    { icon: BarChart3, text: "Never oversell—know exactly what's in stock" },
+                    { icon: Bell, text: "Ship with confidence—track every order" },
+                    { icon: Shield, text: "Stand out as a verified, trusted seller" },
                   ].map((feature, index) => (
                     <motion.div
                       key={index}
@@ -776,33 +776,33 @@ export default function FeaturesPage() {
             {[
               {
                 icon: Heart,
-                title: "Community Focused",
-                description: "We're not a generic platform. Every feature is designed specifically for the stepping community's needs.",
+                title: "Built By Steppers, For Steppers",
+                description: "We don't just understand your community—we're part of it.",
               },
               {
                 icon: DollarSign,
-                title: "Fair Pricing",
-                description: "No hidden fees. Transparent pricing that lets you keep more of what you earn.",
+                title: "Keep More of What You Earn",
+                description: "No surprises. You see exactly what you pay before you pay it.",
               },
               {
                 icon: Zap,
-                title: "Easy to Use",
-                description: "Get started in minutes. No technical skills required. We handle the hard stuff.",
+                title: "Up and Running in Minutes",
+                description: "If you can use Facebook, you can use this. Seriously.",
               },
               {
                 icon: Shield,
-                title: "Secure & Reliable",
-                description: "Bank-level security for payments. 99.9% uptime so you never miss a sale.",
+                title: "Never Miss a Sale",
+                description: "99.9% uptime means your business never sleeps.",
               },
               {
                 icon: Smartphone,
-                title: "Mobile First",
-                description: "Everything works beautifully on phones. Your customers can buy tickets while at the set.",
+                title: "Sell From Anywhere",
+                description: "Take payments at the set, manage orders from your car.",
               },
               {
                 icon: Users,
-                title: "Growing Together",
-                description: "When you succeed, we succeed. We're invested in helping you grow your business.",
+                title: "Your Success Is Our Success",
+                description: "We only win when you win—that's how we built it.",
               },
             ].map((item, index) => (
               <motion.div

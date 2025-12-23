@@ -118,44 +118,44 @@ export default function RestaurantsFeaturesPage() {
   const features = [
     {
       icon: UtensilsCrossed,
-      title: "Full Menu Management",
+      title: "Your Menu, Always Up to Date",
       description:
-        "Easily create and update your menu with categories, items, pricing, and beautiful photos.",
+        "86'd the ribs? Update your menu in seconds. Customers always see what's available.",
       color: "from-orange-500 to-red-500",
     },
     {
       icon: ShoppingBag,
-      title: "Online Ordering",
+      title: "Orders Come to You",
       description:
-        "Accept orders for pickup or delivery with real-time notifications and order tracking.",
+        "No more phone tag. Customers order online, you just cook.",
       color: "from-yellow-500 to-orange-500",
     },
     {
       icon: Clock,
-      title: "Order Scheduling",
+      title: "Catering Made Simple",
       description:
-        "Let customers pre-order for events, catering, or future pickup times.",
+        "Big event orders? Pre-orders for the weekend? Handled automatically.",
       color: "from-green-500 to-teal-500",
     },
     {
       icon: CreditCard,
-      title: "Secure Payments",
+      title: "Money in Your Account—Fast",
       description:
-        "Accept all major payment methods with instant deposits to your bank account.",
+        "Accept cards, Apple Pay, all of it. Cash hits your bank quick.",
       color: "from-blue-500 to-purple-500",
     },
     {
       icon: Bell,
-      title: "Real-Time Alerts",
+      title: "Never Miss an Order",
       description:
-        "Get instant notifications for new orders, customer messages, and reviews.",
+        "New order? Your phone buzzes. No more missed sales or confused customers.",
       color: "from-pink-500 to-rose-500",
     },
     {
       icon: TrendingUp,
-      title: "Sales Analytics",
+      title: "Know What's Selling",
       description:
-        "Track your best sellers, peak hours, revenue trends, and customer insights.",
+        "See your bestsellers. Spot slow movers. Make smarter menu decisions.",
       color: "from-indigo-500 to-blue-500",
     },
   ];
@@ -258,9 +258,9 @@ export default function RestaurantsFeaturesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Serve Up Success with{" "}
+              Fill Your Kitchen with{" "}
               <span className="relative">
-                <span className="text-yellow-300">SteppersLife</span>
+                <span className="text-yellow-300">Orders—Not Stress</span>
                 <motion.span
                   className="absolute -bottom-2 left-0 right-0 h-1 bg-yellow-300 rounded-full"
                   initial={{ scaleX: 0 }}
@@ -276,8 +276,7 @@ export default function RestaurantsFeaturesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              The ultimate platform for soul food restaurants, caterers, and food vendors.
-              Manage your menu, accept online orders, and grow your business.
+              Customers order from their phones. You get notified instantly. Just cook and serve.
             </motion.p>
 
             <motion.div
@@ -456,13 +455,13 @@ export default function RestaurantsFeaturesPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Everything You Need to{" "}
+              From Phone Calls to{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">
-                Grow Your Business
+                Phone Orders
               </span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Powerful tools designed specifically for food businesses
+              Stop missing calls. Start stacking orders.
             </p>
           </motion.div>
 
@@ -728,10 +727,10 @@ export default function RestaurantsFeaturesPage() {
             className="text-center mb-12"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Simple, Transparent Pricing
+              Zero Monthly Fees. Ever.
             </h2>
             <p className="text-xl text-white/80">
-              No monthly fees. Only pay when you make sales.
+              You only pay when customers order. That's it.
             </p>
           </motion.div>
 
@@ -890,11 +889,11 @@ export default function RestaurantsFeaturesPage() {
             </motion.div>
 
             <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              Ready to Serve Up Success?
+              Ready to Stop Missing Orders?
             </h2>
             <p className="text-xl text-white/80 mb-10">
-              Join hundreds of soul food restaurants, caterers, and food vendors
-              who are growing their business with SteppersLife.
+              While you're reading this, someone is hungry and looking for food like yours.
+              Let them find you.
             </p>
 
             <motion.div
