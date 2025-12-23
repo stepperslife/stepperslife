@@ -319,13 +319,84 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
 
   try {
     // Find and update order with refund status
-    await convex.mutation(api.orders.mutations.markOrderRefunded, {
+    const result = await convex.mutation(api.orders.mutations.markOrderRefunded, {
       paymentIntentId: paymentIntentId,
       refundAmount: charge.amount_refunded,
       refundReason: charge.refunds?.data[0]?.reason || "requested_by_customer",
     });
 
+    // If refund was processed successfully, send notification email
+    if (result.success && !result.alreadyRefunded) {
+      try {
+        // Get order details for the email
+        const orderData = await getOrderDetailsForRefundEmail(paymentIntentId);
+
+        if (orderData) {
+          const emailResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_APP_URL || 'https://stepperslife.com'}/api/send-refund-notification`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: orderData.email,
+                customerName: orderData.customerName,
+                eventName: orderData.eventName,
+                eventDate: orderData.eventDate,
+                refundAmount: charge.amount_refunded,
+                ticketCount: result.ticketsCancelled || 1,
+                orderNumber: orderData.orderNumber,
+                refundReason: charge.refunds?.data[0]?.reason || undefined,
+              }),
+            }
+          );
+
+          if (emailResponse.ok) {
+            console.log(`[Stripe Webhook] Refund notification sent to ${orderData.email}`);
+          } else {
+            console.warn(`[Stripe Webhook] Failed to send refund notification email`);
+          }
+        }
+      } catch (emailError: any) {
+        // Don't fail the webhook if email fails
+        console.error(`[Stripe Webhook] Error sending refund email:`, emailError);
+      }
+    }
+
   } catch (error: any) {
     console.error(`[Stripe Webhook] Failed to process refund for ${paymentIntentId}:`, error);
+  }
+}
+
+/**
+ * Helper to get order details for refund email
+ */
+async function getOrderDetailsForRefundEmail(paymentIntentId: string): Promise<{
+  email: string;
+  customerName: string;
+  eventName: string;
+  eventDate?: number;
+  orderNumber: string;
+} | null> {
+  try {
+    // Query order by payment intent ID
+    const orderData = await convex.query(api.orders.queries.getOrderByPaymentIntent, {
+      paymentIntentId,
+    });
+
+    if (!orderData) {
+      console.warn(`[Stripe Webhook] No order found for refund email: ${paymentIntentId}`);
+      return null;
+    }
+
+    return {
+      email: orderData.email || '',
+      customerName: orderData.buyerName || 'Valued Customer',
+      eventName: orderData.eventName || 'Event',
+      eventDate: orderData.eventDate,
+      orderNumber: orderData.orderNumber || orderData._id.substring(0, 12).toUpperCase(),
+    };
+  } catch (error) {
+    console.error(`[Stripe Webhook] Error getting order details for refund email:`, error);
+    return null;
   }
 }
