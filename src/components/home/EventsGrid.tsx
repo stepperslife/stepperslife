@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Tag, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, MapPin, Tag, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 
@@ -41,8 +41,40 @@ export function EventsGrid({ events }: EventsGridProps) {
     scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
+  // Empty state - no events available
   if (events.length === 0) {
-    return null;
+    return (
+      <section ref={sectionRef} className="bg-muted/30 py-16 overflow-hidden">
+        <div className="container px-4 mx-auto">
+          <motion.div
+            className="text-center py-12 bg-card rounded-xl"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <CalendarDays className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            </motion.div>
+            <h2 className="text-3xl font-bold text-foreground mb-2">Upcoming Events</h2>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              No events are currently scheduled. Check back soon for upcoming steppin&apos; events in your area.
+            </p>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/events"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              >
+                <CalendarDays className="w-5 h-5" />
+                Browse Events
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+    );
   }
 
   const containerVariants = {

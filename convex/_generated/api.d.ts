@@ -14,6 +14,7 @@ import type * as admin_cleanup from "../admin/cleanup.js";
 import type * as admin_completeSystemReset from "../admin/completeSystemReset.js";
 import type * as admin_queries from "../admin/queries.js";
 import type * as admin_resetData from "../admin/resetData.js";
+import type * as admin_resetExceptUsers from "../admin/resetExceptUsers.js";
 import type * as admin_systemReset from "../admin/systemReset.js";
 import type * as adminPanel_actions from "../adminPanel/actions.js";
 import type * as adminPanel_mutations from "../adminPanel/mutations.js";
@@ -129,6 +130,7 @@ declare const fullApi: ApiFromModules<{
   "admin/completeSystemReset": typeof admin_completeSystemReset;
   "admin/queries": typeof admin_queries;
   "admin/resetData": typeof admin_resetData;
+  "admin/resetExceptUsers": typeof admin_resetExceptUsers;
   "admin/systemReset": typeof admin_systemReset;
   "adminPanel/actions": typeof adminPanel_actions;
   "adminPanel/mutations": typeof adminPanel_mutations;

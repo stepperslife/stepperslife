@@ -4,69 +4,90 @@ import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { mockRestaurants } from "@/lib/mock-data/restaurants";
 import { Button } from "@/components/ui/button";
 import { Clock, Star, UtensilsCrossed } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import { useRef, useMemo, Component, ReactNode } from "react";
+import { useRef, useMemo } from "react";
 
-// Error boundary to catch Convex query errors and fall back gracefully
-class RestaurantsErrorBoundary extends Component<{ children: ReactNode, fallback: ReactNode }, { hasError: boolean }> {
-  constructor(props: { children: ReactNode, fallback: ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback;
-    }
-    return this.props.children;
-  }
-}
-
-// Inner component that uses Convex query
-function RestaurantsShowcaseInner() {
+export function RestaurantsShowcase() {
   const convexRestaurants = useQuery(api.restaurants.getFeatured);
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
-  // Use Convex data if available, otherwise fall back to mock data
+  // Transform Convex data to component format
   const restaurants = useMemo(() => {
-    if (convexRestaurants && convexRestaurants.length > 0) {
-      return convexRestaurants.map((r) => ({
-        id: r._id,
-        slug: r.slug,
-        name: r.name,
-        description: r.description || "",
-        cuisine: r.cuisine,
-        logoUrl: r.logoUrl || "",
-        coverImageUrl: r.coverImageUrl || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80",
-        acceptingOrders: r.acceptingOrders,
-        estimatedPickupTime: r.estimatedPickupTime,
-        averageRating: 4.5, // Default rating since we don't have reviews yet
-        totalReviews: 0,
-      }));
-    }
-    return mockRestaurants.slice(0, 5);
+    if (!convexRestaurants) return [];
+    return convexRestaurants.map((r) => ({
+      id: r._id,
+      slug: r.slug,
+      name: r.name,
+      description: r.description || "",
+      cuisine: r.cuisine,
+      logoUrl: r.logoUrl || "",
+      coverImageUrl: r.coverImageUrl || "",
+      acceptingOrders: r.acceptingOrders,
+      estimatedPickupTime: r.estimatedPickupTime,
+      averageRating: 4.5,
+      totalReviews: 0,
+    }));
   }, [convexRestaurants]);
 
-  return <RestaurantsShowcaseContent restaurants={restaurants} />;
-}
+  // Loading state
+  if (convexRestaurants === undefined) {
+    return (
+      <section ref={sectionRef} className="bg-muted/30 py-16 overflow-hidden">
+        <div className="container px-4 mx-auto">
+          <div className="mb-10">
+            <div className="h-8 w-64 bg-muted rounded animate-pulse mb-2" />
+            <div className="h-4 w-80 bg-muted rounded animate-pulse" />
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-72 bg-muted rounded-lg animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-// Fallback component that uses mock data
-function RestaurantsShowcaseFallback() {
-  const restaurants = mockRestaurants.slice(0, 5);
-  return <RestaurantsShowcaseContent restaurants={restaurants} />;
-}
+  // Empty state - no restaurants available
+  if (restaurants.length === 0) {
+    return (
+      <section ref={sectionRef} className="bg-muted/30 py-16 overflow-hidden">
+        <div className="container px-4 mx-auto">
+          <motion.div
+            className="text-center py-12 bg-background rounded-xl"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <UtensilsCrossed className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            </motion.div>
+            <h2 className="text-3xl font-bold text-foreground mb-2">Restaurants</h2>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              No restaurants are currently available. Check back soon for local dining options.
+            </p>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/restaurants"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              >
+                <UtensilsCrossed className="w-5 h-5" />
+                View Restaurants
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
-// Main export wraps with error boundary
-export function RestaurantsShowcase() {
-  return (
-    <RestaurantsErrorBoundary fallback={<RestaurantsShowcaseFallback />}>
-      <RestaurantsShowcaseInner />
-    </RestaurantsErrorBoundary>
-  );
+  return <RestaurantsShowcaseContent restaurants={restaurants} />;
 }
 
 // Shared content component
@@ -174,15 +195,21 @@ function RestaurantsShowcaseContent({ restaurants }: { restaurants: Restaurant[]
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   style={{ transformStyle: "preserve-3d" }}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <Image
-                      src={restaurant.coverImageUrl}
-                      alt={restaurant.name}
-                      fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
+                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                    {restaurant.coverImageUrl ? (
+                      <Image
+                        src={restaurant.coverImageUrl}
+                        alt={restaurant.name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
+                      </div>
+                    )}
                     {!restaurant.acceptingOrders && (
                       <motion.div
                         className="absolute inset-0 flex items-center justify-center bg-foreground/60"
