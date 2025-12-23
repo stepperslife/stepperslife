@@ -3,7 +3,8 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
-import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen, GraduationCap, Music, Users, Award, Sparkles, X, ChevronDown, Check } from "lucide-react";
+import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, BookOpen, GraduationCap, Music, Users, Award, Sparkles, X, ChevronDown, Check, Clock } from "lucide-react";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -28,7 +29,7 @@ export default function ClassesListClient() {
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [showPastClasses, setShowPastClasses] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [viewMode, setViewMode] = useState<ViewMode>("masonry");
 
   const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -642,111 +643,171 @@ export default function ClassesListClient() {
           ) : (
             <>
               {viewMode === "masonry" ? (
-                /* Masonry View - 4 columns stacked with details */
-                <div data-testid="classes-grid" className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                /* Masonry View - 4 columns stacked with badges */
+                <div data-testid="classes-grid" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                   {[0, 1, 2, 3].map((columnIndex) => (
-                    <div key={columnIndex} className="grid gap-4">
+                    <div key={columnIndex} className="grid gap-3 sm:gap-4">
                       {classes
                         .filter((_, index) => index % 4 === columnIndex)
                         .map((classItem) => (
-                          <div key={classItem._id}>
-                            <Link
-                              href={`/classes/${classItem._id}`}
-                              data-testid={`class-card-${classItem._id}`}
-                              className="group block bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
-                            >
-                              {classItem.imageUrl ? (
-                                <img
-                                  src={classItem.imageUrl}
-                                  alt={classItem.name}
-                                  className="h-auto max-w-full w-full group-hover:scale-[1.02] transition-transform duration-300"
-                                />
-                              ) : (
-                                <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
-                                  <BookOpen className="w-16 h-16 text-white opacity-50" />
-                                </div>
-                              )}
-                              <div className="p-3 space-y-2">
-                                <h3 className="font-semibold text-foreground line-clamp-2 text-sm">{classItem.name}</h3>
-                                {classItem.categories && classItem.categories.length > 0 && (
-                                  <div className="flex flex-wrap gap-1">
-                                    {classItem.categories.slice(0, 2).map((cat: string) => (
-                                      <span key={cat} className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs">
-                                        {cat}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <Calendar className="w-3 h-3" />
-                                  <span>{classItem.eventDateLiteral || (classItem.startDate && formatClassDate(classItem.startDate, classItem.timezone))}</span>
-                                </div>
-                                {classItem.eventTimeLiteral && (
-                                  <div className="text-xs text-muted-foreground">
-                                    {classItem.eventTimeLiteral}
+                          <Link
+                            key={classItem._id}
+                            href={`/classes/${classItem._id}`}
+                            data-testid={`class-card-${classItem._id}`}
+                            className="group block cursor-pointer"
+                          >
+                            <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                              {/* Portrait aspect ratio image */}
+                              <div className="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+                                {classItem.imageUrl ? (
+                                  <Image
+                                    src={classItem.imageUrl}
+                                    alt={classItem.name}
+                                    fill
+                                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                    loading="lazy"
+                                  />
+                                ) : (
+                                  <div className="absolute inset-0 bg-gradient-to-br from-violet-600 to-violet-800 flex items-center justify-center">
+                                    <BookOpen className="w-16 h-16 text-white opacity-50" />
                                   </div>
                                 )}
                               </div>
-                            </Link>
-                          </div>
+
+                              {/* Gradient overlay */}
+                              <div className="absolute inset-0 bg-black/20 pointer-events-none rounded-lg" />
+
+                              {/* Top Left - Class Type Badge */}
+                              <div className="absolute top-3 left-3">
+                                <span className="px-3 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-foreground">
+                                  {classItem.categories?.[0] || "Class"}
+                                </span>
+                              </div>
+
+                              {/* Top Right - Level Badge */}
+                              {classItem.level && (
+                                <div className="absolute top-3 right-3">
+                                  <div className="flex items-center gap-1 px-2 py-1 bg-violet-600 text-white text-xs font-semibold rounded-full shadow-sm">
+                                    <Award className="w-3 h-3" />
+                                    <span>{classItem.level}</span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Bottom Left - Schedule Badge */}
+                              <div className="absolute bottom-3 left-3">
+                                <div className="flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm">
+                                  <Calendar className="w-4 h-4 text-foreground" />
+                                  <span className="text-sm font-semibold text-foreground">
+                                    {classItem.eventDateLiteral || (classItem.startDate
+                                      ? new Date(classItem.startDate).toLocaleDateString("en-US", {
+                                          weekday: "short",
+                                        })
+                                      : "TBD")}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
                         ))}
                     </div>
                   ))}
                 </div>
               ) : viewMode === "list" ? (
-                /* List View - Single column with full details */
-                <div data-testid="classes-grid" className="grid grid-cols-1 gap-6 max-w-2xl mx-auto">
+                /* List View - Horizontal cards with details */
+                <div data-testid="classes-grid" className="space-y-4">
                   {classes.map((classItem) => (
                     <Link
                       key={classItem._id}
                       href={`/classes/${classItem._id}`}
                       data-testid={`class-card-${classItem._id}`}
-                      className="group block bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+                      className="block bg-card rounded-lg shadow-sm border border-border hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
                     >
-                      {classItem.imageUrl ? (
-                        <img
-                          src={classItem.imageUrl}
-                          alt={classItem.name}
-                          className="h-auto max-w-full w-full group-hover:scale-[1.02] transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
-                          <BookOpen className="w-16 h-16 text-white opacity-50" />
-                        </div>
-                      )}
-                      <div className="p-4 space-y-3">
-                        <h3 className="font-semibold text-lg text-foreground">{classItem.name}</h3>
-                        {classItem.categories && classItem.categories.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {classItem.categories.map((cat: string) => (
-                              <span key={cat} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
-                                {cat}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            <span>{classItem.eventDateLiteral || (classItem.startDate && formatClassDate(classItem.startDate, classItem.timezone))}</span>
-                          </div>
-                          {classItem.eventTimeLiteral && (
-                            <span>{classItem.eventTimeLiteral}</span>
+                      <div className="flex flex-col sm:flex-row">
+                        {/* Class Image */}
+                        <div className="relative sm:w-64 h-48 sm:h-auto bg-muted flex-shrink-0">
+                          {classItem.imageUrl ? (
+                            <Image
+                              src={classItem.imageUrl}
+                              alt={classItem.name}
+                              fill
+                              sizes="(max-width: 640px) 100vw, 256px"
+                              className="object-cover"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-violet-600 to-violet-800">
+                              <BookOpen className="w-12 h-12 text-white opacity-50" />
+                            </div>
                           )}
                         </div>
-                        {classItem.location && typeof classItem.location === "object" && classItem.location.city && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <MapPin className="w-4 h-4" />
-                            <span>{classItem.location.city}, {classItem.location.state}</span>
+
+                        {/* Class Details */}
+                        <div className="flex-1 p-6">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <h3 className="text-xl font-bold text-foreground mb-2 hover:text-primary transition-colors">
+                                {classItem.name}
+                              </h3>
+                              <div className="flex flex-wrap gap-2">
+                                {classItem.categories?.[0] && (
+                                  <span className="inline-block px-3 py-1 text-xs font-semibold bg-accent text-primary rounded-full">
+                                    {classItem.categories[0]}
+                                  </span>
+                                )}
+                                {classItem.level && (
+                                  <span className="inline-block px-3 py-1 text-xs font-semibold bg-violet-100 text-violet-700 rounded-full">
+                                    {classItem.level}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        )}
+
+                          {/* Description Preview */}
+                          {classItem.description && (
+                            <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                              {classItem.description}
+                            </p>
+                          )}
+
+                          {/* Meta Info */}
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Calendar className="w-4 h-4 flex-shrink-0" />
+                              <span>{classItem.eventDateLiteral || (classItem.startDate && formatClassDate(classItem.startDate, classItem.timezone))}</span>
+                            </div>
+
+                            {classItem.eventTimeLiteral && (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Clock className="w-4 h-4 flex-shrink-0" />
+                                <span>{classItem.eventTimeLiteral}</span>
+                              </div>
+                            )}
+
+                            {classItem.location && typeof classItem.location === "object" && classItem.location.city && (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <MapPin className="w-4 h-4 flex-shrink-0" />
+                                <span>{classItem.location.city}, {classItem.location.state}</span>
+                              </div>
+                            )}
+
+                            {classItem.instructorName && (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <GraduationCap className="w-4 h-4 flex-shrink-0" />
+                                <span>Instructor: {classItem.instructorName}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </Link>
                   ))}
                 </div>
               ) : (
                 /* Default Grid View - 2x3 columns with details */
-                <div data-testid="classes-grid" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div data-testid="classes-grid" className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                   {classes.map((classItem) => (
                     <Link
                       key={classItem._id}
@@ -754,48 +815,80 @@ export default function ClassesListClient() {
                       data-testid={`class-card-${classItem._id}`}
                       className="group block bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
                     >
-                      {classItem.imageUrl ? (
-                        <div className="aspect-[4/3] overflow-hidden">
-                          <img
+                      <div className="relative aspect-[4/5] overflow-hidden">
+                        {classItem.imageUrl ? (
+                          <Image
                             src={classItem.imageUrl}
                             alt={classItem.name}
-                            className="h-full w-full object-cover group-hover:scale-[1.05] transition-transform duration-300"
+                            fill
+                            sizes="(max-width: 640px) 50vw, 33vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            placeholder="blur"
+                            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUwMCIgZmlsbD0iI2UzZTNlMyIvPjwvc3ZnPg=="
                           />
-                        </div>
-                      ) : (
-                        <div className="aspect-[4/3] flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
-                          <BookOpen className="w-12 h-12 text-white opacity-50" />
-                        </div>
-                      )}
-                      <div className="p-4 space-y-2">
-                        <h3 className="font-semibold text-foreground line-clamp-2">{classItem.name}</h3>
-                        {classItem.categories && classItem.categories.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {classItem.categories.slice(0, 3).map((cat: string) => (
-                              <span key={cat} className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs">
-                                {cat}
-                              </span>
-                            ))}
-                            {classItem.categories.length > 3 && (
-                              <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded-full text-xs">
-                                +{classItem.categories.length - 3}
-                              </span>
-                            )}
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
+                            <BookOpen className="w-12 h-12 text-white opacity-50" />
                           </div>
                         )}
+
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+
+                        {/* Class Type Badge - Top Left */}
+                        {classItem.classType && (
+                          <div className="absolute top-3 left-3">
+                            <span className="px-3 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-foreground">
+                              {classItem.classType.replace("_", " ")}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Level Badge - Top Right */}
+                        {classItem.level && (
+                          <div className="absolute top-3 right-3">
+                            <span className="px-2 py-1 text-xs font-semibold bg-primary text-primary-foreground rounded-full shadow-sm">
+                              {classItem.level}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="p-4 space-y-2">
+                        <h3 className="font-semibold text-foreground line-clamp-2">{classItem.name}</h3>
+
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Calendar className="w-4 h-4 flex-shrink-0" />
                           <span className="truncate">{classItem.eventDateLiteral || (classItem.startDate && formatClassDate(classItem.startDate, classItem.timezone))}</span>
                         </div>
+
                         {classItem.eventTimeLiteral && (
-                          <div className="text-sm text-muted-foreground">
-                            {classItem.eventTimeLiteral}
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Clock className="w-4 h-4 flex-shrink-0" />
+                            <span>{classItem.eventTimeLiteral}</span>
                           </div>
                         )}
+
                         {classItem.location && typeof classItem.location === "object" && classItem.location.city && (
                           <div className="flex items-center gap-1 text-sm text-muted-foreground">
                             <MapPin className="w-4 h-4 flex-shrink-0" />
                             <span className="truncate">{classItem.location.city}, {classItem.location.state}</span>
+                          </div>
+                        )}
+
+                        {classItem.categories && classItem.categories.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {classItem.categories.slice(0, 2).map((cat: string) => (
+                              <span key={cat} className="px-2 py-0.5 bg-muted text-foreground rounded-full text-xs">
+                                {cat}
+                              </span>
+                            ))}
+                            {classItem.categories.length > 2 && (
+                              <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded-full text-xs">
+                                +{classItem.categories.length - 2}
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>

@@ -12,8 +12,7 @@ import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
-import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
+import { ViewToggle, ViewMode } from "@/components/ui/ViewToggle";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // Product categories
@@ -31,7 +30,7 @@ const PRODUCT_CATEGORIES = [
 export default function ShopPage() {
   const products = useQuery(api.products.queries.getActiveProducts, {});
   const [loadingTimeout, setLoadingTimeout] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [viewMode, setViewMode] = useState<ViewMode>("masonry");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
@@ -567,244 +566,268 @@ export default function ShopPage() {
               )}
             </motion.div>
           ) : viewMode === "masonry" ? (
-            <PortfolioGrid
-              items={filteredProducts}
-              getKey={(product) => product._id}
-              renderItem={(product, index) => (
-                <motion.div
-                  className="bg-card rounded-lg shadow-md overflow-hidden"
-                  whileHover={{
-                    y: -8,
-                    boxShadow: "0 20px 40px -10px rgba(0,0,0,0.15)",
-                  }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  {/* Product Image */}
-                  <div className="aspect-square bg-muted relative overflow-hidden group">
-                    {product.primaryImage ? (
-                      <Image
-                        src={product.primaryImage}
-                        alt={product.name}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-16 h-16 text-muted-foreground" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    {product.compareAtPrice && product.compareAtPrice > product.price && (
-                      <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-bold">
-                        SALE
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="p-4">
-                    <h3 className="font-bold text-lg text-card-foreground mb-1 line-clamp-2">
-                      {product.name}
-                    </h3>
-
-                    {/* Vendor Badge */}
-                    {product.vendor ? (
-                      <Link
-                        href={`/marketplace/vendors/${product.vendor.slug}`}
-                        className="inline-flex items-center gap-1.5 text-xs text-primary dark:text-sky-400 hover:text-primary/90 dark:hover:text-sky-300 mb-2"
-                        onClick={(e) => e.stopPropagation()}
+            /* Masonry View - 4-column stacked grid with portrait cards */
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+              {[0, 1, 2, 3].map((columnIndex) => (
+                <div key={columnIndex} className="grid gap-3 sm:gap-4">
+                  {filteredProducts
+                    .filter((_, index) => index % 4 === columnIndex)
+                    .map((product) => (
+                      <motion.div
+                        key={product._id}
+                        whileHover={{ y: -4 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
                       >
-                        <Store className="w-3 h-3" />
-                        <span>Sold by {product.vendor.storeName}</span>
-                        <VendorTierBadge tier={product.vendor.tier || "BASIC"} size="sm" />
-                      </Link>
-                    ) : (
-                      <div className="flex items-center gap-1.5 text-xs text-primary mb-2">
-                        <Users className="w-3 h-3" />
-                        <span>SteppersLife Official</span>
-                      </div>
-                    )}
+                        <Link href={`/marketplace/${product._id}`} className="group block cursor-pointer">
+                          <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                            {/* Portrait Image */}
+                            <div className="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+                              {product.primaryImage ? (
+                                <Image
+                                  src={product.primaryImage}
+                                  alt={product.name}
+                                  fill
+                                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                  loading="lazy"
+                                  placeholder="blur"
+                                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2UzZTNlMyIvPjwvc3ZnPg=="
+                                />
+                              ) : (
+                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                                  <Package className="h-12 w-12 text-white opacity-50" />
+                                </div>
+                              )}
+                            </div>
 
-                    <div className="flex items-center gap-2 mb-3">
-                      <DollarSign className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xl font-bold text-card-foreground">
-                        ${(product.price / 100).toFixed(2)}
-                      </span>
-                      {product.compareAtPrice && (
-                        <span className="text-sm text-muted-foreground line-through">
-                          ${(product.compareAtPrice / 100).toFixed(2)}
-                        </span>
-                      )}
-                    </div>
+                            {/* Gradient overlay for badge visibility */}
+                            <div className="absolute inset-0 bg-black/20 pointer-events-none rounded-lg" />
 
-                    <Link
-                      href={`/marketplace/${product._id}`}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      View Product
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-            />
-          ) : (
-            <motion.div
-              className={getViewClasses(viewMode, "products")}
-              initial="hidden"
-              animate="visible"
-              variants={{
-                visible: {
-                  transition: {
-                    staggerChildren: 0.08,
-                  },
-                },
-              }}
-            >
-              {filteredProducts.map((product, index) => (
+                            {/* Category Badge - Top Left */}
+                            {product.category && (
+                              <div className="absolute top-3 left-3">
+                                <span className="px-3 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-foreground">
+                                  {product.category.split(" ")[0]}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Stock/Sale Badge - Top Right */}
+                            <div className="absolute top-3 right-3">
+                              {product.compareAtPrice && product.compareAtPrice > product.price ? (
+                                <div className="flex items-center gap-1 px-2 py-1 bg-destructive text-white text-xs font-semibold rounded-full shadow-sm">
+                                  <span>SALE</span>
+                                </div>
+                              ) : product.trackInventory && product.inventoryQuantity > 0 ? (
+                                <div className="flex items-center gap-1 px-2 py-1 bg-success text-white text-xs font-semibold rounded-full shadow-sm">
+                                  <span>In Stock</span>
+                                </div>
+                              ) : product.trackInventory && product.inventoryQuantity === 0 ? (
+                                <div className="flex items-center gap-1 px-2 py-1 bg-muted text-muted-foreground text-xs font-semibold rounded-full shadow-sm">
+                                  <span>Sold Out</span>
+                                </div>
+                              ) : null}
+                            </div>
+
+                            {/* Price Badge - Bottom Left */}
+                            <div className="absolute bottom-3 left-3">
+                              <div className="px-3 py-1.5 bg-primary text-primary-foreground text-sm font-bold rounded-lg shadow-sm">
+                                ${(product.price / 100).toFixed(2)}
+                                {product.compareAtPrice && (
+                                  <span className="ml-1.5 text-xs opacity-75 line-through">
+                                    ${(product.compareAtPrice / 100).toFixed(2)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))}
+                </div>
+              ))}
+            </div>
+          ) : viewMode === "list" ? (
+            /* List View - Horizontal cards */
+            <div className="space-y-4">
+              {filteredProducts.map((product) => (
                 <motion.div
                   key={product._id}
-                  variants={{
-                    hidden: { opacity: 0, y: 30, scale: 0.95 },
-                    visible: { opacity: 1, y: 0, scale: 1 },
-                  }}
-                  transition={{ duration: 0.4 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -2 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  <motion.div
-                    className="bg-card rounded-lg shadow-md overflow-hidden h-full"
-                    whileHover={{
-                      y: -8,
-                      boxShadow: "0 20px 40px -10px rgba(0,0,0,0.15)",
-                    }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  >
-                    {/* Product Image */}
-                    <div className="aspect-square bg-muted relative overflow-hidden group">
-                      {product.primaryImage ? (
-                        <Image
-                          src={product.primaryImage}
-                          alt={product.name}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-110"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <motion.div
-                            animate={{ rotate: [0, 5, -5, 0] }}
-                            transition={{ duration: 3, repeat: Infinity }}
-                          >
-                            <Package className="w-16 h-16 text-muted-foreground" />
-                          </motion.div>
-                        </div>
-                      )}
-                      {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                        <span className="text-white font-medium text-sm">View Product</span>
-                      </div>
-                      {/* Sale badge */}
-                      {product.compareAtPrice && product.compareAtPrice > product.price && (
-                        <motion.div
-                          className="absolute top-2 right-2 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-bold"
-                          initial={{ scale: 0, rotate: -10 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          transition={{ type: "spring", delay: 0.2 + index * 0.05 }}
-                        >
-                          SALE
-                        </motion.div>
-                      )}
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="p-4">
-                      <h3 className="font-bold text-lg text-card-foreground mb-1 line-clamp-2">
-                        {product.name}
-                      </h3>
-
-                      {/* Vendor Badge */}
-                      {product.vendor ? (
-                        <Link
-                          href={`/marketplace/vendors/${product.vendor.slug}`}
-                          className="inline-flex items-center gap-1.5 text-xs text-primary dark:text-sky-400 hover:text-primary/90 dark:hover:text-sky-300 mb-2"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Store className="w-3 h-3" />
-                          <span>Sold by {product.vendor.storeName}</span>
-                          <VendorTierBadge tier={product.vendor.tier || "BASIC"} size="sm" />
-                        </Link>
-                      ) : (
-                        <div className="flex items-center gap-1.5 text-xs text-primary mb-2">
-                          <Users className="w-3 h-3" />
-                          <span>SteppersLife Official</span>
-                        </div>
-                      )}
-
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                        {product.description}
-                      </p>
-
-                      <div className="flex items-center gap-2 mb-4">
-                        <DollarSign className="w-4 h-4 text-muted-foreground" />
-                        <motion.span
-                          className="text-xl font-bold text-card-foreground"
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          ${(product.price / 100).toFixed(2)}
-                        </motion.span>
-                        {product.compareAtPrice && (
-                          <span className="text-sm text-muted-foreground line-through">
-                            ${(product.compareAtPrice / 100).toFixed(2)}
-                          </span>
+                  <Link href={`/marketplace/${product._id}`} className="group block">
+                    <div className="flex gap-4 bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 p-3">
+                      {/* Left: Image */}
+                      <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 rounded-lg overflow-hidden">
+                        {product.primaryImage ? (
+                          <Image
+                            src={product.primaryImage}
+                            alt={product.name}
+                            fill
+                            sizes="160px"
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                            <Package className="h-8 w-8 text-white opacity-50" />
+                          </div>
+                        )}
+                        {/* Sale badge */}
+                        {product.compareAtPrice && product.compareAtPrice > product.price && (
+                          <div className="absolute top-2 left-2 px-2 py-0.5 text-xs font-semibold bg-destructive text-white rounded-full">
+                            SALE
+                          </div>
                         )}
                       </div>
 
-                      {product.trackInventory && (
-                        <motion.div
-                          className="text-sm text-muted-foreground mb-4"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.3 + index * 0.05 }}
-                        >
-                          {product.inventoryQuantity > 0 ? (
-                            <span className="text-success">
-                              {product.inventoryQuantity} in stock
+                      {/* Right: Content */}
+                      <div className="flex-1 flex flex-col justify-center min-w-0">
+                        <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                          {product.name}
+                        </h3>
+
+                        {/* Vendor Info */}
+                        {product.vendor ? (
+                          <p className="text-xs text-primary mt-1 flex items-center gap-1">
+                            <Store className="w-3 h-3" />
+                            {product.vendor.storeName}
+                            <VendorTierBadge tier={product.vendor.tier || "BASIC"} size="sm" />
+                          </p>
+                        ) : (
+                          <p className="text-xs text-primary mt-1 flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            SteppersLife Official
+                          </p>
+                        )}
+
+                        {product.description && (
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            {product.description}
+                          </p>
+                        )}
+
+                        <div className="flex flex-wrap items-center gap-3 mt-2">
+                          <span className="text-lg font-bold text-foreground">
+                            ${(product.price / 100).toFixed(2)}
+                          </span>
+                          {product.compareAtPrice && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              ${(product.compareAtPrice / 100).toFixed(2)}
                             </span>
-                          ) : (
-                            <span className="text-destructive">Out of stock</span>
                           )}
-                        </motion.div>
-                      )}
-
-                      {product.category && (
-                        <motion.span
-                          className="inline-block px-2 py-1 bg-accent text-primary text-xs rounded mb-4"
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          {product.category}
-                        </motion.span>
-                      )}
-
-                      {/* Add to Cart Button */}
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <Link
-                          href={`/marketplace/${product._id}`}
-                          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-                        >
-                          <ShoppingCart className="w-4 h-4" />
-                          View Product
-                        </Link>
-                      </motion.div>
+                          {product.category && (
+                            <span className="px-2 py-0.5 bg-muted text-foreground rounded-full text-xs">
+                              {product.category}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </motion.div>
+                  </Link>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
+          ) : (
+            /* Grid View - 2x3 columns with card details */
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+              {filteredProducts.map((product) => (
+                <motion.div
+                  key={product._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -8 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <Link href={`/marketplace/${product._id}`} className="group block">
+                    <div className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+                      <div className="relative aspect-[4/5] overflow-hidden">
+                        {product.primaryImage ? (
+                          <Image
+                            src={product.primaryImage}
+                            alt={product.name}
+                            fill
+                            sizes="(max-width: 640px) 50vw, 33vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            placeholder="blur"
+                            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUwMCIgZmlsbD0iI2UzZTNlMyIvPjwvc3ZnPg=="
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                            <Package className="h-12 w-12 text-white opacity-50" />
+                          </div>
+                        )}
+
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+
+                        {/* Category Badge - Top Left */}
+                        {product.category && (
+                          <div className="absolute top-3 left-3">
+                            <span className="px-3 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-foreground">
+                              {product.category.split(" ")[0]}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Sale Badge - Top Right */}
+                        {product.compareAtPrice && product.compareAtPrice > product.price && (
+                          <div className="absolute top-3 right-3">
+                            <span className="px-2 py-1 text-xs font-semibold bg-destructive text-white rounded-full shadow-sm">
+                              SALE
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="p-4 space-y-2">
+                        <h3 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                          {product.name}
+                        </h3>
+
+                        {/* Vendor Info */}
+                        {product.vendor ? (
+                          <p className="text-xs text-primary flex items-center gap-1">
+                            <Store className="w-3 h-3" />
+                            {product.vendor.storeName}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-primary flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            SteppersLife Official
+                          </p>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-bold text-foreground">
+                            ${(product.price / 100).toFixed(2)}
+                          </span>
+                          {product.compareAtPrice && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              ${(product.compareAtPrice / 100).toFixed(2)}
+                            </span>
+                          )}
+                        </div>
+
+                        {product.trackInventory && (
+                          <p className="text-xs text-muted-foreground">
+                            {product.inventoryQuantity > 0 ? (
+                              <span className="text-success">{product.inventoryQuantity} in stock</span>
+                            ) : (
+                              <span className="text-destructive">Out of stock</span>
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
           )}
         </main>
 

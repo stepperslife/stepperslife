@@ -11,9 +11,9 @@ import { api } from "@/convex/_generated/api";
 import { useState, useMemo } from "react";
 import { RestaurantCard } from "@/components/restaurants/RestaurantCard";
 import { motion } from "framer-motion";
-import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
-import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
+import { ViewToggle, ViewMode } from "@/components/ui/ViewToggle";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import Image from "next/image";
 
 // All available cuisine types
 const ALL_CUISINES = [
@@ -45,7 +45,7 @@ export default function RestaurantsListClient() {
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortOption>("name");
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [viewMode, setViewMode] = useState<ViewMode>("masonry");
 
   // Get unique cities from restaurants
   const cities = useMemo(() => {
@@ -622,49 +622,168 @@ export default function RestaurantsListClient() {
 
           {filteredRestaurants.length > 0 ? (
             viewMode === "masonry" ? (
-              <PortfolioGrid
-                items={filteredRestaurants}
-                getKey={(restaurant) => restaurant._id}
-                renderItem={(restaurant) => (
+              /* Masonry View - 4-column stacked grid with portrait cards */
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                {[0, 1, 2, 3].map((columnIndex) => (
+                  <div key={columnIndex} className="grid gap-3 sm:gap-4">
+                    {filteredRestaurants
+                      .filter((_, index) => index % 4 === columnIndex)
+                      .map((restaurant) => (
+                        <motion.div
+                          key={restaurant._id}
+                          whileHover={{ y: -4 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        >
+                          <Link href={`/restaurants/${restaurant.slug}`} className="group block cursor-pointer">
+                            <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                              {/* Portrait Image */}
+                              <div className="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+                                {restaurant.coverImageUrl ? (
+                                  <Image
+                                    src={restaurant.coverImageUrl}
+                                    alt={restaurant.name}
+                                    fill
+                                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                    loading="lazy"
+                                    placeholder="blur"
+                                    blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2UzZTNlMyIvPjwvc3ZnPg=="
+                                  />
+                                ) : (
+                                  <div className="absolute inset-0 bg-gradient-to-br from-primary to-sky-600 flex items-center justify-center">
+                                    <Utensils className="h-12 w-12 text-primary-foreground opacity-50" />
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Gradient overlay for badge visibility */}
+                              <div className="absolute inset-0 bg-black/20 pointer-events-none rounded-lg" />
+
+                              {/* Cuisine Badge - Top Left */}
+                              {restaurant.cuisine && restaurant.cuisine.length > 0 && (
+                                <div className="absolute top-3 left-3">
+                                  <span className="px-3 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-foreground">
+                                    {restaurant.cuisine[0]}
+                                  </span>
+                                </div>
+                              )}
+
+                              {/* Status Badge - Top Right */}
+                              <div className="absolute top-3 right-3">
+                                {restaurant.acceptingOrders ? (
+                                  <div className="flex items-center gap-1 px-2 py-1 bg-success text-white text-xs font-semibold rounded-full shadow-sm">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                                    <span>Open</span>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-1 px-2 py-1 bg-muted text-muted-foreground text-xs font-semibold rounded-full shadow-sm">
+                                    <span>Closed</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Pickup Time Badge - Bottom Left */}
+                              <div className="absolute bottom-3 left-3">
+                                <div className="flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm">
+                                  <Clock className="w-4 h-4 text-foreground" />
+                                  <span className="text-sm font-semibold text-foreground">
+                                    ~{restaurant.estimatedPickupTime || 30} min
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        </motion.div>
+                      ))}
+                  </div>
+                ))}
+              </div>
+            ) : viewMode === "list" ? (
+              /* List View - Horizontal cards */
+              <div className="space-y-4">
+                {filteredRestaurants.map((restaurant) => (
                   <motion.div
+                    key={restaurant._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileHover={{ y: -2 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    <Link href={`/restaurants/${restaurant.slug}`} className="group block">
+                      <div className="flex gap-4 bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 p-3">
+                        {/* Left: Image */}
+                        <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 rounded-lg overflow-hidden">
+                          {restaurant.coverImageUrl ? (
+                            <Image
+                              src={restaurant.coverImageUrl}
+                              alt={restaurant.name}
+                              fill
+                              sizes="160px"
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-primary to-sky-600 flex items-center justify-center">
+                              <Utensils className="h-8 w-8 text-primary-foreground opacity-50" />
+                            </div>
+                          )}
+                          {/* Status overlay on image */}
+                          <div className="absolute top-2 left-2">
+                            {restaurant.acceptingOrders ? (
+                              <span className="px-2 py-0.5 text-xs font-semibold bg-success text-white rounded-full">
+                                Open
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 text-xs font-semibold bg-muted text-muted-foreground rounded-full">
+                                Closed
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Right: Content */}
+                        <div className="flex-1 flex flex-col justify-center min-w-0">
+                          <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                            {restaurant.name}
+                          </h3>
+
+                          {restaurant.cuisine && restaurant.cuisine.length > 0 && (
+                            <p className="text-sm text-primary mt-1">
+                              {restaurant.cuisine.slice(0, 3).join(" • ")}
+                            </p>
+                          )}
+
+                          <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-4 h-4 flex-shrink-0" />
+                              <span className="truncate">{restaurant.city}, {restaurant.state}</span>
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-4 h-4 flex-shrink-0" />
+                              <span>~{restaurant.estimatedPickupTime || 30} min</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              /* Grid View - 2x3 columns with card details */
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+                {filteredRestaurants.map((restaurant) => (
+                  <motion.div
+                    key={restaurant._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     whileHover={{ y: -8 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
                     <RestaurantCard restaurant={restaurant} />
                   </motion.div>
-                )}
-              />
-            ) : (
-              <motion.div
-                className={getViewClasses(viewMode, "restaurants")}
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.1,
-                    },
-                  },
-                }}
-              >
-                {filteredRestaurants.map((restaurant) => (
-                  <motion.div
-                    key={restaurant._id}
-                    variants={{
-                      hidden: { opacity: 0, y: 30 },
-                      visible: { opacity: 1, y: 0 },
-                    }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <motion.div
-                      whileHover={{ y: -8 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    >
-                      <RestaurantCard restaurant={restaurant} />
-                    </motion.div>
-                  </motion.div>
                 ))}
-              </motion.div>
+              </div>
             )
           ) : (
             <motion.div
