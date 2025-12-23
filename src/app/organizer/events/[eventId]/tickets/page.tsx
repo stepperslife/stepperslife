@@ -19,12 +19,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import { CapacityProgressBar } from "@/components/events/CapacityProgressBar";
 import {
   CapacityAwareTicketEditor,
   TicketTier as EditorTicketTier,
 } from "@/components/events/CapacityAwareTicketEditor";
 import { FirstEventCongratsModal } from "@/components/organizer/FirstEventCongratsModal";
+import { ConfirmDialog, useConfirmDialog } from "@/components/ui/confirm-dialog";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function TicketTiersPage() {
   const params = useParams();
@@ -41,6 +44,10 @@ export default function TicketTiersPage() {
   const [duplicatingTierId, setDuplicatingTierId] = useState<Id<"ticketTiers"> | null>(null);
   const [duplicateNewName, setDuplicateNewName] = useState("");
   const [isDuplicating, setIsDuplicating] = useState(false);
+
+  // Delete tier state
+  const [tierToDelete, setTierToDelete] = useState<Id<"ticketTiers"> | null>(null);
+  const deleteConfirmDialog = useConfirmDialog();
 
   // Form state - now using CapacityAwareTicketEditor format
   const [newTiers, setNewTiers] = useState<EditorTicketTier[]>([]);
@@ -95,9 +102,7 @@ export default function TicketTiersPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-muted flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
+      <LoadingSpinner fullPage text="Loading ticket tiers..." />
     );
   }
 
@@ -130,7 +135,7 @@ export default function TicketTiersPage() {
   const handleCreateTier = async () => {
     const tier = newTiers[0];
     if (!tier || !tier.name || !tier.price || !tier.quantity) {
-      alert("Please fill in all required fields (Name, Price, Quantity)");
+      toast.error("Please fill in all required fields (Name, Price, Quantity)");
       return;
     }
 
@@ -151,10 +156,10 @@ export default function TicketTiersPage() {
 
       setNewTiers([]);
       setShowAddTier(false);
-      alert("Ticket tier created successfully!");
+      toast.success("Ticket tier created successfully!");
     } catch (error: any) {
       console.error("Create tier error:", error);
-      alert(error.message || "Failed to create ticket tier");
+      toast.error(error.message || "Failed to create ticket tier");
     }
   };
 
@@ -182,7 +187,7 @@ export default function TicketTiersPage() {
   const handleUpdateTier = async () => {
     const tier = editTierData[0];
     if (!editingTier || !tier || !tier.name || !tier.price || !tier.quantity) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -215,24 +220,31 @@ export default function TicketTiersPage() {
       setEditTierData([]);
       setEditingTier(null);
       setShowEditTier(false);
-      alert("Ticket tier updated successfully!");
+      toast.success("Ticket tier updated successfully!");
     } catch (error: any) {
       console.error("Update tier error:", error);
-      alert(error.message || "Failed to update ticket tier");
+      toast.error(error.message || "Failed to update ticket tier");
     }
   };
 
   const handleDeleteTier = async (tierId: Id<"ticketTiers">) => {
-    if (!confirm("Are you sure you want to delete this ticket tier?")) {
-      return;
-    }
+    setTierToDelete(tierId);
+    deleteConfirmDialog.open();
+  };
+
+  const confirmDeleteTier = async () => {
+    if (!tierToDelete) return;
+
+    const tierId = tierToDelete;
+    deleteConfirmDialog.close();
+    setTierToDelete(null);
 
     try {
       await deleteTier({ tierId });
-      alert("Ticket tier deleted successfully!");
+      toast.success("Ticket tier deleted successfully!");
     } catch (error: any) {
       console.error("Delete tier error:", error);
-      alert(error.message || "Failed to delete ticket tier");
+      toast.error(error.message || "Failed to delete ticket tier");
     }
   };
 
@@ -257,10 +269,10 @@ export default function TicketTiersPage() {
       setShowDuplicateDialog(false);
       setDuplicatingTierId(null);
       setDuplicateNewName("");
-      alert("Ticket tier duplicated successfully!");
+      toast.success("Ticket tier duplicated successfully!");
     } catch (error: any) {
       console.error("Duplicate tier error:", error);
-      alert(error.message || "Failed to duplicate ticket tier");
+      toast.error(error.message || "Failed to duplicate ticket tier");
     } finally {
       setIsDuplicating(false);
     }
@@ -656,6 +668,17 @@ export default function TicketTiersPage() {
           </div>
         </div>
       )}
+
+      {/* Delete Ticket Tier Confirmation */}
+      <ConfirmDialog
+        open={deleteConfirmDialog.isOpen}
+        onOpenChange={deleteConfirmDialog.setOpen}
+        title="Delete Ticket Tier?"
+        description="Are you sure you want to delete this ticket tier? This action cannot be undone."
+        confirmText="Delete"
+        variant="destructive"
+        onConfirm={confirmDeleteTier}
+      />
     </div>
   );
 }

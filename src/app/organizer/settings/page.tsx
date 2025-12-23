@@ -14,6 +14,9 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { ConfirmDialog, useConfirmDialog } from "@/components/ui/confirm-dialog";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function SettingsPage() {
   const updatePaymentSettings = useMutation(api.users.mutations.updatePaymentProcessorSettings);
@@ -26,6 +29,8 @@ export default function SettingsPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [processorToDisconnect, setProcessorToDisconnect] = useState<"stripe" | "paypal" | null>(null);
+  const confirmDialog = useConfirmDialog();
 
   // Fetch user data from API instead of Convex
   useEffect(() => {
@@ -71,7 +76,7 @@ export default function SettingsPage() {
       }
     } catch (error) {
       console.error("Error connecting Stripe:", error);
-      alert("Failed to connect Stripe account. Please try again.");
+      toast.error("Failed to connect Stripe account. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -81,31 +86,34 @@ export default function SettingsPage() {
     try {
       setIsProcessing(true);
       // In production, this would redirect to PayPal OAuth flow
-      alert("PayPal integration coming soon! You'll be redirected to complete PayPal setup.");
+      toast.info("PayPal integration coming soon! You'll be redirected to complete PayPal setup.");
     } catch (error) {
       console.error("Error connecting PayPal:", error);
-      alert("Failed to connect PayPal account");
+      toast.error("Failed to connect PayPal account");
     } finally {
       setIsProcessing(false);
     }
   };
 
   const handleDisconnectProcessor = async (processor: "stripe" | "paypal") => {
-    if (
-      !confirm(
-        `Are you sure you want to disconnect ${processor === "stripe" ? "Stripe" : "PayPal"}?`
-      )
-    ) {
-      return;
-    }
+    setProcessorToDisconnect(processor);
+    confirmDialog.open();
+  };
+
+  const confirmDisconnectProcessor = async () => {
+    if (!processorToDisconnect) return;
+
+    const processor = processorToDisconnect;
+    confirmDialog.close();
+    setProcessorToDisconnect(null);
 
     try {
       setIsProcessing(true);
       await disconnectProcessor({ processor });
-      alert(`${processor === "stripe" ? "Stripe" : "PayPal"} disconnected successfully`);
+      toast.success(`${processor === "stripe" ? "Stripe" : "PayPal"} disconnected successfully`);
     } catch (error) {
       console.error(`Error disconnecting ${processor}:`, error);
-      alert(`Failed to disconnect ${processor}`);
+      toast.error(`Failed to disconnect ${processor}`);
     } finally {
       setIsProcessing(false);
     }
@@ -126,7 +134,7 @@ export default function SettingsPage() {
       await updatePaymentSettings(updates);
     } catch (error) {
       console.error("Error updating payment method:", error);
-      alert("Failed to update payment method");
+      toast.error("Failed to update payment method");
     } finally {
       setIsProcessing(false);
     }
@@ -134,11 +142,7 @@ export default function SettingsPage() {
 
   // Check if still loading
   if (isLoading || !currentUser) {
-    return (
-      <div className="min-h-screen bg-muted flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <LoadingSpinner fullPage text="Loading settings..." />;
   }
 
   return (
@@ -484,6 +488,17 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Disconnect Payment Processor Confirmation */}
+      <ConfirmDialog
+        open={confirmDialog.isOpen}
+        onOpenChange={confirmDialog.setOpen}
+        title={`Disconnect ${processorToDisconnect === "stripe" ? "Stripe" : "PayPal"}?`}
+        description={`Are you sure you want to disconnect your ${processorToDisconnect === "stripe" ? "Stripe" : "PayPal"} account? You will no longer be able to accept ${processorToDisconnect === "stripe" ? "credit card" : "PayPal"} payments until you reconnect.`}
+        confirmText="Disconnect"
+        variant="destructive"
+        onConfirm={confirmDisconnectProcessor}
+      />
     </div>
   );
 }
