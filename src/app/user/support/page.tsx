@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageSquare, Mail, Phone, FileText, HelpCircle, Send, ExternalLink } from "lucide-react";
+import { MessageSquare, Mail, Phone, FileText, HelpCircle, Send, ExternalLink, Loader2, Clock } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SupportPage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
@@ -18,10 +19,47 @@ export default function SupportPage() {
     subject: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement support ticket submission with Convex
+
+    if (!formData.subject.trim() || !formData.message.trim()) {
+      toast.error("Please fill in both subject and message");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Send support request via email API
+      const response = await fetch("/api/send-support-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+          userEmail: currentUser?.email || "anonymous",
+          userName: currentUser?.name || "Anonymous User",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send support request");
+      }
+
+      toast.success("Support request submitted! We'll respond within 24 hours.");
+      setFormData({ subject: "", message: "" });
+    } catch (error) {
+      // Fallback: open email client with pre-filled content
+      const mailtoLink = `mailto:support@stepperslife.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
+        `From: ${currentUser?.name || "User"} (${currentUser?.email || "Not logged in"})\n\n${formData.message}`
+      )}`;
+      window.location.href = mailtoLink;
+      toast.info("Opening your email client...");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const faqs = [
@@ -64,20 +102,24 @@ export default function SupportPage() {
 
       {/* Contact Options */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-md transition-shadow relative overflow-hidden">
+          <div className="absolute top-2 right-2 bg-amber-100 text-amber-800 text-xs font-medium px-2 py-0.5 rounded-full flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            Coming Soon
+          </div>
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <MessageSquare className="h-5 w-5 text-primary" />
+              <div className="p-2 bg-muted rounded-lg">
+                <MessageSquare className="h-5 w-5 text-muted-foreground" />
               </div>
-              <CardTitle className="text-base">Live Chat</CardTitle>
+              <CardTitle className="text-base text-muted-foreground">Live Chat</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
               Chat with our support team in real-time
             </p>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" disabled>
               Start Chat
             </Button>
           </CardContent>
@@ -162,14 +204,24 @@ export default function SupportPage() {
             </div>
 
             <div className="flex gap-2">
-              <Button type="submit">
-                <Send className="h-4 w-4 mr-2" />
-                Submit Ticket
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-2" />
+                    Submit Ticket
+                  </>
+                )}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setFormData({ subject: "", message: "" })}
+                disabled={isSubmitting}
               >
                 Clear
               </Button>

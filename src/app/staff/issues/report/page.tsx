@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle, Send } from "lucide-react";
+import { AlertCircle, Send, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ReportIssuePage() {
   const currentUser = useQuery(api.users.queries.getCurrentUser);
+  const staffEvents = useQuery(api.staff.queries.getStaffEvents);
 
   const [formData, setFormData] = useState({
     issueType: "",
@@ -20,10 +22,57 @@ export default function ReportIssuePage() {
     eventId: "",
     description: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement issue submission with Convex
+
+    if (!formData.issueType || !formData.description) {
+      toast.error("Please select issue type and provide a description");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const selectedEvent = staffEvents?.find(e => e.eventId === formData.eventId);
+      const issueTypeLabels: Record<string, string> = {
+        "invalid-ticket": "Invalid Ticket",
+        "duplicate-scan": "Duplicate Scan",
+        "scanner-issue": "Scanner Malfunction",
+        "counterfeit": "Suspected Counterfeit",
+        "other": "Other Issue",
+      };
+
+      const response = await fetch("/api/send-support-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: `[Staff Issue] ${issueTypeLabels[formData.issueType] || formData.issueType}`,
+          message: [
+            `Issue Type: ${issueTypeLabels[formData.issueType] || formData.issueType}`,
+            formData.ticketNumber ? `Ticket Number: ${formData.ticketNumber}` : null,
+            selectedEvent ? `Event: ${selectedEvent.eventName}` : formData.eventId ? `Event ID: ${formData.eventId}` : null,
+            "",
+            "Description:",
+            formData.description,
+          ].filter(Boolean).join("\n"),
+          userEmail: currentUser?.email || "anonymous",
+          userName: currentUser?.name || "Staff Member",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit issue");
+      }
+
+      toast.success("Issue reported successfully! Our team will review it.");
+      setFormData({ issueType: "", ticketNumber: "", eventId: "", description: "" });
+    } catch (error) {
+      toast.error("Failed to submit issue. Please try again or contact your supervisor.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -88,10 +137,13 @@ export default function ReportIssuePage() {
                 className="w-full p-2 border rounded-md"
                 value={formData.eventId}
                 onChange={(e) => setFormData({ ...formData, eventId: e.target.value })}
-                required
               >
-                <option value="">Select event...</option>
-                {/* Events will be populated from Convex */}
+                <option value="">Select event (optional)...</option>
+                {staffEvents?.map((event) => (
+                  <option key={event.eventId} value={event.eventId}>
+                    {event.eventName}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -108,13 +160,23 @@ export default function ReportIssuePage() {
             </div>
 
             <div className="flex gap-2">
-              <Button type="submit">
-                <Send className="h-4 w-4 mr-2" />
-                Submit Report
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-2" />
+                    Submit Report
+                  </>
+                )}
               </Button>
               <Button
                 type="button"
                 variant="outline"
+                disabled={isSubmitting}
                 onClick={() =>
                   setFormData({
                     issueType: "",
