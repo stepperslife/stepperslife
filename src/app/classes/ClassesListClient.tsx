@@ -611,55 +611,6 @@ export default function ClassesListClient() {
               </div>
             </div>
 
-            {/* Active Filters Pills - only show when filters are active */}
-            {(searchTerm || selectedTypes.length > 0 || selectedLevels.length > 0 || selectedDays.length > 0) && (
-              <div className="flex flex-wrap items-center gap-1.5 mt-2 pt-2 border-t border-border">
-                {searchTerm && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-accent text-accent-foreground">
-                    &quot;{searchTerm}&quot;
-                    <button type="button" onClick={() => setSearchTerm("")} className="hover:text-foreground" aria-label="Clear search">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                )}
-                {selectedTypes.map((type) => (
-                  <span key={type} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary">
-                    {type}
-                    <button type="button" onClick={() => toggleType(type)} className="hover:text-primary/70" aria-label={`Remove ${type}`}>
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-                {selectedLevels.map((level) => (
-                  <span key={level} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-warning/10 text-warning">
-                    {level}
-                    <button type="button" onClick={() => toggleLevel(level)} className="hover:text-warning/70" aria-label={`Remove ${level}`}>
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-                {selectedDays.map((day) => (
-                  <span key={day} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary">
-                    {DAY_NAMES[day].slice(0, 3)}
-                    <button type="button" onClick={() => toggleDay(day)} className="hover:text-primary/70" aria-label={`Remove ${DAY_NAMES[day]}`}>
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchTerm("");
-                    setSelectedTypes([]);
-                    setSelectedLevels([]);
-                    setSelectedDays([]);
-                  }}
-                  className="text-xs text-muted-foreground hover:text-foreground ml-1"
-                >
-                  Clear all
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
