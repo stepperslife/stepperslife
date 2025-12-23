@@ -362,10 +362,16 @@ export const userNavigation: RoleNavigation = {
           description: "Previous events",
         },
         {
-          label: "Orders",
+          label: "Ticket Orders",
           href: "/user/my-orders",
           icon: FileText,
-          description: "Order history",
+          description: "Ticket order history",
+        },
+        {
+          label: "Product Orders",
+          href: "/marketplace/orders",
+          icon: Package,
+          description: "Marketplace purchases",
         },
       ],
     },
