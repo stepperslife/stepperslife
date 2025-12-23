@@ -32,21 +32,37 @@ interface SelectedVariation {
 }
 
 interface VariationSelectorProps {
-  productId: Id<"products">;
-  attributes: ProductAttribute[];
-  onVariationSelect: (variation: SelectedVariation | null) => void;
+  productId: Id<"products"> | string;
+  attributes?: ProductAttribute[]; // Optional - will fetch from product if not provided
+  onVariationSelect?: (variation: SelectedVariation | null) => void;
+  onVariationChange?: (variation: any) => void; // Alternative callback for raw variation data
+  showPriceRange?: boolean;
   className?: string;
 }
 
 export function VariationSelector({
   productId,
-  attributes,
+  attributes: propAttributes,
   onVariationSelect,
+  onVariationChange,
+  showPriceRange = false,
   className,
 }: VariationSelectorProps) {
   const [selectedAttributes, setSelectedAttributes] = useState<
     Record<string, string>
   >({});
+
+  // Validate productId
+  const validProductId = productId && typeof productId === 'string' && productId.length > 0;
+
+  // Fetch product if attributes not provided
+  const product = useQuery(
+    api.products.queries.getProductByIdSafe,
+    !propAttributes && validProductId ? { productId: productId as string } : "skip"
+  );
+
+  // Use provided attributes or fetch from product
+  const attributes = propAttributes || (product?.attributes as ProductAttribute[]) || [];
 
   // Get variation attributes only
   const variationAttributes = useMemo(
@@ -58,18 +74,15 @@ export function VariationSelector({
   );
 
   // Get all variations for this product
-  const variations = useQuery(api.products.variations.getVariationsByProduct, {
-    productId,
-    includeDisabled: false,
-  });
+  const variations = useQuery(
+    api.products.variations.getVariationsByProduct,
+    validProductId ? { productId: productId as Id<"products">, includeDisabled: false } : "skip"
+  );
 
   // Get available options based on current selection
   const availableOptions = useQuery(
     api.products.variations.getAvailableAttributeOptions,
-    {
-      productId,
-      selectedAttributes,
-    }
+    validProductId ? { productId: productId as Id<"products">, selectedAttributes } : "skip"
   );
 
   // Find matching variation based on selected attributes
@@ -105,10 +118,31 @@ export function VariationSelector({
     };
   }, [variations, selectedAttributes, variationAttributes]);
 
+  // Find the raw matching variation for onVariationChange callback
+  const rawMatchedVariation = useMemo(() => {
+    if (!variations || variationAttributes.length === 0) return null;
+    const allSelected = variationAttributes.every(
+      (attr) => selectedAttributes[attr.slug]
+    );
+    if (!allSelected) return null;
+
+    return variations.find((variation) => {
+      const varAttrs = variation.attributes as Record<string, string>;
+      return variationAttributes.every(
+        (attr) => varAttrs[attr.slug] === selectedAttributes[attr.slug]
+      );
+    }) || null;
+  }, [variations, selectedAttributes, variationAttributes]);
+
   // Notify parent of selection changes
   useEffect(() => {
-    onVariationSelect(selectedVariation);
-  }, [selectedVariation, onVariationSelect]);
+    if (onVariationSelect) {
+      onVariationSelect(selectedVariation);
+    }
+    if (onVariationChange) {
+      onVariationChange(rawMatchedVariation);
+    }
+  }, [selectedVariation, rawMatchedVariation, onVariationSelect, onVariationChange]);
 
   // Handle attribute selection
   const handleAttributeSelect = (slug: string, value: string) => {
@@ -303,28 +337,89 @@ export function VariationSelector({
 /**
  * Hook for using variation selection in parent components
  */
-export function useVariationSelection(productId: Id<"products">) {
-  const [selectedVariation, setSelectedVariation] =
-    useState<SelectedVariation | null>(null);
+interface UseVariationSelectionOptions {
+  productId?: Id<"products"> | string;
+  initialAttributes?: Record<string, string>;
+}
 
-  const variations = useQuery(api.products.variations.getVariationsByProduct, {
-    productId,
-    includeDisabled: false,
-  });
+interface VariationData {
+  _id: Id<"productVariations">;
+  attributes: Record<string, string>;
+  price: number;
+  compareAtPrice?: number;
+  inventoryQuantity: number;
+  trackInventory: boolean;
+  sku?: string;
+  imageUrl?: string;
+  allowBackorder?: boolean;
+}
 
-  const priceRange = useQuery(api.products.variations.getProductPriceRange, {
-    productId,
-  });
+export function useVariationSelection(options: UseVariationSelectionOptions) {
+  const { productId, initialAttributes = {} } = options;
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>(initialAttributes);
+  const [selectedVariation, setSelectedVariation] = useState<VariationData | null>(null);
+
+  // Query variations only if productId is valid
+  const validProductId = productId && typeof productId === 'string' && productId.length > 0;
+
+  const variations = useQuery(
+    api.products.variations.getVariationsByProduct,
+    validProductId ? { productId: productId as Id<"products">, includeDisabled: false } : "skip"
+  );
+
+  const priceRange = useQuery(
+    api.products.variations.getProductPriceRange,
+    validProductId ? { productId: productId as Id<"products"> } : "skip"
+  );
+
+  // Get the product to check attributes
+  const product = useQuery(
+    api.products.queries.getProductByIdSafe,
+    validProductId ? { productId: productId as string } : "skip"
+  );
+
+  // Calculate if all required attributes are selected
+  const isComplete = useMemo(() => {
+    if (!product?.attributes) return false;
+    const variationAttrs = (product.attributes as ProductAttribute[]).filter(a => a.isVariation);
+    if (variationAttrs.length === 0) return false;
+    return variationAttrs.every(attr => selectedAttributes[attr.slug]);
+  }, [product?.attributes, selectedAttributes]);
+
+  // Find matching variation when attributes change
+  useEffect(() => {
+    if (!variations || !isComplete) {
+      setSelectedVariation(null);
+      return;
+    }
+
+    const match = variations.find((v) => {
+      const varAttrs = v.attributes as Record<string, string>;
+      return Object.entries(selectedAttributes).every(
+        ([key, value]) => varAttrs[key] === value
+      );
+    });
+
+    setSelectedVariation(match as VariationData | null);
+  }, [variations, selectedAttributes, isComplete]);
+
+  const handleAttributeChange = (slug: string, value: string) => {
+    setSelectedAttributes(prev => ({ ...prev, [slug]: value }));
+  };
 
   return {
     selectedVariation,
     setSelectedVariation,
+    selectedAttributes,
+    setSelectedAttributes,
+    handleAttributeChange,
     variations,
     priceRange,
     hasVariations: (variations?.length || 0) > 0,
+    isComplete,
     isVariationSelected: selectedVariation !== null,
     canAddToCart:
       selectedVariation !== null &&
-      (selectedVariation.isInStock || selectedVariation.allowBackorder),
+      (selectedVariation.inventoryQuantity > 0 || !selectedVariation.trackInventory || selectedVariation.allowBackorder),
   };
 }
