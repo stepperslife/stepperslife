@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Utensils, Search, X, SlidersHorizontal, Coffee, ChefHat, Flame, Clock, MapPin, Star } from "lucide-react";
+import { Utensils, Search, X, Coffee, ChefHat, Flame, Clock, MapPin, Star, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { RestaurantsSubNav } from "@/components/layout/RestaurantsSubNav";
@@ -10,9 +10,10 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useState, useMemo } from "react";
 import { RestaurantCard } from "@/components/restaurants/RestaurantCard";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
 import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // All available cuisine types
 const ALL_CUISINES = [
@@ -44,7 +45,6 @@ export default function RestaurantsListClient() {
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortOption>("name");
-  const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   // Get unique cities from restaurants
@@ -411,165 +411,213 @@ export default function RestaurantsListClient() {
             </p>
           </motion.div>
 
-          {/* Search and Filter Bar */}
+          {/* Compact Filter Bar */}
           {restaurants.length > 0 && (
-            <motion.div
-              className="mb-8 space-y-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              {/* Search Input */}
-              <div className="relative max-w-xl mx-auto">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <label htmlFor="restaurant-search" className="sr-only">Search restaurants or cuisines</label>
-                <input
-                  id="restaurant-search"
-                  type="text"
-                  placeholder="Search restaurants or cuisines..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 rounded-full border border-border bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm transition-shadow"
-                />
-                <AnimatePresence>
-                  {searchQuery && (
-                    <motion.button
-                      type="button"
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      aria-label="Clear search"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                    >
-                      <X className="h-5 w-5" />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Filter Controls */}
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                {/* Toggle Filters Button (Mobile) */}
-                <motion.button
-                  type="button"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="md:hidden flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card text-card-foreground"
-                  aria-expanded={showFilters}
-                  aria-label="Toggle filters"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <SlidersHorizontal className="h-4 w-4" />
-                  Filters
-                  {hasActiveFilters && (
-                    <motion.span
-                      className="w-2 h-2 rounded-full bg-primary"
-                      aria-label="Active filters"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
+            <div className="bg-card border border-border rounded-lg mb-8">
+              <div className="px-4 py-3">
+                <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                  {/* Search - flexible width */}
+                  <div className="relative flex-1 min-w-[200px] max-w-md">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                    <label htmlFor="restaurant-search" className="sr-only">Search restaurants</label>
+                    <input
+                      id="restaurant-search"
+                      type="text"
+                      placeholder="Search restaurants..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 text-sm border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground placeholder-muted-foreground"
                     />
-                  )}
-                </motion.button>
+                  </div>
 
-                {/* City Filter */}
-                <div className={`${showFilters ? 'flex' : 'hidden'} md:flex`}>
-                  <label htmlFor="city-filter" className="sr-only">Filter by city</label>
-                  <select
-                    id="city-filter"
-                    value={selectedCity}
-                    onChange={(e) => setSelectedCity(e.target.value)}
-                    className="px-4 py-2 rounded-full border border-border bg-card text-card-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="">All Cities</option>
-                    {cities.map(city => (
-                      <option key={city} value={city}>{city}</option>
-                    ))}
-                  </select>
+                  {/* Cuisine Filter - Inline Pills (Desktop) */}
+                  <div className="flex items-center gap-2">
+                    <div className="hidden md:flex items-center gap-1.5">
+                      <Utensils className="w-3.5 h-3.5 text-muted-foreground" />
+                      {availableCuisines.slice(0, 6).map((cuisine) => (
+                        <button
+                          key={cuisine}
+                          type="button"
+                          onClick={() => toggleCuisine(cuisine)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                            selectedCuisines.includes(cuisine)
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          }`}
+                        >
+                          {cuisine}
+                        </button>
+                      ))}
+                      {availableCuisines.length > 6 && (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-7 gap-1 px-2">
+                              <span className="text-xs">+{availableCuisines.length - 6}</span>
+                              <ChevronDown className="w-3 h-3 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-2" align="start">
+                            <div className="flex flex-wrap gap-1.5 max-w-[300px]">
+                              {availableCuisines.slice(6).map((cuisine) => (
+                                <button
+                                  key={cuisine}
+                                  type="button"
+                                  onClick={() => toggleCuisine(cuisine)}
+                                  className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                                    selectedCuisines.includes(cuisine)
+                                      ? "bg-primary text-primary-foreground"
+                                      : "bg-muted text-muted-foreground hover:bg-accent"
+                                  }`}
+                                >
+                                  {cuisine}
+                                </button>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                    </div>
+
+                    {/* Cuisine Filter - Mobile Dropdown */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={`h-9 gap-1 md:hidden ${selectedCuisines.length > 0 ? "border-primary text-primary" : ""}`}
+                        >
+                          <Utensils className="w-3.5 h-3.5" />
+                          {selectedCuisines.length > 0 && (
+                            <span className="rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
+                              {selectedCuisines.length}
+                            </span>
+                          )}
+                          <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-2" align="start">
+                        <div className="flex flex-wrap gap-1.5 max-w-[280px]">
+                          {availableCuisines.map((cuisine) => (
+                            <button
+                              key={cuisine}
+                              type="button"
+                              onClick={() => toggleCuisine(cuisine)}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                                selectedCuisines.includes(cuisine)
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-muted text-muted-foreground hover:bg-accent"
+                              }`}
+                            >
+                              {cuisine}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+
+                    {/* Divider */}
+                    <div className="hidden sm:block w-px h-6 bg-border" />
+
+                    {/* City Filter Dropdown */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={`h-9 gap-1 ${selectedCity ? "border-primary text-primary" : ""}`}
+                        >
+                          <MapPin className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline text-xs">{selectedCity || "City"}</span>
+                          <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-2" align="start">
+                        <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCity("")}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                              !selectedCity
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted text-muted-foreground hover:bg-accent"
+                            }`}
+                          >
+                            All Cities
+                          </button>
+                          {cities.map(city => (
+                            <button
+                              key={city}
+                              type="button"
+                              onClick={() => setSelectedCity(city)}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                                selectedCity === city
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-muted text-muted-foreground hover:bg-accent"
+                              }`}
+                            >
+                              {city}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+
+                    {/* Sort Dropdown */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-9 gap-1">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline text-xs">
+                            {sortBy === "name" ? "Name" : sortBy === "pickup_time" ? "Fast" : "New"}
+                          </span>
+                          <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-2" align="start">
+                        <div className="flex flex-col gap-1">
+                          {[
+                            { value: "name", label: "Sort by Name" },
+                            { value: "pickup_time", label: "Fastest Pickup" },
+                            { value: "newest", label: "Newest First" },
+                          ].map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => setSortBy(option.value as SortOption)}
+                              className={`px-3 py-1.5 rounded-md text-xs font-medium text-left transition-colors ${
+                                sortBy === option.value
+                                  ? "bg-primary text-primary-foreground"
+                                  : "hover:bg-accent"
+                              }`}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+
+                    {/* Divider */}
+                    <div className="hidden sm:block w-px h-6 bg-border" />
+
+                    {/* View Toggle */}
+                    <ViewToggle view={viewMode} onViewChange={setViewMode} />
+
+                    {/* Clear Filters */}
+                    {hasActiveFilters && (
+                      <button
+                        type="button"
+                        onClick={clearFilters}
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3 h-3" />
+                        <span className="hidden sm:inline">Clear</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-
-                {/* Sort Dropdown */}
-                <div className={`${showFilters ? 'flex' : 'hidden'} md:flex`}>
-                  <label htmlFor="sort-by" className="sr-only">Sort restaurants by</label>
-                  <select
-                    id="sort-by"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="px-4 py-2 rounded-full border border-border bg-card text-card-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="name">Sort by Name</option>
-                    <option value="pickup_time">Fastest Pickup</option>
-                    <option value="newest">Newest First</option>
-                  </select>
-                </div>
-
-                {/* View Toggle */}
-                <ViewToggle view={viewMode} onViewChange={setViewMode} />
-
-                {/* Clear Filters */}
-                <AnimatePresence>
-                  {hasActiveFilters && (
-                    <motion.button
-                      type="button"
-                      onClick={clearFilters}
-                      className="flex items-center gap-1 px-4 py-2 rounded-full text-primary hover:bg-accent text-sm font-medium"
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <X className="h-4 w-4" />
-                      Clear Filters
-                    </motion.button>
-                  )}
-                </AnimatePresence>
               </div>
-
-              {/* Cuisine Filter Chips */}
-              {availableCuisines.length > 0 && (
-                <motion.div
-                  className={`${showFilters ? 'flex' : 'hidden'} md:flex flex-wrap justify-center gap-2`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  {availableCuisines.map((cuisine, index) => (
-                    <motion.button
-                      key={cuisine}
-                      type="button"
-                      onClick={() => toggleCuisine(cuisine)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                        selectedCuisines.includes(cuisine)
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                      }`}
-                      aria-pressed={selectedCuisines.includes(cuisine)}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.3 + index * 0.03 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {cuisine}
-                    </motion.button>
-                  ))}
-                </motion.div>
-              )}
-
-              {/* Results Count */}
-              <AnimatePresence>
-                {hasActiveFilters && (
-                  <motion.p
-                    className="text-center text-sm text-muted-foreground"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                  >
-                    Showing {filteredRestaurants.length} of {restaurants.length} restaurants
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </motion.div>
+            </div>
           )}
 
           {filteredRestaurants.length > 0 ? (

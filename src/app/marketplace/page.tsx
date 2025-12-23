@@ -2,11 +2,11 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Package, ShoppingCart, DollarSign, AlertCircle, Store, Users, ShoppingBag, Tag, Sparkles, TrendingUp } from "lucide-react";
+import { Package, ShoppingCart, DollarSign, AlertCircle, Store, Users, ShoppingBag, Tag, Sparkles, TrendingUp, Search, ChevronDown, X } from "lucide-react";
 import { VendorTierBadge } from "@/components/marketplace/VendorTierBadge";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
@@ -14,11 +14,78 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
 import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
+// Product categories
+const PRODUCT_CATEGORIES = [
+  "Apparel & Fashion",
+  "Accessories",
+  "Dance Supplies",
+  "Music & Media",
+  "Art & Collectibles",
+  "Books & Education",
+  "Health & Wellness",
+  "Other",
+];
 
 export default function ShopPage() {
   const products = useQuery(api.products.queries.getActiveProducts, {});
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  // Get available categories from products
+  const availableCategories = useMemo(() => {
+    if (!products) return [];
+    const categorySet = new Set<string>();
+    products.forEach(p => {
+      if (p.category) categorySet.add(p.category);
+    });
+    return PRODUCT_CATEGORIES.filter(c => categorySet.has(c));
+  }, [products]);
+
+  // Filter products
+  const filteredProducts = useMemo(() => {
+    if (!products) return [];
+    let filtered = [...products];
+
+    // Search by name or description
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.description?.toLowerCase().includes(query) ||
+        p.category?.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by categories
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(p =>
+        p.category && selectedCategories.includes(p.category)
+      );
+    }
+
+    return filtered;
+  }, [products, searchQuery, selectedCategories]);
+
+  // Toggle category filter
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedCategories([]);
+  };
+
+  const hasActiveFilters = searchQuery || selectedCategories.length > 0;
 
   // Timeout fallback - after 10 seconds, show error state
   useEffect(() => {
@@ -325,42 +392,154 @@ export default function ShopPage() {
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
         </section>
 
-        {/* Main Content */}
-        <main id="products-grid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <motion.div
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">All Products</h2>
-              <p className="text-muted-foreground">
-                {products.length} {products.length === 1 ? "product" : "products"} available
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              {/* View Toggle */}
-              <ViewToggle view={viewMode} onViewChange={setViewMode} />
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
+        {/* Compact Filter Bar */}
+        <div className="bg-card border-b border-border sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              {/* Search - flexible width */}
+              <div className="relative flex-1 min-w-[200px] max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <label htmlFor="products-search" className="sr-only">Search products</label>
+                <input
+                  id="products-search"
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground placeholder-muted-foreground"
+                />
+              </div>
+
+              {/* Category Filter - Inline Pills (Desktop) */}
+              <div className="flex items-center gap-2">
+                <div className="hidden md:flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                  {availableCategories.slice(0, 4).map((category) => (
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() => toggleCategory(category)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                        selectedCategories.includes(category)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      }`}
+                    >
+                      {category.split(" ")[0]}
+                    </button>
+                  ))}
+                  {availableCategories.length > 4 && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-7 gap-1 px-2">
+                          <span className="text-xs">+{availableCategories.length - 4}</span>
+                          <ChevronDown className="w-3 h-3 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-2" align="start">
+                        <div className="flex flex-wrap gap-1.5 max-w-[280px]">
+                          {availableCategories.slice(4).map((category) => (
+                            <button
+                              key={category}
+                              type="button"
+                              onClick={() => toggleCategory(category)}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                                selectedCategories.includes(category)
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-muted text-muted-foreground hover:bg-accent"
+                              }`}
+                            >
+                              {category}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </div>
+
+                {/* Category Filter - Mobile Dropdown */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={`h-9 gap-1 md:hidden ${selectedCategories.length > 0 ? "border-primary text-primary" : ""}`}
+                    >
+                      <Tag className="w-3.5 h-3.5" />
+                      {selectedCategories.length > 0 && (
+                        <span className="rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-medium">
+                          {selectedCategories.length}
+                        </span>
+                      )}
+                      <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-2" align="start">
+                    <div className="flex flex-wrap gap-1.5 max-w-[280px]">
+                      {availableCategories.map((category) => (
+                        <button
+                          key={category}
+                          type="button"
+                          onClick={() => toggleCategory(category)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                            selectedCategories.includes(category)
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-accent"
+                          }`}
+                        >
+                          {category}
+                        </button>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {/* Divider */}
+                <div className="hidden sm:block w-px h-6 bg-border" />
+
+                {/* View Toggle */}
+                <ViewToggle view={viewMode} onViewChange={setViewMode} />
+
+                {/* Divider */}
+                <div className="hidden sm:block w-px h-6 bg-border" />
+
+                {/* Browse Vendors Link */}
                 <Link
                   href="/marketplace/vendors"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-sky-100 dark:bg-sky-900/30 text-primary/90 dark:text-sky-300 rounded-lg hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-primary hover:text-primary/80"
                 >
-                  <Store className="w-5 h-5" />
-                  Browse Vendors
+                  <Store className="w-3.5 h-3.5" />
+                  Vendors
                 </Link>
-              </motion.div>
-            </div>
-          </motion.div>
 
-          {products.length === 0 ? (
+                {/* Clear Filters */}
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="w-3 h-3" />
+                    <span className="hidden sm:inline">Clear</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <main id="products-grid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-sm text-muted-foreground">
+              {hasActiveFilters
+                ? `Showing ${filteredProducts.length} of ${products.length} products`
+                : `${products.length} ${products.length === 1 ? "product" : "products"} available`}
+            </p>
+          </div>
+
+          {filteredProducts.length === 0 ? (
             <motion.div
               className="bg-card rounded-lg shadow-md p-12 text-center"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -374,15 +553,22 @@ export default function ShopPage() {
                 <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
               </motion.div>
               <h2 className="text-2xl font-bold text-foreground mb-2">
-                Coming Soon!
+                {hasActiveFilters ? "No Products Found" : "Coming Soon!"}
               </h2>
-              <p className="text-muted-foreground">
-                Our shop is currently being stocked with amazing products. Check back soon!
+              <p className="text-muted-foreground mb-4">
+                {hasActiveFilters
+                  ? "Try adjusting your search or filters to find what you're looking for."
+                  : "Our shop is currently being stocked with amazing products. Check back soon!"}
               </p>
+              {hasActiveFilters && (
+                <Button variant="outline" onClick={clearFilters}>
+                  Clear Filters
+                </Button>
+              )}
             </motion.div>
           ) : viewMode === "masonry" ? (
             <PortfolioGrid
-              items={products}
+              items={filteredProducts}
               getKey={(product) => product._id}
               renderItem={(product, index) => (
                 <motion.div
@@ -477,7 +663,7 @@ export default function ShopPage() {
                 },
               }}
             >
-              {products.map((product, index) => (
+              {filteredProducts.map((product, index) => (
                 <motion.div
                   key={product._id}
                   variants={{

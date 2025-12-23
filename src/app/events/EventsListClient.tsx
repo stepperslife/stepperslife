@@ -3,15 +3,16 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
-import { Calendar, MapPin, Tag, Search, Filter, AlertCircle, Ticket, Music, Users, Star } from "lucide-react";
+import { Calendar, Search, Filter, AlertCircle, Ticket, Music, Users, Star, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { EventsSubNav } from "@/components/layout/EventsSubNav";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ViewToggle, ViewMode, getViewClasses } from "@/components/ui/ViewToggle";
-import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/portfolio-01";
+import { ViewToggle, ViewMode } from "@/components/ui/ViewToggle";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function EventsListClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,18 +40,6 @@ export default function EventsListClient() {
       setLoadingTimeout(false);
     }
   }, [events]);
-
-  // Format date
-  function formatEventDate(timestamp: number, timezone?: string): string {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      timeZone: timezone || "America/New_York",
-    });
-  }
 
   // Show timeout error state
   if (loadingTimeout && events === undefined) {
@@ -332,120 +321,152 @@ export default function EventsListClient() {
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
         </section>
 
-        {/* Filters */}
-        <motion.div
-          className="bg-card border-b border-border sticky top-0 z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Search */}
-              <motion.div
-                className="flex-1 relative"
-                whileFocus={{ scale: 1.01 }}
-              >
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+        {/* Compact Filter Bar */}
+        <div className="bg-card border-b border-border sticky top-0 z-10">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              {/* Search - flexible width */}
+              <div className="relative flex-1 min-w-[200px] max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <label htmlFor="events-search" className="sr-only">Search events</label>
                 <input
+                  id="events-search"
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search events by name, description, or location..."
+                  placeholder="Search events..."
                   data-testid="events-search-input"
-                  className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground placeholder-muted-foreground transition-shadow"
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground placeholder-muted-foreground"
                 />
-              </motion.div>
-
-              {/* Category Filter */}
-              <div className="relative">
-                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <select
-                  value={selectedCategory || ""}
-                  onChange={(e) => setSelectedCategory(e.target.value || undefined)}
-                  data-testid="events-category-filter"
-                  className="pl-10 pr-10 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent appearance-none bg-background text-foreground transition-shadow"
-                >
-                  <option value="">All Categories</option>
-                  {categories?.map((cat) => (
-                    <option key={cat.name} value={cat.name}>
-                      {cat.name} ({cat.count})
-                    </option>
-                  ))}
-                </select>
               </div>
 
-              {/* Past Events Toggle */}
-              <motion.label
-                className="flex items-center gap-2 cursor-pointer px-4 py-2 bg-muted rounded-lg hover:bg-accent transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <input
-                  type="checkbox"
-                  checked={showPastEvents}
-                  onChange={(e) => setShowPastEvents(e.target.checked)}
-                  data-testid="events-past-toggle"
-                  className="w-4 h-4 text-primary border-input rounded focus:ring-ring"
-                />
-                <span className="text-sm font-medium text-foreground">
-                  Show past events
-                </span>
-              </motion.label>
-
-              {/* View Toggle */}
-              <ViewToggle view={viewMode} onViewChange={setViewMode} />
-            </div>
-
-            {/* Active Filters Display */}
-            <AnimatePresence>
-              {(searchTerm || selectedCategory) && (
-                <motion.div
-                  className="mt-3 flex items-center gap-2"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                >
-                  <span className="text-sm text-muted-foreground">Active filters:</span>
-                  {searchTerm && (
-                    <motion.span
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
+              {/* Category Filter - Inline Pills (Desktop) */}
+              <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-1.5">
+                  <Filter className="w-3.5 h-3.5 text-muted-foreground" />
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategory(undefined)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                      !selectedCategory
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {categories?.slice(0, 5).map((cat) => (
+                    <button
+                      key={cat.name}
+                      type="button"
+                      onClick={() => setSelectedCategory(cat.name)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                        selectedCategory === cat.name
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      }`}
                     >
-                      Search: {searchTerm}
-                      <button
-                        type="button"
-                        onClick={() => setSearchTerm("")}
-                        className="ml-2 text-primary hover:text-primary/80"
-                      >
-                        ×
-                      </button>
-                    </motion.span>
+                      {cat.name}
+                    </button>
+                  ))}
+                  {categories && categories.length > 5 && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-7 gap-1 px-2">
+                          <span className="text-xs">More</span>
+                          <ChevronDown className="w-3 h-3 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-2" align="start">
+                        <div className="flex flex-wrap gap-1.5 max-w-[250px]">
+                          {categories.slice(5).map((cat) => (
+                            <button
+                              key={cat.name}
+                              type="button"
+                              onClick={() => setSelectedCategory(cat.name)}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                                selectedCategory === cat.name
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-muted text-muted-foreground hover:bg-accent"
+                              }`}
+                            >
+                              {cat.name}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   )}
-                  {selectedCategory && (
-                    <motion.span
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-accent text-accent-foreground"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
+                </div>
+
+                {/* Category Filter - Mobile Dropdown */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={`h-9 gap-1 sm:hidden ${selectedCategory ? "border-primary text-primary" : ""}`}
                     >
-                      Category: {selectedCategory}
+                      <Filter className="w-3.5 h-3.5" />
+                      {selectedCategory && (
+                        <span className="text-xs truncate max-w-[60px]">{selectedCategory}</span>
+                      )}
+                      <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-2" align="start">
+                    <div className="flex flex-wrap gap-1.5 max-w-[250px]">
                       <button
                         type="button"
                         onClick={() => setSelectedCategory(undefined)}
-                        className="ml-2 text-primary hover:text-primary/80"
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                          !selectedCategory
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground hover:bg-accent"
+                        }`}
                       >
-                        ×
+                        All
                       </button>
-                    </motion.span>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                      {categories?.map((cat) => (
+                        <button
+                          key={cat.name}
+                          type="button"
+                          onClick={() => setSelectedCategory(cat.name)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                            selectedCategory === cat.name
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-accent"
+                          }`}
+                        >
+                          {cat.name}
+                        </button>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {/* Divider */}
+                <div className="hidden sm:block w-px h-6 bg-border" />
+
+                {/* Past Events Toggle */}
+                <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground hover:text-foreground">
+                  <Checkbox
+                    checked={showPastEvents}
+                    onCheckedChange={(checked) => setShowPastEvents(checked === true)}
+                    data-testid="events-past-toggle"
+                  />
+                  <span className="hidden sm:inline">Past</span>
+                </label>
+
+                {/* Divider */}
+                <div className="hidden sm:block w-px h-6 bg-border" />
+
+                {/* View Toggle */}
+                <ViewToggle view={viewMode} onViewChange={setViewMode} />
+              </div>
+            </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Events Grid */}
         <div id="events-grid" className="container mx-auto px-4 py-8">
