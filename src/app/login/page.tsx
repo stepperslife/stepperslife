@@ -126,7 +126,7 @@ export default function LoginPage() {
                   window.location.href = `/api/auth/google?callbackUrl=${callbackUrl}`;
                 }}
                 data-testid="google-login-button"
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-card border-2 border-input rounded-lg hover:bg-muted transition-colors font-medium text-foreground shadow-sm"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border-2 border-gray-800 rounded-lg hover:bg-gray-50 transition-colors font-medium text-gray-900 shadow-sm"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -152,10 +152,10 @@ export default function LoginPage() {
               {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border"></div>
+                  <div className="w-full border-t border-gray-800"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-card text-muted-foreground">
+                  <span className="px-2 bg-card text-gray-900 dark:text-gray-100 font-medium">
                     or
                   </span>
                 </div>
@@ -166,7 +166,7 @@ export default function LoginPage() {
                 <div>
                   <label
                     htmlFor="magic-email"
-                    className="block text-sm font-medium text-foreground mb-2"
+                    className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2"
                   >
                     Email Address
                   </label>
@@ -176,7 +176,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     data-testid="email-input"
-                    className="w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-800 bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-500"
                     placeholder="you@example.com"
                   />
                 </div>
