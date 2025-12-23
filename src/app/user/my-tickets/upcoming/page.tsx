@@ -111,7 +111,11 @@ export default function UpcomingTicketsPage() {
                       <div className="flex items-start gap-2 text-sm">
                         <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
                         <div>
-                          <div className="font-medium">{ticket.location}</div>
+                          <div className="font-medium">
+                            {typeof ticket.location === 'string'
+                              ? ticket.location
+                              : ticket.location && [ticket.location.venueName, ticket.location.city, ticket.location.state].filter(Boolean).join(', ')}
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-start gap-2 text-sm">

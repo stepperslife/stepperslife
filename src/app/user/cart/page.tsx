@@ -87,7 +87,9 @@ export default function CartPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4" />
-                              {item.location}
+                              {typeof item.location === 'string'
+                                ? item.location
+                                : item.location && [item.location.venueName, item.location.city, item.location.state].filter(Boolean).join(', ')}
                             </div>
                             {item.ticketType && (
                               <div className="flex items-center gap-2">

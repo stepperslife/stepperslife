@@ -12,7 +12,14 @@ interface PastEvent {
   id: string;
   name: string;
   date: number;
-  location: string;
+  location: string | {
+    venueName?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  };
   scannedCount: number;
 }
 
@@ -106,7 +113,11 @@ export default function PastEventsPage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
-                        <span className="truncate">{event.location}</span>
+                        <span className="truncate">
+                          {typeof event.location === 'string'
+                            ? event.location
+                            : event.location && [event.location.venueName, event.location.city, event.location.state].filter(Boolean).join(', ')}
+                        </span>
                       </div>
                       <div className="flex items-center gap-1 text-success">
                         <CheckCircle className="h-3 w-3" />

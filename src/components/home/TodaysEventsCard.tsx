@@ -123,7 +123,9 @@ export function TodaysEventsCard() {
               {(event.venue || event.location) && (
                 <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 line-clamp-1">
                   <MapPin className="w-3 h-3 flex-shrink-0" />
-                  {event.venue || event.location}
+                  {event.venue || (typeof event.location === 'string'
+                    ? event.location
+                    : event.location && [event.location.venueName, event.location.city, event.location.state].filter(Boolean).join(', '))}
                 </p>
               )}
 

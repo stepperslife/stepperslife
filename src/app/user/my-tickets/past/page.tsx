@@ -104,7 +104,11 @@ export default function PastTicketsPage() {
                           </div>
                           <div className="flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
-                            <span className="truncate">{ticket.location}</span>
+                            <span className="truncate">
+                              {typeof ticket.location === 'string'
+                                ? ticket.location
+                                : ticket.location && [ticket.location.venueName, ticket.location.city, ticket.location.state].filter(Boolean).join(', ')}
+                            </span>
                           </div>
                           {ticket.scanned && (
                             <div className="flex items-center gap-1 text-success">

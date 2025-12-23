@@ -11,7 +11,14 @@ interface TicketData {
   id: string;
   eventName: string;
   eventDate: number;
-  location: string;
+  location: string | {
+    venueName?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  };
   ticketNumber: string;
   status: string;
 }
@@ -198,7 +205,11 @@ export default function MyTicketsPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4" />
-                              <span>{ticket.location}</span>
+                              <span>
+                                {typeof ticket.location === 'string'
+                                  ? ticket.location
+                                  : ticket.location && [ticket.location.venueName, ticket.location.city, ticket.location.state].filter(Boolean).join(', ')}
+                              </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <TicketIcon className="h-4 w-4" />

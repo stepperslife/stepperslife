@@ -12,7 +12,14 @@ interface TodayEvent {
   name: string;
   startTime: number;
   endTime: number;
-  location: string;
+  location: string | {
+    venueName?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  };
   expectedAttendance: number;
   scannedCount: number;
 }
@@ -85,7 +92,11 @@ export default function TodayEventsPage() {
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{event.location}</span>
+                        <span>
+                          {typeof event.location === 'string'
+                            ? event.location
+                            : event.location && [event.location.venueName, event.location.city, event.location.state].filter(Boolean).join(', ')}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <Users className="h-4 w-4 text-muted-foreground" />

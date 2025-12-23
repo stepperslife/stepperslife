@@ -9,7 +9,14 @@ interface Event {
   slug: string
   description: string | null
   startDate: Date
-  location: string | null
+  location: string | null | {
+    venueName?: string
+    address?: string
+    city?: string
+    state?: string
+    zipCode?: string
+    country?: string
+  }
   imageUrl: string | null
   eventType: string
   ticketTypes: Array<{
@@ -109,7 +116,11 @@ export function EventsSection({ events }: EventsSectionProps) {
                     {event.location && (
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 flex-shrink-0" />
-                        <span className="line-clamp-1">{event.location}</span>
+                        <span className="line-clamp-1">
+                          {typeof event.location === 'string'
+                            ? event.location
+                            : [event.location.venueName, event.location.city, event.location.state].filter(Boolean).join(', ')}
+                        </span>
                       </div>
                     )}
 

@@ -9,7 +9,14 @@ import Link from "next/link";
 interface Event {
   id: string;
   name: string;
-  location: string;
+  location: string | {
+    venueName?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  };
   scannedCount: number;
   soldCount: number;
   capacity: number;
@@ -62,7 +69,11 @@ export default function EventStatusPage() {
                     In Progress
                   </span>
                 </div>
-                <CardDescription>{event.location}</CardDescription>
+                <CardDescription>
+                  {typeof event.location === 'string'
+                    ? event.location
+                    : event.location && [event.location.venueName, event.location.city, event.location.state].filter(Boolean).join(', ')}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {/* Progress Bar */}
