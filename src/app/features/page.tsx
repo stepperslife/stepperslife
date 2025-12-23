@@ -4,6 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { format } from "date-fns";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import {
@@ -85,6 +88,21 @@ const staggerContainer = {
 
 export default function FeaturesPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Fetch real data from database
+  const upcomingEvents = useQuery(api.public.queries.getUpcomingEvents, { limit: 3 });
+  const upcomingClasses = useQuery(api.public.queries.getPublishedClasses, { includePast: false });
+
+  // Get first event and class for the preview sections
+  const featuredEvent = upcomingEvents?.[0];
+  const featuredClass = upcomingClasses?.[0];
+
+  // Helper to get image URL from event/class
+  const getImageUrl = (item: { imageUrl?: string; images?: string[] } | undefined) => {
+    if (!item) return null;
+    return item.imageUrl ||
+      (item.images && item.images[0] ? `https://expert-vulture-775.convex.cloud/api/storage/${item.images[0]}` : null);
+  };
 
   // Auto-advance slides
   useEffect(() => {
@@ -332,18 +350,22 @@ export default function FeaturesPage() {
 
               <div className="relative">
                 <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-4 overflow-hidden">
-                  {/* Event Image */}
+                  {/* Event Image - Use real event if available */}
                   <div className="relative h-48 rounded-xl overflow-hidden mb-4">
                     <Image
-                      src="https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=800&q=80"
-                      alt="Elegant dancing event"
+                      src={getImageUrl(featuredEvent) || "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=800&q=80"}
+                      alt={featuredEvent?.name || "Stepping event"}
                       fill
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-3 left-3 right-3">
-                      <p className="text-white font-bold">Chicago Steppers Ball</p>
-                      <p className="text-white/80 text-sm">Sat, Jan 15 • 8PM</p>
+                      <p className="text-white font-bold">{featuredEvent?.name || "Chicago Steppers Ball"}</p>
+                      <p className="text-white/80 text-sm">
+                        {featuredEvent?.eventDateLiteral || featuredEvent?.startDate
+                          ? format(new Date(featuredEvent.startDate), "EEE, MMM d • h:mma")
+                          : "Sat, Jan 15 • 8PM"}
+                      </p>
                     </div>
                   </div>
                   <div className="bg-card rounded-xl shadow-xl p-6 space-y-4">
@@ -357,7 +379,7 @@ export default function FeaturesPage() {
                     </div>
                     <div className="grid grid-cols-3 gap-4 pt-4 border-t">
                       <div>
-                        <p className="text-2xl font-bold text-foreground">342</p>
+                        <p className="text-2xl font-bold text-foreground">{featuredEvent?.ticketsSold || 342}</p>
                         <p className="text-xs text-muted-foreground">Tickets Sold</p>
                       </div>
                       <div>
@@ -385,17 +407,19 @@ export default function FeaturesPage() {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="order-2 lg:order-1">
                 <div className="bg-gradient-to-br from-warning/5 to-warning/10 rounded-2xl p-4 overflow-hidden">
-                  {/* Dance Class Image */}
+                  {/* Dance Class Image - Use real class if available */}
                   <div className="relative h-48 rounded-xl overflow-hidden mb-4">
                     <Image
-                      src="https://images.unsplash.com/photo-1547153760-18fc86324498?w=800&q=80"
-                      alt="Couple dancing elegantly"
+                      src={getImageUrl(featuredClass) || "https://images.unsplash.com/photo-1547153760-18fc86324498?w=800&q=80"}
+                      alt={featuredClass?.name || "Dance class"}
                       fill
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-3 left-3">
-                      <span className="bg-warning text-white px-2 py-1 rounded-full text-xs font-semibold">Live Class</span>
+                      <span className="bg-warning text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        {featuredClass?.categories?.[0] || "Live Class"}
+                      </span>
                     </div>
                   </div>
                   <div className="bg-card rounded-xl shadow-xl p-6">
@@ -404,14 +428,18 @@ export default function FeaturesPage() {
                         <BookOpen className="w-8 h-8 text-warning" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-foreground">Beginner Steppin</h4>
-                        <p className="text-sm text-muted-foreground">Every Tuesday 7PM</p>
+                        <h4 className="font-bold text-foreground">{featuredClass?.name || "Beginner Steppin"}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {featuredClass?.classDays
+                            ? `Every ${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][featuredClass.classDays[0]]}`
+                            : "Every Tuesday 7PM"}
+                        </p>
                       </div>
                     </div>
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Enrolled</span>
-                        <span className="font-semibold text-foreground">24/30</span>
+                        <span className="font-semibold text-foreground">{featuredClass?.ticketsSold || 24}/{featuredClass?.capacity || 30}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Revenue</span>
