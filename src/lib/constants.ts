@@ -12,7 +12,7 @@ export const EVENT_CATEGORIES = [
   "Workshop",
   "Save the Date",
   "Cruise",
-  "Outdoors Steppin",
+  "Outdoor",
   "Holiday Event",
   "Weekend Event",
   "Comedy Shows",

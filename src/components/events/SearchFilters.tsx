@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { EVENT_CATEGORIES } from "@/lib/constants";
 
 interface SearchFiltersProps {
   onSearchChange: (query: string) => void;
@@ -12,16 +13,7 @@ interface SearchFiltersProps {
   onTogglePastEvents?: (show: boolean) => void;
 }
 
-const CATEGORIES = [
-  "All",
-  "Set",
-  "Workshop",
-  "Save the Date",
-  "Cruise",
-  "Outdoors Steppin",
-  "Holiday Event",
-  "Weekend Event",
-];
+const CATEGORIES = ["All", ...EVENT_CATEGORIES];
 
 export function SearchFilters({
   onSearchChange,

@@ -371,9 +371,12 @@ All fields below should be extracted from the description text you captured in P
       * "Workshop" - instructional or learning events
       * "Save the Date" - advance notice events
       * "Cruise" - boat or cruise events
-      * "Outdoors Steppin" - outdoor stepping events
+      * "Outdoor" - outdoor stepping events
       * "Holiday Event" - themed around a holiday
       * "Weekend Event" - multi-day weekend events
+      * "Comedy Shows" - comedy or stand-up events
+      * "Trips" - group travel or excursion events
+      * "Concerts" - live music or concert events
 
     - Return as array: ["Weekend Event", "Holiday Event"]
     - If none apply: []
