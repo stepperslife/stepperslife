@@ -1212,11 +1212,20 @@ export default defineSchema({
     name: v.string(),
     description: v.string(),
 
+    // Product Type (NEW - for variable products support)
+    productType: v.optional(
+      v.union(
+        v.literal("SIMPLE"), // Regular product with no variations
+        v.literal("VARIABLE"), // Product with variations (sizes, colors, etc.)
+        v.literal("DIGITAL") // Downloadable/virtual product
+      )
+    ), // Default: SIMPLE for backward compatibility
+
     // Pricing
-    price: v.number(), // Price in cents
+    price: v.number(), // Price in cents (base price for variable products)
     compareAtPrice: v.optional(v.number()), // Original price (for showing discounts)
 
-    // Inventory
+    // Inventory (for SIMPLE products or aggregate for VARIABLE)
     sku: v.optional(v.string()), // Stock Keeping Unit
     inventoryQuantity: v.number(), // Available quantity
     trackInventory: v.boolean(), // Whether to track inventory
@@ -1230,7 +1239,26 @@ export default defineSchema({
     images: v.optional(v.array(v.string())), // Array of image URLs
     primaryImage: v.optional(v.string()), // Main product image
 
-    // Variants (e.g., sizes, colors)
+    // ==========================================
+    // VARIABLE PRODUCTS - Flexible Attributes (NEW)
+    // ==========================================
+    // Attributes define what options a product has (e.g., Size, Color, Material)
+    // Each attribute can create variations when isVariation=true
+    attributes: v.optional(
+      v.array(
+        v.object({
+          id: v.string(), // Unique attribute ID (e.g., "attr_size_123")
+          name: v.string(), // Display name: "Size", "Color", "Material", "Scent"
+          slug: v.string(), // URL-safe: "size", "color", "material"
+          values: v.array(v.string()), // Options: ["S", "M", "L", "XL"] or ["Red", "Blue", "Green"]
+          isVariation: v.boolean(), // Does this attribute create variations?
+          isVisible: v.boolean(), // Show on product page?
+          sortOrder: v.optional(v.number()), // Display order
+        })
+      )
+    ),
+
+    // Legacy variants field (DEPRECATED - use productVariations table instead)
     hasVariants: v.boolean(),
     variants: v.optional(
       v.array(
@@ -1276,7 +1304,82 @@ export default defineSchema({
     .index("by_category", ["category"])
     .index("by_sku", ["sku"])
     .index("by_created_by", ["createdBy"])
-    .index("by_vendor", ["vendorId"]),
+    .index("by_vendor", ["vendorId"])
+    .index("by_product_type", ["productType"]),
+
+  // ==========================================
+  // PRODUCT VARIATIONS - Individual variation records (NEW)
+  // ==========================================
+  // Each variation is a unique combination of attributes (e.g., Size=M + Color=Blue)
+  // Variations have their own price, inventory, SKU, and image
+  productVariations: defineTable({
+    productId: v.id("products"),
+    vendorId: v.optional(v.id("vendors")), // For vendor products
+
+    // Attribute combination for this variation (dynamic keys)
+    // e.g., { size: "M", color: "Blue" } or { size: "L", material: "Cotton", color: "Red" }
+    attributes: v.any(), // Flexible object to store attribute key-value pairs
+
+    // Variation-specific data
+    sku: v.optional(v.string()), // Unique SKU for this variation
+    price: v.number(), // Price in cents (can differ from parent product)
+    compareAtPrice: v.optional(v.number()), // Original price for sale display
+
+    // Per-variation inventory
+    inventoryQuantity: v.number(),
+    trackInventory: v.boolean(),
+    allowBackorder: v.optional(v.boolean()),
+    lowStockThreshold: v.optional(v.number()), // Alert when stock falls below this
+
+    // Variation image (shown when this variation is selected)
+    imageUrl: v.optional(v.string()),
+    imageId: v.optional(v.id("_storage")), // For uploaded images
+
+    // Status
+    isEnabled: v.boolean(), // Whether this variation is available for purchase
+    status: v.union(v.literal("ACTIVE"), v.literal("DRAFT")),
+
+    // Shipping overrides (can differ from parent product)
+    weight: v.optional(v.number()), // Weight in grams
+    dimensions: v.optional(
+      v.object({
+        length: v.number(),
+        width: v.number(),
+        height: v.number(),
+      })
+    ),
+
+    // Digital product support
+    isVirtual: v.optional(v.boolean()), // No shipping required
+    isDownloadable: v.optional(v.boolean()),
+    downloadFiles: v.optional(
+      v.array(
+        v.object({
+          id: v.string(),
+          name: v.string(),
+          url: v.string(),
+        })
+      )
+    ),
+    downloadLimit: v.optional(v.number()), // Max downloads (-1 for unlimited)
+    downloadExpiry: v.optional(v.number()), // Days until link expires
+
+    // Sorting and display
+    menuOrder: v.number(), // For drag-drop reordering
+    displayName: v.optional(v.string()), // Generated name like "M / Blue"
+
+    // Optimistic locking (prevents race conditions)
+    version: v.number(),
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_product", ["productId"])
+    .index("by_vendor", ["vendorId"])
+    .index("by_sku", ["sku"])
+    .index("by_status", ["status"])
+    .index("by_product_status", ["productId", "status"]),
 
   // Product Orders - Customer orders for products
   productOrders: defineTable({

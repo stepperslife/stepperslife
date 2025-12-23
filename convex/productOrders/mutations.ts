@@ -9,8 +9,13 @@ export const createProductOrder = mutation({
         productId: v.id("products"),
         productName: v.string(),
         productImage: v.optional(v.string()), // Product image URL
+        // Legacy variant system
         variantId: v.optional(v.string()),
         variantName: v.optional(v.string()),
+        // New variation system (productType: "VARIABLE")
+        variationId: v.optional(v.id("productVariations")),
+        variationAttributes: v.optional(v.any()), // { size: "M", color: "Blue" }
+        variationSku: v.optional(v.string()),
         quantity: v.number(),
         price: v.number(),
       })
@@ -64,13 +69,42 @@ export const createProductOrder = mutation({
         throw new Error(`Product ${item.productId} not found`);
       }
 
-      // Check and update inventory
+      // Handle new variation system (productType: "VARIABLE")
+      if (item.variationId) {
+        const variation = await ctx.db.get(item.variationId);
+        if (!variation) {
+          throw new Error(`Variation ${item.variationId} not found`);
+        }
+
+        if (variation.trackInventory) {
+          if (variation.inventoryQuantity < item.quantity) {
+            const attrDisplay = item.variationAttributes
+              ? Object.entries(item.variationAttributes)
+                  .map(([k, v]) => `${k}: ${v}`)
+                  .join(", ")
+              : "";
+            throw new Error(
+              `Insufficient inventory for ${item.productName}${attrDisplay ? ` (${attrDisplay})` : ""}`
+            );
+          }
+
+          // Decrement variation inventory with optimistic locking
+          await ctx.db.patch(item.variationId, {
+            inventoryQuantity: variation.inventoryQuantity - item.quantity,
+            version: (variation.version || 0) + 1,
+            updatedAt: Date.now(),
+          });
+        }
+        continue; // Move to next item
+      }
+
+      // Legacy: Check and update inventory
       if (product.trackInventory) {
         if (item.variantId && product.variants) {
-          // Update variant inventory
-          const variantIndex = product.variants.findIndex((v) => v.id === item.variantId);
+          // Update legacy variant inventory
+          const variantIndex = product.variants.findIndex((v: any) => v.id === item.variantId);
           if (variantIndex >= 0) {
-            const variant = product.variants[variantIndex];
+            const variant = product.variants[variantIndex] as any;
             if (variant.inventoryQuantity < item.quantity) {
               throw new Error(
                 `Insufficient inventory for ${item.productName} - ${item.variantName}`

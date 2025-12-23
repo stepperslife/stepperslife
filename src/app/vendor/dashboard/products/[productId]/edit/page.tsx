@@ -17,9 +17,12 @@ import {
   Loader2,
   ImagePlus,
   Trash2,
+  Boxes,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { ProductImageUpload } from "@/components/marketplace/ProductImageUpload";
+import { VariationManager } from "@/components/products/VariationManager";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const PRODUCT_CATEGORIES = [
   "Apparel & Fashion",
@@ -280,81 +283,99 @@ export default function EditProductPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-8">
-        {/* Basic Info */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
-              <Package className="w-5 h-5 text-primary" />
-            </div>
-            <h2 className="text-lg font-bold text-foreground">Basic Information</h2>
-          </div>
+      <Tabs defaultValue="details" className="max-w-4xl">
+        <TabsList className="mb-6">
+          <TabsTrigger value="details" className="flex items-center gap-2">
+            <Package className="w-4 h-4" />
+            Product Details
+          </TabsTrigger>
+          <TabsTrigger value="variations" className="flex items-center gap-2">
+            <Boxes className="w-4 h-4" />
+            Variations
+            {product.productType === "VARIABLE" && (
+              <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary/10 text-primary rounded">
+                Variable
+              </span>
+            )}
+          </TabsTrigger>
+        </TabsList>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Product Name *
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                placeholder="Enter product name"
-              />
-            </div>
+        <TabsContent value="details">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Basic Info */}
+            <div className="bg-card rounded-xl border border-border p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+                  <Package className="w-5 h-5 text-primary" />
+                </div>
+                <h2 className="text-lg font-bold text-foreground">Basic Information</h2>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Description *
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-                rows={4}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
-                placeholder="Describe your product..."
-              />
-            </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Product Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                    placeholder="Enter product name"
+                  />
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Category
-              </label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-              >
-                <option value="">Select a category</option>
-                {PRODUCT_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Description *
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    required
+                    rows={4}
+                    className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
+                    placeholder="Describe your product..."
+                  />
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Tags (comma-separated)
-              </label>
-              <input
-                type="text"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                placeholder="steppers, dance, apparel"
-              />
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  >
+                    <option value="">Select a category</option>
+                    {PRODUCT_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Tags (comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    name="tags"
+                    value={formData.tags}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                    placeholder="steppers, dance, apparel"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
         {/* Images */}
         <div className="bg-card rounded-xl border border-border p-6">
@@ -603,7 +624,32 @@ export default function EditProductPage() {
             </div>
           </div>
         </div>
-      </form>
+          </form>
+        </TabsContent>
+
+        <TabsContent value="variations">
+          <div className="bg-card rounded-xl border border-border p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
+                <Boxes className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-foreground">Product Variations</h2>
+                <p className="text-sm text-muted-foreground">
+                  Create variations with different sizes, colors, or other attributes
+                </p>
+              </div>
+            </div>
+
+            <VariationManager
+              productId={productId as Id<"products">}
+              onVariationsChange={() => {
+                // Refetch is automatic with Convex real-time subscriptions
+              }}
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

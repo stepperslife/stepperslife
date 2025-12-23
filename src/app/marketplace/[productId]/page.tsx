@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -29,6 +29,7 @@ import ProductOptionInput, {
   type SelectedOption,
 } from "@/components/marketplace/ProductOptionInput";
 import { VendorTierBadge } from "@/components/marketplace/VendorTierBadge";
+import { VariationSelector, useVariationSelection } from "@/components/products/VariationSelector";
 
 // Type definitions
 interface ProductVariant {
@@ -95,6 +96,28 @@ export default function ProductDetailPage() {
     Record<string, SelectedOption>
   >({});
 
+  // New variation system hook (for productType: "VARIABLE")
+  const {
+    selectedVariation: newSelectedVariation,
+    isComplete: variationIsComplete,
+    handleAttributeChange,
+    setSelectedVariation: setNewSelectedVariation,
+    selectedAttributes,
+  } = useVariationSelection({
+    productId: productId || undefined,
+    initialAttributes: {}
+  });
+
+  // Check if this is a new-style variable product
+  const isNewVariableProduct = product?.productType === "VARIABLE";
+
+  // When a new variation is selected, update the image
+  useEffect(() => {
+    if (newSelectedVariation?.imageUrl) {
+      setSelectedImage(0);
+    }
+  }, [newSelectedVariation]);
+
   // Show loading state only for valid IDs that are being fetched
   if (isValidId && product === undefined) {
     return (
@@ -145,14 +168,51 @@ export default function ProductDetailPage() {
       : null;
 
   // Use variant image if available, otherwise use product images
-  const allImages = currentVariant?.image
-    ? ([currentVariant.image, product.primaryImage, ...(product.images || [])].filter(
-        Boolean
-      ) as string[])
-    : ([product.primaryImage, ...(product.images || [])].filter(Boolean) as string[]);
+  // Priority: new variation image > old variant image > product images
+  const allImages = (() => {
+    if (isNewVariableProduct && newSelectedVariation?.imageUrl) {
+      return [newSelectedVariation.imageUrl, product.primaryImage, ...(product.images || [])].filter(Boolean) as string[];
+    }
+    if (currentVariant?.image) {
+      return [currentVariant.image, product.primaryImage, ...(product.images || [])].filter(Boolean) as string[];
+    }
+    return [product.primaryImage, ...(product.images || [])].filter(Boolean) as string[];
+  })();
 
-  const isOutOfStock = product.trackInventory && product.inventoryQuantity === 0;
-  const maxQuantity = product.trackInventory ? product.inventoryQuantity : 99;
+  // Calculate stock status - consider new variations if applicable
+  const getStockInfo = () => {
+    if (isNewVariableProduct) {
+      if (!variationIsComplete || !newSelectedVariation) {
+        // No variation selected yet, show base product status
+        return {
+          isOutOfStock: false,
+          maxQuantity: 99,
+          showSelectVariation: true
+        };
+      }
+      // Use variation inventory
+      const varInStock = newSelectedVariation.trackInventory
+        ? newSelectedVariation.inventoryQuantity > 0
+        : true;
+      return {
+        isOutOfStock: !varInStock,
+        maxQuantity: newSelectedVariation.trackInventory
+          ? newSelectedVariation.inventoryQuantity
+          : 99,
+        showSelectVariation: false
+      };
+    }
+    // Legacy behavior
+    return {
+      isOutOfStock: product.trackInventory && product.inventoryQuantity === 0,
+      maxQuantity: product.trackInventory ? product.inventoryQuantity : 99,
+      showSelectVariation: false
+    };
+  };
+
+  const stockInfo = getStockInfo();
+  const isOutOfStock = stockInfo.isOutOfStock;
+  const maxQuantity = stockInfo.maxQuantity;
 
   // Calculate total options price modifier
   const totalOptionsPriceModifier = Object.values(selectedProductOptions).reduce(
@@ -160,8 +220,13 @@ export default function ProductDetailPage() {
     0
   );
 
-  // Calculate final price (base/variant + options)
-  const basePrice = currentVariant?.price ?? product.price;
+  // Calculate final price (base/variant/new variation + options)
+  const basePrice = (() => {
+    if (isNewVariableProduct && newSelectedVariation) {
+      return newSelectedVariation.price;
+    }
+    return currentVariant?.price ?? product.price;
+  })();
   const finalPrice = basePrice + totalOptionsPriceModifier;
 
   const handleQuantityChange = (change: number) => {
@@ -187,9 +252,34 @@ export default function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
-    // If product has variants, find the selected variant
+    // For new variable products, use the new variation system
+    if (isNewVariableProduct) {
+      if (!variationIsComplete || !newSelectedVariation) {
+        // Don't add to cart without selecting variation
+        return;
+      }
+
+      const productOptionsArray = Object.values(selectedProductOptions);
+
+      addToCart({
+        productId: product._id,
+        productName: product.name,
+        productPrice: finalPrice,
+        productImage: newSelectedVariation.imageUrl || product.primaryImage,
+        quantity,
+        variationId: newSelectedVariation._id,
+        variationAttributes: newSelectedVariation.attributes,
+        variationSku: newSelectedVariation.sku,
+        ...(productOptionsArray.length > 0 && {
+          productOptions: productOptionsArray,
+          optionsPriceModifier: totalOptionsPriceModifier,
+        }),
+      });
+      return;
+    }
+
+    // Legacy: If product has old-style variants
     let variant: ProductVariant | undefined = undefined;
-    let variantPrice = product.price;
     let productImage = product.primaryImage;
 
     if (product.hasVariants && product.variants && selectedOptions.size && selectedOptions.color) {
@@ -198,7 +288,6 @@ export default function ProductDetailPage() {
           v.options.size === selectedOptions.size && v.options.color === selectedOptions.color
       );
       if (variant) {
-        variantPrice = variant.price || product.price;
         productImage = variant.image || product.primaryImage;
       }
     }
@@ -225,9 +314,35 @@ export default function ProductDetailPage() {
   };
 
   const handleBuyNow = () => {
-    // If product has variants, find the selected variant
+    // For new variable products, use the new variation system
+    if (isNewVariableProduct) {
+      if (!variationIsComplete || !newSelectedVariation) {
+        // Don't proceed without selecting variation
+        return;
+      }
+
+      const productOptionsArray = Object.values(selectedProductOptions);
+
+      addToCart({
+        productId: product._id,
+        productName: product.name,
+        productPrice: finalPrice,
+        productImage: newSelectedVariation.imageUrl || product.primaryImage,
+        quantity,
+        variationId: newSelectedVariation._id,
+        variationAttributes: newSelectedVariation.attributes,
+        variationSku: newSelectedVariation.sku,
+        ...(productOptionsArray.length > 0 && {
+          productOptions: productOptionsArray,
+          optionsPriceModifier: totalOptionsPriceModifier,
+        }),
+      });
+      router.push("/marketplace/checkout");
+      return;
+    }
+
+    // Legacy: If product has old-style variants
     let variant: ProductVariant | undefined = undefined;
-    let variantPrice = product.price;
     let productImage = product.primaryImage;
 
     if (product.hasVariants && product.variants && selectedOptions.size && selectedOptions.color) {
@@ -236,7 +351,6 @@ export default function ProductDetailPage() {
           v.options.size === selectedOptions.size && v.options.color === selectedOptions.color
       );
       if (variant) {
-        variantPrice = variant.price || product.price;
         productImage = variant.image || product.primaryImage;
       }
     }
@@ -426,8 +540,8 @@ export default function ProductDetailPage() {
                 <p className="text-foreground leading-relaxed">{product.description}</p>
               </div>
 
-              {/* Stock Status */}
-              {product.trackInventory && (
+              {/* Stock Status (for non-variable products) */}
+              {!isNewVariableProduct && product.trackInventory && (
                 <div>
                   {isOutOfStock ? (
                     <div className="flex items-center gap-2 text-destructive">
@@ -443,15 +557,50 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              {/* SKU */}
-              {product.sku && (
+              {/* SKU - show variation SKU if available */}
+              {(newSelectedVariation?.sku || product.sku) && (
                 <div className="text-sm text-muted-foreground">
-                  SKU: <span className="font-mono">{product.sku}</span>
+                  SKU: <span className="font-mono">{newSelectedVariation?.sku || product.sku}</span>
                 </div>
               )}
 
-              {/* Product Variants */}
-              {product.hasVariants && product.variants && product.variants.length > 0 && (
+              {/* New Variable Products System */}
+              {isNewVariableProduct && productId && (
+                <div className="space-y-4">
+                  <VariationSelector
+                    productId={productId}
+                    onVariationChange={(variation) => {
+                      setNewSelectedVariation(variation);
+                    }}
+                    showPriceRange={!variationIsComplete}
+                  />
+
+                  {/* Stock status for selected variation */}
+                  {variationIsComplete && newSelectedVariation && (
+                    <div>
+                      {newSelectedVariation.trackInventory && newSelectedVariation.inventoryQuantity === 0 ? (
+                        <div className="flex items-center gap-2 text-destructive">
+                          <Package className="w-5 h-5" />
+                          <span className="font-semibold">Out of Stock</span>
+                        </div>
+                      ) : newSelectedVariation.trackInventory ? (
+                        <div className="flex items-center gap-2 text-success">
+                          <Package className="w-5 h-5" />
+                          <span className="font-semibold">{newSelectedVariation.inventoryQuantity} in stock</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-success">
+                          <Package className="w-5 h-5" />
+                          <span className="font-semibold">In Stock</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Legacy Product Variants (old system) */}
+              {!isNewVariableProduct && product.hasVariants && product.variants && product.variants.length > 0 && (
                 <div className="space-y-4">
                   {/* Extract unique sizes and colors */}
                   {(() => {
@@ -608,19 +757,28 @@ export default function ProductDetailPage() {
 
               {/* Action Buttons */}
               <div className="space-y-3">
+                {/* Show message if variation needs to be selected */}
+                {isNewVariableProduct && !variationIsComplete && (
+                  <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-center">
+                    <p className="text-amber-800 dark:text-amber-200 text-sm font-medium">
+                      Please select all options above to continue
+                    </p>
+                  </div>
+                )}
+
                 <button
                   type="button"
                   onClick={handleBuyNow}
-                  disabled={isOutOfStock}
+                  disabled={isOutOfStock || (isNewVariableProduct && !variationIsComplete)}
                   className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-lg font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CreditCard className="w-5 h-5" />
-                  Buy Now
+                  {isNewVariableProduct && !variationIsComplete ? "Select Options" : "Buy Now"}
                 </button>
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  disabled={isOutOfStock}
+                  disabled={isOutOfStock || (isNewVariableProduct && !variationIsComplete)}
                   className="w-full flex items-center justify-center gap-2 px-6 py-4 border-2 border-primary text-primary text-lg font-semibold rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ShoppingCartIcon className="w-5 h-5" />

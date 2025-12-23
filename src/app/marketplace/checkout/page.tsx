@@ -32,6 +32,7 @@ export default function CheckoutPage() {
             productId: item.productId as string,
             quantity: item.quantity,
             variantId: item.variantId,
+            variationId: item.variationId as string | undefined,
           })),
         }
       : "skip"
@@ -179,8 +180,13 @@ export default function CheckoutPage() {
         productId: item.productId as Id<"products">,
         productName: item.productName,
         productImage: item.productImage, // Store product image with order
+        // Legacy variant system
         variantId: item.variantId,
         variantName: item.variantName,
+        // New variation system
+        variationId: item.variationId,
+        variationAttributes: item.variationAttributes,
+        variationSku: item.variationSku,
         quantity: item.quantity,
         price: item.productPrice,
       }));
@@ -626,9 +632,18 @@ export default function CheckoutPage() {
                           <h3 className="font-medium text-foreground text-sm line-clamp-2">
                             {item.productName}
                           </h3>
+                          {/* Legacy variant display */}
                           {item.variantName && (
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {item.variantName}
+                            </p>
+                          )}
+                          {/* New variation attributes display */}
+                          {item.variationAttributes && Object.keys(item.variationAttributes).length > 0 && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {Object.entries(item.variationAttributes)
+                                .map(([key, value]) => `${key}: ${value}`)
+                                .join(", ")}
                             </p>
                           )}
                           <div className="flex justify-between items-center mt-2">

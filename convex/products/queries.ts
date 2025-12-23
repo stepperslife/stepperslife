@@ -185,6 +185,7 @@ export const validateCartItems = query({
         productId: v.string(),
         quantity: v.number(),
         variantId: v.optional(v.string()),
+        variationId: v.optional(v.string()), // New variation system
       })
     ),
   },
@@ -221,10 +222,59 @@ export const validateCartItems = query({
           continue;
         }
 
-        // Check inventory if tracking is enabled
+        // Handle new variation system (productType: "VARIABLE")
+        if (item.variationId) {
+          const variation = await ctx.db
+            .query("productVariations")
+            .filter((q) => q.eq(q.field("_id"), item.variationId as any))
+            .first();
+
+          if (!variation) {
+            validationResults.push({
+              productId: item.productId,
+              productName: product.name,
+              valid: false,
+              error: "Selected variation no longer exists",
+            });
+            allValid = false;
+            continue;
+          }
+
+          if (variation.status !== "ACTIVE" || !variation.isEnabled) {
+            validationResults.push({
+              productId: item.productId,
+              productName: product.name,
+              valid: false,
+              error: "Selected variation is no longer available",
+            });
+            allValid = false;
+            continue;
+          }
+
+          if (variation.trackInventory && variation.inventoryQuantity < item.quantity) {
+            validationResults.push({
+              productId: item.productId,
+              productName: product.name,
+              valid: false,
+              error: `Only ${variation.inventoryQuantity} in stock for this option`,
+              availableQuantity: variation.inventoryQuantity,
+            });
+            allValid = false;
+            continue;
+          }
+
+          validationResults.push({
+            productId: item.productId,
+            productName: product.name,
+            valid: true,
+          });
+          continue;
+        }
+
+        // Legacy: Check inventory if tracking is enabled
         if (product.trackInventory) {
           if (item.variantId && product.variants) {
-            const variant = product.variants.find((v) => v.id === item.variantId);
+            const variant = (product.variants as any[]).find((v: any) => v.id === item.variantId);
             if (!variant) {
               validationResults.push({
                 productId: item.productId,

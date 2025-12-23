@@ -79,6 +79,8 @@ import type * as productOrders_queries from "../productOrders/queries.js";
 import type * as products_mutations from "../products/mutations.js";
 import type * as products_orders from "../products/orders.js";
 import type * as products_queries from "../products/queries.js";
+import type * as products_variationMutations from "../products/variationMutations.js";
+import type * as products_variations from "../products/variations.js";
 import type * as public_queries from "../public/queries.js";
 import type * as restaurantActivity from "../restaurantActivity.js";
 import type * as restaurantAnalytics from "../restaurantAnalytics.js";
@@ -195,6 +197,8 @@ declare const fullApi: ApiFromModules<{
   "products/mutations": typeof products_mutations;
   "products/orders": typeof products_orders;
   "products/queries": typeof products_queries;
+  "products/variationMutations": typeof products_variationMutations;
+  "products/variations": typeof products_variations;
   "public/queries": typeof public_queries;
   restaurantActivity: typeof restaurantActivity;
   restaurantAnalytics: typeof restaurantAnalytics;

@@ -22,10 +22,16 @@ export interface CartItem {
   productPrice: number; // Base/variant price + options price modifier
   productImage?: string;
   quantity: number;
+  // Legacy variant system
   variantId?: string;
   variantName?: string;
   variantOptions?: {size?: string; color?: string};
-  productOptions?: SelectedProductOption[]; // Product customization options
+  // New variation system (productType: "VARIABLE")
+  variationId?: Id<"productVariations">;
+  variationAttributes?: Record<string, string>; // { size: "M", color: "Blue" }
+  variationSku?: string;
+  // Product customization options
+  productOptions?: SelectedProductOption[];
   optionsPriceModifier?: number; // Total price from options
 }
 
@@ -72,11 +78,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = (newItem: CartItem) => {
     setItems(currentItems => {
-      // Check if item already exists in cart (match by productId, variantId, AND productOptions)
+      // Check if item already exists in cart
+      // Match by productId, variantId/variationId, AND productOptions
       const existingItemIndex = currentItems.findIndex(item => {
-        // Must match productId and variantId
+        // Must match productId
         if (item.productId !== newItem.productId) return false;
+
+        // Must match legacy variantId
         if (item.variantId !== newItem.variantId) return false;
+
+        // Must match new variationId
+        if (item.variationId !== newItem.variationId) return false;
 
         // Must have same product options (or both have none)
         const itemOptionsJson = JSON.stringify(item.productOptions || []);
