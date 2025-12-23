@@ -5,13 +5,50 @@ import Link from "next/link";
 import { Home, Calendar, ShoppingBag, Utensils, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
+// Helper to determine the best account route based on user role
+function getAccountRoute(user: any): string {
+  if (!user) return "/login";
+
+  // Check role and return appropriate dashboard
+  switch (user.role) {
+    case "admin":
+      return "/admin";
+    case "vendor":
+      return "/vendor/dashboard";
+    case "restaurateur":
+      return "/restaurateur/dashboard";
+    case "staff":
+      return "/staff/dashboard";
+    case "team":
+      return "/team/dashboard";
+    case "associate":
+      return "/associate/dashboard";
+    case "organizer":
+      return "/organizer/events";
+    default:
+      // Regular user - go to my tickets
+      return "/my-tickets";
+  }
+}
+
 export function MobileBottomNav() {
   const pathname = usePathname();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
-  // Hide on certain pages (organizer, admin, staff sections have their own navigation)
-  // Also hide on checkout pages for cleaner payment experience
-  const hideOnPaths = ["/organizer", "/admin", "/staff", "/login", "/scan", "/checkout"];
+  // Hide on dashboard sections that have their own navigation
+  // Also hide on checkout and scan pages for cleaner experience
+  const hideOnPaths = [
+    "/organizer",
+    "/admin",
+    "/staff",
+    "/vendor/dashboard",
+    "/restaurateur",
+    "/team",
+    "/associate",
+    "/login",
+    "/scan",
+    "/checkout",
+  ];
   const shouldHide = hideOnPaths.some(
     (path) => pathname?.startsWith(path) || pathname?.includes("/checkout")
   );
@@ -19,6 +56,9 @@ export function MobileBottomNav() {
   if (shouldHide) {
     return null;
   }
+
+  // Determine the best account route based on user role
+  const accountRoute = getAccountRoute(user);
 
   const navItems = [
     {
@@ -46,10 +86,10 @@ export function MobileBottomNav() {
       activePatterns: [/^\/restaurants/],
     },
     {
-      href: isAuthenticated ? "/organizer/events" : "/login",
+      href: accountRoute,
       icon: User,
       label: "Account",
-      activePatterns: [/^\/my-tickets/, /^\/organizer\/events/],
+      activePatterns: [/^\/my-tickets/, /^\/user\//],
     },
   ];
 

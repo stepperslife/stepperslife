@@ -68,31 +68,137 @@ export function AppHeader() {
     }
   };
 
-  // Generate breadcrumbs from pathname
+  // Generate breadcrumbs from pathname - role-aware
   const getBreadcrumbs = () => {
     const paths = pathname.split("/").filter(Boolean);
+    const section = paths[0];
 
-    if (paths[0] === "organizer") {
+    // Section-specific dashboard config
+    const sectionConfig: Record<string, { label: string; dashboardPath: string }> = {
+      organizer: { label: "Organizer", dashboardPath: "/organizer/events" },
+      admin: { label: "Admin", dashboardPath: "/admin" },
+      staff: { label: "Staff", dashboardPath: "/staff/dashboard" },
+      vendor: { label: "Vendor", dashboardPath: "/vendor/dashboard" },
+      restaurateur: { label: "Restaurant", dashboardPath: "/restaurateur/dashboard" },
+      team: { label: "Team", dashboardPath: "/team/dashboard" },
+      associate: { label: "Associate", dashboardPath: "/associate/dashboard" },
+      user: { label: "Account", dashboardPath: "/user/dashboard" },
+    };
+
+    const config = sectionConfig[section];
+    if (!config) {
+      return [{ label: "Dashboard", href: "/", isLast: true }];
+    }
+
+    // Special handling for organizer events
+    if (section === "organizer") {
       if (paths.length === 1 || (paths.length === 2 && paths[1] === "events")) {
-        return [{ label: "Dashboard", href: "/organizer/events", isLast: true }];
+        return [{ label: "Dashboard", href: config.dashboardPath, isLast: true }];
       }
-
       if (paths[1] === "events" && paths[2] === "create") {
         return [
-          { label: "Dashboard", href: "/organizer/events", isLast: false },
-          { label: "Create Event", href: "/organizer/events/create", isLast: true },
+          { label: "Dashboard", href: config.dashboardPath, isLast: false },
+          { label: "Create Event", href: pathname, isLast: true },
         ];
       }
-
       if (paths[1] === "events" && paths[2]) {
         return [
-          { label: "Dashboard", href: "/organizer/events", isLast: false },
+          { label: "Dashboard", href: config.dashboardPath, isLast: false },
           { label: "Event Details", href: pathname, isLast: true },
+        ];
+      }
+      if (paths[1] === "classes" && paths[2] === "create") {
+        return [
+          { label: "Dashboard", href: config.dashboardPath, isLast: false },
+          { label: "Create Class", href: pathname, isLast: true },
+        ];
+      }
+      if (paths[1] === "classes" && paths[2]) {
+        return [
+          { label: "Dashboard", href: config.dashboardPath, isLast: false },
+          { label: "Class Details", href: pathname, isLast: true },
         ];
       }
     }
 
-    return [{ label: "Dashboard", href: "/organizer/events", isLast: true }];
+    // Admin section breadcrumbs
+    if (section === "admin") {
+      if (paths.length === 1) {
+        return [{ label: "Admin Dashboard", href: config.dashboardPath, isLast: true }];
+      }
+      const subSection = paths[1]?.charAt(0).toUpperCase() + paths[1]?.slice(1);
+      return [
+        { label: "Admin", href: config.dashboardPath, isLast: false },
+        { label: subSection || "Dashboard", href: pathname, isLast: true },
+      ];
+    }
+
+    // Staff section breadcrumbs
+    if (section === "staff") {
+      if (paths.length === 1 || paths[1] === "dashboard") {
+        return [{ label: "Staff Dashboard", href: config.dashboardPath, isLast: true }];
+      }
+      const subSection = paths[1]?.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+      return [
+        { label: "Staff", href: config.dashboardPath, isLast: false },
+        { label: subSection || "Dashboard", href: pathname, isLast: true },
+      ];
+    }
+
+    // Vendor section breadcrumbs
+    if (section === "vendor") {
+      if (paths.length <= 2 && paths[1] === "dashboard") {
+        return [{ label: "Vendor Dashboard", href: config.dashboardPath, isLast: true }];
+      }
+      if (paths[1] === "dashboard" && paths[2]) {
+        const subSection = paths[2]?.charAt(0).toUpperCase() + paths[2]?.slice(1);
+        return [
+          { label: "Vendor", href: config.dashboardPath, isLast: false },
+          { label: subSection || "Dashboard", href: pathname, isLast: true },
+        ];
+      }
+    }
+
+    // Restaurateur section breadcrumbs
+    if (section === "restaurateur") {
+      if (paths.length <= 2 && paths[1] === "dashboard") {
+        return [{ label: "Restaurant Dashboard", href: config.dashboardPath, isLast: true }];
+      }
+      if (paths[1] === "dashboard" && paths[2]) {
+        const subSection = paths[2]?.charAt(0).toUpperCase() + paths[2]?.slice(1);
+        return [
+          { label: "Restaurant", href: config.dashboardPath, isLast: false },
+          { label: subSection || "Dashboard", href: pathname, isLast: true },
+        ];
+      }
+    }
+
+    // Team section breadcrumbs
+    if (section === "team") {
+      if (paths.length === 1 || paths[1] === "dashboard") {
+        return [{ label: "Team Dashboard", href: config.dashboardPath, isLast: true }];
+      }
+      const subSection = paths[1]?.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+      return [
+        { label: "Team", href: config.dashboardPath, isLast: false },
+        { label: subSection || "Dashboard", href: pathname, isLast: true },
+      ];
+    }
+
+    // User section breadcrumbs
+    if (section === "user") {
+      if (paths.length === 1 || paths[1] === "dashboard") {
+        return [{ label: "My Account", href: config.dashboardPath, isLast: true }];
+      }
+      const subSection = paths[1]?.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+      return [
+        { label: "Account", href: config.dashboardPath, isLast: false },
+        { label: subSection || "Dashboard", href: pathname, isLast: true },
+      ];
+    }
+
+    // Default for recognized sections
+    return [{ label: config.label + " Dashboard", href: config.dashboardPath, isLast: true }];
   };
 
   const breadcrumbs = getBreadcrumbs();
@@ -172,10 +278,29 @@ export function AppHeader() {
                 <Package className="mr-2 h-4 w-4" />
                 <span>My Marketplace Orders</span>
               </DropdownMenuItem>
+              {/* Role-specific menu items */}
+              {(currentUser.role === "vendor" || currentUser.role === "admin") && (
+                <DropdownMenuItem onClick={() => router.push("/vendor/dashboard")}>
+                  <Package className="mr-2 h-4 w-4" />
+                  <span>Vendor Dashboard</span>
+                </DropdownMenuItem>
+              )}
               {(currentUser.role === "restaurateur" || currentUser.role === "admin") && (
                 <DropdownMenuItem onClick={() => router.push("/restaurateur/dashboard")}>
                   <Utensils className="mr-2 h-4 w-4" />
                   <span>My Restaurant</span>
+                </DropdownMenuItem>
+              )}
+              {(currentUser.role === "staff" || currentUser.role === "admin") && (
+                <DropdownMenuItem onClick={() => router.push("/staff/dashboard")}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Staff Dashboard</span>
+                </DropdownMenuItem>
+              )}
+              {(currentUser.role === "team" || currentUser.role === "admin") && (
+                <DropdownMenuItem onClick={() => router.push("/team/dashboard")}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Team Dashboard</span>
                 </DropdownMenuItem>
               )}
               {currentUser.role === "admin" && (
