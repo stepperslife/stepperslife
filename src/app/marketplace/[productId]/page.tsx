@@ -29,7 +29,7 @@ import ProductOptionInput, {
   type SelectedOption,
 } from "@/components/marketplace/ProductOptionInput";
 import { VendorTierBadge } from "@/components/marketplace/VendorTierBadge";
-import { VariationSelector, useVariationSelection } from "@/components/products/VariationSelector";
+import { VariationSelector } from "@/components/products/VariationSelector";
 
 // Type definitions
 interface ProductVariant {
@@ -96,20 +96,24 @@ export default function ProductDetailPage() {
     Record<string, SelectedOption>
   >({});
 
-  // New variation system hook (for productType: "VARIABLE")
-  const {
-    selectedVariation: newSelectedVariation,
-    isComplete: variationIsComplete,
-    handleAttributeChange,
-    setSelectedVariation: setNewSelectedVariation,
-    selectedAttributes,
-  } = useVariationSelection({
-    productId: productId || undefined,
-    initialAttributes: {}
-  });
+  // New variation system - track selected variation directly from VariationSelector callback
+  const [newSelectedVariation, setNewSelectedVariation] = useState<{
+    _id: Id<"productVariations">;
+    attributes: Record<string, string>;
+    price: number;
+    compareAtPrice?: number;
+    inventoryQuantity: number;
+    trackInventory: boolean;
+    sku?: string;
+    imageUrl?: string;
+    allowBackorder?: boolean;
+  } | null>(null);
 
   // Check if this is a new-style variable product
   const isNewVariableProduct = product?.productType === "VARIABLE";
+
+  // Variation is complete when a variation is selected
+  const variationIsComplete = newSelectedVariation !== null;
 
   // When a new variation is selected, update the image
   useEffect(() => {
