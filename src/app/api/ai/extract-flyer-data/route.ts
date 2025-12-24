@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFile } from "fs/promises";
-import path from "path";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { jwtVerify } from "jose";
 import { getJwtSecretEncoded } from "@/lib/auth/jwt-secret";
@@ -212,58 +210,27 @@ async function verifyAuth(request: NextRequest): Promise<{ userId: string; role:
 }
 
 /**
- * Get the base path for flyer storage
- * Configurable via environment variable
- */
-function getFlyerStoragePath(): string {
-  return (
-    process.env.FLYER_STORAGE_PATH ||
-    "/root/websites/events-stepperslife/STEPFILES/event-flyers"
-  );
-}
-
-/**
- * Extract image data from filepath
- * Handles both local file paths and URLs
+ * Extract image data from filepath via URL fetch
+ * Note: Local file reading is not available on Vercel serverless functions
  */
 async function getImageData(filepath: string): Promise<{ base64: string; mimeType: string }> {
-  // Extract filename from filepath (handles both old and new format)
-  const filename = filepath.includes("/api/flyers/")
-    ? filepath.split("/api/flyers/")[1]
-    : path.basename(filepath);
+  // Build the full URL
+  const imageUrl = filepath.startsWith("http")
+    ? filepath
+    : `${process.env.NEXT_PUBLIC_APP_URL || "https://stepperslife.com"}${filepath}`;
 
-  // Determine MIME type from extension
-  const ext = path.extname(filename).toLowerCase();
-  const mimeType =
-    ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : "image/jpeg";
-
-  // Try to read from local storage first
-  try {
-    const fullPath = path.join(getFlyerStoragePath(), filename);
-    const imageBuffer = await readFile(fullPath);
-    return {
-      base64: imageBuffer.toString("base64"),
-      mimeType,
-    };
-  } catch {
-    // If local file not found, try to fetch from URL
-    const imageUrl = filepath.startsWith("http")
-      ? filepath
-      : `${process.env.NEXT_PUBLIC_APP_URL || "https://stepperslife.com"}${filepath}`;
-
-    const imageResponse = await fetch(imageUrl);
-    if (!imageResponse.ok) {
-      throw new Error(`Failed to fetch image: ${imageResponse.status}`);
-    }
-
-    const imageBuffer = await imageResponse.arrayBuffer();
-    const contentType = imageResponse.headers.get("content-type") || mimeType;
-
-    return {
-      base64: Buffer.from(imageBuffer).toString("base64"),
-      mimeType: contentType.split(";")[0].trim(),
-    };
+  const imageResponse = await fetch(imageUrl);
+  if (!imageResponse.ok) {
+    throw new Error(`Failed to fetch image: ${imageResponse.status}`);
   }
+
+  const imageBuffer = await imageResponse.arrayBuffer();
+  const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+
+  return {
+    base64: Buffer.from(imageBuffer).toString("base64"),
+    mimeType: contentType.split(";")[0].trim(),
+  };
 }
 
 /**

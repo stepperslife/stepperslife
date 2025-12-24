@@ -11,23 +11,23 @@ import {
   AlertCircle,
   Sparkles,
   Loader2,
-  Zap,
-  Package,
   Trash2,
   Send,
   Play,
-  ToggleLeft,
-  ToggleRight,
   Bot,
   Cloud,
   Server,
   RefreshCw,
-  Shield,
   Search,
-  Filter,
   CheckCircle2,
   Clock,
   Eye,
+  Calendar,
+  MapPin,
+  DollarSign,
+  Users,
+  FileText,
+  Tag,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Id } from "@/convex/_generated/dataModel";
@@ -64,9 +64,29 @@ interface UploadedFlyer {
   fallbackUsed?: boolean;
 }
 
+// Event categories
+const EVENT_CATEGORIES = [
+  "Set",
+  "Workshop",
+  "Save the Date",
+  "Cruise",
+  "Outdoor",
+  "Holiday Event",
+  "Weekend Event",
+  "Comedy Shows",
+  "Trips",
+  "Concerts",
+];
+
+// Event types
+const EVENT_TYPES = [
+  { value: "TICKETED_EVENT", label: "Ticketed Event" },
+  { value: "FREE_EVENT", label: "Pay at the door" },
+  { value: "SAVE_THE_DATE", label: "📅 Save the Date" },
+];
+
 export default function BulkFlyerUploadPage() {
   const [flyers, setFlyers] = useState<UploadedFlyer[]>([]);
-  const [editingFlyerId, setEditingFlyerId] = useState<string | null>(null);
   const [editedData, setEditedData] = useState<Record<string, any>>({});
   const [duplicateHash, setDuplicateHash] = useState<string | null>(null);
   const [duplicateFile, setDuplicateFile] = useState<File | null>(null);
@@ -76,6 +96,7 @@ export default function BulkFlyerUploadPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFlyers, setSelectedFlyers] = useState<Set<string>>(new Set());
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [savingFlyer, setSavingFlyer] = useState<string | null>(null);
 
   const logFlyer = useMutation(api.flyers.mutations.logUploadedFlyer);
   const updateExtractedData = useMutation(api.flyers.mutations.updateFlyerWithExtractedData);
@@ -107,6 +128,21 @@ export default function BulkFlyerUploadPage() {
     fetchProviderStatus();
   }, []);
 
+  // Initialize editedData when draftFlyers loads
+  useEffect(() => {
+    if (draftFlyers) {
+      const initialData: Record<string, any> = {};
+      draftFlyers.forEach((flyer) => {
+        if (!editedData[flyer._id]) {
+          initialData[flyer._id] = { ...flyer.extractedData };
+        }
+      });
+      if (Object.keys(initialData).length > 0) {
+        setEditedData((prev) => ({ ...prev, ...initialData }));
+      }
+    }
+  }, [draftFlyers]);
+
   // Auto-dismiss duplicate alert after 5 seconds
   useEffect(() => {
     if (duplicateHash) {
@@ -122,7 +158,7 @@ export default function BulkFlyerUploadPage() {
   // Filter drafts based on search
   const filteredDrafts = draftFlyers?.filter((flyer) => {
     if (!searchQuery) return true;
-    const data = flyer.extractedData;
+    const data = editedData[flyer._id] || flyer.extractedData;
     const searchLower = searchQuery.toLowerCase();
     return (
       flyer.filename.toLowerCase().includes(searchLower) ||
@@ -243,6 +279,12 @@ export default function BulkFlyerUploadPage() {
           extractedData: extractedData,
         });
 
+        // Initialize editable data for this flyer
+        setEditedData((prev) => ({
+          ...prev,
+          [logResult.flyerId]: { ...extractedData },
+        }));
+
         setFlyers((prev) =>
           prev.map((f) =>
             f.id === flyer.id
@@ -332,7 +374,12 @@ export default function BulkFlyerUploadPage() {
   const handleDeleteFlyer = async (flyerId: Id<"uploadedFlyers">) => {
     try {
       await deleteFlyer({ flyerId });
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Remove from editedData
+      setEditedData((prev) => {
+        const newData = { ...prev };
+        delete newData[flyerId];
+        return newData;
+      });
       setDuplicateHash(null);
       setDuplicateFile(null);
     } catch (error) {
@@ -343,20 +390,34 @@ export default function BulkFlyerUploadPage() {
     }
   };
 
-  const handleSaveEdit = async (flyerId: Id<"uploadedFlyers">) => {
+  const handleSaveAndPublish = async (flyerId: Id<"uploadedFlyers">) => {
     const dataToSave = editedData[flyerId];
     if (!dataToSave) return;
 
+    setSavingFlyer(flyerId);
+
     try {
+      // First save the edited data
       await updateExtractedData({
         flyerId,
         extractedData: dataToSave,
       });
-      setEditingFlyerId(null);
+
+      // Then create the event
+      await autoCreateEvent({ flyerId });
+
+      // Remove from editedData after successful publish
+      setEditedData((prev) => {
+        const newData = { ...prev };
+        delete newData[flyerId];
+        return newData;
+      });
     } catch (error) {
       alert(
-        "Failed to save changes: " + (error instanceof Error ? error.message : "Unknown error")
+        "Failed to publish event: " + (error instanceof Error ? error.message : "Unknown error")
       );
+    } finally {
+      setSavingFlyer(null);
     }
   };
 
@@ -393,27 +454,30 @@ export default function BulkFlyerUploadPage() {
         flyerId: flyerId,
         extractedData: extractedData,
       });
+
+      // Update local edited data
+      setEditedData((prev) => ({
+        ...prev,
+        [flyerId]: { ...extractedData },
+      }));
     } catch (error) {
       alert("Retry failed: " + (error instanceof Error ? error.message : "Unknown error"));
     }
   };
 
-  const handlePublish = async (flyerId: Id<"uploadedFlyers">) => {
-    try {
-      await autoCreateEvent({ flyerId });
-    } catch (error) {
-      alert(
-        "Failed to publish event: " + (error instanceof Error ? error.message : "Unknown error")
-      );
-    }
-  };
-
   const handleBulkPublish = async () => {
     for (const flyerId of selectedFlyers) {
-      try {
-        await autoCreateEvent({ flyerId: flyerId as Id<"uploadedFlyers"> });
-      } catch (error) {
-        console.error(`Failed to publish ${flyerId}:`, error);
+      const dataToSave = editedData[flyerId];
+      if (dataToSave) {
+        try {
+          await updateExtractedData({
+            flyerId: flyerId as Id<"uploadedFlyers">,
+            extractedData: dataToSave,
+          });
+          await autoCreateEvent({ flyerId: flyerId as Id<"uploadedFlyers"> });
+        } catch (error) {
+          console.error(`Failed to publish ${flyerId}:`, error);
+        }
       }
     }
     setSelectedFlyers(new Set());
@@ -442,19 +506,22 @@ export default function BulkFlyerUploadPage() {
     setSelectedFlyers(newSelection);
   };
 
-  const startEditing = (flyerId: string, data: any) => {
-    setEditingFlyerId(flyerId);
-    setEditedData({ ...editedData, [flyerId]: data });
-  };
-
-  const updateField = (flyerId: string, field: string, value: string) => {
-    setEditedData({
-      ...editedData,
+  const updateField = (flyerId: string, field: string, value: any) => {
+    setEditedData((prev) => ({
+      ...prev,
       [flyerId]: {
-        ...editedData[flyerId],
+        ...prev[flyerId],
         [field]: value,
       },
-    });
+    }));
+  };
+
+  const toggleCategory = (flyerId: string, category: string) => {
+    const currentCategories = editedData[flyerId]?.categories || [];
+    const newCategories = currentCategories.includes(category)
+      ? currentCategories.filter((c: string) => c !== category)
+      : [...currentCategories, category];
+    updateField(flyerId, "categories", newCategories);
   };
 
   // Confidence badge component
@@ -462,7 +529,11 @@ export default function BulkFlyerUploadPage() {
     if (!data) return null;
     const confidence = getExtractionConfidence(data);
     const color =
-      confidence >= 80 ? "bg-green-100 text-green-700" : confidence >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700";
+      confidence >= 80
+        ? "bg-green-100 text-green-700"
+        : confidence >= 50
+          ? "bg-yellow-100 text-yellow-700"
+          : "bg-red-100 text-red-700";
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${color}`}>
         {confidence}% confidence
@@ -496,7 +567,7 @@ export default function BulkFlyerUploadPage() {
                 AI Flyer Manager
               </h1>
               <p className="text-base sm:text-lg text-slate-600">
-                Upload flyers, review AI-extracted data, and publish events
+                Upload flyers, review AI-extracted data, edit fields, and publish events
               </p>
             </div>
 
@@ -527,7 +598,11 @@ export default function BulkFlyerUploadPage() {
                       />
                       <span
                         className={`w-2 h-2 rounded-full ${providersInfo.gemini.available ? "bg-green-400" : "bg-gray-300"}`}
-                        title={providersInfo.gemini.available ? "Gemini configured" : "Gemini not configured"}
+                        title={
+                          providersInfo.gemini.available
+                            ? "Gemini configured"
+                            : "Gemini not configured"
+                        }
                       />
                     </div>
                   )}
@@ -588,9 +663,7 @@ export default function BulkFlyerUploadPage() {
                   <Clock className="w-5 h-5 text-amber-500" />
                   <p className="text-sm font-medium text-slate-500">Pending Review</p>
                 </div>
-                <p className="text-2xl font-bold text-amber-600">
-                  {draftFlyers?.length || 0}
-                </p>
+                <p className="text-2xl font-bold text-amber-600">{draftFlyers?.length || 0}</p>
               </div>
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
                 <div className="flex items-center gap-2 mb-2">
@@ -657,7 +730,9 @@ export default function BulkFlyerUploadPage() {
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-amber-800">Duplicate Flyer Detected</h3>
+                    <h3 className="text-sm font-semibold text-amber-800">
+                      Duplicate Flyer Detected
+                    </h3>
                     <p className="text-sm text-amber-700">
                       This flyer has already been uploaded. Check the drafts below.
                     </p>
@@ -694,7 +769,9 @@ export default function BulkFlyerUploadPage() {
                       className="w-16 h-16 object-cover rounded-lg"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-700 truncate">{flyer.file.name}</p>
+                      <p className="text-sm font-medium text-slate-700 truncate">
+                        {flyer.file.name}
+                      </p>
                       <p className="text-xs text-slate-500">
                         {(flyer.file.size / 1024 / 1024).toFixed(2)} MB
                       </p>
@@ -732,7 +809,9 @@ export default function BulkFlyerUploadPage() {
                           <ProviderBadge provider={flyer.provider} fallback={flyer.fallbackUsed} />
                         </div>
                       )}
-                      {flyer.status === "error" && <AlertCircle className="w-5 h-5 text-red-500" />}
+                      {flyer.status === "error" && (
+                        <AlertCircle className="w-5 h-5 text-red-500" />
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -745,7 +824,7 @@ export default function BulkFlyerUploadPage() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h2 className="text-2xl font-bold text-slate-800">
-              Draft Flyers Awaiting Review ({filteredDrafts?.length || 0})
+              Review & Edit Extracted Data ({filteredDrafts?.length || 0})
             </h2>
 
             <div className="flex items-center gap-3">
@@ -793,9 +872,9 @@ export default function BulkFlyerUploadPage() {
           ) : (
             <div className="space-y-6">
               {filteredDrafts.map((flyer) => {
-                const isEditing = editingFlyerId === flyer._id;
-                const data = isEditing ? editedData[flyer._id] : flyer.extractedData;
+                const data = editedData[flyer._id] || flyer.extractedData || {};
                 const isSelected = selectedFlyers.has(flyer._id);
+                const isSaving = savingFlyer === flyer._id;
 
                 return (
                   <motion.div
@@ -809,7 +888,7 @@ export default function BulkFlyerUploadPage() {
                   >
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-0">
                       {/* Flyer Image */}
-                      <div className="xl:col-span-4 bg-slate-100 p-4 flex items-start justify-center relative">
+                      <div className="xl:col-span-3 bg-slate-100 p-4 flex flex-col items-center relative">
                         {/* Selection Checkbox */}
                         <div className="absolute top-4 left-4 z-10">
                           <input
@@ -820,14 +899,14 @@ export default function BulkFlyerUploadPage() {
                           />
                         </div>
 
-                        <div className="w-full max-w-sm">
+                        <div className="w-full max-w-xs">
                           <img
                             src={flyer.filepath}
                             alt={flyer.filename}
                             className="w-full h-auto rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-all"
                             onClick={() => setImagePreview(flyer.filepath)}
                           />
-                          <div className="flex items-center justify-center gap-2 mt-3">
+                          <div className="flex flex-col items-center gap-2 mt-3">
                             <button
                               onClick={() => setImagePreview(flyer.filepath)}
                               className="text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1"
@@ -839,186 +918,279 @@ export default function BulkFlyerUploadPage() {
                         </div>
                       </div>
 
-                      {/* Editable Fields */}
-                      <div className="xl:col-span-8 p-6">
-                        <div className="space-y-4">
-                          {/* Event Name */}
-                          <div>
-                            <label className="text-sm font-medium text-slate-600 block mb-1">
-                              Event Name <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              value={data?.eventName || ""}
-                              onChange={(e) =>
-                                isEditing && updateField(flyer._id, "eventName", e.target.value)
-                              }
-                              disabled={!isEditing}
-                              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg disabled:bg-slate-50 disabled:text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
-                            />
-                          </div>
-
-                          {/* Date & Time */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Editable Form Fields */}
+                      <div className="xl:col-span-9 p-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {/* Left Column */}
+                          <div className="space-y-4">
+                            {/* Event Name */}
                             <div>
-                              <label className="text-sm font-medium text-slate-600 block mb-1">
-                                Date <span className="text-red-500">*</span>
+                              <label className="text-sm font-medium text-slate-700 flex items-center gap-2 mb-1">
+                                <FileText className="w-4 h-4 text-slate-400" />
+                                Event Name <span className="text-red-500">*</span>
                               </label>
                               <input
                                 type="text"
-                                value={data?.eventDate || data?.date || ""}
-                                onChange={(e) =>
-                                  isEditing && updateField(flyer._id, "eventDate", e.target.value)
-                                }
-                                disabled={!isEditing}
-                                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg disabled:bg-slate-50 disabled:text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                value={data.eventName || ""}
+                                onChange={(e) => updateField(flyer._id, "eventName", e.target.value)}
+                                placeholder="e.g., Chicago Summer Steppers Set 2025"
+                                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
                               />
                             </div>
+
+                            {/* Event Type */}
                             <div>
-                              <label className="text-sm font-medium text-slate-600 block mb-1">
-                                Time <span className="text-red-500">*</span>
+                              <label className="text-sm font-medium text-slate-700 flex items-center gap-2 mb-1">
+                                <Tag className="w-4 h-4 text-slate-400" />
+                                Event Type <span className="text-red-500">*</span>
                               </label>
-                              <input
-                                type="text"
-                                value={data?.eventTime || data?.time || ""}
-                                onChange={(e) =>
-                                  isEditing && updateField(flyer._id, "eventTime", e.target.value)
-                                }
-                                disabled={!isEditing}
-                                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg disabled:bg-slate-50 disabled:text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Venue */}
-                          <div>
-                            <label className="text-sm font-medium text-slate-600 block mb-1">
-                              Venue Name
-                            </label>
-                            <input
-                              type="text"
-                              value={data?.venueName || ""}
-                              onChange={(e) =>
-                                isEditing && updateField(flyer._id, "venueName", e.target.value)
-                              }
-                              disabled={!isEditing}
-                              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg disabled:bg-slate-50 disabled:text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
-                            />
-                          </div>
-
-                          {/* City, State */}
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="text-sm font-medium text-slate-600 block mb-1">
-                                City
-                              </label>
-                              <input
-                                type="text"
-                                value={data?.city || ""}
-                                onChange={(e) =>
-                                  isEditing && updateField(flyer._id, "city", e.target.value)
-                                }
-                                disabled={!isEditing}
-                                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg disabled:bg-slate-50 disabled:text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-slate-600 block mb-1">
-                                State
-                              </label>
-                              <input
-                                type="text"
-                                value={data?.state || ""}
-                                onChange={(e) =>
-                                  isEditing && updateField(flyer._id, "state", e.target.value)
-                                }
-                                disabled={!isEditing}
-                                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg disabled:bg-slate-50 disabled:text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Description */}
-                          <div>
-                            <label className="text-sm font-medium text-slate-600 block mb-1">
-                              Description
-                            </label>
-                            <textarea
-                              value={data?.description || ""}
-                              onChange={(e) =>
-                                isEditing && updateField(flyer._id, "description", e.target.value)
-                              }
-                              disabled={!isEditing}
-                              rows={4}
-                              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg disabled:bg-slate-50 disabled:text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all resize-none"
-                            />
-                          </div>
-
-                          {/* Categories & Event Type */}
-                          <div className="flex flex-wrap gap-2">
-                            {data?.categories?.map((cat: string, idx: number) => (
-                              <span
-                                key={idx}
-                                className="px-3 py-1 bg-indigo-50 text-indigo-700 text-sm font-medium rounded-full"
+                              <select
+                                value={data.eventType || "TICKETED_EVENT"}
+                                onChange={(e) => updateField(flyer._id, "eventType", e.target.value)}
+                                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
                               >
-                                {cat}
-                              </span>
-                            ))}
-                            {data?.eventType && (
-                              <span className="px-3 py-1 bg-green-50 text-green-700 text-sm font-medium rounded-full">
-                                {data.eventType.replace(/_/g, " ")}
-                              </span>
-                            )}
+                                {EVENT_TYPES.map((type) => (
+                                  <option key={type.value} value={type.value}>
+                                    {type.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Date & Time */}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 flex items-center gap-2 mb-1">
+                                  <Calendar className="w-4 h-4 text-slate-400" />
+                                  Start Date <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.eventDate || data.date || ""}
+                                  onChange={(e) => updateField(flyer._id, "eventDate", e.target.value)}
+                                  placeholder="e.g., Saturday, January 25, 2025"
+                                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                                  Start Time <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.eventTime || data.time || ""}
+                                  onChange={(e) => updateField(flyer._id, "eventTime", e.target.value)}
+                                  placeholder="e.g., 8:00 PM"
+                                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                />
+                              </div>
+                            </div>
+
+                            {/* End Date & Time */}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                                  End Date
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.eventEndDate || ""}
+                                  onChange={(e) => updateField(flyer._id, "eventEndDate", e.target.value)}
+                                  placeholder="For multi-day events"
+                                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                                  End Time
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.eventEndTime || ""}
+                                  onChange={(e) => updateField(flyer._id, "eventEndTime", e.target.value)}
+                                  placeholder="e.g., 2:00 AM"
+                                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Capacity & Door Price */}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 flex items-center gap-2 mb-1">
+                                  <Users className="w-4 h-4 text-slate-400" />
+                                  Capacity
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.capacity || ""}
+                                  onChange={(e) => updateField(flyer._id, "capacity", e.target.value)}
+                                  placeholder="e.g., 500"
+                                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 flex items-center gap-2 mb-1">
+                                  <DollarSign className="w-4 h-4 text-slate-400" />
+                                  Door Price
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.doorPrice || data.ageRestriction || ""}
+                                  onChange={(e) => updateField(flyer._id, "doorPrice", e.target.value)}
+                                  placeholder="e.g., $20 at the door"
+                                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Right Column */}
+                          <div className="space-y-4">
+                            {/* Venue */}
+                            <div>
+                              <label className="text-sm font-medium text-slate-700 flex items-center gap-2 mb-1">
+                                <MapPin className="w-4 h-4 text-slate-400" />
+                                Venue Name
+                              </label>
+                              <input
+                                type="text"
+                                value={data.venueName || ""}
+                                onChange={(e) => updateField(flyer._id, "venueName", e.target.value)}
+                                placeholder="e.g., The Grand Ballroom"
+                                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                              />
+                            </div>
+
+                            {/* Address */}
+                            <div>
+                              <label className="text-sm font-medium text-slate-700 mb-1 block">
+                                Street Address
+                              </label>
+                              <input
+                                type="text"
+                                value={data.address || ""}
+                                onChange={(e) => updateField(flyer._id, "address", e.target.value)}
+                                placeholder="123 Main Street"
+                                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                              />
+                            </div>
+
+                            {/* City, State, ZIP */}
+                            <div className="grid grid-cols-3 gap-4">
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                                  City <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.city || ""}
+                                  onChange={(e) => updateField(flyer._id, "city", e.target.value)}
+                                  placeholder="Chicago"
+                                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                                  State <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.state || ""}
+                                  onChange={(e) => updateField(flyer._id, "state", e.target.value)}
+                                  placeholder="IL"
+                                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                                  ZIP Code
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.zipCode || ""}
+                                  onChange={(e) => updateField(flyer._id, "zipCode", e.target.value)}
+                                  placeholder="60601"
+                                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Categories */}
+                            <div>
+                              <label className="text-sm font-medium text-slate-700 mb-2 block">
+                                Categories (Select all that apply)
+                              </label>
+                              <div className="flex flex-wrap gap-2">
+                                {EVENT_CATEGORIES.map((category) => {
+                                  const isActive = (data.categories || []).includes(category);
+                                  return (
+                                    <button
+                                      key={category}
+                                      type="button"
+                                      onClick={() => toggleCategory(flyer._id, category)}
+                                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                                        isActive
+                                          ? "bg-indigo-600 text-white"
+                                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                      }`}
+                                    >
+                                      {category}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
                           </div>
                         </div>
 
+                        {/* Description - Full Width */}
+                        <div className="mt-6">
+                          <label className="text-sm font-medium text-slate-700 mb-1 block">
+                            Description <span className="text-red-500">*</span>
+                          </label>
+                          <textarea
+                            value={data.description || ""}
+                            onChange={(e) => updateField(flyer._id, "description", e.target.value)}
+                            placeholder="Describe your event, what attendees can expect, special guests, etc..."
+                            rows={6}
+                            className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all resize-y"
+                          />
+                        </div>
+
                         {/* Action Buttons */}
-                        <div className="mt-6 flex flex-wrap gap-3">
-                          {isEditing ? (
-                            <>
-                              <button
-                                onClick={() => handleSaveEdit(flyer._id)}
-                                className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-all"
-                              >
-                                Save Changes
-                              </button>
-                              <button
-                                onClick={() => setEditingFlyerId(null)}
-                                className="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-all"
-                              >
-                                Cancel
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => handlePublish(flyer._id)}
-                                className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-all flex items-center justify-center gap-2"
-                              >
-                                <Send className="w-4 h-4" />
-                                Publish Event
-                              </button>
-                              <button
-                                onClick={() => handleRetryExtraction(flyer._id, flyer.filepath)}
-                                className="px-4 py-2.5 bg-indigo-100 text-indigo-700 rounded-lg font-medium hover:bg-indigo-200 transition-all flex items-center gap-2"
-                              >
-                                <RefreshCw className="w-4 h-4" />
-                                Retry AI
-                              </button>
-                              <button
-                                onClick={() => startEditing(flyer._id, flyer.extractedData)}
-                                className="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-all"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDeleteFlyer(flyer._id)}
-                                className="px-4 py-2.5 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition-all flex items-center gap-2"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
+                        <div className="mt-6 flex flex-wrap gap-3 pt-4 border-t border-slate-200">
+                          <button
+                            onClick={() => handleSaveAndPublish(flyer._id)}
+                            disabled={isSaving}
+                            className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isSaving ? (
+                              <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                Publishing...
+                              </>
+                            ) : (
+                              <>
+                                <Send className="w-5 h-5" />
+                                Save & Publish Event
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleRetryExtraction(flyer._id, flyer.filepath)}
+                            className="px-4 py-3 bg-indigo-100 text-indigo-700 rounded-lg font-medium hover:bg-indigo-200 transition-all flex items-center gap-2"
+                          >
+                            <RefreshCw className="w-4 h-4" />
+                            Re-scan with AI
+                          </button>
+                          <button
+                            onClick={() => handleDeleteFlyer(flyer._id)}
+                            className="px-4 py-3 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition-all flex items-center gap-2"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
                         </div>
                       </div>
                     </div>

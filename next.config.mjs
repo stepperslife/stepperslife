@@ -8,6 +8,10 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Externalize heavy packages for serverless functions to reduce bundle size
+  serverExternalPackages: [
+    '@google/generative-ai',
+  ],
   compiler: {
     // Remove console.log in production
     removeConsole: process.env.NODE_ENV === 'production',
