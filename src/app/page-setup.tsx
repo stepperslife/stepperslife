@@ -160,7 +160,7 @@ export default function Home() {
                   <li>✓ Credits system (200 free tickets)</li>
                   <li>✓ Dual payment models</li>
                   <li>✓ Staff & commissions</li>
-                  <li>✓ Magic Link auth</li>
+                  <li>✓ Email/Password auth</li>
                   <li>✓ Public API queries</li>
                 </ul>
               </div>
@@ -181,12 +181,11 @@ export default function Home() {
             <div className="mt-6 pt-6 border-t border">
               <h4 className="font-semibold text-foreground mb-2">Next Steps After Setup</h4>
               <ul className="text-sm text-muted-foreground space-y-1">
-                <li>1. Build Login page (Magic Link UI)</li>
-                <li>2. Build Event Detail page</li>
-                <li>3. Build My Tickets dashboard</li>
-                <li>4. Payment model selection</li>
-                <li>5. Staff management</li>
-                <li>6. Stripe integration</li>
+                <li>1. Build Event Detail page</li>
+                <li>2. Build My Tickets dashboard</li>
+                <li>3. Payment model selection</li>
+                <li>4. Staff management</li>
+                <li>5. Stripe integration</li>
               </ul>
             </div>
           </div>

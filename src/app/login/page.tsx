@@ -1,23 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Mail, ChevronDown, ChevronUp } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function LoginPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showTraditionalLogin, setShowTraditionalLogin] = useState(false);
 
   // Get redirect URL from query params
   const redirectUrl = searchParams.get("redirect") || "/";
@@ -25,7 +21,6 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
     setIsLoading(true);
 
     try {
@@ -34,7 +29,7 @@ export default function LoginPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Include cookies in request/response
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
@@ -48,47 +43,9 @@ export default function LoginPage() {
 
       // Login successful, use hard redirect to ensure cookies are included
       window.location.href = redirectUrl;
-    } catch (err) {
+    } catch {
       setError("An error occurred. Please try again.");
       setIsLoading(false);
-    }
-  };
-
-  const handleMagicLink = async () => {
-    if (!email) {
-      setError("Please enter your email address");
-      return;
-    }
-
-    setError("");
-    setSuccess("");
-    setIsMagicLinkLoading(true);
-
-    try {
-      const response = await fetch("/api/auth/magic-link", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          callbackUrl: redirectUrl,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || "Failed to send magic link");
-        setIsMagicLinkLoading(false);
-        return;
-      }
-
-      setSuccess("Check your email! We've sent you a sign-in link.");
-      setIsMagicLinkLoading(false);
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-      setIsMagicLinkLoading(false);
     }
   };
 
@@ -105,21 +62,15 @@ export default function LoginPage() {
               <p className="text-gray-600">Sign in to your account</p>
             </div>
 
-            {/* Error and Success Messages */}
+            {/* Error Message */}
             {error && (
               <div data-testid="login-error-message" className="mb-4 bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg text-sm">
                 {error}
               </div>
             )}
 
-            {success && (
-              <div data-testid="login-success-message" className="mb-4 bg-success/10 border border-success text-success px-4 py-3 rounded-lg text-sm">
-                {success}
-              </div>
-            )}
-
             <div className="space-y-4">
-              {/* 1. Google OAuth - Primary Option */}
+              {/* Google OAuth Option */}
               <button
                 onClick={() => {
                   const callbackUrl = encodeURIComponent(redirectUrl);
@@ -156,141 +107,87 @@ export default function LoginPage() {
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="px-2 bg-white text-gray-600 font-medium">
-                    or
+                    or sign in with email
                   </span>
                 </div>
               </div>
 
-              {/* 2. Magic Link - Second Option */}
-              <div className="space-y-3">
+              {/* Email/Password Login Form */}
+              <form onSubmit={handleSubmit} data-testid="password-login-form" className="space-y-4">
                 <div>
                   <label
-                    htmlFor="magic-email"
+                    htmlFor="email"
                     className="block text-sm font-medium text-gray-900 mb-2"
                   >
                     Email Address
                   </label>
                   <input
-                    id="magic-email"
+                    id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    data-testid="email-input"
+                    required
+                    autoComplete="email"
+                    data-testid="login-email"
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400"
                     placeholder="you@example.com"
                   />
                 </div>
-                <div className="bg-primary/10 border border-primary text-primary px-3 py-2 rounded-lg text-xs flex items-center gap-2">
-                  <Mail className="w-4 h-4 shrink-0" />
-                  <span>
-                    We'll send you a secure link to sign in instantly - no password needed!
-                  </span>
+
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-900 mb-2"
+                  >
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      autoComplete="current-password"
+                      data-testid="login-password"
+                      className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      data-testid="toggle-password-visibility"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
+
+                <div className="flex items-center justify-end">
+                  <Link
+                    href="/forgot-password"
+                    data-testid="forgot-password-link"
+                    className="text-sm text-primary hover:underline font-medium"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
                 <Button
-                  type="button"
-                  onClick={handleMagicLink}
-                  disabled={isMagicLinkLoading}
-                  data-testid="magic-link-button"
+                  type="submit"
+                  disabled={isLoading}
+                  data-testid="login-submit"
                   className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isMagicLinkLoading ? "Sending link..." : "Send Magic Link"}
+                  {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
-              </div>
-
-              {/* 3. Traditional Login - Dropdown/Collapsible */}
-              <div className="border border-gray-300 rounded-lg overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setShowTraditionalLogin(!showTraditionalLogin)}
-                  data-testid="password-login-toggle"
-                  className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  <span className="text-sm font-medium text-gray-900">
-                    Sign in with password
-                  </span>
-                  {showTraditionalLogin ? (
-                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                  )}
-                </button>
-
-                {showTraditionalLogin && (
-                  <form onSubmit={handleSubmit} data-testid="password-login-form" className="p-4 space-y-4 bg-white">
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-900 mb-2"
-                      >
-                        Email Address
-                      </label>
-                      <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        data-testid="login-email"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400"
-                        placeholder="you@example.com"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-900 mb-2"
-                      >
-                        Password
-                      </label>
-                      <div className="relative">
-                        <input
-                          id="password"
-                          type={showPassword ? "text" : "password"}
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          data-testid="login-password"
-                          className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400"
-                          placeholder="Enter your password"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          data-testid="toggle-password-visibility"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
-                          aria-label={showPassword ? "Hide password" : "Show password"}
-                        >
-                          {showPassword ? (
-                            <EyeOff className="w-5 h-5" />
-                          ) : (
-                            <Eye className="w-5 h-5" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <Link
-                        href="/forgot-password"
-                        data-testid="forgot-password-link"
-                        className="text-sm text-primary hover:underline font-medium"
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={isLoading}
-                      data-testid="login-submit"
-                      className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isLoading ? "Signing in..." : "Sign In"}
-                    </Button>
-                  </form>
-                )}
-              </div>
+              </form>
             </div>
 
             {/* Sign Up Section */}
@@ -301,7 +198,7 @@ export default function LoginPage() {
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="px-2 bg-white text-gray-600">
-                    Don't have an account?
+                    Don&apos;t have an account?
                   </span>
                 </div>
               </div>

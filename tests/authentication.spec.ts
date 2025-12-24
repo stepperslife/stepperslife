@@ -5,7 +5,6 @@
  * - Login page functionality
  * - Registration flow
  * - Forgot/Reset password
- * - Magic link authentication
  * - Protected route redirects
  * - Session management
  *
@@ -33,17 +32,13 @@ const TIMEOUTS = {
 const TEST_IDS = {
   // Login page
   loginFormContainer: '[data-testid="login-form-container"]',
-  emailInput: '[data-testid="email-input"]',
-  passwordEmailInput: '[data-testid="password-email-input"]',
-  passwordInput: '[data-testid="password-input"]',
-  loginSubmitButton: '[data-testid="login-submit-button"]',
-  magicLinkButton: '[data-testid="magic-link-button"]',
-  passwordLoginToggle: '[data-testid="password-login-toggle"]',
+  loginEmail: '[data-testid="login-email"]',
+  loginPassword: '[data-testid="login-password"]',
+  loginSubmit: '[data-testid="login-submit"]',
   googleLoginButton: '[data-testid="google-login-button"]',
   forgotPasswordLink: '[data-testid="forgot-password-link"]',
   createAccountLink: '[data-testid="create-account-link"]',
   loginErrorMessage: '[data-testid="login-error-message"]',
-  loginSuccessMessage: '[data-testid="login-success-message"]',
   togglePasswordVisibility: '[data-testid="toggle-password-visibility"]',
   // Header
   publicHeader: '[data-testid="public-header"]',
@@ -107,7 +102,7 @@ test.describe("Authentication Feature", () => {
       await expect(page.locator(TEST_IDS.loginFormContainer)).toBeVisible();
 
       // Verify email input field
-      await expect(page.locator(TEST_IDS.emailInput)).toBeVisible();
+      await expect(page.locator(TEST_IDS.loginEmail)).toBeVisible();
 
       await takeScreenshot(page, "01-login-page");
       console.log("✅ Login page loaded successfully");
@@ -120,20 +115,19 @@ test.describe("Authentication Feature", () => {
       await waitForPageLoad(page);
 
       // Check for email field using data-testid
-      const emailInput = page.locator(TEST_IDS.emailInput);
+      const emailInput = page.locator(TEST_IDS.loginEmail);
       await expect(emailInput).toBeVisible();
       console.log("  ✓ Email field present");
 
-      // Check for magic link button
-      const magicLinkBtn = page.locator(TEST_IDS.magicLinkButton);
-      await expect(magicLinkBtn).toBeVisible();
-      console.log("  ✓ Magic link button present");
+      // Check for password field
+      const passwordInput = page.locator(TEST_IDS.loginPassword);
+      await expect(passwordInput).toBeVisible();
+      console.log("  ✓ Password field present");
 
-      // Check for password login toggle
-      const passwordToggle = page.locator(TEST_IDS.passwordLoginToggle);
-      if (await passwordToggle.isVisible()) {
-        console.log("  ✓ Password login toggle present");
-      }
+      // Check for submit button
+      const submitButton = page.locator(TEST_IDS.loginSubmit);
+      await expect(submitButton).toBeVisible();
+      console.log("  ✓ Submit button present");
 
       await takeScreenshot(page, "02-login-form-fields");
     });
@@ -144,15 +138,8 @@ test.describe("Authentication Feature", () => {
       await page.goto(`${BASE_URL}/login`);
       await waitForPageLoad(page);
 
-      // Expand password login form
-      const passwordToggle = page.locator(TEST_IDS.passwordLoginToggle);
-      if (await passwordToggle.isVisible()) {
-        await passwordToggle.click();
-        await page.waitForTimeout(300);
-      }
-
       // Try to submit empty form
-      const submitButton = page.locator(TEST_IDS.loginSubmitButton);
+      const submitButton = page.locator(TEST_IDS.loginSubmit);
       await submitButton.click();
       await page.waitForTimeout(500);
 
@@ -161,13 +148,11 @@ test.describe("Authentication Feature", () => {
       console.log("  ✓ Empty form submission prevented");
 
       // Try invalid email format
-      const emailInput = page.locator(TEST_IDS.passwordEmailInput);
+      const emailInput = page.locator(TEST_IDS.loginEmail);
       await emailInput.fill("invalid-email");
 
-      const passwordInput = page.locator(TEST_IDS.passwordInput);
-      if (await passwordInput.isVisible()) {
-        await passwordInput.fill("password");
-      }
+      const passwordInput = page.locator(TEST_IDS.loginPassword);
+      await passwordInput.fill("password");
 
       await submitButton.click();
       await page.waitForTimeout(500);
@@ -181,26 +166,8 @@ test.describe("Authentication Feature", () => {
       await takeScreenshot(page, "03-login-validation");
     });
 
-    test("1.4 - Magic link option available", async ({ page }) => {
-      console.log("\n🔐 Test 1.4: Magic link option\n");
-
-      await page.goto(`${BASE_URL}/login`);
-      await waitForPageLoad(page);
-
-      // Check for magic link button using data-testid
-      const magicLinkButton = page.locator(TEST_IDS.magicLinkButton);
-
-      if (await magicLinkButton.isVisible()) {
-        await expect(magicLinkButton).toBeVisible();
-        console.log("  ✓ Magic link option available");
-        await takeScreenshot(page, "04-magic-link-option");
-      } else {
-        console.log("  ℹ Magic link option not visible on this page");
-      }
-    });
-
-    test("1.5 - Social login options visible", async ({ page }) => {
-      console.log("\n🔐 Test 1.5: Social login options\n");
+    test("1.4 - Social login options visible", async ({ page }) => {
+      console.log("\n🔐 Test 1.4: Social login options\n");
 
       await page.goto(`${BASE_URL}/login`);
       await waitForPageLoad(page);
@@ -211,11 +178,11 @@ test.describe("Authentication Feature", () => {
         console.log("  ✓ Google OAuth option available");
       }
 
-      await takeScreenshot(page, "05-social-login-options");
+      await takeScreenshot(page, "04-social-login-options");
     });
 
-    test("1.6 - Register link navigates correctly", async ({ page }) => {
-      console.log("\n🔐 Test 1.6: Register link navigation\n");
+    test("1.5 - Register link navigates correctly", async ({ page }) => {
+      console.log("\n🔐 Test 1.5: Register link navigation\n");
 
       await page.goto(`${BASE_URL}/login`);
       await waitForPageLoad(page);
@@ -233,21 +200,14 @@ test.describe("Authentication Feature", () => {
         console.log("  ℹ Register link not found on login page");
       }
 
-      await takeScreenshot(page, "06-register-navigation");
+      await takeScreenshot(page, "05-register-navigation");
     });
 
-    test("1.7 - Forgot password link works", async ({ page }) => {
-      console.log("\n🔐 Test 1.7: Forgot password link\n");
+    test("1.6 - Forgot password link works", async ({ page }) => {
+      console.log("\n🔐 Test 1.6: Forgot password link\n");
 
       await page.goto(`${BASE_URL}/login`);
       await waitForPageLoad(page);
-
-      // Expand password login form to see forgot password link
-      const passwordToggle = page.locator(TEST_IDS.passwordLoginToggle);
-      if (await passwordToggle.isVisible()) {
-        await passwordToggle.click();
-        await page.waitForTimeout(300);
-      }
 
       // Check for forgot password link using data-testid
       const forgotLink = page.locator(TEST_IDS.forgotPasswordLink);
@@ -258,7 +218,7 @@ test.describe("Authentication Feature", () => {
 
         expect(page.url()).toMatch(/forgot|reset/);
         console.log("  ✓ Forgot password link works");
-        await takeScreenshot(page, "07-forgot-password");
+        await takeScreenshot(page, "06-forgot-password");
       } else {
         console.log("  ℹ Forgot password link not visible");
       }

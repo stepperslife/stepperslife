@@ -13,11 +13,11 @@ export default defineSchema({
     passwordHash: v.optional(v.string()), // bcrypt hash for classic login
     googleId: v.optional(v.string()), // Google OAuth user ID
     authProvider: v.optional(
-      v.union(v.literal("password"), v.literal("magic_link"), v.literal("google"))
-    ), // Which auth method was used
-    // Magic Link fields
-    magicLinkToken: v.optional(v.string()), // Hashed token for magic link login
-    magicLinkExpiry: v.optional(v.number()), // Expiration timestamp (15 minutes)
+      v.union(v.literal("password"), v.literal("google"), v.literal("magic_link"))
+    ), // Which auth method was used (magic_link kept for existing users)
+    // Legacy magic link fields (kept for existing users, no longer used)
+    magicLinkToken: v.optional(v.string()),
+    magicLinkExpiry: v.optional(v.number()),
     // Password Reset
     passwordResetToken: v.optional(v.string()), // Hashed token for password reset
     passwordResetExpiry: v.optional(v.number()), // Expiration timestamp (1 hour)
@@ -50,7 +50,6 @@ export default defineSchema({
     .index("by_email", ["email"])
     .index("by_role", ["role"])
     .index("by_googleId", ["googleId"])
-    .index("by_magicLinkToken", ["magicLinkToken"])
     .index("by_passwordResetToken", ["passwordResetToken"]),
 
   events: defineTable({

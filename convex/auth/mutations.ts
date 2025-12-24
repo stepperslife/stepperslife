@@ -73,114 +73,6 @@ export const updateUserPassword = mutation({
 });
 
 /**
- * Store magic link token for passwordless authentication
- * Creates user if doesn't exist
- */
-export const storeMagicLinkToken = mutation({
-  args: {
-    email: v.string(),
-    tokenHash: v.string(),
-    expiry: v.number(),
-  },
-  handler: async (ctx, args) => {
-    const now = Date.now();
-
-    // Check if user exists
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
-      .first();
-
-    if (!user) {
-      // Create new user if doesn't exist
-      const userId = await ctx.db.insert("users", {
-        email: args.email,
-        role: "user",
-        emailVerified: false,
-        authProvider: "magic_link",
-        magicLinkToken: args.tokenHash,
-        magicLinkExpiry: args.expiry,
-        createdAt: now,
-        updatedAt: now,
-      });
-
-      return userId;
-    } else {
-      // Update existing user with magic link token
-      await ctx.db.patch(user._id, {
-        magicLinkToken: args.tokenHash,
-        magicLinkExpiry: args.expiry,
-        updatedAt: now,
-      });
-
-      return user._id;
-    }
-  },
-});
-
-/**
- * Verify magic link token and return user
- * Clears token after successful verification
- */
-export const verifyMagicLinkToken = mutation({
-  args: {
-    tokenHash: v.string(),
-  },
-  handler: async (ctx, args) => {
-    // Find user with matching token
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_magicLinkToken", (q) => q.eq("magicLinkToken", args.tokenHash))
-      .first();
-
-    if (!user) {
-      return null;
-    }
-
-    // Check if token is expired
-    if (user.magicLinkExpiry && Date.now() > user.magicLinkExpiry) {
-      // Clear expired token
-      await ctx.db.patch(user._id, {
-        magicLinkToken: undefined,
-        magicLinkExpiry: undefined,
-        updatedAt: Date.now(),
-      });
-      return null;
-    }
-
-    // Token is valid - mark email as verified and clear token
-    await ctx.db.patch(user._id, {
-      emailVerified: true,
-      magicLinkToken: undefined,
-      magicLinkExpiry: undefined,
-      updatedAt: Date.now(),
-    });
-
-    // Initialize credits for new organizers
-    if (user.role === "organizer" || user.role === "admin") {
-      const existingCredits = await ctx.db
-        .query("organizerCredits")
-        .withIndex("by_organizer", (q) => q.eq("organizerId", user._id))
-        .first();
-
-      if (!existingCredits) {
-        await ctx.db.insert("organizerCredits", {
-          organizerId: user._id,
-          creditsTotal: 1000,
-          creditsUsed: 0,
-          creditsRemaining: 1000,
-          firstEventFreeUsed: false,
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        });
-      }
-    }
-
-    return user;
-  },
-});
-
-/**
  * Store password reset token
  */
 export const storePasswordResetToken = mutation({
@@ -246,7 +138,6 @@ export const resetPassword = mutation({
       emailVerified: true, // Mark as verified since they proved email ownership
       updatedAt: Date.now(),
     });
-
 
     return {
       success: true,

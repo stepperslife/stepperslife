@@ -7,18 +7,16 @@ This application uses **custom JWT-based authentication**, not Convex Auth.
 ### Core Components
 
 1. **`jwt-secret.ts`** - Centralized JWT secret management
-2. **`session-manager.ts`** - Session token creation and cookie management (NEW ✨)
-3. **`password-utils.ts`** - Password hashing and validation (NEW ✨)
+2. **`session-manager.ts`** - Session token creation and cookie management
+3. **`password-utils.ts`** - Password hashing and validation
 4. **`convex-client.ts`** - Singleton Convex HTTP client
 5. **`google-oauth.ts`** - Google OAuth flow implementation
-6. **`magic-link.ts`** - Magic link (passwordless) authentication
 
 ### Authentication Methods
 
 1. **Email/Password** - Traditional login with bcrypt password hashing
 2. **Google OAuth** - Social authentication via Google
-3. **Magic Link** - Passwordless email-based authentication
-4. **Password Reset** - Secure token-based password reset flow
+3. **Password Reset** - Secure token-based password reset flow
 
 ### Session Management
 
@@ -50,8 +48,6 @@ This application uses **custom JWT-based authentication**, not Convex Auth.
 - `POST /api/auth/logout` - Session termination
 - `GET /api/auth/callback/google` - OAuth callback handler
 - `GET /api/auth/google` - OAuth flow initiator
-- `POST /api/auth/magic-link` - Request magic link
-- `GET /api/auth/verify-magic-link` - Verify magic link token
 - `POST /api/auth/forgot-password` - Request password reset
 - `POST /api/auth/reset-password` - Reset password with token
 - `GET /api/auth/convex-token` - Exchange session for Convex token
@@ -69,7 +65,7 @@ This application uses **custom JWT-based authentication**, not Convex Auth.
 
 ### Token Security
 - **Storage**: Database with SHA-256 hashing
-- **Expiration**: 1 hour (password reset), 15 minutes (magic link)
+- **Expiration**: 1 hour (password reset)
 - **CSRF Protection**: State parameter in OAuth flow
 - **User Enumeration Prevention**: Consistent responses for invalid emails
 
@@ -101,7 +97,7 @@ The auth system was recently refactored to eliminate code duplication:
 
 This application uses custom JWT authentication instead of `@convex-dev/auth` because:
 
-1. **Custom Requirements**: Need for multiple auth methods (OAuth, magic link, password)
+1. **Custom Requirements**: Need for multiple auth methods (OAuth, password)
 2. **Fine-grained Control**: Custom token structure and session management
 3. **Integration**: Seamless integration with existing Next.js API routes
 4. **Flexibility**: Easy to extend for future auth methods
