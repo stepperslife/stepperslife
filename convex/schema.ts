@@ -1422,8 +1422,12 @@ export default defineSchema({
         productId: v.id("products"),
         productName: v.string(),
         productImage: v.optional(v.string()), // Product image URL for display
-        variantId: v.optional(v.string()),
-        variantName: v.optional(v.string()),
+        variantId: v.optional(v.string()), // Legacy variant system
+        variantName: v.optional(v.string()), // Legacy variant system
+        // New variation system (for VARIABLE products)
+        variationId: v.optional(v.id("productVariations")),
+        variationAttributes: v.optional(v.any()), // e.g., { size: "M", color: "Blue" }
+        variationSku: v.optional(v.string()),
         quantity: v.number(),
         price: v.number(), // Price per item in cents
         totalPrice: v.number(), // quantity * price
