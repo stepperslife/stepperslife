@@ -135,7 +135,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
 /**
  * Handle successful payment intent
- * Handles both ticket orders (split payments) and platform products (100% to platform)
+ * Handles ticket orders, product orders (marketplace), and platform products
  */
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   const { metadata } = paymentIntent;
@@ -145,6 +145,18 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
   // Check if this is a platform product payment (100% to platform)
   if (chargeType === "PLATFORM" && productType) {
     await handlePlatformProductPayment(paymentIntent);
+    return;
+  }
+
+  // Check if this is a marketplace product order
+  if (chargeType === "PRODUCT_ORDER") {
+    await handleProductOrderPayment(paymentIntent);
+    return;
+  }
+
+  // Check if this is a food order
+  if (chargeType === "FOOD_ORDER") {
+    await handleFoodOrderPayment(paymentIntent);
     return;
   }
 
@@ -189,6 +201,113 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
   } catch (error: any) {
     console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error);
+  }
+}
+
+/**
+ * Handle marketplace product order payments with split payments
+ */
+async function handleProductOrderPayment(paymentIntent: Stripe.PaymentIntent) {
+  const { metadata } = paymentIntent;
+  const orderId = metadata?.orderId;
+  const vendorId = metadata?.vendorId;
+  const commissionPercent = parseInt(metadata?.commissionPercent || "15", 10);
+  const applicationFee = parseInt(metadata?.applicationFee || "0", 10);
+
+  console.log("[Stripe Webhook] Processing product order payment:", {
+    paymentIntentId: paymentIntent.id,
+    orderId,
+    vendorId,
+    amount: paymentIntent.amount,
+    applicationFee,
+  });
+
+  if (!orderId) {
+    console.warn("[Stripe Webhook] No orderId in product order metadata");
+    return;
+  }
+
+  try {
+    // 1. Update order payment status to PAID
+    await convex.mutation(api.productOrders.mutations.updatePaymentStatus, {
+      orderId: orderId as any,
+      paymentStatus: "PAID",
+      paymentMethod: "stripe",
+      stripePaymentIntentId: paymentIntent.id,
+    });
+    console.log(`[Stripe Webhook] Product order ${orderId} marked as PAID`);
+
+    // 2. Create vendor earnings record if we have a vendor
+    if (vendorId) {
+      try {
+        // Get order details for earnings
+        const orderData = await convex.query(api.productOrders.queries.getOrderById, {
+          orderId: orderId as any,
+        });
+
+        if (orderData) {
+          await convex.mutation(api.vendorEarnings.createFromOrder, {
+            vendorId: vendorId as any,
+            orderId: orderId as any,
+            orderNumber: orderData.orderNumber,
+            orderDate: orderData.createdAt,
+            grossAmount: orderData.subtotal, // Use subtotal (before tax/shipping) for commission
+            commissionRate: commissionPercent,
+          });
+          console.log(`[Stripe Webhook] Vendor earnings created for order ${orderId}`);
+        }
+      } catch (earningsError: any) {
+        console.error(`[Stripe Webhook] Failed to create vendor earnings:`, earningsError);
+        // Don't fail the webhook - the order is still paid
+      }
+
+      // 3. Update vendor stats
+      try {
+        await convex.mutation(api.vendors.updateStats, {
+          id: vendorId as any,
+          saleAmount: paymentIntent.amount - applicationFee,
+          earningsAmount: paymentIntent.amount - applicationFee,
+        });
+        console.log(`[Stripe Webhook] Vendor stats updated for ${vendorId}`);
+      } catch (statsError: any) {
+        console.error(`[Stripe Webhook] Failed to update vendor stats:`, statsError);
+      }
+    }
+
+  } catch (error: any) {
+    console.error(`[Stripe Webhook] Failed to process product order ${orderId}:`, error);
+  }
+}
+
+/**
+ * Handle food order payments
+ */
+async function handleFoodOrderPayment(paymentIntent: Stripe.PaymentIntent) {
+  const { metadata } = paymentIntent;
+  const orderId = metadata?.orderId;
+
+  console.log("[Stripe Webhook] Processing food order payment:", {
+    paymentIntentId: paymentIntent.id,
+    orderId,
+    amount: paymentIntent.amount,
+  });
+
+  if (!orderId) {
+    console.warn("[Stripe Webhook] No orderId in food order metadata");
+    return;
+  }
+
+  try {
+    // Update food order payment status to PAID
+    await convex.mutation(api.foodOrders.updatePaymentStatus, {
+      orderId: orderId as any,
+      paymentStatus: "PAID",
+      stripePaymentIntentId: paymentIntent.id,
+    });
+    console.log(`[Stripe Webhook] Food order ${orderId} marked as PAID`);
+
+  } catch (error: any) {
+    console.error(`[Stripe Webhook] Failed to process food order ${orderId}:`, error);
   }
 }
 

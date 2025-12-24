@@ -1709,6 +1709,11 @@ export default defineSchema({
     totalSales: v.optional(v.number()),
     totalEarnings: v.optional(v.number()),
     totalPaidOut: v.optional(v.number()),
+    // Stripe Connect for receiving split payments
+    stripeConnectedAccountId: v.optional(v.string()),
+    stripeAccountSetupComplete: v.optional(v.boolean()),
+    stripeCashAppEnabled: v.optional(v.boolean()),
+    stripePayoutsEnabled: v.optional(v.boolean()),
     // Timestamps
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -1717,7 +1722,8 @@ export default defineSchema({
     .index("by_slug", ["slug"])
     .index("by_status", ["status"])
     .index("by_active", ["isActive"])
-    .index("by_tier", ["tier", "isActive"]),
+    .index("by_tier", ["tier", "isActive"])
+    .index("by_stripe_account", ["stripeConnectedAccountId"]),
 
   // Vendor Earnings - Track earnings from each order
   vendorEarnings: defineTable({

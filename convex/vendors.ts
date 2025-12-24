@@ -461,3 +461,94 @@ export const updateProductCount = mutation({
     });
   },
 });
+
+// Save Stripe Connect account ID for a vendor
+export const saveStripeAccount = mutation({
+  args: {
+    vendorId: v.id("vendors"),
+    stripeConnectedAccountId: v.string(),
+    stripeAccountSetupComplete: v.optional(v.boolean()),
+    stripeCashAppEnabled: v.optional(v.boolean()),
+    stripePayoutsEnabled: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const vendor = await ctx.db.get(args.vendorId);
+    if (!vendor) throw new Error("Vendor not found");
+
+    return await ctx.db.patch(args.vendorId, {
+      stripeConnectedAccountId: args.stripeConnectedAccountId,
+      stripeAccountSetupComplete: args.stripeAccountSetupComplete ?? false,
+      stripeCashAppEnabled: args.stripeCashAppEnabled ?? false,
+      stripePayoutsEnabled: args.stripePayoutsEnabled ?? false,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Update Stripe account setup status
+export const updateStripeAccountStatus = mutation({
+  args: {
+    vendorId: v.id("vendors"),
+    stripeAccountSetupComplete: v.optional(v.boolean()),
+    stripeCashAppEnabled: v.optional(v.boolean()),
+    stripePayoutsEnabled: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const vendor = await ctx.db.get(args.vendorId);
+    if (!vendor) throw new Error("Vendor not found");
+
+    const updates: Record<string, any> = {
+      updatedAt: Date.now(),
+    };
+
+    if (args.stripeAccountSetupComplete !== undefined) {
+      updates.stripeAccountSetupComplete = args.stripeAccountSetupComplete;
+    }
+    if (args.stripeCashAppEnabled !== undefined) {
+      updates.stripeCashAppEnabled = args.stripeCashAppEnabled;
+    }
+    if (args.stripePayoutsEnabled !== undefined) {
+      updates.stripePayoutsEnabled = args.stripePayoutsEnabled;
+    }
+
+    return await ctx.db.patch(args.vendorId, updates);
+  },
+});
+
+// Get Stripe account status for a vendor
+export const getStripeAccountStatus = query({
+  args: { vendorId: v.id("vendors") },
+  handler: async (ctx, args) => {
+    const vendor = await ctx.db.get(args.vendorId);
+    if (!vendor) return null;
+
+    return {
+      hasStripeAccount: !!vendor.stripeConnectedAccountId,
+      stripeConnectedAccountId: vendor.stripeConnectedAccountId,
+      stripeAccountSetupComplete: vendor.stripeAccountSetupComplete ?? false,
+      stripeCashAppEnabled: vendor.stripeCashAppEnabled ?? false,
+      stripePayoutsEnabled: vendor.stripePayoutsEnabled ?? false,
+    };
+  },
+});
+
+// Get vendor with Stripe account info for payment processing
+export const getVendorForPayment = query({
+  args: { vendorId: v.id("vendors") },
+  handler: async (ctx, args) => {
+    const vendor = await ctx.db.get(args.vendorId);
+    if (!vendor) return null;
+
+    return {
+      _id: vendor._id,
+      name: vendor.name,
+      commissionPercent: vendor.commissionPercent,
+      tier: vendor.tier,
+      stripeConnectedAccountId: vendor.stripeConnectedAccountId,
+      stripeAccountSetupComplete: vendor.stripeAccountSetupComplete ?? false,
+      canReceivePayments: !!(
+        vendor.stripeConnectedAccountId && vendor.stripeAccountSetupComplete
+      ),
+    };
+  },
+});

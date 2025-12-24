@@ -1,27 +1,140 @@
 "use client";
 
 import { useCart } from "@/contexts/CartContext";
-import { ArrowLeft, Package, Loader2, Truck, Store, CheckCircle, AlertTriangle, LogIn } from "lucide-react";
+import { ArrowLeft, Package, Loader2, Truck, Store, CreditCard, AlertTriangle, LogIn, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { MarketplaceSubNav } from "@/components/layout/MarketplaceSubNav";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+// Load Stripe outside of component to avoid recreating on every render
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "");
+
+// Payment Form Component with Stripe Elements
+function PaymentForm({
+  clientSecret,
+  total,
+  onSuccess,
+  onError,
+  isProcessing,
+  setIsProcessing,
+}: {
+  clientSecret: string;
+  total: number;
+  onSuccess: () => void;
+  onError: (error: string) => void;
+  isProcessing: boolean;
+  setIsProcessing: (processing: boolean) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/marketplace/order-confirmation`,
+        },
+        redirect: "if_required",
+      });
+
+      if (error) {
+        console.error("[Payment] Error:", error);
+        onError(error.message || "Payment failed. Please try again.");
+        setIsProcessing(false);
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        console.log("[Payment] Success:", paymentIntent.id);
+        onSuccess();
+      } else {
+        // Payment might require additional action
+        console.log("[Payment] Status:", paymentIntent?.status);
+        onError("Payment requires additional verification. Please try again.");
+        setIsProcessing(false);
+      }
+    } catch (err: any) {
+      console.error("[Payment] Exception:", err);
+      onError(err.message || "Payment failed. Please try again.");
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <PaymentElement
+        options={{
+          layout: "tabs",
+          paymentMethodOrder: ["card", "cashapp"],
+        }}
+      />
+      <button
+        type="submit"
+        disabled={!stripe || !elements || isProcessing}
+        className="w-full py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        {isProcessing ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Processing Payment...
+          </>
+        ) : (
+          <>
+            <Lock className="w-5 h-5" />
+            Pay ${(total / 100).toFixed(2)}
+          </>
+        )}
+      </button>
+      <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+        <Lock className="w-3 h-3" />
+        Secured by Stripe. Your payment info is encrypted.
+      </p>
+    </form>
+  );
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, getSubtotal, clearCart, removeItemByIndex } = useCart();
+  const { items, getSubtotal, clearCart } = useCart();
   const createOrder = useMutation(api.productOrders.mutations.createProductOrder);
+  const updatePaymentStatus = useMutation(api.productOrders.mutations.updatePaymentStatus);
   const currentUser = useQuery(api.users.queries.getCurrentUser);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState<Id<"productOrders"> | null>(null);
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
+  const [step, setStep] = useState<"info" | "payment">("info");
+
+  // Get unique vendor IDs from cart items
+  const vendorIds = useMemo(() => {
+    const ids = new Set<string>();
+    items.forEach(item => {
+      if (item.vendorId) {
+        ids.add(item.vendorId);
+      }
+    });
+    return Array.from(ids);
+  }, [items]);
 
   // Validate cart items on load
   const cartValidation = useQuery(
@@ -49,6 +162,7 @@ export default function CheckoutPage() {
       setValidationErrors([]);
     }
   }, [cartValidation]);
+
   const [shippingMethod, setShippingMethod] = useState<"DELIVERY" | "PICKUP">("DELIVERY");
 
   // Form state
@@ -72,6 +186,18 @@ export default function CheckoutPage() {
   const estimatedShipping = shippingMethod === "DELIVERY" ? 999 : 0; // $9.99 flat rate for now
   const tax = Math.round(subtotal * TAX_RATE);
   const total = subtotal + estimatedShipping + tax;
+
+  // Pre-fill customer info from user profile
+  useEffect(() => {
+    if (currentUser) {
+      if (currentUser.name && !customerName) {
+        setCustomerName(currentUser.name);
+      }
+      if (currentUser.email && !customerEmail) {
+        setCustomerEmail(currentUser.email);
+      }
+    }
+  }, [currentUser, customerName, customerEmail]);
 
   // Loading state for user authentication check
   if (currentUser === undefined) {
@@ -151,12 +277,12 @@ export default function CheckoutPage() {
     );
   }
 
-  const handleSubmitOrder = async (e: React.FormEvent) => {
+  const handleContinueToPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsSubmitting(true);
 
-    console.log("[Checkout] Starting order submission...");
+    console.log("[Checkout] Starting order and payment setup...");
 
     try {
       // Check cart validation first
@@ -179,11 +305,9 @@ export default function CheckoutPage() {
       const orderItems = items.map((item) => ({
         productId: item.productId as Id<"products">,
         productName: item.productName,
-        productImage: item.productImage, // Store product image with order
-        // Legacy variant system
+        productImage: item.productImage,
         variantId: item.variantId,
         variantName: item.variantName,
-        // New variation system
         variationId: item.variationId,
         variationAttributes: item.variationAttributes,
         variationSku: item.variationSku,
@@ -191,39 +315,107 @@ export default function CheckoutPage() {
         price: item.productPrice,
       }));
 
-      console.log("[Checkout] Order items prepared:", orderItems.length, "items");
-      console.log("[Checkout] Customer email:", customerEmail.trim().toLowerCase());
+      console.log("[Checkout] Creating order...");
 
-      // Submit order (normalize email to lowercase for consistent lookup)
-      let result;
-      try {
-        result = await createOrder({
-          items: orderItems,
-          customerEmail: customerEmail.trim().toLowerCase(),
-          customerName: customerName.trim(),
-          customerPhone: customerPhone.trim() || undefined,
-          shippingMethod,
-          shippingAddress: {
-            name: customerName.trim(),
-            address1: address1.trim(),
-            address2: address2.trim() || undefined,
-            city: city.trim(),
-            state: state.trim(),
-            zipCode: zipCode.trim(),
-            country: country.trim(),
-            phone: customerPhone.trim() || undefined,
-          },
-          pickupLocation: shippingMethod === "PICKUP" ? pickupLocation : undefined,
-        });
-        console.log("[Checkout] Order created successfully:", result);
-      } catch (orderError: any) {
-        console.error("[Checkout] Failed to create order:", orderError);
-        throw new Error(orderError.message || "Failed to create order. Please try again.");
+      // Create order with PENDING payment status
+      const result = await createOrder({
+        items: orderItems,
+        customerEmail: customerEmail.trim().toLowerCase(),
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim() || undefined,
+        shippingMethod,
+        shippingAddress: {
+          name: customerName.trim(),
+          address1: address1.trim(),
+          address2: address2.trim() || undefined,
+          city: city.trim(),
+          state: state.trim(),
+          zipCode: zipCode.trim(),
+          country: country.trim(),
+          phone: customerPhone.trim() || undefined,
+        },
+        pickupLocation: shippingMethod === "PICKUP" ? pickupLocation : undefined,
+      });
+
+      console.log("[Checkout] Order created:", result);
+      setOrderId(result.orderId);
+      setOrderNumber(result.orderNumber);
+
+      // Get vendor info for the first item (for now, single-vendor checkout)
+      // TODO: Support multi-vendor checkout
+      const firstVendorId = items[0]?.vendorId;
+      let vendorInfo = null;
+
+      if (firstVendorId) {
+        // Fetch vendor payment info
+        try {
+          const vendorResponse = await fetch(`/api/vendors/${firstVendorId}/payment-info`);
+          if (vendorResponse.ok) {
+            vendorInfo = await vendorResponse.json();
+          }
+        } catch (vendorError) {
+          console.log("[Checkout] Could not fetch vendor info, using platform payment");
+        }
       }
 
-      // Send order confirmation emails (don't block on this)
+      // Create Stripe payment intent
+      console.log("[Checkout] Creating payment intent...");
+      const paymentResponse = await fetch("/api/stripe/create-product-order-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: total,
+          orderId: result.orderId,
+          orderNumber: result.orderNumber,
+          vendorId: firstVendorId || "",
+          vendorName: items[0]?.vendorName || "SteppersLife Marketplace",
+          vendorStripeAccountId: vendorInfo?.stripeConnectedAccountId || null,
+          commissionPercent: vendorInfo?.commissionPercent || 15, // Default 15%
+          customerName: customerName.trim(),
+          customerEmail: customerEmail.trim().toLowerCase(),
+          items: orderItems.map(item => ({
+            name: item.productName,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        }),
+      });
+
+      if (!paymentResponse.ok) {
+        const errorData = await paymentResponse.json();
+        throw new Error(errorData.error || "Failed to initialize payment");
+      }
+
+      const paymentData = await paymentResponse.json();
+      console.log("[Checkout] Payment intent created:", paymentData.paymentIntentId);
+
+      setClientSecret(paymentData.clientSecret);
+      setPaymentIntentId(paymentData.paymentIntentId);
+      setStep("payment");
+      setIsSubmitting(false);
+    } catch (err: any) {
+      console.error("[Checkout] Setup failed:", err);
+      setError(err.message || "Failed to proceed to payment. Please try again.");
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePaymentSuccess = async () => {
+    console.log("[Checkout] Payment successful, updating order...");
+
+    try {
+      // Update order payment status
+      if (orderId && paymentIntentId) {
+        await updatePaymentStatus({
+          orderId: orderId,
+          paymentStatus: "PAID",
+          paymentMethod: "stripe",
+          stripePaymentIntentId: paymentIntentId,
+        });
+      }
+
+      // Send confirmation email
       try {
-        console.log("[Checkout] Sending confirmation emails...");
         const emailItems = items.map((item) => ({
           productId: item.productId,
           productName: item.productName,
@@ -233,14 +425,14 @@ export default function CheckoutPage() {
           variantName: item.variantName,
         }));
 
-        const emailResponse = await fetch("/api/send-product-order-confirmation", {
+        await fetch("/api/send-product-order-confirmation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             customerEmail: customerEmail.trim().toLowerCase(),
             customerName: customerName.trim(),
             customerPhone: customerPhone.trim() || undefined,
-            orderNumber: result.orderNumber,
+            orderNumber: orderNumber,
             items: emailItems,
             subtotal,
             shippingCost: estimatedShipping,
@@ -257,25 +449,39 @@ export default function CheckoutPage() {
             } : undefined,
             shippingMethod,
             pickupNotes: shippingMethod === "PICKUP" ? pickupLocation : undefined,
+            paymentMethod: "stripe",
           }),
         });
-        const emailResult = await emailResponse.json();
-        console.log("[Checkout] Email response:", emailResult);
       } catch (emailError) {
-        // Log but don't block order completion
-        console.error("[Checkout] Failed to send confirmation email:", emailError);
+        console.error("[Checkout] Email error:", emailError);
       }
 
-      // Clear cart and redirect to confirmation
-      console.log("[Checkout] Redirecting to confirmation page...");
+      // Clear cart and redirect
       clearCart();
-      router.push(`/marketplace/order-confirmation?orderNumber=${result.orderNumber}`);
+      router.push(`/marketplace/order-confirmation?orderNumber=${orderNumber}`);
     } catch (err: any) {
-      console.error("[Checkout] Order submission failed:", err);
-      const errorMessage = err.message || "Failed to place order. Please try again.";
-      setError(errorMessage);
-      setIsSubmitting(false);
+      console.error("[Checkout] Post-payment update failed:", err);
+      // Still redirect since payment succeeded
+      clearCart();
+      router.push(`/marketplace/order-confirmation?orderNumber=${orderNumber}`);
     }
+  };
+
+  const handlePaymentError = (errorMessage: string) => {
+    setError(errorMessage);
+  };
+
+  // Stripe Elements appearance
+  const appearance = {
+    theme: "stripe" as const,
+    variables: {
+      colorPrimary: "#8B5CF6",
+      colorBackground: "#ffffff",
+      colorText: "#1f2937",
+      colorDanger: "#ef4444",
+      fontFamily: "system-ui, sans-serif",
+      borderRadius: "8px",
+    },
   };
 
   return (
@@ -300,289 +506,279 @@ export default function CheckoutPage() {
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold text-foreground mb-8">Checkout</h1>
 
-          <form onSubmit={handleSubmitOrder}>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Left Column - Forms */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Contact Information */}
-                <div className="bg-card rounded-xl shadow-md p-6">
-                  <h2 className="text-xl font-semibold text-foreground mb-4">
-                    Contact Information
-                  </h2>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
-                        Full Name <span className="text-destructive">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                        placeholder="John Doe"
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                          Email <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          value={customerEmail}
-                          onChange={(e) => setCustomerEmail(e.target.value)}
-                          className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                          placeholder="john@example.com"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                          Phone
-                        </label>
-                        <input
-                          type="tel"
-                          value={customerPhone}
-                          onChange={(e) => setCustomerPhone(e.target.value)}
-                          className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                          placeholder="(555) 123-4567"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          {/* Step Indicator */}
+          <div className="flex items-center gap-4 mb-8">
+            <div className={`flex items-center gap-2 ${step === "info" ? "text-primary" : "text-muted-foreground"}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step === "info" ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}>1</div>
+              <span className="font-medium">Your Info</span>
+            </div>
+            <div className="flex-1 h-px bg-border" />
+            <div className={`flex items-center gap-2 ${step === "payment" ? "text-primary" : "text-muted-foreground"}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step === "payment" ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}>2</div>
+              <span className="font-medium">Payment</span>
+            </div>
+          </div>
 
-                {/* Shipping Method */}
-                <div className="bg-card rounded-xl shadow-md p-6">
-                  <h2 className="text-xl font-semibold text-foreground mb-4">
-                    Shipping Method
-                  </h2>
-                  <div className="space-y-3">
-                    <label
-                      className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
-                        shippingMethod === "DELIVERY"
-                          ? "border-primary bg-primary/5"
-                          : "border-input hover:border-primary/50"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="shippingMethod"
-                        value="DELIVERY"
-                        checked={shippingMethod === "DELIVERY"}
-                        onChange={() => setShippingMethod("DELIVERY")}
-                        className="w-4 h-4 text-primary"
-                      />
-                      <Truck className="w-6 h-6 text-primary" />
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">Standard Shipping</p>
-                        <p className="text-sm text-muted-foreground">
-                          Delivered to your address in 5-7 business days
-                        </p>
-                      </div>
-                      <span className="font-semibold text-foreground">$9.99</span>
-                    </label>
-
-                    <label
-                      className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
-                        shippingMethod === "PICKUP"
-                          ? "border-primary bg-primary/5"
-                          : "border-input hover:border-primary/50"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="shippingMethod"
-                        value="PICKUP"
-                        checked={shippingMethod === "PICKUP"}
-                        onChange={() => setShippingMethod("PICKUP")}
-                        className="w-4 h-4 text-primary"
-                      />
-                      <Store className="w-6 h-6 text-primary" />
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">Local Pickup</p>
-                        <p className="text-sm text-muted-foreground">
-                          Pick up from vendor location
-                        </p>
-                      </div>
-                      <span className="font-semibold text-success">Free</span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Shipping Address */}
-                {shippingMethod === "DELIVERY" && (
-                  <div className="bg-card rounded-xl shadow-md p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Forms */}
+            <div className="lg:col-span-2 space-y-6">
+              {step === "info" ? (
+                <form onSubmit={handleContinueToPayment}>
+                  {/* Contact Information */}
+                  <div className="bg-card rounded-xl shadow-md p-6 mb-6">
                     <h2 className="text-xl font-semibold text-foreground mb-4">
-                      Shipping Address
+                      Contact Information
                     </h2>
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                          Street Address <span className="text-destructive">*</span>
+                          Full Name <span className="text-destructive">*</span>
                         </label>
                         <input
                           type="text"
-                          value={address1}
-                          onChange={(e) => setAddress1(e.target.value)}
+                          value={customerName}
+                          onChange={(e) => setCustomerName(e.target.value)}
                           className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                          placeholder="123 Main Street"
-                          required={shippingMethod === "DELIVERY"}
+                          placeholder="John Doe"
+                          required
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                          Apt, Suite, etc. (optional)
-                        </label>
-                        <input
-                          type="text"
-                          value={address2}
-                          onChange={(e) => setAddress2(e.target.value)}
-                          className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                          placeholder="Apartment 4B"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        <div className="col-span-2 sm:col-span-1">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
                           <label className="block text-sm font-medium text-foreground mb-1">
-                            City <span className="text-destructive">*</span>
+                            Email <span className="text-destructive">*</span>
                           </label>
                           <input
-                            type="text"
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
+                            type="email"
+                            value={customerEmail}
+                            onChange={(e) => setCustomerEmail(e.target.value)}
                             className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                            placeholder="Chicago"
-                            required={shippingMethod === "DELIVERY"}
+                            placeholder="john@example.com"
+                            required
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-foreground mb-1">
-                            State <span className="text-destructive">*</span>
+                            Phone
                           </label>
                           <input
-                            type="text"
-                            value={state}
-                            onChange={(e) => setState(e.target.value)}
+                            type="tel"
+                            value={customerPhone}
+                            onChange={(e) => setCustomerPhone(e.target.value)}
                             className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                            placeholder="IL"
-                            required={shippingMethod === "DELIVERY"}
+                            placeholder="(555) 123-4567"
                           />
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-1">
-                            ZIP Code <span className="text-destructive">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            value={zipCode}
-                            onChange={(e) => setZipCode(e.target.value)}
-                            className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                            placeholder="60601"
-                            required={shippingMethod === "DELIVERY"}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                          Country
-                        </label>
-                        <select
-                          value={country}
-                          onChange={(e) => setCountry(e.target.value)}
-                          className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                        >
-                          <option value="United States">United States</option>
-                        </select>
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Pickup Location */}
-                {shippingMethod === "PICKUP" && (
-                  <div className="bg-card rounded-xl shadow-md p-6">
+                  {/* Shipping Method */}
+                  <div className="bg-card rounded-xl shadow-md p-6 mb-6">
                     <h2 className="text-xl font-semibold text-foreground mb-4">
-                      Pickup Information
+                      Shipping Method
                     </h2>
-                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-4">
-                      <p className="text-sm text-foreground">
-                        After placing your order, the vendor will contact you with pickup location details and available times.
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
-                        Preferred Pickup Location (optional)
+                    <div className="space-y-3">
+                      <label
+                        className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
+                          shippingMethod === "DELIVERY"
+                            ? "border-primary bg-primary/5"
+                            : "border-input hover:border-primary/50"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="shippingMethod"
+                          value="DELIVERY"
+                          checked={shippingMethod === "DELIVERY"}
+                          onChange={() => setShippingMethod("DELIVERY")}
+                          className="w-4 h-4 text-primary"
+                        />
+                        <Truck className="w-6 h-6 text-primary" />
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">Standard Shipping</p>
+                          <p className="text-sm text-muted-foreground">
+                            Delivered to your address in 5-7 business days
+                          </p>
+                        </div>
+                        <span className="font-semibold text-foreground">$9.99</span>
                       </label>
-                      <textarea
-                        value={pickupLocation}
-                        onChange={(e) => setPickupLocation(e.target.value)}
-                        className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                        placeholder="Any preferred location or notes for the vendor..."
-                        rows={3}
-                      />
+
+                      <label
+                        className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
+                          shippingMethod === "PICKUP"
+                            ? "border-primary bg-primary/5"
+                            : "border-input hover:border-primary/50"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="shippingMethod"
+                          value="PICKUP"
+                          checked={shippingMethod === "PICKUP"}
+                          onChange={() => setShippingMethod("PICKUP")}
+                          className="w-4 h-4 text-primary"
+                        />
+                        <Store className="w-6 h-6 text-primary" />
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">Local Pickup</p>
+                          <p className="text-sm text-muted-foreground">
+                            Pick up from vendor location
+                          </p>
+                        </div>
+                        <span className="font-semibold text-success">Free</span>
+                      </label>
                     </div>
                   </div>
-                )}
 
-                {/* Payment Notice */}
-                <div className="bg-card rounded-xl shadow-md p-6">
-                  <h2 className="text-xl font-semibold text-foreground mb-4">
-                    Payment
-                  </h2>
-                  <div className="bg-warning/10 dark:bg-warning/20 border border-warning/30 dark:border-warning/40 rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-medium text-foreground dark:text-warning">
-                          Pay When You Receive
-                        </p>
-                        <p className="text-sm text-warning dark:text-warning mt-1">
-                          Payment will be collected upon delivery or pickup. The vendor will contact you to arrange payment details.
-                        </p>
+                  {/* Shipping Address */}
+                  {shippingMethod === "DELIVERY" && (
+                    <div className="bg-card rounded-xl shadow-md p-6 mb-6">
+                      <h2 className="text-xl font-semibold text-foreground mb-4">
+                        Shipping Address
+                      </h2>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-foreground mb-1">
+                            Street Address <span className="text-destructive">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={address1}
+                            onChange={(e) => setAddress1(e.target.value)}
+                            className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                            placeholder="123 Main Street"
+                            required={shippingMethod === "DELIVERY"}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-foreground mb-1">
+                            Apt, Suite, etc. (optional)
+                          </label>
+                          <input
+                            type="text"
+                            value={address2}
+                            onChange={(e) => setAddress2(e.target.value)}
+                            className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                            placeholder="Apartment 4B"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                          <div className="col-span-2 sm:col-span-1">
+                            <label className="block text-sm font-medium text-foreground mb-1">
+                              City <span className="text-destructive">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={city}
+                              onChange={(e) => setCity(e.target.value)}
+                              className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                              placeholder="Chicago"
+                              required={shippingMethod === "DELIVERY"}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-foreground mb-1">
+                              State <span className="text-destructive">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={state}
+                              onChange={(e) => setState(e.target.value)}
+                              className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                              placeholder="IL"
+                              required={shippingMethod === "DELIVERY"}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-foreground mb-1">
+                              ZIP Code <span className="text-destructive">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={zipCode}
+                              onChange={(e) => setZipCode(e.target.value)}
+                              className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                              placeholder="60601"
+                              required={shippingMethod === "DELIVERY"}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-foreground mb-1">
+                            Country
+                          </label>
+                          <select
+                            value={country}
+                            onChange={(e) => setCountry(e.target.value)}
+                            className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                          >
+                            <option value="United States">United States</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  )}
 
-                {/* Cart Validation Errors */}
-                {validationErrors.length > 0 && (
-                  <div className="bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 dark:border-destructive/30 rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-medium text-destructive dark:text-destructive mb-2">
-                          Some items in your cart have issues:
-                        </p>
-                        <ul className="text-sm text-destructive dark:text-destructive space-y-1 list-disc list-inside">
-                          {validationErrors.map((err, i) => (
-                            <li key={i}>{err}</li>
-                          ))}
-                        </ul>
-                        <p className="text-sm text-destructive dark:text-destructive mt-2">
-                          Please remove or update these items to continue.
+                  {/* Pickup Location */}
+                  {shippingMethod === "PICKUP" && (
+                    <div className="bg-card rounded-xl shadow-md p-6 mb-6">
+                      <h2 className="text-xl font-semibold text-foreground mb-4">
+                        Pickup Information
+                      </h2>
+                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-4">
+                        <p className="text-sm text-foreground">
+                          After placing your order, the vendor will contact you with pickup location details and available times.
                         </p>
                       </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Error Message */}
-                {error && (
-                  <div className="bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 dark:border-destructive/30 text-destructive dark:text-destructive px-4 py-3 rounded-lg">
-                    <div className="flex items-start gap-2">
-                      <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-medium">Order Failed</p>
-                        <p className="text-sm mt-1">{error}</p>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                          Preferred Pickup Location (optional)
+                        </label>
+                        <textarea
+                          value={pickupLocation}
+                          onChange={(e) => setPickupLocation(e.target.value)}
+                          className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                          placeholder="Any preferred location or notes for the vendor..."
+                          rows={3}
+                        />
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Submit Button - Mobile */}
-                <div className="lg:hidden">
+                  {/* Cart Validation Errors */}
+                  {validationErrors.length > 0 && (
+                    <div className="bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 rounded-lg p-4 mb-6">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-destructive mb-2">
+                            Some items in your cart have issues:
+                          </p>
+                          <ul className="text-sm text-destructive space-y-1 list-disc list-inside">
+                            {validationErrors.map((err, i) => (
+                              <li key={i}>{err}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Error Message */}
+                  {error && (
+                    <div className="bg-destructive/10 dark:bg-destructive/15 border border-destructive/30 text-destructive px-4 py-3 rounded-lg mb-6">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium">Error</p>
+                          <p className="text-sm mt-1">{error}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Continue to Payment Button */}
                   <button
                     type="submit"
                     disabled={isSubmitting || validationErrors.length > 0}
@@ -591,129 +787,164 @@ export default function CheckoutPage() {
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        Placing Order...
+                        Processing...
                       </>
-                    ) : validationErrors.length > 0 ? (
-                      "Fix Cart Issues to Continue"
                     ) : (
-                      `Place Order - $${(total / 100).toFixed(2)}`
+                      <>
+                        <CreditCard className="w-5 h-5" />
+                        Continue to Payment
+                      </>
                     )}
                   </button>
-                </div>
-              </div>
+                </form>
+              ) : (
+                // Payment Step
+                <div className="bg-card rounded-xl shadow-md p-6">
+                  <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <CreditCard className="w-5 h-5" />
+                    Payment
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Complete your purchase securely. We accept credit cards and Cash App Pay.
+                  </p>
 
-              {/* Right Column - Order Summary */}
-              <div className="lg:col-span-1">
-                <div className="bg-card rounded-xl shadow-md p-6 sticky top-4">
-                  <h2 className="text-xl font-bold text-foreground mb-4">Order Summary</h2>
-
-                  {/* Cart Items */}
-                  <div className="space-y-4 mb-4 max-h-80 overflow-y-auto">
-                    {items.map((item, index) => (
-                      <div
-                        key={`${item.productId}-${item.variantId || "default"}-${index}`}
-                        className="flex gap-3 pb-4 border-b border-border"
-                      >
-                        {item.productImage ? (
-                          <div className="relative w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-                            <Image
-                              src={item.productImage}
-                              alt={item.productName}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Package className="w-6 h-6 text-muted-foreground" />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-foreground text-sm line-clamp-2">
-                            {item.productName}
-                          </h3>
-                          {/* Legacy variant display */}
-                          {item.variantName && (
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {item.variantName}
-                            </p>
-                          )}
-                          {/* New variation attributes display */}
-                          {item.variationAttributes && Object.keys(item.variationAttributes).length > 0 && (
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {Object.entries(item.variationAttributes)
-                                .map(([key, value]) => `${key}: ${value}`)
-                                .join(", ")}
-                            </p>
-                          )}
-                          <div className="flex justify-between items-center mt-2">
-                            <p className="text-sm text-muted-foreground">
-                              Qty: {item.quantity}
-                            </p>
-                            <p className="text-sm font-semibold text-foreground">
-                              ${((item.productPrice * item.quantity) / 100).toFixed(2)}
-                            </p>
-                          </div>
+                  {/* Error Message */}
+                  {error && (
+                    <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg mb-6">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium">Payment Failed</p>
+                          <p className="text-sm mt-1">{error}</p>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
 
-                  {/* Order Totals */}
-                  <div className="space-y-2 pt-4 border-t border-border">
-                    <div className="flex justify-between text-muted-foreground text-sm">
-                      <span>Subtotal</span>
-                      <span>${(subtotal / 100).toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-muted-foreground text-sm">
-                      <span>Shipping</span>
-                      <span>
-                        {shippingMethod === "PICKUP" ? (
-                          <span className="text-success">Free</span>
-                        ) : (
-                          `$${(estimatedShipping / 100).toFixed(2)}`
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-muted-foreground text-sm">
-                      <span>Tax (8.75%)</span>
-                      <span>${(tax / 100).toFixed(2)}</span>
-                    </div>
-                    <div className="border-t border-border pt-2 mt-2 flex justify-between text-lg font-bold text-foreground">
-                      <span>Total</span>
-                      <span className="text-primary">
-                        ${(total / 100).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Submit Button - Desktop */}
-                  <div className="hidden lg:block mt-6">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting || validationErrors.length > 0}
-                      className="w-full py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  {clientSecret && (
+                    <Elements
+                      stripe={stripePromise}
+                      options={{
+                        clientSecret,
+                        appearance,
+                      }}
                     >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Placing Order...
-                        </>
-                      ) : validationErrors.length > 0 ? (
-                        "Fix Cart Issues"
-                      ) : (
-                        "Place Order"
-                      )}
-                    </button>
-                  </div>
+                      <PaymentForm
+                        clientSecret={clientSecret}
+                        total={total}
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                        isProcessing={isProcessing}
+                        setIsProcessing={setIsProcessing}
+                      />
+                    </Elements>
+                  )}
 
-                  <p className="text-xs text-muted-foreground mt-4 text-center">
-                    By placing your order, you agree to our Terms of Service
-                  </p>
+                  {/* Back to Info Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep("info");
+                      setError("");
+                    }}
+                    disabled={isProcessing}
+                    className="w-full mt-4 py-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                  >
+                    ← Back to shipping info
+                  </button>
                 </div>
+              )}
+            </div>
+
+            {/* Right Column - Order Summary */}
+            <div className="lg:col-span-1">
+              <div className="bg-card rounded-xl shadow-md p-6 sticky top-4">
+                <h2 className="text-xl font-bold text-foreground mb-4">Order Summary</h2>
+
+                {/* Cart Items */}
+                <div className="space-y-4 mb-4 max-h-80 overflow-y-auto">
+                  {items.map((item, index) => (
+                    <div
+                      key={`${item.productId}-${item.variantId || "default"}-${index}`}
+                      className="flex gap-3 pb-4 border-b border-border"
+                    >
+                      {item.productImage ? (
+                        <div className="relative w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                          <Image
+                            src={item.productImage}
+                            alt={item.productName}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Package className="w-6 h-6 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-foreground text-sm line-clamp-2">
+                          {item.productName}
+                        </h3>
+                        {item.variantName && (
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {item.variantName}
+                          </p>
+                        )}
+                        {item.variationAttributes && Object.keys(item.variationAttributes).length > 0 && (
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {Object.entries(item.variationAttributes)
+                              .map(([key, value]) => `${key}: ${value}`)
+                              .join(", ")}
+                          </p>
+                        )}
+                        <div className="flex justify-between items-center mt-2">
+                          <p className="text-sm text-muted-foreground">
+                            Qty: {item.quantity}
+                          </p>
+                          <p className="text-sm font-semibold text-foreground">
+                            ${((item.productPrice * item.quantity) / 100).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Order Totals */}
+                <div className="space-y-2 pt-4 border-t border-border">
+                  <div className="flex justify-between text-muted-foreground text-sm">
+                    <span>Subtotal</span>
+                    <span>${(subtotal / 100).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-muted-foreground text-sm">
+                    <span>Shipping</span>
+                    <span>
+                      {shippingMethod === "PICKUP" ? (
+                        <span className="text-success">Free</span>
+                      ) : (
+                        `$${(estimatedShipping / 100).toFixed(2)}`
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-muted-foreground text-sm">
+                    <span>Tax (8.75%)</span>
+                    <span>${(tax / 100).toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-border pt-2 mt-2 flex justify-between text-lg font-bold text-foreground">
+                    <span>Total</span>
+                    <span className="text-primary">
+                      ${(total / 100).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-xs text-muted-foreground mt-4 text-center">
+                  By placing your order, you agree to our Terms of Service
+                </p>
               </div>
             </div>
-          </form>
+          </div>
         </main>
       </div>
       <PublicFooter />
