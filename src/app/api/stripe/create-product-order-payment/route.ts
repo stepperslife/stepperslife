@@ -167,7 +167,13 @@ export async function POST(request: NextRequest) {
       vendorReceives: isRealStripeAccount ? amount - applicationFeeAmount : 0,
     });
   } catch (error: any) {
-    console.error("[Stripe Product Order] Creation error:", error);
+    console.error("[Stripe Product Order] Creation error:", {
+      message: error.message,
+      type: error.type,
+      code: error.code,
+      statusCode: error.statusCode,
+      raw: error.raw?.message,
+    });
 
     // Handle specific Stripe errors
     if (error.type === "StripeInvalidRequestError") {
@@ -177,10 +183,22 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+      // Return the actual Stripe error for debugging
+      return NextResponse.json(
+        { error: `Stripe error: ${error.message}`, code: error.code },
+        { status: 400 }
+      );
+    }
+
+    if (error.type === "StripeConnectionError" || error.type === "StripeAPIError") {
+      return NextResponse.json(
+        { error: `Stripe connection issue: ${error.message}`, type: error.type },
+        { status: 503 }
+      );
     }
 
     return NextResponse.json(
-      { error: error.message || "Failed to create payment intent" },
+      { error: error.message || "Failed to create payment intent", type: error.type },
       { status: 500 }
     );
   }
