@@ -117,8 +117,15 @@ export async function POST(request: NextRequest) {
       receipt_email: customerEmail || undefined,
     };
 
-    // If vendor has Stripe Connect, set up split payment
-    if (vendorStripeAccountId) {
+    // If vendor has a REAL Stripe Connect account, set up split payment
+    // Real Stripe accounts start with 'acct_' and are typically 20+ characters
+    // Test/fake accounts like 'acct_test_xxx' should be skipped
+    const isRealStripeAccount = vendorStripeAccountId &&
+      vendorStripeAccountId.startsWith('acct_') &&
+      !vendorStripeAccountId.includes('_test_') &&
+      vendorStripeAccountId.length >= 20;
+
+    if (isRealStripeAccount) {
       // Split payment: platform keeps commission, vendor gets rest
       paymentIntentOptions.application_fee_amount = applicationFeeAmount;
       paymentIntentOptions.transfer_data = {
@@ -131,9 +138,12 @@ export async function POST(request: NextRequest) {
         vendorReceives: amount - applicationFeeAmount,
       });
     } else {
-      // No connected account - platform receives full amount
+      // No connected account or test account - platform receives full amount
       // Vendor will be paid out manually via vendorPayouts
-      console.log("[Stripe Product Order] No connected account - platform collects full amount");
+      console.log("[Stripe Product Order] No valid connected account - platform collects full amount", {
+        vendorStripeAccountId,
+        isRealStripeAccount,
+      });
     }
 
     // Create Payment Intent
@@ -150,9 +160,9 @@ export async function POST(request: NextRequest) {
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
       chargeType: "PRODUCT_ORDER",
-      splitPayment: !!vendorStripeAccountId,
-      applicationFeeAmount: vendorStripeAccountId ? applicationFeeAmount : 0,
-      vendorReceives: vendorStripeAccountId ? amount - applicationFeeAmount : 0,
+      splitPayment: isRealStripeAccount,
+      applicationFeeAmount: isRealStripeAccount ? applicationFeeAmount : 0,
+      vendorReceives: isRealStripeAccount ? amount - applicationFeeAmount : 0,
     });
   } catch (error: any) {
     console.error("[Stripe Product Order] Creation error:", error);
