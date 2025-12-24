@@ -110,8 +110,10 @@ export async function POST(request: NextRequest) {
     const paymentIntentOptions: Stripe.PaymentIntentCreateParams = {
       amount: amount,
       currency: currency,
-      // Enable Card and Cash App Pay
-      payment_method_types: ["card", "cashapp"],
+      // Enable automatic payment methods - Stripe will determine which methods are available
+      automatic_payment_methods: {
+        enabled: true,
+      },
       metadata: paymentMetadata,
       description: `${vendorName || "SteppersLife Marketplace"} - Product Order${orderNumber ? ` #${orderNumber}` : ""}`.trim(),
       receipt_email: customerEmail || undefined,
