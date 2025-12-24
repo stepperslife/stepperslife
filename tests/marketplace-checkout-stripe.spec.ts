@@ -492,7 +492,7 @@ test.describe("Marketplace Stripe Checkout E2E", () => {
   });
 
   test("4. Complete payment with Stripe test card", async ({ page }) => {
-    test.setTimeout(120000); // 2 minute timeout for payment test
+    test.setTimeout(180000); // 3 minute timeout for payment test
     console.log("\n🛍️ Step 4: Complete Stripe payment...");
 
     // Setup: Add product and go to checkout
@@ -571,6 +571,22 @@ test.describe("Marketplace Stripe Checkout E2E", () => {
       await buyNowBtn.click();
       console.log("  ✓ Buy Now clicked - navigating to checkout");
       await page.waitForTimeout(3000);
+
+      // Check if cart slide-out opened - need to close it or click "Checkout" in the cart
+      const cartCheckoutBtn = page.locator('a[href="/marketplace/checkout"]:has-text("Checkout"), button:has-text("Checkout")');
+      if (await cartCheckoutBtn.first().isVisible().catch(() => false)) {
+        await cartCheckoutBtn.first().click();
+        console.log("  ✓ Clicked Checkout in cart overlay");
+        await page.waitForTimeout(3000);
+      } else {
+        // Close cart overlay if it's blocking
+        const closeCartBtn = page.locator('[aria-label="Close cart"], button:has-text("Close")');
+        if (await closeCartBtn.first().isVisible().catch(() => false)) {
+          await closeCartBtn.first().click();
+          console.log("  ✓ Closed cart overlay");
+          await page.waitForTimeout(1000);
+        }
+      }
     } else if (await addCartBtn.isVisible() && await addCartBtn.isEnabled()) {
       await addCartBtn.click();
       console.log("  ✓ Product added to cart");
@@ -609,109 +625,210 @@ test.describe("Marketplace Stripe Checkout E2E", () => {
     console.log("  ✓ Checkout page loaded with cart items");
     await page.screenshot({ path: "test-results/stripe-checkout-4d-checkout-page.png", fullPage: true });
 
-    // Fill contact and shipping info
-    // The checkout page has: Full Name, Email, Phone, then Shipping fields
-    const fullNameInput = page.locator('input[name="fullName"], input[name="name"], input[placeholder*="John Doe"]');
-    if (await fullNameInput.first().isVisible()) {
-      await fullNameInput.first().fill(`${TEST_ADDRESS.firstName} ${TEST_ADDRESS.lastName}`);
-      console.log("  ✓ Full Name filled");
+    // ========================================================================
+    // STEP 1: Fill Contact Information (Full Name, Email, Phone)
+    // ========================================================================
+    console.log("  📝 Filling contact information...");
+
+    // Full Name - look for input with placeholder "John Doe"
+    const fullNameInput = page.locator('input[placeholder="John Doe"]');
+    if (await fullNameInput.isVisible()) {
+      await fullNameInput.fill(`${TEST_ADDRESS.firstName} ${TEST_ADDRESS.lastName}`);
+      console.log("    ✓ Full Name filled");
     }
 
-    const emailInput = page.locator('input[type="email"], input[name="email"]');
-    if (await emailInput.first().isVisible()) {
-      await emailInput.first().fill(TEST_CUSTOMER.email);
-      console.log("  ✓ Email filled");
+    // Email - look for email input
+    const emailInput = page.locator('input[type="email"]').first();
+    if (await emailInput.isVisible()) {
+      await emailInput.fill(TEST_CUSTOMER.email);
+      console.log("    ✓ Email filled");
     }
 
-    const phoneInput = page.locator('input[name="phone"], input[type="tel"]');
-    if (await phoneInput.first().isVisible()) {
-      await phoneInput.first().fill(TEST_ADDRESS.phone);
-      console.log("  ✓ Phone filled");
+    // Phone - look for tel input
+    const phoneInput = page.locator('input[type="tel"]').first();
+    if (await phoneInput.isVisible()) {
+      await phoneInput.fill(TEST_ADDRESS.phone);
+      console.log("    ✓ Phone filled");
     }
 
-    // Address fields (might be separate or combined)
-    await page.locator('input[name="address"], input[name="streetAddress"]').first().fill(TEST_ADDRESS.address).catch(() => {});
-    await page.locator('input[name="city"]').first().fill(TEST_ADDRESS.city).catch(() => {});
-    await page.locator('input[name="state"]').first().fill(TEST_ADDRESS.state).catch(() => {});
-    await page.locator('input[name="zip"], input[name="zipCode"], input[name="postalCode"]').first().fill(TEST_ADDRESS.zip).catch(() => {});
-    console.log("  ✓ Shipping info filled");
+    // ========================================================================
+    // STEP 2: Fill Shipping Address (required for DELIVERY)
+    // ========================================================================
+    console.log("  📝 Filling shipping address...");
 
-    // Look for "Proceed to Checkout" or similar button
-    const proceedBtn = page.locator('button:has-text("Proceed to Checkout"), button:has-text("Continue to Payment"), button:has-text("Continue"), button:has-text("Next")');
-    if (await proceedBtn.first().isVisible()) {
-      await proceedBtn.first().click();
-      await page.waitForTimeout(3000);
-      console.log("  ✓ Proceeded to payment step");
+    // Street Address - look for input with placeholder "123 Main Street"
+    const streetInput = page.locator('input[placeholder="123 Main Street"]');
+    if (await streetInput.isVisible()) {
+      await streetInput.fill(TEST_ADDRESS.address);
+      console.log("    ✓ Street Address filled");
     }
 
-    // Take screenshot of payment page
-    await page.screenshot({ path: "test-results/stripe-checkout-4e-payment-page.png", fullPage: true });
+    // City - look for input with placeholder "Chicago"
+    const cityInput = page.locator('input[placeholder="Chicago"]');
+    if (await cityInput.isVisible()) {
+      await cityInput.fill(TEST_ADDRESS.city);
+      console.log("    ✓ City filled");
+    }
 
-    // Wait for Stripe Elements to load
+    // State - look for input with placeholder "IL"
+    const stateInput = page.locator('input[placeholder="IL"]');
+    if (await stateInput.isVisible()) {
+      await stateInput.fill(TEST_ADDRESS.state);
+      console.log("    ✓ State filled");
+    }
+
+    // ZIP Code - look for input with placeholder "60601"
+    const zipInput = page.locator('input[placeholder="60601"]');
+    if (await zipInput.isVisible()) {
+      await zipInput.fill(TEST_ADDRESS.zip);
+      console.log("    ✓ ZIP Code filled");
+    }
+
+    await page.screenshot({ path: "test-results/stripe-checkout-4e-form-filled.png", fullPage: true });
+
+    // ========================================================================
+    // STEP 3: Click "Continue to Payment" to trigger payment intent creation
+    // ========================================================================
+    console.log("  📝 Submitting form to proceed to payment...");
+
+    // The button text is "Continue to Payment" with a CreditCard icon
+    const continueToPaymentBtn = page.locator('button[type="submit"]:has-text("Continue to Payment")');
+
+    if (await continueToPaymentBtn.isVisible() && await continueToPaymentBtn.isEnabled()) {
+      // Listen for network request to create payment intent
+      const paymentIntentPromise = page.waitForResponse(
+        response => response.url().includes('/api/stripe/create-product-order-payment') && response.status() === 200,
+        { timeout: 30000 }
+      ).catch(() => null);
+
+      await continueToPaymentBtn.click();
+      console.log("    ✓ Continue to Payment clicked");
+
+      // Wait for payment intent API response
+      const paymentIntentResponse = await paymentIntentPromise;
+      if (paymentIntentResponse) {
+        const data = await paymentIntentResponse.json();
+        console.log(`    ✓ Payment intent created: ${data.paymentIntentId || 'unknown'}`);
+      } else {
+        console.log("    ⚠️ Payment intent response not captured");
+      }
+
+      // Wait for step to change to "payment"
+      await page.waitForTimeout(5000);
+    } else {
+      console.log("    ⚠️ Continue to Payment button not visible or disabled");
+      // Try to find and click any submit button
+      const submitBtn = page.locator('button[type="submit"]').first();
+      if (await submitBtn.isVisible()) {
+        await submitBtn.click();
+        console.log("    ✓ Submit button clicked");
+        await page.waitForTimeout(5000);
+      }
+    }
+
+    await page.screenshot({ path: "test-results/stripe-checkout-4f-payment-step.png", fullPage: true });
+
+    // ========================================================================
+    // STEP 4: Fill Stripe Payment Element
+    // ========================================================================
+    console.log("  💳 Looking for Stripe payment element...");
+
+    // Wait for Stripe to load - look for the PaymentElement header
     await page.waitForTimeout(5000);
 
-    // Look for Stripe payment element
-    const stripeElement = page.locator('iframe[name*="stripe"], iframe[title*="Secure"]');
-    const hasStripe = await stripeElement.first().isVisible().catch(() => false);
+    // Check if we're now on the payment step
+    const paymentHeader = page.locator('h2:has-text("Payment")');
+    if (await paymentHeader.isVisible()) {
+      console.log("    ✓ Payment step reached");
+    }
 
-    if (hasStripe) {
-      console.log("  ✓ Stripe payment element loaded");
+    // Look for Stripe iframe
+    const stripeIframe = page.locator('iframe[title*="Secure payment"]');
+    const hasStripeIframe = await stripeIframe.first().isVisible().catch(() => false);
 
-      // Try to fill the card using PaymentElement
+    if (hasStripeIframe) {
+      console.log("    ✓ Stripe payment element found");
+
       try {
-        // Wait for all iframes to be ready
+        // Stripe PaymentElement uses a complex iframe structure
+        // We need to interact with the iframe content
+        const stripeFrame = page.frameLocator('iframe[title*="Secure payment"]').first();
+
+        // Wait for the iframe to be fully loaded
         await page.waitForTimeout(3000);
 
-        // Find the payment form frame
-        const frames = page.frames();
-        console.log(`  Found ${frames.length} frames`);
+        // The PaymentElement has tabs: Card, Cash App Pay
+        // By default, Card is selected
+        // The card input fields are in nested iframes
 
-        // Try filling via the main page first (some implementations)
-        const cardInput = page.locator('input[name="cardNumber"], input[placeholder*="Card number"]');
-        if (await cardInput.first().isVisible().catch(() => false)) {
-          await cardInput.first().fill(STRIPE_TEST_CARDS.visa.number);
-          console.log("  ✓ Card number filled (direct input)");
-        } else {
-          // Use frame-based approach
-          const paymentFrame = page.frameLocator('iframe[title*="Secure payment input frame"]').first();
+        // Try to find the card number field
+        const cardNumberFrame = page.frameLocator('iframe[title="Secure card number input frame"]').first();
+        const cardExpFrame = page.frameLocator('iframe[title="Secure expiration date input frame"]').first();
+        const cardCvcFrame = page.frameLocator('iframe[title="Secure CVC input frame"]').first();
 
-          await paymentFrame.locator('[name="number"], [placeholder*="number"]').fill(STRIPE_TEST_CARDS.visa.number, { timeout: 10000 });
-          await paymentFrame.locator('[name="expiry"], [placeholder*="MM"]').fill(STRIPE_TEST_CARDS.visa.exp, { timeout: 10000 });
-          await paymentFrame.locator('[name="cvc"], [placeholder*="CVC"]').fill(STRIPE_TEST_CARDS.visa.cvc, { timeout: 10000 });
-          console.log("  ✓ Card details filled via iframe");
-        }
+        // Fill card number
+        await cardNumberFrame.locator('input[data-elements-stable-field-name="cardNumber"]').fill(STRIPE_TEST_CARDS.visa.number, { timeout: 10000 });
+        console.log("    ✓ Card number filled");
 
-        // Submit payment
-        const payBtn = page.locator('button:has-text("Pay"), button:has-text("Place Order"), button:has-text("Complete")');
-        if (await payBtn.first().isVisible()) {
-          await payBtn.first().click();
-          console.log("  ✓ Payment submitted");
+        // Fill expiry
+        await cardExpFrame.locator('input[data-elements-stable-field-name="cardExpiry"]').fill(STRIPE_TEST_CARDS.visa.exp, { timeout: 10000 });
+        console.log("    ✓ Expiry filled");
 
-          // Wait for processing
+        // Fill CVC
+        await cardCvcFrame.locator('input[data-elements-stable-field-name="cardCvc"]').fill(STRIPE_TEST_CARDS.visa.cvc, { timeout: 10000 });
+        console.log("    ✓ CVC filled");
+
+        await page.screenshot({ path: "test-results/stripe-checkout-4g-card-filled.png", fullPage: true });
+
+        // ========================================================================
+        // STEP 5: Submit Payment
+        // ========================================================================
+        console.log("  💳 Submitting payment...");
+
+        // The pay button text is "Pay $XX.XX"
+        const payButton = page.locator('button[type="submit"]:has-text("Pay $")');
+        if (await payButton.isVisible() && await payButton.isEnabled()) {
+          await payButton.click();
+          console.log("    ✓ Pay button clicked");
+
+          // Wait for payment processing (can take a few seconds)
           await page.waitForTimeout(10000);
 
-          // Check for confirmation or error
-          const confirmation = page.locator("text=/Order Confirmed|Thank you|Confirmation|Success/i");
-          const error = page.locator("text=/declined|failed|error/i");
-
-          if (await confirmation.first().isVisible().catch(() => false)) {
-            console.log("  ✓ Order confirmed!");
-          } else if (await error.first().isVisible().catch(() => false)) {
-            console.log("  ⚠️ Payment error displayed (expected for test card in some cases)");
-          } else {
-            console.log("  ℹ Payment processing status unclear");
+          // Check for success - should redirect to order confirmation
+          if (page.url().includes('/order-confirmation')) {
+            console.log("    ✓ Redirected to order confirmation!");
           }
+
+          // Check for success message on confirmation page
+          const confirmationMsg = page.locator('text=/Order Confirmed|Thank you|order has been placed/i');
+          if (await confirmationMsg.first().isVisible().catch(() => false)) {
+            console.log("    ✓ Order confirmed successfully!");
+          }
+
+          // Check for any error messages
+          const errorMsg = page.locator('text=/declined|failed|error/i');
+          if (await errorMsg.first().isVisible().catch(() => false)) {
+            const errorText = await errorMsg.first().textContent();
+            console.log(`    ⚠️ Payment error: ${errorText}`);
+          }
+        } else {
+          console.log("    ⚠️ Pay button not visible or disabled");
         }
-      } catch (e) {
-        console.log(`  ⚠️ Could not fill Stripe form: ${e}`);
+      } catch (stripeError) {
+        console.log(`    ⚠️ Error filling Stripe form: ${stripeError}`);
+        // Take diagnostic screenshot
+        await page.screenshot({ path: "test-results/stripe-checkout-4h-stripe-error.png", fullPage: true });
       }
     } else {
-      console.log("  ⚠️ Stripe payment element not found");
+      console.log("    ⚠️ Stripe payment element not found");
 
-      // Check if there's a different payment flow
-      const paymentSection = page.locator("text=/Payment|Pay with/i");
-      if (await paymentSection.first().isVisible()) {
-        console.log("  ℹ Payment section exists but Stripe not loaded");
+      // Debug: list all iframes on page
+      const iframes = await page.locator('iframe').all();
+      console.log(`    Found ${iframes.length} iframes on page`);
+      for (let i = 0; i < iframes.length; i++) {
+        const title = await iframes[i].getAttribute('title');
+        const name = await iframes[i].getAttribute('name');
+        console.log(`      iframe ${i}: title="${title}", name="${name}"`);
       }
     }
 

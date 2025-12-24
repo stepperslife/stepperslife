@@ -22,6 +22,9 @@ export interface CartItem {
   productPrice: number; // Base/variant price + options price modifier
   productImage?: string;
   quantity: number;
+  // Vendor info for split payments
+  vendorId?: Id<"vendors">;
+  vendorName?: string;
   // Legacy variant system
   variantId?: string;
   variantName?: string;

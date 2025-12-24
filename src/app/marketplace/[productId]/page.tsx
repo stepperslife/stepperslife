@@ -271,6 +271,8 @@ export default function ProductDetailPage() {
         productPrice: finalPrice,
         productImage: newSelectedVariation.imageUrl || product.primaryImage,
         quantity,
+        vendorId: product.vendorId,
+        vendorName: product.vendor?.storeName,
         variationId: newSelectedVariation._id,
         variationAttributes: newSelectedVariation.attributes,
         variationSku: newSelectedVariation.sku,
@@ -305,6 +307,8 @@ export default function ProductDetailPage() {
       productPrice: finalPrice, // Includes base price + options
       productImage,
       quantity,
+      vendorId: product.vendorId,
+      vendorName: product.vendor?.storeName,
       ...(variant && {
         variantId: variant.id,
         variantName: variant.name,
@@ -333,6 +337,8 @@ export default function ProductDetailPage() {
         productPrice: finalPrice,
         productImage: newSelectedVariation.imageUrl || product.primaryImage,
         quantity,
+        vendorId: product.vendorId,
+        vendorName: product.vendor?.storeName,
         variationId: newSelectedVariation._id,
         variationAttributes: newSelectedVariation.attributes,
         variationSku: newSelectedVariation.sku,
@@ -368,6 +374,8 @@ export default function ProductDetailPage() {
       productPrice: finalPrice, // Includes base price + options
       productImage,
       quantity,
+      vendorId: product.vendorId,
+      vendorName: product.vendor?.storeName,
       ...(variant && {
         variantId: variant.id,
         variantName: variant.name,
