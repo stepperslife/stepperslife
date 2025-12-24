@@ -11,6 +11,13 @@ function generateIdempotencyKey(orderId: string, amount: number): string {
 // Validate environment variables
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
+// Debug: Log key info (not the actual key)
+console.log("[Stripe Product Order] Key check:", {
+  hasKey: !!STRIPE_SECRET_KEY,
+  keyLength: STRIPE_SECRET_KEY?.length || 0,
+  keyStart: STRIPE_SECRET_KEY?.substring(0, 8) || "none",
+});
+
 if (!STRIPE_SECRET_KEY) {
   console.error("[Stripe Product Order] CRITICAL: STRIPE_SECRET_KEY is not set!");
 }
