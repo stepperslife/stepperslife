@@ -66,3 +66,8 @@ logs/
 .eslintrc.json
 tsconfig.json
 jest.config.js
+
+# Backup directories
+STORES-STEPPERSLIFE-BACKUP-*/
+stepperslife11111/
+docs-archive/
