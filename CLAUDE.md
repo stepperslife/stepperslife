@@ -90,3 +90,24 @@ Use IDE MCP for:
 - **Payments**: Stripe
 - **Email**: Resend
 - **Hosting**: Vercel
+
+# Infrastructure Migration - CRITICAL
+
+## Deployment Platform: COOLIFY ONLY
+- **ALL websites are migrating from Docker to Coolify**
+- **NOT using Vercel** - Coolify handles everything
+- **NEVER create Docker containers directly** - always go through Coolify
+- Coolify is the central deployment and management system
+
+## Coolify Best Practices
+1. All applications managed via Coolify dashboard (http://72.60.28.175:8000)
+2. Use Coolify's built-in features: SSL, domains, environment variables, health checks
+3. Deploy via Coolify UI or API - never  or 
+4. Let Coolify handle container lifecycle, networking, and reverse proxy (Traefik)
+5. Store sources in /opt/ directories for local deployments
+6. Use Coolify's environment variable management for secrets
+
+## Server Details
+- **VPS**: 72.60.28.175
+- **Coolify Dashboard**: http://72.60.28.175:8000
+- **Coolify manages**: All web applications, databases, services
