@@ -63,8 +63,6 @@ logs/
 .editorconfig
 .npmrc
 .prettierrc
-.eslintrc.json
-tsconfig.json
 jest.config.js
 
 # Backup directories
