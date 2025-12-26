@@ -26,6 +26,14 @@ Use Playwright MCP for:
 - Automated regression testing
 - Screenshot comparisons
 
+### Convex MCP
+Use Convex MCP for:
+- Querying tables and data in the self-hosted Convex instance
+- Running read-only queries against the database
+- Checking function specs and logs
+- Managing environment variables
+- Viewing deployment status
+
 ### Context7 MCP
 Use Context7 MCP for:
 - Looking up Convex documentation
@@ -79,12 +87,21 @@ Use IDE MCP for:
 
 ## Key URLs
 - Production: https://stepperslife.com
-- Convex Dashboard: https://dashboard.convex.dev/d/prod:expert-vulture-775
+- Convex Dashboard (Self-Hosted): https://convex-dashboard.agistaffers.com
+- Convex API (Self-Hosted): https://convex-api.agistaffers.com
+- Convex Site Proxy: https://convex.agistaffers.com
 - GitHub: https://github.com/stepperslife/stepperslife
+
+## Self-Hosted Convex Configuration
+- **Backend URL**: https://convex-api.agistaffers.com
+- **Dashboard URL**: https://convex-dashboard.agistaffers.com
+- **Instance Name**: stepperslife
+- **Admin Key**: stepperslife|01789e57e6410c3a3df3f517bf54fcb13a6a5bf591aff0888fda1b722df66312e86741572d
+- **Coolify Service**: http://72.60.28.175:8000/project/p8kk884c0sc84o008gkk0o04/production/service/xgkksok48sgg8o4g4ggo808c
 
 ## Tech Stack Quick Reference
 - **Framework**: Next.js 15 (App Router)
-- **Database**: Convex (real-time backend)
+- **Database**: Convex (self-hosted on 72.60.28.175)
 - **Auth**: Custom JWT with RSA keys
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Payments**: Stripe
