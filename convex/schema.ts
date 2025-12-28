@@ -2112,6 +2112,7 @@ export default defineSchema({
         sold: v.number(), // Rooms booked
         maxGuests: v.number(),
         description: v.optional(v.string()),
+        version: v.optional(v.number()), // For optimistic locking (prevent race conditions)
       })
     ),
 
@@ -2172,8 +2173,13 @@ export default defineSchema({
       v.literal("PENDING"), // Awaiting payment
       v.literal("CONFIRMED"), // Payment complete
       v.literal("CANCELLED"), // Guest cancelled
-      v.literal("REFUNDED") // Refunded
+      v.literal("REFUNDED"), // Refunded
+      v.literal("EXPIRED") // Hold expired without payment
     ),
+
+    // Hold system (for preventing race conditions)
+    holdToken: v.optional(v.string()), // Unique token for this hold
+    expiresAt: v.optional(v.number()), // When the hold expires (15 min)
 
     // Optional: Link to ticket order (for bundled bookings)
     orderId: v.optional(v.id("orders")),
@@ -2190,5 +2196,6 @@ export default defineSchema({
     .index("by_package", ["packageId"])
     .index("by_user", ["userId"])
     .index("by_status", ["status"])
-    .index("by_confirmation", ["confirmationNumber"]),
+    .index("by_confirmation", ["confirmationNumber"])
+    .index("by_expires", ["expiresAt"]), // For cleanup cron
 });

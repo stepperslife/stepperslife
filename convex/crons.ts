@@ -20,6 +20,17 @@ crons.interval(
 );
 
 /**
+ * Expire Hotel Reservations
+ * Runs every 5 minutes to expire PENDING hotel reservations that have passed their 15-minute hold
+ * This releases room inventory back to availability when checkout is abandoned
+ */
+crons.interval(
+  "expire-hotel-reservations",
+  { minutes: 5 }, // Check every 5 minutes
+  internal.hotels.hotelCron.expireHotelReservations
+);
+
+/**
  * Class/Event Reminders
  * Runs every hour to send reminders for classes/events starting in the next 24 hours
  */

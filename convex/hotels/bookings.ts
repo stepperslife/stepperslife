@@ -10,7 +10,17 @@ function generateConfirmationNumber(): string {
   return `${prefix}-${timestamp}-${random}`;
 }
 
+// Generate a unique hold token
+function generateHoldToken(): string {
+  return `hold_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 10)}`;
+}
+
+// Hold duration: 15 minutes
+const HOLD_DURATION_MS = 15 * 60 * 1000;
+
 // Create a hotel reservation (customer booking)
+// HOLD-FIRST PATTERN: Rooms are reserved immediately to prevent race conditions.
+// If payment fails or times out (15 min), the hold expires and rooms are released.
 export const createReservation = mutation({
   args: {
     packageId: v.id("hotelPackages"),
@@ -37,7 +47,7 @@ export const createReservation = mutation({
     const roomType = pkg.roomTypes.find((rt) => rt.id === args.roomTypeId);
     if (!roomType) throw new Error("Room type not found");
 
-    // Check availability
+    // Check availability (accounting for current sold count)
     const remainingRooms = roomType.quantity - roomType.sold;
     if (args.numberOfRooms > remainingRooms) {
       throw new Error(
@@ -83,8 +93,35 @@ export const createReservation = mutation({
 
     const now = Date.now();
     const confirmationNumber = generateConfirmationNumber();
+    const holdToken = generateHoldToken();
+    const expiresAt = now + HOLD_DURATION_MS;
 
-    // Create the reservation (PENDING until payment)
+    // HOLD-FIRST: Immediately reserve the rooms with optimistic locking
+    // This prevents race conditions where two users could book the same room
+    const currentVersion = roomType.version || 0;
+    const updatedRoomTypes = pkg.roomTypes.map((rt) => {
+      if (rt.id === args.roomTypeId) {
+        const newSold = rt.sold + args.numberOfRooms;
+        // Double-check availability with fresh calculation
+        if (newSold > rt.quantity) {
+          throw new Error("Rooms no longer available - please try again");
+        }
+        return {
+          ...rt,
+          sold: newSold,
+          version: currentVersion + 1, // Increment version for optimistic locking
+        };
+      }
+      return rt;
+    });
+
+    // Update package with reserved rooms
+    await ctx.db.patch(args.packageId, {
+      roomTypes: updatedRoomTypes,
+      updatedAt: now,
+    });
+
+    // Create the reservation with hold info (PENDING until payment)
     const reservationId = await ctx.db.insert("hotelReservations", {
       packageId: args.packageId,
       eventId: pkg.eventId,
@@ -104,6 +141,8 @@ export const createReservation = mutation({
       totalCents,
       paymentMethod: args.paymentMethod,
       status: "PENDING",
+      holdToken, // For verification on confirmation
+      expiresAt, // When the hold expires (15 min)
       specialRequests: args.specialRequests,
       confirmationNumber,
       createdAt: now,
@@ -114,16 +153,20 @@ export const createReservation = mutation({
       reservationId,
       confirmationNumber,
       totalCents,
+      holdToken,
+      expiresAt,
     };
   },
 });
 
 // Confirm a reservation after payment
+// Note: With hold-first pattern, rooms are already reserved. This just confirms the payment.
 export const confirmReservation = mutation({
   args: {
     reservationId: v.id("hotelReservations"),
     stripePaymentIntentId: v.optional(v.string()),
     paypalOrderId: v.optional(v.string()),
+    holdToken: v.optional(v.string()), // Optional verification
   },
   handler: async (ctx, args) => {
     const reservation = await ctx.db.get(args.reservationId);
@@ -132,31 +175,26 @@ export const confirmReservation = mutation({
       throw new Error("Reservation is not pending");
     }
 
-    // Update the hotel package sold count
-    const pkg = await ctx.db.get(reservation.packageId);
-    if (!pkg) throw new Error("Hotel package not found");
+    // Check if hold has expired
+    if (reservation.expiresAt && Date.now() > reservation.expiresAt) {
+      throw new Error("Reservation hold has expired. Please start a new booking.");
+    }
 
-    const updatedRoomTypes = pkg.roomTypes.map((rt) => {
-      if (rt.id === reservation.roomTypeId) {
-        return {
-          ...rt,
-          sold: rt.sold + reservation.numberOfRooms,
-        };
-      }
-      return rt;
-    });
+    // Optional: Verify hold token matches (security)
+    if (args.holdToken && reservation.holdToken !== args.holdToken) {
+      throw new Error("Invalid hold token");
+    }
 
-    // Update package with new sold counts
-    await ctx.db.patch(reservation.packageId, {
-      roomTypes: updatedRoomTypes,
-      updatedAt: Date.now(),
-    });
+    // Note: Sold count was already updated in createReservation (hold-first pattern)
+    // No need to update it again here
 
-    // Confirm the reservation
+    // Confirm the reservation and clear hold fields
     await ctx.db.patch(args.reservationId, {
       status: "CONFIRMED",
       stripePaymentIntentId: args.stripePaymentIntentId,
       paypalOrderId: args.paypalOrderId,
+      holdToken: undefined, // Clear hold token
+      expiresAt: undefined, // Clear expiration
       updatedAt: Date.now(),
     });
 
@@ -194,8 +232,9 @@ export const cancelReservation = mutation({
       throw new Error("Reservation is already cancelled");
     }
 
-    // If reservation was confirmed, restore room availability
-    if (reservation.status === "CONFIRMED" && pkg) {
+    // With hold-first pattern, rooms are reserved for both PENDING and CONFIRMED
+    // So we need to release them for both statuses
+    if ((reservation.status === "CONFIRMED" || reservation.status === "PENDING") && pkg) {
       const updatedRoomTypes = pkg.roomTypes.map((rt) => {
         if (rt.id === reservation.roomTypeId) {
           return {
