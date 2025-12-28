@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Tag, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { Calendar, MapPin, Tag, ChevronLeft, ChevronRight, CalendarDays, Hotel } from "lucide-react";
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 
@@ -22,6 +22,8 @@ interface Event {
   categories?: string[];
   imageUrl?: string;
   isFeatured?: boolean;
+  hasHotels?: boolean;
+  hotelCount?: number;
 }
 
 interface EventsGridProps {
@@ -218,18 +220,30 @@ export function EventsGrid({ events }: EventsGridProps) {
                         loading="lazy"
                         unoptimized={true}
                       />
-                      {event.isFeatured && (
-                        <motion.div
-                          className="absolute right-3 top-3"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", delay: 0.3 }}
-                        >
-                          <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                      {/* Top Right Badges */}
+                      <div className="absolute right-3 top-3 flex flex-col gap-2">
+                        {event.isFeatured && (
+                          <motion.span
+                            className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", delay: 0.3 }}
+                          >
                             Featured
-                          </span>
-                        </motion.div>
-                      )}
+                          </motion.span>
+                        )}
+                        {event.hasHotels && (
+                          <motion.span
+                            className="flex items-center gap-1 rounded-full bg-blue-500 px-3 py-1 text-xs font-semibold text-white"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", delay: 0.4 }}
+                          >
+                            <Hotel className="w-3 h-3" />
+                            Hotels
+                          </motion.span>
+                        )}
+                      </div>
                       <div className="absolute left-3 top-3">
                         <motion.span
                           className={`rounded-full px-3 py-1 text-xs font-semibold ${

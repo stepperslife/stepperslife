@@ -66,7 +66,7 @@ export const getPublishedEvents = query({
       events = events.slice(0, args.limit);
     }
 
-    // Convert storage IDs to URLs for images
+    // Convert storage IDs to URLs for images and add hotel info
     const eventsWithImageUrls = await Promise.all(
       events.map(async (event) => {
         let imageUrl = event.imageUrl;
@@ -77,9 +77,18 @@ export const getPublishedEvents = query({
           imageUrl = url ?? undefined;
         }
 
+        // Check for hotel packages
+        const hotelPackages = await ctx.db
+          .query("hotelPackages")
+          .withIndex("by_event", (q) => q.eq("eventId", event._id))
+          .filter((q) => q.eq(q.field("isActive"), true))
+          .collect();
+
         return {
           ...event,
           imageUrl,
+          hasHotels: hotelPackages.length > 0,
+          hotelCount: hotelPackages.length,
         };
       })
     );
