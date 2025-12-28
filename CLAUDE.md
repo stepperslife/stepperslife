@@ -87,17 +87,17 @@ Use IDE MCP for:
 
 ## Key URLs
 - Production: https://stepperslife.com
-- Convex Dashboard (Self-Hosted): https://convex-dashboard.agistaffers.com
-- Convex API (Self-Hosted): https://convex-api.agistaffers.com
-- Convex Site Proxy: https://convex.agistaffers.com
+- Convex Backend (Self-Hosted): https://convex.toolboxhosting.com
+- Convex Dashboard (Self-Hosted): https://convex-dashboard.toolboxhosting.com
 - GitHub: https://github.com/stepperslife/stepperslife
 
 ## Self-Hosted Convex Configuration
-- **Backend URL**: https://convex-api.agistaffers.com
-- **Dashboard URL**: https://convex-dashboard.agistaffers.com
-- **Instance Name**: stepperslife
-- **Admin Key**: stepperslife|01789e57e6410c3a3df3f517bf54fcb13a6a5bf591aff0888fda1b722df66312e86741572d
-- **Coolify Service**: http://72.60.28.175:8000/project/p8kk884c0sc84o008gkk0o04/production/service/xgkksok48sgg8o4g4ggo808c
+- **Backend URL**: https://convex.toolboxhosting.com
+- **Dashboard URL**: https://convex-dashboard.toolboxhosting.com
+- **Admin Key**: convex-self-hosted|018c7b48e18cbc911401e58fa631d48dc57329a6bb7bdab63ddc04afc7e0a2bdf6e1a6345e
+- **Coolify Service UUID**: ygcsk808ss80844kwgk8444k
+- **Backend Container**: backend-ygcsk808ss80844kwgk8444k
+- **Dashboard Container**: dashboard-ygcsk808ss80844kwgk8444k
 
 ## Tech Stack Quick Reference
 - **Framework**: Next.js 15 (App Router)
