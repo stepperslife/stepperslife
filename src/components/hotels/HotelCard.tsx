@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import RoomTypeSelector from "./RoomTypeSelector";
+// RoomTypeSelector no longer used - booking happens on /events/[eventId]/hotels page
 
 interface RoomType {
   id: string;
@@ -74,7 +74,6 @@ interface HotelCardProps {
 export default function HotelCard({ hotel, eventId, index }: HotelCardProps) {
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showRoomSelector, setShowRoomSelector] = useState(false);
 
   // Calculate starting price
   const startingPrice = Math.min(
@@ -250,7 +249,7 @@ export default function HotelCard({ hotel, eventId, index }: HotelCardProps) {
                 {/* Book Now Button */}
                 <button
                   type="button"
-                  onClick={() => setShowRoomSelector(true)}
+                  onClick={() => router.push(`/events/${eventId}/hotels`)}
                   disabled={!hasAvailability}
                   className={`w-full py-3 rounded-lg font-medium transition-colors ${
                     hasAvailability
@@ -272,14 +271,6 @@ export default function HotelCard({ hotel, eventId, index }: HotelCardProps) {
         </AnimatePresence>
       </motion.div>
 
-      {/* Room Selector Modal */}
-      {showRoomSelector && (
-        <RoomTypeSelector
-          hotel={hotel}
-          eventId={eventId}
-          onClose={() => setShowRoomSelector(false)}
-        />
-      )}
     </>
   );
 }
