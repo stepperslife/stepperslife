@@ -40,6 +40,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -340,7 +341,7 @@ export default function HotelBookingPage() {
                       setCheckOutDate(format(new Date(hotel.checkOutDate), "yyyy-MM-dd"));
                     }}
                     disabled={!hasAvailability}
-                    className={`w-full text-left border rounded-lg p-4 transition-all ${
+                    className={`w-full text-left border rounded-lg overflow-hidden transition-all ${
                       isSelected
                         ? "border-primary bg-primary/5 ring-2 ring-primary"
                         : hasAvailability
@@ -348,13 +349,34 @@ export default function HotelBookingPage() {
                           : "border-border bg-muted/50 opacity-60 cursor-not-allowed"
                     }`}
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Hotel className="w-6 h-6 text-primary" />
-                        </div>
+                    {/* Hotel Image */}
+                    {hotel.images && hotel.images.length > 0 ? (
+                      <div className="relative w-full h-48 bg-muted">
+                        <Image
+                          src={hotel.images[0]}
+                          alt={hotel.hotelName}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 800px"
+                        />
+                        {!hasAvailability && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <span className="px-4 py-2 bg-destructive text-white rounded-full text-sm font-medium">
+                              Sold Out
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="w-full h-32 bg-muted flex items-center justify-center">
+                        <Hotel className="w-12 h-12 text-muted-foreground/50" />
+                      </div>
+                    )}
+
+                    <div className="p-4">
+                      <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="font-semibold text-foreground">{hotel.hotelName}</h3>
+                          <h3 className="font-semibold text-foreground text-lg">{hotel.hotelName}</h3>
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
                             {hotel.city}, {hotel.state}
@@ -366,38 +388,45 @@ export default function HotelBookingPage() {
                               ))}
                             </div>
                           )}
-                          {hotel.amenities && hotel.amenities.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {hotel.amenities.slice(0, 4).map((amenityId) => {
-                                const Icon = AMENITY_ICONS[amenityId] || Hotel;
-                                const label = AMENITY_LABELS[amenityId] || amenityId;
-                                return (
-                                  <span
-                                    key={amenityId}
-                                    className="flex items-center gap-1 text-xs text-muted-foreground"
-                                  >
-                                    <Icon className="w-3 h-3" />
-                                    {label}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-muted-foreground">From</p>
+                          <p className="text-xl font-bold text-primary">
+                            ${(startingPrice / 100).toFixed(0)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">/night</p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm text-muted-foreground">From</p>
-                        <p className="text-xl font-bold text-primary">
-                          ${(startingPrice / 100).toFixed(0)}
+
+                      {hotel.amenities && hotel.amenities.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {hotel.amenities.slice(0, 4).map((amenityId) => {
+                            const Icon = AMENITY_ICONS[amenityId] || Hotel;
+                            const label = AMENITY_LABELS[amenityId] || amenityId;
+                            return (
+                              <span
+                                key={amenityId}
+                                className="flex items-center gap-1 px-2 py-1 bg-muted rounded text-xs text-muted-foreground"
+                              >
+                                <Icon className="w-3 h-3" />
+                                {label}
+                              </span>
+                            );
+                          })}
+                          {hotel.amenities.length > 4 && (
+                            <span className="px-2 py-1 text-xs text-muted-foreground">
+                              +{hotel.amenities.length - 4} more
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {hotel.description && (
+                        <p className="text-sm text-muted-foreground mt-3 line-clamp-2">
+                          {hotel.description}
                         </p>
-                        <p className="text-xs text-muted-foreground">/night</p>
-                      </div>
+                      )}
                     </div>
-                    {hotel.description && (
-                      <p className="text-sm text-muted-foreground mt-3 line-clamp-2">
-                        {hotel.description}
-                      </p>
-                    )}
                   </button>
                 );
               })}
@@ -409,16 +438,58 @@ export default function HotelBookingPage() {
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-card border border-border rounded-lg p-6"
+              className="bg-card border border-border rounded-lg overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm">
-                  2
+              {/* Image Gallery Header */}
+              {selectedHotel.images && selectedHotel.images.length > 0 && (
+                <div className="relative h-64 md:h-80 bg-muted">
+                  <Image
+                    src={selectedHotel.images[0]}
+                    alt={selectedHotel.hotelName}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 900px"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <h3 className="text-2xl font-bold">{selectedHotel.hotelName}</h3>
+                    <p className="text-white/80 flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {selectedHotel.address}, {selectedHotel.city}, {selectedHotel.state}
+                    </p>
+                  </div>
+                  {/* Thumbnail Strip */}
+                  {selectedHotel.images.length > 1 && (
+                    <div className="absolute bottom-4 right-4 flex gap-2">
+                      {selectedHotel.images.slice(1, 4).map((img, idx) => (
+                        <div
+                          key={idx}
+                          className="w-16 h-12 rounded border-2 border-white/50 overflow-hidden"
+                        >
+                          <Image
+                            src={img}
+                            alt={`${selectedHotel.hotelName} ${idx + 2}`}
+                            width={64}
+                            height={48}
+                            className="object-cover w-full h-full"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <h2 className="text-lg font-semibold">Select Room & Dates</h2>
-              </div>
+              )}
 
-              {/* Date Selection */}
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    2
+                  </div>
+                  <h2 className="text-lg font-semibold">Select Room & Dates</h2>
+                </div>
+
+                {/* Date Selection */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium mb-1">Check-in</label>
@@ -575,6 +646,7 @@ export default function HotelBookingPage() {
                   )}
                 </div>
               )}
+              </div>
             </motion.section>
           )}
 

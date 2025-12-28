@@ -49,6 +49,10 @@ export const createTestHotels = internalMutation({
           "Experience luxury in the heart of downtown Chicago. Our 4-star hotel offers stunning views of the Magnificent Mile, world-class dining, and first-class amenities for the discerning traveler.",
         amenities: ["wifi", "parking", "breakfast", "pool", "gym", "restaurant"],
         starRating: 4,
+        images: [
+          "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=800&fit=crop",
+          "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&h=600&fit=crop",
+        ],
         roomTypes: [
           {
             id: "marriott-std-king",
@@ -115,6 +119,10 @@ export const createTestHotels = internalMutation({
           "Comfortable and convenient accommodations in the heart of Atlanta. Perfect for event attendees looking for value without sacrificing quality. Free hot breakfast included!",
         amenities: ["wifi", "parking", "breakfast"],
         starRating: 3,
+        images: [
+          "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1200&h=800&fit=crop",
+          "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=600&fit=crop",
+        ],
         roomTypes: [
           {
             id: "hampton-std-queen",
@@ -172,6 +180,10 @@ export const createTestHotels = internalMutation({
           "Smart, simple, and affordable. Our Holiday Inn Express offers everything you need for a comfortable stay - including complimentary breakfast and an indoor pool.",
         amenities: ["wifi", "breakfast", "pool"],
         starRating: 3,
+        images: [
+          "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1200&h=800&fit=crop",
+          "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800&h=600&fit=crop",
+        ],
         roomTypes: [
           {
             id: "hiex-standard",
@@ -266,6 +278,10 @@ export const seedTestHotels = mutation({
           "Experience luxury in the heart of downtown Chicago. Our 4-star hotel offers stunning views of the Magnificent Mile, world-class dining, and first-class amenities for the discerning traveler.",
         amenities: ["wifi", "parking", "breakfast", "pool", "gym", "restaurant"],
         starRating: 4,
+        images: [
+          "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=800&fit=crop",
+          "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&h=600&fit=crop",
+        ],
         roomTypes: [
           {
             id: "marriott-std-king",
@@ -332,6 +348,10 @@ export const seedTestHotels = mutation({
           "Comfortable and convenient accommodations in the heart of Atlanta. Perfect for event attendees looking for value without sacrificing quality. Free hot breakfast included!",
         amenities: ["wifi", "parking", "breakfast"],
         starRating: 3,
+        images: [
+          "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1200&h=800&fit=crop",
+          "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=600&fit=crop",
+        ],
         roomTypes: [
           {
             id: "hampton-std-queen",
@@ -389,6 +409,10 @@ export const seedTestHotels = mutation({
           "Smart, simple, and affordable. Our Holiday Inn Express offers everything you need for a comfortable stay - including complimentary breakfast and an indoor pool.",
         amenities: ["wifi", "breakfast", "pool"],
         starRating: 3,
+        images: [
+          "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1200&h=800&fit=crop",
+          "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800&h=600&fit=crop",
+        ],
         roomTypes: [
           {
             id: "hiex-standard",
@@ -429,6 +453,53 @@ export const seedTestHotels = mutation({
       message: `Created ${createdHotels.length} test hotel packages`,
       hotels: createdHotels,
       eventsUsed: events.map((e) => ({ id: e._id, name: e.name })),
+    };
+  },
+});
+
+/**
+ * Update existing hotels with images
+ * Run with: npx convex run hotels/seed:updateHotelImages
+ */
+export const updateHotelImages = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const hotelImages: Record<string, string[]> = {
+      "Marriott Downtown Chicago": [
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&h=600&fit=crop",
+      ],
+      "Hampton Inn & Suites Atlanta": [
+        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&h=600&fit=crop",
+      ],
+      "Holiday Inn Express Detroit": [
+        "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1595576508898-0ad5c879a061?w=800&h=600&fit=crop",
+      ],
+    };
+
+    const updated: string[] = [];
+
+    for (const [hotelName, images] of Object.entries(hotelImages)) {
+      const hotels = await ctx.db
+        .query("hotelPackages")
+        .filter((q) => q.eq(q.field("hotelName"), hotelName))
+        .collect();
+
+      for (const hotel of hotels) {
+        await ctx.db.patch(hotel._id, { images, updatedAt: Date.now() });
+        updated.push(`${hotelName} (${hotel._id})`);
+      }
+    }
+
+    return {
+      success: true,
+      message: `Updated ${updated.length} hotels with images`,
+      hotels: updated,
     };
   },
 });

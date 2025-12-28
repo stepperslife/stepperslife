@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Id } from "@/convex/_generated/dataModel";
 import {
   Hotel,
@@ -41,6 +42,7 @@ interface HotelPackage {
   description?: string;
   amenities?: string[];
   starRating?: number;
+  images?: string[];
   roomTypes: RoomType[];
   checkInDate: number;
   checkOutDate: number;
@@ -98,38 +100,54 @@ export default function HotelCard({ hotel, eventId, index }: HotelCardProps) {
         transition={{ duration: 0.3, delay: index * 0.1 }}
         className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-card"
       >
+        {/* Hotel Image */}
+        {hotel.images && hotel.images.length > 0 ? (
+          <div className="relative w-full h-40 bg-muted">
+            <Image
+              src={hotel.images[0]}
+              alt={hotel.hotelName}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 400px"
+            />
+            {!hasAvailability && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <span className="px-3 py-1 bg-destructive text-white rounded-full text-xs font-medium">
+                  Sold Out
+                </span>
+              </div>
+            )}
+            {/* Price Badge */}
+            <div className="absolute top-3 right-3 bg-card/90 backdrop-blur-sm px-3 py-1 rounded-lg">
+              <p className="text-xs text-muted-foreground">From</p>
+              <p className="font-bold text-primary">${(startingPrice / 100).toFixed(0)}<span className="text-xs font-normal">/night</span></p>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full h-32 bg-muted flex items-center justify-center">
+            <Hotel className="w-10 h-10 text-muted-foreground/50" />
+          </div>
+        )}
+
         {/* Main Content */}
         <div className="p-4">
           <div className="flex items-start justify-between mb-3">
-            <div className="flex items-start gap-3">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Hotel className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground">{hotel.hotelName}</h4>
-                <p className="text-sm text-muted-foreground flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  {hotel.address}, {hotel.city}, {hotel.state}
-                </p>
-                {hotel.starRating && (
-                  <div className="flex items-center gap-0.5 mt-1">
-                    {Array.from({ length: hotel.starRating }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-3 h-3 fill-warning text-warning"
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground">From</p>
-              <p className="text-xl font-bold text-primary">
-                ${(startingPrice / 100).toFixed(0)}
+            <div>
+              <h4 className="font-semibold text-foreground">{hotel.hotelName}</h4>
+              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                {hotel.city}, {hotel.state}
               </p>
-              <p className="text-xs text-muted-foreground">/night</p>
+              {hotel.starRating && (
+                <div className="flex items-center gap-0.5 mt-1">
+                  {Array.from({ length: hotel.starRating }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-3 h-3 fill-warning text-warning"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
