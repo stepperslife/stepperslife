@@ -1,5 +1,6 @@
 import { internalMutation, mutation } from "../_generated/server";
 import { requireAdmin } from "../lib/auth";
+import { Id } from "../_generated/dataModel";
 
 /**
  * Seed test hotel packages for viewing the hotel UI
@@ -27,8 +28,9 @@ export const createTestHotels = internalMutation({
     const createdHotels: string[] = [];
 
     // Hotel 1: Marriott Downtown (Luxury) - attached to first event
-    if (events[0]) {
+    if (events[0] && events[0].organizerId) {
       const event = events[0];
+      const organizerId = event.organizerId as Id<"users">;
       const checkInDate = event.startDate
         ? event.startDate - 24 * 60 * 60 * 1000 // Day before event
         : now + 7 * 24 * 60 * 60 * 1000;
@@ -38,7 +40,7 @@ export const createTestHotels = internalMutation({
 
       const hotelId = await ctx.db.insert("hotelPackages", {
         eventId: event._id,
-        organizerId: event.organizerId,
+        organizerId,
         hotelName: "Marriott Downtown Chicago",
         address: "540 N Michigan Ave",
         city: "Chicago",
@@ -92,8 +94,9 @@ export const createTestHotels = internalMutation({
     }
 
     // Hotel 2: Hampton Inn (Mid-Range) - attached to second event
-    if (events[1]) {
+    if (events[1] && events[1].organizerId) {
       const event = events[1];
+      const organizerId = event.organizerId as Id<"users">;
       const checkInDate = event.startDate
         ? event.startDate - 24 * 60 * 60 * 1000
         : now + 14 * 24 * 60 * 60 * 1000;
@@ -103,7 +106,7 @@ export const createTestHotels = internalMutation({
 
       const hotelId = await ctx.db.insert("hotelPackages", {
         eventId: event._id,
-        organizerId: event.organizerId,
+        organizerId,
         hotelName: "Hampton Inn & Suites Atlanta",
         address: "225 Peachtree St NE",
         city: "Atlanta",
@@ -148,8 +151,9 @@ export const createTestHotels = internalMutation({
     }
 
     // Hotel 3: Holiday Inn Express (Budget-Friendly) - attached to third event
-    if (events[2]) {
+    if (events[2] && events[2].organizerId) {
       const event = events[2];
+      const organizerId = event.organizerId as Id<"users">;
       const checkInDate = event.startDate
         ? event.startDate - 24 * 60 * 60 * 1000
         : now + 21 * 24 * 60 * 60 * 1000;
@@ -159,7 +163,7 @@ export const createTestHotels = internalMutation({
 
       const hotelId = await ctx.db.insert("hotelPackages", {
         eventId: event._id,
-        organizerId: event.organizerId,
+        organizerId,
         hotelName: "Holiday Inn Express Detroit",
         address: "1020 Washington Blvd",
         city: "Detroit",
@@ -241,8 +245,9 @@ export const seedTestHotels = mutation({
     const createdHotels: string[] = [];
 
     // Hotel 1: Marriott Downtown (Luxury) - attached to first event
-    if (events[0]) {
+    if (events[0] && events[0].organizerId) {
       const event = events[0];
+      const organizerId = event.organizerId as Id<"users">;
       const checkInDate = event.startDate
         ? event.startDate - 24 * 60 * 60 * 1000
         : now + 7 * 24 * 60 * 60 * 1000;
@@ -252,7 +257,7 @@ export const seedTestHotels = mutation({
 
       const hotelId = await ctx.db.insert("hotelPackages", {
         eventId: event._id,
-        organizerId: event.organizerId,
+        organizerId,
         hotelName: "Marriott Downtown Chicago",
         address: "540 N Michigan Ave",
         city: "Chicago",
@@ -306,8 +311,9 @@ export const seedTestHotels = mutation({
     }
 
     // Hotel 2: Hampton Inn (Mid-Range) - attached to second event
-    if (events[1]) {
+    if (events[1] && events[1].organizerId) {
       const event = events[1];
+      const organizerId = event.organizerId as Id<"users">;
       const checkInDate = event.startDate
         ? event.startDate - 24 * 60 * 60 * 1000
         : now + 14 * 24 * 60 * 60 * 1000;
@@ -317,7 +323,7 @@ export const seedTestHotels = mutation({
 
       const hotelId = await ctx.db.insert("hotelPackages", {
         eventId: event._id,
-        organizerId: event.organizerId,
+        organizerId,
         hotelName: "Hampton Inn & Suites Atlanta",
         address: "225 Peachtree St NE",
         city: "Atlanta",
@@ -362,8 +368,9 @@ export const seedTestHotels = mutation({
     }
 
     // Hotel 3: Holiday Inn Express (Budget-Friendly) - attached to third event
-    if (events[2]) {
+    if (events[2] && events[2].organizerId) {
       const event = events[2];
+      const organizerId = event.organizerId as Id<"users">;
       const checkInDate = event.startDate
         ? event.startDate - 24 * 60 * 60 * 1000
         : now + 21 * 24 * 60 * 60 * 1000;
@@ -373,7 +380,7 @@ export const seedTestHotels = mutation({
 
       const hotelId = await ctx.db.insert("hotelPackages", {
         eventId: event._id,
-        organizerId: event.organizerId,
+        organizerId,
         hotelName: "Holiday Inn Express Detroit",
         address: "1020 Washington Blvd",
         city: "Detroit",
