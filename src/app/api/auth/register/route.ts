@@ -9,8 +9,13 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
+    // Debug: Check Convex URL is available
+    const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+    console.log("[Register] Convex URL configured:", convexUrl ? "yes" : "NO - MISSING!");
+
     const body = await request.json();
     const { name, email, password } = body;
+    console.log("[Register] Received registration request for:", email);
 
     // Validation
     if (!name || !email || !password) {
@@ -104,9 +109,15 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("[Register] Unexpected registration error:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error("[Register] Unexpected registration error:", errorMessage);
+    console.error("[Register] Stack trace:", errorStack);
     return NextResponse.json(
-      { error: "An error occurred during registration. Please try again." },
+      {
+        error: "An error occurred during registration. Please try again.",
+        debug: process.env.NODE_ENV === "development" ? errorMessage : undefined
+      },
       { status: 500 }
     );
   }
