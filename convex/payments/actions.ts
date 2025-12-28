@@ -13,6 +13,7 @@ if (!STRIPE_SECRET_KEY) {
 
 const stripe = STRIPE_SECRET_KEY
   ? new Stripe(STRIPE_SECRET_KEY, {
+      // @ts-expect-error Using future API version
       apiVersion: "2025-10-29.clover",
     })
   : null;

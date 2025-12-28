@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { ArrowLeft, Calendar, MapPin, FileText, Users, Info, Ticket } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, FileText, Users, Info, Ticket, Check, AlertCircle, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { ImageUpload } from "@/components/upload/ImageUpload";
-// Ticket editor removed - tickets created on dedicated page after event creation
 import { WelcomePopup } from "@/components/organizer/WelcomePopup";
 import { getTimezoneFromLocation, getTimezoneName } from "@/lib/timezone";
 import { Id } from "@/convex/_generated/dataModel";
@@ -15,7 +14,44 @@ import { toDate } from "date-fns-tz";
 import { format as formatDate } from "date-fns";
 import { EVENT_CATEGORIES } from "@/lib/constants";
 
-type EventType = "TICKETED_EVENT" | "FREE_EVENT" | "SAVE_THE_DATE"; // | "BALLROOM_EVENT"; // Ballroom feature hidden
+type EventType = "TICKETED_EVENT" | "FREE_EVENT" | "SAVE_THE_DATE" | "SEATED_EVENT";
+
+// Step definitions for each event type
+type StepId = "basic" | "datetime" | "location" | "seating" | "tickets" | "details" | "review";
+
+interface StepConfig {
+  id: StepId;
+  title: string;
+  description: string;
+}
+
+// Get steps based on event type - adaptive wizard flow
+function getStepsForEventType(eventType: EventType): StepConfig[] {
+  const basicInfo: StepConfig = { id: "basic", title: "Basic Information", description: "Tell us about your event" };
+  const dateTime: StepConfig = { id: "datetime", title: "Date & Time", description: "When is your event happening?" };
+  const location: StepConfig = { id: "location", title: "Location", description: "Where is your event taking place?" };
+  const seating: StepConfig = { id: "seating", title: "Seating Layout", description: "Design your table seating" };
+  const tickets: StepConfig = { id: "tickets", title: "Tickets", description: "Set up your ticket tiers" };
+  const details: StepConfig = { id: "details", title: "Details", description: "Final touches for your event" };
+  const review: StepConfig = { id: "review", title: "Review & Launch", description: "Review and publish your event" };
+
+  switch (eventType) {
+    case "SAVE_THE_DATE":
+      // Minimal: Basic Info → Date + City/State → Review
+      return [basicInfo, dateTime, location, review];
+    case "FREE_EVENT":
+      // Standard without tickets: Basic → Date → Location → Details → Review
+      return [basicInfo, dateTime, location, details, review];
+    case "TICKETED_EVENT":
+      // Full with tickets: Basic → Date → Location → Tickets → Details → Review
+      return [basicInfo, dateTime, location, tickets, details, review];
+    case "SEATED_EVENT":
+      // Full with seating: Basic → Date → Location → Seating → Tickets → Details → Review
+      return [basicInfo, dateTime, location, seating, tickets, details, review];
+    default:
+      return [basicInfo, dateTime, location, details, review];
+  }
+}
 
 interface TicketTier {
   id: string;
@@ -25,6 +61,28 @@ interface TicketTier {
   quantity: string;
 }
 
+// Seating section interface for Quick Setup
+interface SeatingSection {
+  id: string;
+  name: string;
+  tableShape: "ROUND" | "RECTANGULAR" | "SQUARE";
+  tableCount: number;
+  seatsPerTable: number;
+}
+
+// Ticket tier with section linking for seated events
+interface TicketTierForm {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  quantity: string;
+  linkedSectionId?: string;
+  sellMode?: "INDIVIDUAL" | "TABLE" | "BOTH";
+  earlyBirdPrice?: string;
+  earlyBirdUntil?: string;
+}
+
 export default function CreateEventPage() {
   const router = useRouter();
 
@@ -32,7 +90,7 @@ export default function CreateEventPage() {
   // The Convex mutations will verify authentication
   // This page is protected by middleware/layout guards
 
-  const [step, setStep] = useState(1);
+  const [stepIndex, setStepIndex] = useState(0);
 
   // Basic Information
   const [eventName, setEventName] = useState("");
@@ -59,10 +117,30 @@ export default function CreateEventPage() {
   const [uploadedImageId, setUploadedImageId] = useState<Id<"_storage"> | null>(null);
   const [doorPrice, setDoorPrice] = useState("");
 
-  // Ticket Tiers removed - will be created on dedicated tickets page
+  // Seating sections (for SEATED_EVENT)
+  const [seatingSections, setSeatingSections] = useState<SeatingSection[]>([
+    { id: "1", name: "VIP Section", tableShape: "ROUND", tableCount: 10, seatsPerTable: 8 }
+  ]);
+  const [skipSeatingSetup, setSkipSeatingSetup] = useState(false);
+
+  // Ticket Tiers (for TICKETED_EVENT and SEATED_EVENT)
+  const [ticketTiers, setTicketTiers] = useState<TicketTierForm[]>([
+    { id: "1", name: "", description: "", price: "", quantity: "", sellMode: "BOTH" }
+  ]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+
+  // Compute steps based on event type
+  const steps = useMemo(() => getStepsForEventType(eventType), [eventType]);
+  const currentStep = steps[stepIndex];
+  const totalSteps = steps.length;
+
+  // Calculate total seating capacity
+  const totalSeatingCapacity = seatingSections.reduce(
+    (sum, section) => sum + section.tableCount * section.seatsPerTable,
+    0
+  );
 
   // Queries for welcome popup logic
   const currentUser = useQuery(api.users.queries.getCurrentUser);
@@ -212,7 +290,98 @@ export default function CreateEventPage() {
     }
   };
 
-  const totalSteps = 4;
+  // Helper to add a new seating section
+  const addSeatingSection = () => {
+    const newId = String(seatingSections.length + 1);
+    setSeatingSections([
+      ...seatingSections,
+      { id: newId, name: `Section ${newId}`, tableShape: "ROUND", tableCount: 5, seatsPerTable: 8 }
+    ]);
+  };
+
+  // Helper to remove a seating section
+  const removeSeatingSection = (id: string) => {
+    if (seatingSections.length > 1) {
+      setSeatingSections(seatingSections.filter(s => s.id !== id));
+    }
+  };
+
+  // Helper to update a seating section
+  const updateSeatingSection = (id: string, updates: Partial<SeatingSection>) => {
+    setSeatingSections(seatingSections.map(s => s.id === id ? { ...s, ...updates } : s));
+  };
+
+  // Helper to add a new ticket tier
+  const addTicketTier = () => {
+    const newId = String(ticketTiers.length + 1);
+    setTicketTiers([
+      ...ticketTiers,
+      { id: newId, name: "", description: "", price: "", quantity: "", sellMode: "BOTH" }
+    ]);
+  };
+
+  // Helper to remove a ticket tier
+  const removeTicketTier = (id: string) => {
+    if (ticketTiers.length > 1) {
+      setTicketTiers(ticketTiers.filter(t => t.id !== id));
+    }
+  };
+
+  // Helper to update a ticket tier
+  const updateTicketTier = (id: string, updates: Partial<TicketTierForm>) => {
+    setTicketTiers(ticketTiers.map(t => t.id === id ? { ...t, ...updates } : t));
+  };
+
+  // Validation for review step
+  const getValidationChecks = () => {
+    const checks: { label: string; passed: boolean; required: boolean }[] = [];
+
+    // All event types need basic info
+    checks.push({ label: "Event name", passed: !!eventName, required: true });
+    checks.push({ label: "Event date", passed: !!startDate, required: true });
+    checks.push({ label: "City and state", passed: !!(city && state), required: true });
+
+    // Free and ticketed events need full address (save the date doesn't)
+    if (eventType !== "SAVE_THE_DATE") {
+      checks.push({ label: "Venue address", passed: !!(venueName || address), required: false });
+    }
+
+    // Event image for all except save the date
+    if (eventType !== "SAVE_THE_DATE") {
+      checks.push({ label: "Event image", passed: !!uploadedImageId, required: eventType !== "FREE_EVENT" });
+    }
+
+    // Ticket tiers for ticketed and seated events
+    if (eventType === "TICKETED_EVENT" || eventType === "SEATED_EVENT") {
+      const hasValidTier = ticketTiers.some(t => t.name && t.price && parseFloat(t.price) > 0);
+      checks.push({ label: "At least one ticket tier", passed: hasValidTier, required: true });
+    }
+
+    // Seating layout for seated events
+    if (eventType === "SEATED_EVENT") {
+      const hasSeating = skipSeatingSetup || seatingSections.some(s => s.tableCount > 0);
+      checks.push({ label: "Seating layout configured", passed: hasSeating, required: true });
+
+      if (!skipSeatingSetup) {
+        // Check if all sections are linked to tiers
+        const unlinkedSections = seatingSections.filter(
+          s => !ticketTiers.some(t => t.linkedSectionId === s.id)
+        );
+        checks.push({
+          label: "All sections linked to ticket tiers",
+          passed: unlinkedSections.length === 0,
+          required: false
+        });
+      }
+    }
+
+    return checks;
+  };
+
+  const canPublish = () => {
+    const checks = getValidationChecks();
+    return checks.filter(c => c.required).every(c => c.passed);
+  };
 
   return (
     <div className="min-h-screen bg-muted">
@@ -229,25 +398,45 @@ export default function CreateEventPage() {
 
           <h1 className="text-3xl font-bold text-foreground">Create New Event</h1>
           <p className="text-muted-foreground mt-1">
-            Step {step} of {totalSteps}
+            Step {stepIndex + 1} of {totalSteps}: {currentStep?.title}
           </p>
 
           {/* Progress Bar */}
           <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-primary transition-all duration-300"
-              style={{ width: `${(step / totalSteps) * 100}%` }}
+              style={{ width: `${((stepIndex + 1) / totalSteps) * 100}%` }}
             />
           </div>
 
+          {/* Step Indicators */}
+          <div className="mt-4 flex gap-2 flex-wrap">
+            {steps.map((s, idx) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => idx < stepIndex && setStepIndex(idx)}
+                className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                  idx === stepIndex
+                    ? "bg-primary text-white"
+                    : idx < stepIndex
+                    ? "bg-primary/20 text-primary hover:bg-primary/30 cursor-pointer"
+                    : "bg-muted text-muted-foreground cursor-not-allowed"
+                }`}
+                disabled={idx > stepIndex}
+              >
+                {s.title}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="bg-card rounded-lg shadow-md p-6 md:p-8">
-          {/* Step 1: Basic Information */}
-          {step === 1 && (
+          {/* Step: Basic Information */}
+          {currentStep?.id === "basic" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-2">Basic Information</h2>
@@ -291,12 +480,18 @@ export default function CreateEventPage() {
                       ? {
                           type: "TICKETED_EVENT" as EventType,
                           label: "Ticketed Event",
-                          desc: "Sell tickets",
+                          desc: "Sell tickets online",
                           icon: "🎫",
                         }
                       : null,
-                    // Ballroom feature hidden
-                    // canCreateTicketedEvents ? { type: "BALLROOM_EVENT" as EventType, label: "Ballroom Event", desc: "Table seating & tickets", icon: "💃" } : null,
+                    canCreateTicketedEvents
+                      ? {
+                          type: "SEATED_EVENT" as EventType,
+                          label: "Seated Event",
+                          desc: "Table seating & tickets",
+                          icon: "🪑",
+                        }
+                      : null,
                     {
                       type: "FREE_EVENT" as EventType,
                       label: "Pay at the Door",
@@ -306,7 +501,7 @@ export default function CreateEventPage() {
                     {
                       type: "SAVE_THE_DATE" as EventType,
                       label: "Save the Date",
-                      desc: "Coming soon",
+                      desc: "Announcement only",
                       icon: "📅",
                     },
                   ]
@@ -373,8 +568,8 @@ export default function CreateEventPage() {
             </div>
           )}
 
-          {/* Step 2: Date & Time */}
-          {step === 2 && (
+          {/* Step: Date & Time */}
+          {currentStep?.id === "datetime" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-2">Date & Time</h2>
@@ -426,8 +621,8 @@ export default function CreateEventPage() {
             </div>
           )}
 
-          {/* Step 3: Location */}
-          {step === 3 && (
+          {/* Step: Location */}
+          {currentStep?.id === "location" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-2">Location</h2>
@@ -506,8 +701,365 @@ export default function CreateEventPage() {
             </div>
           )}
 
-          {/* Step 4: Additional Details */}
-          {step === 4 && (
+          {/* Step: Seating Layout (SEATED_EVENT only) */}
+          {currentStep?.id === "seating" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Seating Layout</h2>
+                <p className="text-muted-foreground">Design your table seating arrangement</p>
+              </div>
+
+              {/* Skip Seating Setup Option */}
+              <div className="bg-accent border border-border rounded-lg p-4">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={skipSeatingSetup}
+                    onChange={(e) => setSkipSeatingSetup(e.target.checked)}
+                    className="mt-1 w-4 h-4 rounded border-border"
+                  />
+                  <div>
+                    <p className="font-medium text-foreground">I'll design the layout later</p>
+                    <p className="text-sm text-muted-foreground">
+                      Skip this step and use the full seating builder after event creation
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              {!skipSeatingSetup && (
+                <>
+                  {/* Seating Sections */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-foreground">Table Sections</h3>
+                      <button
+                        type="button"
+                        onClick={addSeatingSection}
+                        className="flex items-center gap-1 text-sm text-primary hover:text-primary/80"
+                      >
+                        <Plus className="w-4 h-4" /> Add Section
+                      </button>
+                    </div>
+
+                    {seatingSections.map((section) => (
+                      <div
+                        key={section.id}
+                        className="border border-border rounded-lg p-4 space-y-4"
+                      >
+                        <div className="flex items-start justify-between">
+                          <input
+                            type="text"
+                            value={section.name}
+                            onChange={(e) => updateSeatingSection(section.id, { name: e.target.value })}
+                            placeholder="Section Name"
+                            className="text-lg font-medium bg-transparent border-none focus:outline-none focus:ring-0 text-foreground"
+                          />
+                          {seatingSections.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeSeatingSection(section.id)}
+                              className="text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div>
+                            <label className="block text-xs text-muted-foreground mb-1">Table Shape</label>
+                            <select
+                              value={section.tableShape}
+                              onChange={(e) => updateSeatingSection(section.id, { tableShape: e.target.value as SeatingSection["tableShape"] })}
+                              className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground"
+                            >
+                              <option value="ROUND">Round</option>
+                              <option value="RECTANGULAR">Rectangle</option>
+                              <option value="SQUARE">Square</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-muted-foreground mb-1">Number of Tables</label>
+                            <input
+                              type="number"
+                              min="1"
+                              max="100"
+                              value={section.tableCount}
+                              onChange={(e) => updateSeatingSection(section.id, { tableCount: parseInt(e.target.value) || 1 })}
+                              className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-muted-foreground mb-1">Seats per Table</label>
+                            <input
+                              type="number"
+                              min="1"
+                              max="20"
+                              value={section.seatsPerTable}
+                              onChange={(e) => updateSeatingSection(section.id, { seatsPerTable: parseInt(e.target.value) || 1 })}
+                              className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-muted-foreground mb-1">Section Capacity</label>
+                            <div className="px-3 py-2 bg-muted rounded-lg text-sm font-medium text-foreground">
+                              {section.tableCount * section.seatsPerTable} seats
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Total Capacity Summary */}
+                  <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-foreground">Total Seating Capacity</span>
+                      <span className="text-2xl font-bold text-primary">{totalSeatingCapacity} seats</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Across {seatingSections.length} section{seatingSections.length > 1 ? "s" : ""} and{" "}
+                      {seatingSections.reduce((sum, s) => sum + s.tableCount, 0)} tables
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {skipSeatingSetup && (
+                <div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-foreground">Seating layout required before launch</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        You'll need to complete the seating layout in the builder before your event can go live.
+                        The builder is available after event creation.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step: Tickets */}
+          {currentStep?.id === "tickets" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Ticket Tiers</h2>
+                <p className="text-muted-foreground">Set up your ticket pricing and options</p>
+              </div>
+
+              {/* Ticket Tiers */}
+              <div className="space-y-4">
+                {ticketTiers.map((tier, index) => (
+                  <div
+                    key={tier.id}
+                    className="border border-border rounded-lg p-4 space-y-4"
+                  >
+                    <div className="flex items-start justify-between">
+                      <h3 className="font-medium text-foreground">Ticket Tier {index + 1}</h3>
+                      {ticketTiers.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeTicketTier(tier.id)}
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Tier Name *</label>
+                        <input
+                          type="text"
+                          value={tier.name}
+                          onChange={(e) => updateTicketTier(tier.id, { name: e.target.value })}
+                          placeholder="e.g., VIP Table, General Admission"
+                          className="w-full px-3 py-2 border border-border rounded-lg text-foreground"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Price *</label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={tier.price}
+                            onChange={(e) => updateTicketTier(tier.id, { price: e.target.value })}
+                            placeholder="0.00"
+                            className="w-full pl-7 pr-3 py-2 border border-border rounded-lg text-foreground"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">Description</label>
+                      <textarea
+                        value={tier.description}
+                        onChange={(e) => updateTicketTier(tier.id, { description: e.target.value })}
+                        placeholder="What's included with this ticket?"
+                        rows={2}
+                        className="w-full px-3 py-2 border border-border rounded-lg text-foreground"
+                      />
+                    </div>
+
+                    {/* Section linking for seated events */}
+                    {eventType === "SEATED_EVENT" && !skipSeatingSetup && seatingSections.length > 0 && (
+                      <div className="bg-accent rounded-lg p-4 space-y-3">
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={!!tier.linkedSectionId}
+                            onChange={(e) => updateTicketTier(tier.id, {
+                              linkedSectionId: e.target.checked ? seatingSections[0].id : undefined
+                            })}
+                            className="w-4 h-4 rounded border-border"
+                          />
+                          <span className="text-sm font-medium text-foreground">Link to seating section</span>
+                        </label>
+
+                        {tier.linkedSectionId && (
+                          <>
+                            <select
+                              value={tier.linkedSectionId}
+                              onChange={(e) => updateTicketTier(tier.id, { linkedSectionId: e.target.value })}
+                              className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground"
+                            >
+                              {seatingSections.map(s => (
+                                <option key={s.id} value={s.id}>
+                                  {s.name} ({s.tableCount} tables, {s.tableCount * s.seatsPerTable} seats)
+                                </option>
+                              ))}
+                            </select>
+
+                            <div>
+                              <label className="block text-xs text-muted-foreground mb-1">Sell as</label>
+                              <div className="flex gap-2">
+                                {[
+                                  { value: "INDIVIDUAL", label: "Individual seats" },
+                                  { value: "TABLE", label: "Whole tables" },
+                                  { value: "BOTH", label: "Both" },
+                                ].map((option) => (
+                                  <button
+                                    key={option.value}
+                                    type="button"
+                                    onClick={() => updateTicketTier(tier.id, { sellMode: option.value as TicketTierForm["sellMode"] })}
+                                    className={`px-3 py-1 text-xs rounded-full ${
+                                      tier.sellMode === option.value
+                                        ? "bg-primary text-white"
+                                        : "bg-muted text-foreground hover:bg-muted/80"
+                                    }`}
+                                  >
+                                    {option.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Quantity for non-seated events */}
+                    {(eventType === "TICKETED_EVENT" || !tier.linkedSectionId) && (
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                          Quantity Available {eventType === "TICKETED_EVENT" && "*"}
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={tier.quantity}
+                          onChange={(e) => updateTicketTier(tier.id, { quantity: e.target.value })}
+                          placeholder="e.g., 100"
+                          className="w-full px-3 py-2 border border-border rounded-lg text-foreground"
+                        />
+                      </div>
+                    )}
+
+                    {/* Early Bird Pricing */}
+                    <div className="border-t border-border pt-4">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={!!tier.earlyBirdPrice}
+                          onChange={(e) => updateTicketTier(tier.id, {
+                            earlyBirdPrice: e.target.checked ? tier.price : "",
+                            earlyBirdUntil: e.target.checked ? "" : undefined
+                          })}
+                          className="w-4 h-4 rounded border-border"
+                        />
+                        <span className="text-sm font-medium text-foreground">Add early bird pricing</span>
+                      </label>
+
+                      {tier.earlyBirdPrice !== undefined && tier.earlyBirdPrice !== "" && (
+                        <div className="grid grid-cols-2 gap-4 mt-3">
+                          <div>
+                            <label className="block text-xs text-muted-foreground mb-1">Early Bird Price</label>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={tier.earlyBirdPrice}
+                                onChange={(e) => updateTicketTier(tier.id, { earlyBirdPrice: e.target.value })}
+                                className="w-full pl-7 pr-3 py-2 border border-border rounded-lg text-foreground"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-muted-foreground mb-1">Until</label>
+                            <input
+                              type="date"
+                              value={tier.earlyBirdUntil || ""}
+                              onChange={(e) => updateTicketTier(tier.id, { earlyBirdUntil: e.target.value })}
+                              className="w-full px-3 py-2 border border-border rounded-lg text-foreground"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={addTicketTier}
+                  className="w-full py-3 border-2 border-dashed border-border rounded-lg text-muted-foreground hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-4 h-4" /> Add Another Ticket Tier
+                </button>
+              </div>
+
+              {/* Summary */}
+              <div className="bg-accent border border-border rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-foreground">
+                    <p className="font-semibold mb-1">Ticket Tips</p>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• Create multiple tiers for different experiences (VIP, General, etc.)</li>
+                      <li>• Early bird pricing encourages early purchases</li>
+                      {eventType === "SEATED_EVENT" && (
+                        <li>• Link tiers to seating sections for assigned seating</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step: Additional Details */}
+          {currentStep?.id === "details" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-2">Additional Details</h2>
@@ -569,23 +1121,118 @@ export default function CreateEventPage() {
                 </p>
               </div>
 
-              <div className="bg-accent border border-border rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-foreground">
-                    <p className="font-semibold mb-1">Next Steps</p>
-                    <p>
-                      After creating your event, you'll be redirected to your events dashboard.
-                      {eventType === "TICKETED_EVENT" && (
-                        <span className="block mt-1">
-                          <strong>Important:</strong> Click the blinking "Tickets" button to create
-                          your ticket tiers.
-                        </span>
-                      )}
-                    </p>
+            </div>
+          )}
+
+          {/* Step: Review & Launch */}
+          {currentStep?.id === "review" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Review & Launch</h2>
+                <p className="text-muted-foreground">Review your event details before publishing</p>
+              </div>
+
+              {/* Event Summary */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <div className="bg-muted px-4 py-3 border-b border-border">
+                  <h3 className="font-semibold text-foreground">Event Summary</h3>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Event Name</span>
+                    <span className="font-medium text-foreground">{eventName || "—"}</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Event Type</span>
+                    <span className="font-medium text-foreground">
+                      {eventType === "SAVE_THE_DATE" && "Save the Date"}
+                      {eventType === "FREE_EVENT" && "Pay at the Door"}
+                      {eventType === "TICKETED_EVENT" && "Ticketed Event"}
+                      {eventType === "SEATED_EVENT" && "Seated Event"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Date</span>
+                    <span className="font-medium text-foreground">
+                      {startDate ? formatDate(new Date(startDate), "MMMM d, yyyy 'at' h:mm a") : "—"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Location</span>
+                    <span className="font-medium text-foreground">
+                      {city && state ? `${city}, ${state}` : "—"}
+                    </span>
+                  </div>
+                  {(eventType === "TICKETED_EVENT" || eventType === "SEATED_EVENT") && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Ticket Tiers</span>
+                      <span className="font-medium text-foreground">
+                        {ticketTiers.filter(t => t.name && t.price).length} tier(s)
+                      </span>
+                    </div>
+                  )}
+                  {eventType === "SEATED_EVENT" && !skipSeatingSetup && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Seating Capacity</span>
+                      <span className="font-medium text-foreground">{totalSeatingCapacity} seats</span>
+                    </div>
+                  )}
                 </div>
               </div>
+
+              {/* Validation Checklist */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <div className="bg-muted px-4 py-3 border-b border-border">
+                  <h3 className="font-semibold text-foreground">Pre-Launch Checklist</h3>
+                </div>
+                <div className="p-4 space-y-2">
+                  {getValidationChecks().map((check, idx) => (
+                    <div key={idx} className="flex items-center gap-3">
+                      {check.passed ? (
+                        <Check className="w-5 h-5 text-green-600" />
+                      ) : check.required ? (
+                        <AlertCircle className="w-5 h-5 text-destructive" />
+                      ) : (
+                        <AlertCircle className="w-5 h-5 text-warning" />
+                      )}
+                      <span className={check.passed ? "text-foreground" : check.required ? "text-destructive" : "text-warning"}>
+                        {check.label}
+                        {!check.required && !check.passed && " (optional)"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Can't publish warning */}
+              {!canPublish() && (
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-foreground">Cannot publish yet</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Please complete all required items before publishing your event.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Ready to publish */}
+              {canPublish() && (
+                <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-foreground">Ready to launch!</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Your event is ready to be published. Click "Create Event" to go live.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -593,19 +1240,19 @@ export default function CreateEventPage() {
           <div className="flex items-center justify-between pt-6 border-t border-border mt-8">
             <button
               type="button"
-              onClick={() => setStep(Math.max(1, step - 1))}
-              disabled={step === 1}
+              onClick={() => setStepIndex(Math.max(0, stepIndex - 1))}
+              disabled={stepIndex === 0}
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                step === 1 ? "text-muted-foreground cursor-not-allowed" : "text-foreground hover:bg-muted"
+                stepIndex === 0 ? "text-muted-foreground cursor-not-allowed" : "text-foreground hover:bg-muted"
               }`}
             >
               Previous
             </button>
 
-            {step < totalSteps ? (
+            {stepIndex < totalSteps - 1 ? (
               <button
                 type="button"
-                onClick={() => setStep(step + 1)}
+                onClick={() => setStepIndex(stepIndex + 1)}
                 className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold"
               >
                 Next Step
@@ -614,9 +1261,9 @@ export default function CreateEventPage() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !canPublish()}
                 className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-                  isSubmitting
+                  isSubmitting || !canPublish()
                     ? "bg-muted text-muted-foreground cursor-not-allowed"
                     : "bg-primary text-white hover:bg-primary/90"
                 }`}

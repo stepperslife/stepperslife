@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * Simplified Single-Page Checkout
+ *
+ * All steps visible at once:
+ * - Left: Ticket selection + Buyer info
+ * - Right: Order summary + Payment
+ */
+
 import { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
@@ -7,11 +15,12 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { StripeCheckout } from "@/components/checkout/StripeCheckout";
 import { PayPalPayment } from "@/components/checkout/PayPalPayment";
+import { TicketSelector } from "@/components/checkout/TicketSelector";
 import type { SelectedSeat } from "@/components/checkout/SeatSelection";
 import type { SelectedSeat as BallroomSeat } from "@/components/seating/InteractiveSeatingChart";
 import dynamic from "next/dynamic";
 
-// Dynamic imports for heavy seating components (only loaded when needed)
+// Dynamic imports for heavy seating components
 const SeatSelection = dynamic(() => import("@/components/checkout/SeatSelection"), {
   loading: () => (
     <div className="flex items-center justify-center h-64">
@@ -32,7 +41,7 @@ const InteractiveSeatingChart = dynamic(
     ssr: false,
   }
 );
-import { TierCountdown, TierAvailabilityBadge } from "@/components/events/TierCountdown";
+
 import {
   ArrowLeft,
   AlertTriangle,
@@ -41,14 +50,13 @@ import {
   UserCheck,
   Tag,
   X,
-  Package,
-  Zap,
-  TrendingDown,
   LogIn,
+  CreditCard,
+  Banknote,
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import toast from "react-hot-toast";
@@ -60,17 +68,23 @@ export default function CheckoutPage() {
   const eventId = params.eventId as Id<"events">;
   const ENABLE_SEATING = process.env.NEXT_PUBLIC_ENABLE_SEATING_CHARTS === "true";
 
+  // Selection state
   const [selectedTierId, setSelectedTierId] = useState<Id<"ticketTiers"> | null>(null);
   const [selectedBundleId, setSelectedBundleId] = useState<Id<"ticketBundles"> | null>(null);
   const [purchaseType, setPurchaseType] = useState<"tier" | "bundle">("tier");
   const [quantity, setQuantity] = useState(1);
+
+  // Buyer info
   const [buyerEmail, setBuyerEmail] = useState("");
   const [buyerName, setBuyerName] = useState("");
-  const [showPayment, setShowPayment] = useState(false);
-  // Default to cash payment - organizer validates with activation code
+
+  // Payment state
   const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "cash">("cash");
   const [orderId, setOrderId] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Extras
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [discountCode, setDiscountCode] = useState("");
   const [appliedDiscount, setAppliedDiscount] = useState<{
@@ -83,6 +97,7 @@ export default function CheckoutPage() {
   const [discountError, setDiscountError] = useState<string | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<SelectedSeat[]>([]);
 
+  // Queries
   const eventDetails = useQuery(api.public.queries.getPublicEventDetails, { eventId });
   const currentUser = useQuery(api.users.queries.getCurrentUser);
   const seatingChart = useQuery(
@@ -95,6 +110,7 @@ export default function CheckoutPage() {
     referralCode ? { referralCode } : "skip"
   );
 
+  // Mutations
   const createOrder = useMutation(api.tickets.mutations.createOrder);
   const createBundleOrder = useMutation(api.tickets.mutations.createBundleOrder);
   const completeOrder = useMutation(api.tickets.mutations.completeOrder);
@@ -104,18 +120,15 @@ export default function CheckoutPage() {
     orderId ? { orderId: orderId as Id<"orders"> } : "skip"
   );
 
-  // Check for referral code in URL parameters
+  // Check for referral code in URL
   useEffect(() => {
     const refParam = searchParams.get("ref");
-    if (refParam) {
-      setReferralCode(refParam);
-    }
+    if (refParam) setReferralCode(refParam);
   }, [searchParams]);
 
-  // Auto-select default payment method based on available options
-  // Priority: Cash (if available) > Card (if Stripe configured) > PayPal (if configured)
+  // Auto-select payment method
   useEffect(() => {
-    if (paymentConfig === undefined) return; // Still loading
+    if (paymentConfig === undefined) return;
 
     const hasStripe = !!paymentConfig?.stripeConnectAccountId &&
       (paymentConfig?.customerPaymentMethods?.includes("STRIPE") ?? false);
@@ -123,38 +136,30 @@ export default function CheckoutPage() {
       (paymentConfig?.customerPaymentMethods?.includes("PAYPAL") ?? false);
     const hasCash = paymentConfig?.customerPaymentMethods?.includes("CASH") ?? true;
 
-    // Set default to first available method
-    if (hasCash) {
-      setPaymentMethod("cash");
-    } else if (hasStripe) {
-      setPaymentMethod("card");
-    } else if (hasPayPal) {
-      setPaymentMethod("paypal");
-    }
+    if (hasCash) setPaymentMethod("cash");
+    else if (hasStripe) setPaymentMethod("card");
+    else if (hasPayPal) setPaymentMethod("paypal");
   }, [paymentConfig]);
 
-  // Only require eventDetails to show tickets, not authentication
+  // Reset seats when tier/quantity changes
+  useEffect(() => {
+    setSelectedSeats([]);
+  }, [selectedTierId, quantity]);
+
   const isLoading = eventDetails === undefined;
 
   const selectedTier = eventDetails?.ticketTiers?.find((tier: any) => tier._id === selectedTierId);
-  const selectedBundle = eventDetails?.bundles?.find(
-    (bundle: any) => bundle._id === selectedBundleId
-  );
+  const selectedBundle = eventDetails?.bundles?.find((bundle: any) => bundle._id === selectedBundleId);
 
-  // Determine payment processor based on event payment model
+  // Payment config
   const paymentModel = paymentConfig?.paymentModel || "PREPAY";
-  // Only force Stripe if CREDIT_CARD AND Stripe Connect is configured
-  const useStripePayment = paymentModel === "CREDIT_CARD" && !!paymentConfig?.stripeConnectAccountId;
-
-  // Determine which payment methods are available based on organizer's configuration
-  // Check both the customerPaymentMethods array AND the presence of account IDs
   const hasStripeConfigured = !!paymentConfig?.stripeConnectAccountId &&
     (paymentConfig?.customerPaymentMethods?.includes("STRIPE") ?? false);
   const hasPayPalConfigured = !!paymentConfig?.paypalMerchantId &&
     (paymentConfig?.customerPaymentMethods?.includes("PAYPAL") ?? false);
-  // Cash is always available if included in customerPaymentMethods OR if no config exists (fallback)
   const hasCashConfigured = paymentConfig?.customerPaymentMethods?.includes("CASH") ?? true;
 
+  // Price calculations
   const subtotal =
     purchaseType === "bundle" && selectedBundle
       ? selectedBundle.price * quantity
@@ -164,37 +169,36 @@ export default function CheckoutPage() {
   const discountAmount = appliedDiscount?.discountAmountCents || 0;
   const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
 
-  // Fee calculation depends on payment model
   let platformFee = 0;
   let processingFee = 0;
 
-  if (paymentModel === "PREPAY") {
-    // Organizer already paid platform fee upfront - no additional fees for customer
-    platformFee = 0;
-    processingFee = 0;
-  } else if (subtotalAfterDiscount === 0) {
-    // Free tickets (price $0 or 100% discount) - no fees charged
+  if (paymentModel === "PREPAY" || subtotalAfterDiscount === 0) {
     platformFee = 0;
     processingFee = 0;
   } else {
-    // CREDIT_CARD - fees added to customer's purchase
-    platformFee = Math.round((subtotalAfterDiscount * 3.7) / 100) + 179; // 3.7% + $1.79
-    processingFee = Math.round(((subtotalAfterDiscount + platformFee) * 2.9) / 100) + 30; // 2.9% + $0.30
+    platformFee = Math.round((subtotalAfterDiscount * 3.7) / 100) + 179;
+    processingFee = Math.round(((subtotalAfterDiscount + platformFee) * 2.9) / 100) + 30;
   }
 
   const total = subtotalAfterDiscount + platformFee + processingFee;
 
+  // Check if form is complete
+  const hasSelection = selectedTierId || selectedBundleId;
+  const hasBuyerInfo = buyerName.trim() && buyerEmail.trim();
+  const requiresSeats = purchaseType === "tier" && seatingChart?.sections?.length > 0;
+  const hasRequiredSeats = !requiresSeats || selectedSeats.length === quantity;
+  const canCheckout = hasSelection && hasBuyerInfo && hasRequiredSeats;
+
+  // Handlers
   const handleApplyDiscount = async () => {
-    if (!discountCode || discountCode.trim().length === 0) {
+    if (!discountCode.trim()) {
       setDiscountError("Please enter a discount code");
       return;
     }
-
     if (!buyerEmail) {
       setDiscountError("Please enter your email first");
       return;
     }
-
     if (!selectedTierId) {
       setDiscountError("Please select a ticket tier first");
       return;
@@ -202,8 +206,6 @@ export default function CheckoutPage() {
 
     try {
       setDiscountError(null);
-
-      // Call validation query manually via fetch
       const response = await fetch(`${process.env.NEXT_PUBLIC_CONVEX_URL}/api/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -220,7 +222,6 @@ export default function CheckoutPage() {
       });
 
       const result = await response.json();
-
       if (result.value.valid) {
         setAppliedDiscount({
           _id: result.value.discountCode._id,
@@ -233,23 +234,13 @@ export default function CheckoutPage() {
       } else {
         setDiscountError(result.value.error || "Invalid discount code");
       }
-    } catch (error) {
-      console.error("Discount validation error:", error);
+    } catch {
       setDiscountError("Failed to validate discount code");
     }
   };
 
-  const handleRemoveDiscount = () => {
-    setAppliedDiscount(null);
-    setDiscountCode("");
-    setDiscountError(null);
-  };
+  const handleSeatsSelected = (seats: SelectedSeat[]) => setSelectedSeats(seats);
 
-  const handleSeatsSelected = (seats: SelectedSeat[]) => {
-    setSelectedSeats(seats);
-  };
-
-  // Ballroom seat handlers
   const handleBallroomSeatSelect = (seat: BallroomSeat) => {
     setSelectedSeats((prev) => [...prev, seat as any]);
   };
@@ -258,52 +249,19 @@ export default function CheckoutPage() {
     setSelectedSeats((prev) => prev.filter((s) => s.seatId !== seatId));
   };
 
-  // Reset seats when tier or quantity changes
-  useEffect(() => {
-    setSelectedSeats([]);
-  }, [selectedTierId, quantity]);
+  const handleCreateOrder = async () => {
+    if (orderId) return orderId; // Already created
 
-  const handleContinueToPayment = async () => {
-    // If order already exists (user clicked back and returned), just show payment
-    if (orderId) {
-      setShowPayment(true);
-      return;
-    }
-
-    // Show loading toast immediately
-    const loadingToast = toast.loading("Creating order...");
-
-    if ((!selectedTierId && !selectedBundleId) || !buyerEmail || !buyerName) {
-      toast.dismiss(loadingToast);
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    // For cash payments, require user to be logged in
     if (paymentMethod === "cash" && !currentUser) {
-      toast.dismiss(loadingToast);
-      toast.error("Please sign in to complete a cash payment purchase. Your account links tickets to your profile.");
+      toast.error("Please sign in to complete a cash payment purchase.");
       router.push(`/login?redirect=/events/${eventId}/checkout`);
-      return;
-    }
-
-    // Stripe Connect is only required for CREDIT_CARD model events with online payment
-    // Cash payments don't need Stripe Connect - they're validated by organizer with activation code
-
-    // Check if seating chart exists and seats are required (only for individual tickets)
-    const requiresSeats =
-      purchaseType === "tier" && seatingChart && seatingChart.sections && seatingChart.sections.length > 0;
-    if (requiresSeats && selectedSeats.length !== quantity) {
-      toast.dismiss(loadingToast);
-      toast.error(`Please select ${quantity} seat${quantity > 1 ? "s" : ""} before proceeding`);
-      return;
+      return null;
     }
 
     try {
       let newOrderId;
 
       if (purchaseType === "bundle" && selectedBundleId) {
-        // Create bundle order
         newOrderId = await createBundleOrder({
           eventId,
           bundleId: selectedBundleId,
@@ -319,7 +277,6 @@ export default function CheckoutPage() {
           discountAmountCents: appliedDiscount?.discountAmountCents,
         });
       } else if (purchaseType === "tier" && selectedTierId) {
-        // Create regular tier order
         newOrderId = await createOrder({
           eventId,
           ticketTierId: selectedTierId,
@@ -335,98 +292,56 @@ export default function CheckoutPage() {
           discountAmountCents: appliedDiscount?.discountAmountCents,
           selectedSeats: requiresSeats ? selectedSeats : undefined,
         });
-      } else {
-        throw new Error("Invalid purchase type");
       }
 
       setOrderId(newOrderId);
-
-      // If total is $0.00 (free order with 100% discount), skip payment and complete order immediately
-      if (total === 0) {
-        try {
-          // Complete the order directly without payment
-          if (purchaseType === "bundle") {
-            await completeBundleOrder({
-              orderId: newOrderId as Id<"orders">,
-              paymentId: "FREE_ORDER_NO_PAYMENT", // Free orders don't have payment IDs
-              paymentMethod: "FREE",
-            });
-          } else {
-            await completeOrder({
-              orderId: newOrderId as Id<"orders">,
-              paymentId: "FREE_ORDER_NO_PAYMENT",
-              paymentMethod: "FREE",
-            });
-          }
-
-          // Mark as success
-          toast.dismiss(loadingToast);
-          setIsSuccess(true);
-          toast.success("Order completed successfully!");
-        } catch (error: any) {
-          console.error("Free order completion error:", error);
-          toast.dismiss(loadingToast);
-          toast.error("Failed to complete free order. Please contact support.");
-        }
-      } else {
-        // Show payment UI for paid orders
-        toast.dismiss(loadingToast);
-        setShowPayment(true);
-      }
+      return newOrderId;
     } catch (error: any) {
-      console.error("Order creation error:", error);
-      toast.dismiss(loadingToast);
-      toast.error(error.message || "Failed to create order. Please try again.");
+      toast.error(error.message || "Failed to create order");
+      return null;
     }
   };
 
-
   const handlePaymentSuccess = async (result: Record<string, unknown>) => {
-    if (!orderId) return;
+    const currentOrderId = orderId || await handleCreateOrder();
+    if (!currentOrderId) return;
 
     try {
-      // Determine payment method based on which system was used
       let usedPaymentMethod: "STRIPE" | "PAYPAL" = "STRIPE";
       let paymentId: string;
 
       if (result.paymentIntentId) {
-        // Stripe payment (card / Cash App Pay)
         usedPaymentMethod = "STRIPE";
         paymentId = result.paymentIntentId as string;
       } else if (result.paymentId) {
-        // PayPal payment
         usedPaymentMethod = "PAYPAL";
         paymentId = result.paymentId as string;
       } else {
         throw new Error("No payment ID received");
       }
 
-      // Complete the order in Convex
       if (purchaseType === "bundle") {
         await completeBundleOrder({
-          orderId: orderId as Id<"orders">,
-          paymentId: paymentId,
+          orderId: currentOrderId as Id<"orders">,
+          paymentId,
           paymentMethod: usedPaymentMethod,
         });
       } else {
         await completeOrder({
-          orderId: orderId as Id<"orders">,
-          paymentId: paymentId,
+          orderId: currentOrderId as Id<"orders">,
+          paymentId,
           paymentMethod: usedPaymentMethod,
         });
       }
 
       setIsSuccess(true);
 
-      // Send ticket confirmation email
-      // Wait for order details to be available
+      // Send confirmation email
       setTimeout(async () => {
         try {
-          const response = await fetch("/api/send-ticket-confirmation", {
+          await fetch("/api/send-ticket-confirmation", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               email: buyerEmail,
               orderDetails: getOrderDetails?.order,
@@ -434,50 +349,159 @@ export default function CheckoutPage() {
               event: getOrderDetails?.event,
             }),
           });
-
-          if (!response.ok) {
-            console.error("Failed to send ticket confirmation email");
-          }
-        } catch (emailError) {
-          console.error("Email sending error:", emailError);
-          // Don't block success screen if email fails
-        }
+        } catch {}
       }, 2000);
     } catch (error) {
-      console.error("Order completion error:", error);
       toast.error("Payment successful but order completion failed. Please contact support.");
     }
   };
 
   const handlePaymentError = (error: string) => {
     toast.error(`Payment failed: ${error}`);
-    setShowPayment(false);
-    setOrderId(null);
+    setIsProcessing(false);
   };
 
-  // Render content based on state - all wrapped in same layout to maintain hook count
-  return (
-    <>
-      <PublicHeader />
-      {/* Loading State */}
-      {(isLoading || !eventDetails || currentUser === undefined) && (
-        <div className="min-h-screen bg-muted flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        </div>
-      )}
+  const handleCashPayment = async () => {
+    setIsProcessing(true);
+    const currentOrderId = orderId || await handleCreateOrder();
+    if (!currentOrderId) {
+      setIsProcessing(false);
+      return;
+    }
 
-      {/* Login Required State */}
-      {!isLoading && eventDetails && currentUser === null && (
+    try {
+      if (purchaseType === "bundle") {
+        await completeBundleOrder({
+          orderId: currentOrderId as Id<"orders">,
+          paymentId: "CASH_PENDING",
+          paymentMethod: "CASH",
+        });
+      } else {
+        await completeOrder({
+          orderId: currentOrderId as Id<"orders">,
+          paymentId: "CASH_PENDING",
+          paymentMethod: "CASH",
+        });
+      }
+      setIsSuccess(true);
+      toast.success("Cash order created! Pay organizer within 30 minutes to activate tickets.");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create cash order");
+    }
+    setIsProcessing(false);
+  };
+
+  const handleFreeOrder = async () => {
+    setIsProcessing(true);
+    const currentOrderId = orderId || await handleCreateOrder();
+    if (!currentOrderId) {
+      setIsProcessing(false);
+      return;
+    }
+
+    try {
+      if (purchaseType === "bundle") {
+        await completeBundleOrder({
+          orderId: currentOrderId as Id<"orders">,
+          paymentId: "FREE_ORDER_NO_PAYMENT",
+          paymentMethod: "FREE",
+        });
+      } else {
+        await completeOrder({
+          orderId: currentOrderId as Id<"orders">,
+          paymentId: "FREE_ORDER_NO_PAYMENT",
+          paymentMethod: "FREE",
+        });
+      }
+      setIsSuccess(true);
+      toast.success("Order completed successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to complete order");
+    }
+    setIsProcessing(false);
+  };
+
+  // Render states
+  if (isLoading || !eventDetails || currentUser === undefined) {
+    return (
+      <>
+        <PublicHeader />
+        <div className="min-h-screen bg-muted">
+          <div className="container mx-auto px-4 py-8">
+            {/* Back button skeleton */}
+            <div className="h-6 w-32 bg-muted-foreground/20 rounded animate-pulse mb-8" />
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column Skeleton */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Event header skeleton */}
+                <div className="bg-card rounded-2xl shadow-lg p-6 border border-border">
+                  <div className="flex gap-4">
+                    <div className="w-20 h-20 bg-muted-foreground/20 rounded-xl animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-6 w-3/4 bg-muted-foreground/20 rounded animate-pulse" />
+                      <div className="h-4 w-1/2 bg-muted-foreground/20 rounded animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ticket selection skeleton */}
+                <div className="bg-card rounded-2xl shadow-lg p-6 border border-border">
+                  <div className="h-6 w-40 bg-muted-foreground/20 rounded animate-pulse mb-4" />
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-24 bg-muted-foreground/10 rounded-xl animate-pulse" />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Buyer info skeleton */}
+                <div className="bg-card rounded-2xl shadow-lg p-6 border border-border">
+                  <div className="h-6 w-48 bg-muted-foreground/20 rounded animate-pulse mb-4" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="h-12 bg-muted-foreground/10 rounded-lg animate-pulse" />
+                    <div className="h-12 bg-muted-foreground/10 rounded-lg animate-pulse" />
+                    <div className="h-12 bg-muted-foreground/10 rounded-lg animate-pulse md:col-span-2" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column Skeleton */}
+              <div className="lg:col-span-1">
+                <div className="bg-card rounded-2xl shadow-lg p-6 border border-border sticky top-24">
+                  <div className="h-6 w-32 bg-muted-foreground/20 rounded animate-pulse mb-4" />
+                  <div className="space-y-3">
+                    <div className="h-4 w-full bg-muted-foreground/10 rounded animate-pulse" />
+                    <div className="h-4 w-2/3 bg-muted-foreground/10 rounded animate-pulse" />
+                    <div className="h-px bg-border my-4" />
+                    <div className="flex justify-between">
+                      <div className="h-5 w-16 bg-muted-foreground/20 rounded animate-pulse" />
+                      <div className="h-5 w-20 bg-muted-foreground/20 rounded animate-pulse" />
+                    </div>
+                  </div>
+                  <div className="mt-6 h-12 bg-muted-foreground/20 rounded-lg animate-pulse" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <PublicFooter />
+      </>
+    );
+  }
+
+  if (currentUser === null) {
+    return (
+      <>
+        <PublicHeader />
         <div className="min-h-screen bg-muted">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-8 text-center border border-border">
-              <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <LogIn className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-4">Sign In to Continue</h1>
-              <p className="text-muted-foreground mb-8">
-                Please sign in to purchase tickets for this event.
-              </p>
+              <p className="text-muted-foreground mb-8">Please sign in to purchase tickets.</p>
               <Link
                 href={`/login?redirect=${encodeURIComponent(`/events/${eventId}/checkout`)}`}
                 className="block w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
@@ -493,47 +517,33 @@ export default function CheckoutPage() {
             </div>
           </div>
         </div>
-      )}
+        <PublicFooter />
+      </>
+    );
+  }
 
-      {/* Success State */}
-      {!isLoading && eventDetails && currentUser && isSuccess && (
+  if (isSuccess) {
+    return (
+      <>
+        <PublicHeader />
         <div className="min-h-screen bg-muted flex items-center justify-center p-4" data-testid="payment-success">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
-            className="bg-card rounded-lg shadow-lg p-8 max-w-md text-center"
+            className="bg-card rounded-2xl shadow-lg p-8 max-w-md text-center"
           >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
+            <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-10 h-10 text-success" />
-            </motion.div>
-            <motion.h2
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-2xl font-bold text-foreground mb-2"
-            >
-              Payment Successful!
-            </motion.h2>
-            <motion.p
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="text-muted-foreground mb-6"
-            >
-              Your tickets have been purchased. Check your email for confirmation.
-            </motion.p>
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="space-y-3"
-            >
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              {paymentMethod === "cash" ? "Order Created!" : "Payment Successful!"}
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              {paymentMethod === "cash"
+                ? "Pay the organizer to activate your tickets."
+                : "Your tickets have been purchased. Check your email for confirmation."}
+            </p>
+            <div className="space-y-3">
               <Link
                 href="/my-tickets"
                 className="block w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
@@ -546,628 +556,142 @@ export default function CheckoutPage() {
               >
                 Back to Event
               </Link>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
-      )}
+        <PublicFooter />
+      </>
+    );
+  }
 
-      {/* Main Checkout Form */}
-      {!isLoading && eventDetails && currentUser && !isSuccess && (
-        <div className="min-h-screen bg-muted">
-          {/* Step Indicator - Sticky Header */}
-          <div className="bg-card border-b border-border sticky top-0 z-40">
-            <div className="container mx-auto px-4 py-4 max-w-4xl">
-              <div className="flex items-center justify-between">
-                <Link
-                  href={`/events/${eventId}`}
-                  className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden sm:inline">Back to Event</span>
-                </Link>
+  return (
+    <>
+      <PublicHeader />
+      <div className="min-h-screen bg-muted">
+        {/* Header */}
+        <div className="bg-card border-b border-border sticky top-0 z-40">
+          <div className="container mx-auto px-4 py-4 max-w-6xl">
+            <div className="flex items-center justify-between">
+              <Link
+                href={`/events/${eventId}`}
+                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Back to Event</span>
+              </Link>
+              <h1 className="font-semibold text-foreground">Checkout</h1>
+              <div className="w-20" /> {/* Spacer */}
+            </div>
+          </div>
+        </div>
 
-                {/* Simple 2-Step Indicator */}
-                <div className="flex items-center gap-2">
-                  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    !showPayment
-                      ? "bg-primary text-white"
-                      : "bg-muted text-muted-foreground"
-                  }`}>
-                    <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">1</span>
-                    <span className="hidden sm:inline">Select Tickets</span>
-                  </div>
-                  <div className="w-8 h-0.5 bg-border" />
-                  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    showPayment
-                      ? "bg-primary text-white"
-                      : "bg-muted text-muted-foreground"
-                  }`}>
-                    <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">2</span>
-                    <span className="hidden sm:inline">Payment</span>
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
+          <div className="grid lg:grid-cols-5 gap-8">
+            {/* Left Column: Event + Tickets + Buyer Info (3 cols) */}
+            <div className="lg:col-span-3 space-y-6">
+              {/* Event Card */}
+              <div className="bg-card rounded-xl shadow-md overflow-hidden">
+                <div className="flex gap-4 p-4">
+                  <img
+                    src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80"}
+                    alt={eventDetails.name}
+                    className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <h2 className="font-bold text-foreground text-lg truncate">{eventDetails.name}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {eventDetails.startDate && format(new Date(eventDetails.startDate), "EEE, MMM d 'at' h:mm a")}
+                    </p>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {eventDetails.location?.venueName}, {eventDetails.location?.city}
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="container mx-auto px-4 py-8 max-w-4xl">
-            <div className="grid md:grid-cols-2 gap-8">
-            {/* Left: Order Details */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <h1 className="text-2xl font-bold text-foreground mb-6">
-                {showPayment ? "Complete Payment" : "Select Your Tickets"}
-              </h1>
-
-              {/* Event Info */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-                className="bg-card rounded-lg shadow-md overflow-hidden mb-6"
-              >
-                {/* Event Image */}
-                <div className="w-full h-48 relative bg-muted">
-                  <img
-                    src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
-                    alt={eventDetails.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                <div className="p-6">
-                  <h3 className="font-semibold text-foreground mb-2">{eventDetails.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {eventDetails.startDate &&
-                      format(new Date(eventDetails.startDate), "EEEE, MMMM d, yyyy 'at' h:mm a")}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {eventDetails.location &&
-                      typeof eventDetails.location === "object" &&
-                      eventDetails.location.venueName &&
-                      `${eventDetails.location.venueName}, `}
-                    {eventDetails.location &&
-                      typeof eventDetails.location === "object" &&
-                      eventDetails.location.city}
-                    ,{" "}
-                    {eventDetails.location &&
-                      typeof eventDetails.location === "object" &&
-                      eventDetails.location.state}
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Referral Code Banner */}
+              {/* Referral Banner */}
               {referralCode && staffMemberInfo && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.3 }}
-                  className="bg-accent border-2 border-primary/30 rounded-lg p-4 mb-6"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="bg-primary/5 border-2 border-primary/20 rounded-xl p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                       <UserCheck className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground mb-1">
-                        Referred by {staffMemberInfo.name}
-                      </h4>
-                      <p className="text-sm text-primary">
-                        Your purchase will be credited to this staff member
-                      </p>
+                      <p className="font-semibold text-foreground">Referred by {staffMemberInfo.name}</p>
+                      <p className="text-sm text-primary">Your purchase supports this seller</p>
                     </div>
                   </div>
-                </motion.div>
-              )}
-
-              {!showPayment ? (
-                <>
-                  {/* Ticket/Bundle Selection */}
-                  <div className="bg-card rounded-lg shadow-md p-6 mb-6">
-                    <h3 className="font-semibold text-foreground mb-4">Select Tickets or Bundle</h3>
-
-                    {/* Purchase Type Tabs */}
-                    {eventDetails.bundles && eventDetails.bundles.length > 0 && (
-                      <div className="flex gap-2 mb-4 p-1 bg-muted rounded-lg">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPurchaseType("tier");
-                            setSelectedBundleId(null);
-                          }}
-                          className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
-                            purchaseType === "tier"
-                              ? "bg-card text-primary shadow-sm"
-                              : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          <Ticket className="w-4 h-4 inline mr-2" />
-                          Individual Tickets
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPurchaseType("bundle");
-                            setSelectedTierId(null);
-                          }}
-                          className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
-                            purchaseType === "bundle"
-                              ? "bg-card text-primary shadow-sm"
-                              : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          <Package className="w-4 h-4 inline mr-2" />
-                          Bundles
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Individual Tickets */}
-                    {purchaseType === "tier" && (
-                      <div className="space-y-3">
-                        {eventDetails.ticketTiers
-                          ?.filter((tier: any) => {
-                            const now = Date.now();
-                            const isAvailable =
-                              (!tier.saleStart || now >= tier.saleStart) &&
-                              (!tier.saleEnd || now <= tier.saleEnd) &&
-                              tier.sold < tier.quantity;
-                            return isAvailable;
-                          })
-                          .map((tier: any) => {
-                            const now = Date.now();
-                            const isSoldOut = tier.sold >= tier.quantity;
-                            const remaining = tier.quantity - tier.sold;
-                            const isLowStock = remaining <= 10 && remaining > 0;
-                            const showEarlyBird = tier.isEarlyBird && tier.currentTierName;
-                            const nextPriceIncrease =
-                              tier.nextPriceChange &&
-                              tier.nextPriceChange.price > tier.currentPrice;
-
-                            return (
-                              <button
-                                type="button"
-                                key={tier._id}
-                                data-testid={`tier-${tier.name.toLowerCase().replace(/\s+/g, "-")}`}
-                                onClick={() => {
-                                  if (!isSoldOut) {
-                                    setSelectedTierId(tier._id);
-                                  }
-                                }}
-                                disabled={isSoldOut}
-                                className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
-                                  selectedTierId === tier._id
-                                    ? showEarlyBird
-                                      ? "border-warning bg-warning/10"
-                                      : "border-primary bg-accent"
-                                    : isSoldOut
-                                      ? "border-border bg-muted opacity-60 cursor-not-allowed"
-                                      : "border-border hover:border-border"
-                                }`}
-                              >
-                                <div className="space-y-2">
-                                  <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <p className="font-semibold text-foreground">{tier.name}</p>
-                                        {showEarlyBird && (
-                                          <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-warning text-white rounded-full font-medium">
-                                            <Zap className="w-3 h-3" />
-                                            {tier.currentTierName}
-                                          </span>
-                                        )}
-                                        <TierAvailabilityBadge
-                                          saleStart={tier.saleStart}
-                                          saleEnd={tier.saleEnd}
-                                          sold={tier.sold}
-                                          quantity={tier.quantity}
-                                        />
-                                      </div>
-                                      {tier.description && (
-                                        <p className="text-sm text-muted-foreground mt-1">
-                                          {tier.description}
-                                        </p>
-                                      )}
-                                    </div>
-                                    <div className="text-right ml-4">
-                                      <p
-                                        className={`text-lg font-bold ${showEarlyBird ? "text-warning" : "text-foreground"}`}
-                                      >
-                                        ${(tier.currentPrice / 100).toFixed(2)}
-                                      </p>
-                                      {showEarlyBird && tier.price !== tier.currentPrice && (
-                                        <p className="text-xs text-muted-foreground line-through">
-                                          ${(tier.price / 100).toFixed(2)}
-                                        </p>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {nextPriceIncrease && (
-                                    <div className="mt-2 p-2 bg-warning/10 border border-warning rounded text-xs">
-                                      <p className="text-warning font-medium">
-                                        Price increases to $
-                                        {(tier.nextPriceChange.price / 100).toFixed(2)} on{" "}
-                                        {format(tier.nextPriceChange.date, "MMM d")}
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  {/* Additional Info Row */}
-                                  <div className="flex items-center gap-4 text-sm">
-                                    {/* Countdown */}
-                                    {tier.saleEnd && tier.saleEnd > now && (
-                                      <TierCountdown endDate={tier.saleEnd} />
-                                    )}
-
-                                    {/* Stock Warning */}
-                                    {isLowStock && (
-                                      <span className="text-warning font-medium">
-                                        Only {remaining} left!
-                                      </span>
-                                    )}
-
-                                    {/* Quantity Info */}
-                                    {!isLowStock && !isSoldOut && (
-                                      <span className="text-muted-foreground">{remaining} available</span>
-                                    )}
-                                  </div>
-                                </div>
-                              </button>
-                            );
-                          })}
-                      </div>
-                    )}
-
-                    {/* Bundles */}
-                    {purchaseType === "bundle" && eventDetails.bundles && (
-                      <div className="space-y-3">
-                        {eventDetails.bundles.map((bundle: any) => (
-                          <button
-                            type="button"
-                            key={bundle._id}
-                            onClick={() => setSelectedBundleId(bundle._id)}
-                            className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
-                              selectedBundleId === bundle._id
-                                ? "border-primary bg-accent"
-                                : "border-border hover:border-border"
-                            }`}
-                          >
-                            <div className="space-y-2">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <p className="font-semibold text-foreground">{bundle.name}</p>
-                                    <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-success text-white rounded-full font-bold">
-                                      <TrendingDown className="w-3 h-3" />
-                                      Save {bundle.percentageSavings}%
-                                    </span>
-                                  </div>
-                                  {bundle.description && (
-                                    <p className="text-sm text-muted-foreground mt-1">
-                                      {bundle.description}
-                                    </p>
-                                  )}
-                                  <div className="flex flex-wrap gap-1 mt-2">
-                                    {bundle.includedTiers.map((includedTier: any) => (
-                                      <span
-                                        key={includedTier.tierId}
-                                        className="text-xs px-2 py-0.5 bg-accent text-primary rounded"
-                                      >
-                                        {includedTier.quantity}x {includedTier.tierName}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                                <div className="text-right ml-4">
-                                  <p className="text-lg font-bold text-primary">
-                                    ${(bundle.price / 100).toFixed(2)}
-                                  </p>
-                                  {bundle.regularPrice && (
-                                    <p className="text-xs text-muted-foreground line-through">
-                                      ${(bundle.regularPrice / 100).toFixed(2)}
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="text-sm text-success font-medium">
-                                {bundle.available} bundle{bundle.available !== 1 ? "s" : ""}{" "}
-                                available
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* No Available Options Message */}
-                    {purchaseType === "tier" &&
-                      eventDetails.ticketTiers?.every((tier: any) => {
-                        const now = Date.now();
-                        return (
-                          (tier.saleStart && now < tier.saleStart) ||
-                          (tier.saleEnd && now > tier.saleEnd) ||
-                          tier.sold >= tier.quantity
-                        );
-                      }) && (
-                        <div className="text-center py-8">
-                          <Ticket className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                          <p className="text-muted-foreground font-medium">
-                            No tickets currently available
-                          </p>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Check back later or contact the organizer
-                          </p>
-                        </div>
-                      )}
-                  </div>
-
-                  {/* Seat Selection - Only for individual tickets */}
-                  {ENABLE_SEATING &&
-                    selectedTierId &&
-                    purchaseType === "tier" &&
-                    seatingChart &&
-                    seatingChart.sections.length > 0 && (
-                      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                        <h3 className="font-semibold text-foreground mb-4">Select Your Seats</h3>
-                        {(seatingChart as any).seatingStyle === "TABLE_BASED" ? (
-                          <InteractiveSeatingChart
-                            eventId={eventId}
-                            onSeatSelect={handleBallroomSeatSelect}
-                            onSeatDeselect={handleBallroomSeatDeselect}
-                            selectedSeats={selectedSeats as any}
-                            className="min-h-[600px]"
-                          />
-                        ) : (
-                          <SeatSelection
-                            eventId={eventId}
-                            ticketTierId={selectedTierId}
-                            requiredSeats={quantity}
-                            onSeatsSelected={handleSeatsSelected}
-                          />
-                        )}
-                      </div>
-                    )}
-                </>
-              ) : (
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <h3 className="font-semibold text-foreground mb-4">Payment Method</h3>
-
-                  {/* Payment Method Selector - Only show payment methods the organizer has configured */}
-                  {!useStripePayment && (hasStripeConfigured || hasPayPalConfigured || hasCashConfigured) && (
-                    <div className={`grid gap-3 mb-6 ${
-                      // Dynamic grid columns based on available payment methods
-                      [hasStripeConfigured, hasPayPalConfigured, hasCashConfigured].filter(Boolean).length === 1
-                        ? "grid-cols-1"
-                        : [hasStripeConfigured, hasPayPalConfigured, hasCashConfigured].filter(Boolean).length === 2
-                          ? "grid-cols-2"
-                          : "grid-cols-3"
-                    }`} data-testid="payment-method-selector">
-                      {hasStripeConfigured && (
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod("card")}
-                          data-testid="payment-method-card"
-                          className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                            paymentMethod === "card"
-                              ? "border-primary bg-accent text-foreground font-semibold"
-                              : "border hover:border"
-                          }`}
-                        >
-                          Card / Cash App Pay
-                        </button>
-                      )}
-                      {hasPayPalConfigured && (
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod("paypal")}
-                          data-testid="payment-method-paypal"
-                          className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                            paymentMethod === "paypal"
-                              ? "border-[#0070BA] bg-info/10 text-[#003087] font-semibold"
-                              : "border hover:border"
-                          }`}
-                        >
-                          PayPal
-                        </button>
-                      )}
-                      {hasCashConfigured && (
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod("cash")}
-                          data-testid="payment-method-cash"
-                          className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                            paymentMethod === "cash"
-                              ? "border-success bg-success/10 text-success font-semibold"
-                              : "border hover:border"
-                          }`}
-                        >
-                          Cash In-Person
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Payment Form - CUSTOMER payment methods only (Stripe, PayPal, Cash) */}
-                  {useStripePayment ? (
-                    // Stripe payment for CREDIT_CARD events
-                    <StripeCheckout
-                      total={total / 100}
-                      connectedAccountId={paymentConfig?.stripeConnectAccountId || ""}
-                      platformFee={platformFee + processingFee} // Total platform fee
-                      orderId={orderId || undefined}
-                      orderNumber={`ORD-${Date.now()}`}
-                      billingContact={{
-                        givenName: buyerName.split(" ")[0],
-                        familyName: buyerName.split(" ").slice(1).join(" "),
-                        email: buyerEmail,
-                      }}
-                      onPaymentSuccess={(result) =>
-                        handlePaymentSuccess({ paymentIntentId: result.paymentIntentId })
-                      }
-                      onPaymentError={handlePaymentError}
-                      onBack={() => setShowPayment(false)}
-                    />
-                  ) : paymentMethod === "card" ? (
-                    // Stripe payment for PREPAID events (customer pays via Stripe)
-                    <StripeCheckout
-                      total={total / 100}
-                      connectedAccountId={paymentConfig?.stripeConnectAccountId || ""}
-                      platformFee={platformFee + processingFee}
-                      orderId={orderId || undefined}
-                      orderNumber={`ORD-${Date.now()}`}
-                      billingContact={{
-                        givenName: buyerName.split(" ")[0],
-                        familyName: buyerName.split(" ").slice(1).join(" "),
-                        email: buyerEmail,
-                      }}
-                      onPaymentSuccess={(result) =>
-                        handlePaymentSuccess({ paymentIntentId: result.paymentIntentId })
-                      }
-                      onPaymentError={handlePaymentError}
-                      onBack={() => setShowPayment(false)}
-                    />
-                  ) : paymentMethod === "paypal" ? (
-                    // PayPal payment with split payment support
-                    <div className="space-y-4">
-                      <PayPalPayment
-                        amount={total}
-                        platformFee={platformFee + processingFee}
-                        orderId={orderId || undefined}
-                        description={`${eventDetails?.name} - ${selectedTier?.name || selectedBundle?.name} x ${quantity}`}
-                        organizerPaypalMerchantId={paymentConfig?.paypalMerchantId}
-                        onSuccess={(paypalOrderId) => {
-                          handlePaymentSuccess({ paymentId: paypalOrderId });
-                        }}
-                        onError={handlePaymentError}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPayment(false)}
-                        className="w-full px-6 py-3 border border rounded-lg hover:bg-card transition-colors"
-                      >
-                        Back
-                      </button>
-                    </div>
-                  ) : paymentMethod === "cash" ? (
-                    // Cash payment (physical USD, staff validated)
-                    <div className="space-y-4">
-                      <div className="bg-warning/10 border-2 border-warning/30 rounded-lg p-4">
-                        <div className="flex items-start gap-2">
-                          <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
-                          <p className="text-sm text-foreground">
-                            <strong>Important:</strong> Payment must be verified by event staff before your ticket is activated.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-3">
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            try {
-                              // Complete cash order with PENDING status
-                              if (purchaseType === "bundle") {
-                                await completeBundleOrder({
-                                  orderId: orderId as Id<"orders">,
-                                  paymentId: "CASH_PENDING",
-                                  paymentMethod: "CASH",
-                                });
-                              } else {
-                                await completeOrder({
-                                  orderId: orderId as Id<"orders">,
-                                  paymentId: "CASH_PENDING",
-                                  paymentMethod: "CASH",
-                                });
-                              }
-                              setIsSuccess(true);
-                              toast.success("Cash order created! Pay organizer within 30 minutes to activate tickets.");
-                            } catch (error: any) {
-                              console.error("Cash order error:", error);
-                              toast.error(error.message || "Failed to create cash order");
-                            }
-                          }}
-                          className="flex-1 px-6 py-3 bg-success text-white rounded-lg hover:bg-success/80 transition-colors font-medium"
-                        >
-                          Confirm Cash Payment
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setShowPayment(false)}
-                          className="px-6 py-3 border border rounded-lg hover:bg-card transition-colors"
-                        >
-                          Back
-                        </button>
-                      </div>
-                    </div>
-                  ) : null}
                 </div>
               )}
-            </motion.div>
 
-            {/* Right: Buyer Info, Discount Code, and Order Summary */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="space-y-6"
-            >
-              {/* Quantity */}
-              {!showPayment && (selectedTierId || selectedBundleId) && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.3 }}
-                  className="bg-white rounded-lg shadow-md p-6"
-                >
-                  <h3 className="font-semibold text-foreground mb-4">Quantity</h3>
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={quantity}
-                    onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                    className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
-                  />
-                </motion.div>
+              {/* Ticket Selection */}
+              <div className="bg-card rounded-xl shadow-md p-6">
+                <h3 className="font-bold text-foreground text-lg mb-4 flex items-center gap-2">
+                  <Ticket className="w-5 h-5" />
+                  Select Tickets
+                </h3>
+                <TicketSelector
+                  tiers={eventDetails.ticketTiers || []}
+                  bundles={eventDetails.bundles || []}
+                  selectedTierId={selectedTierId}
+                  selectedBundleId={selectedBundleId}
+                  purchaseType={purchaseType}
+                  quantity={quantity}
+                  onTierSelect={(id) => {
+                    setSelectedTierId(id);
+                    setSelectedBundleId(null);
+                  }}
+                  onBundleSelect={(id) => {
+                    setSelectedBundleId(id);
+                    setSelectedTierId(null);
+                  }}
+                  onPurchaseTypeChange={(type) => {
+                    setPurchaseType(type);
+                    if (type === "tier") setSelectedBundleId(null);
+                    else setSelectedTierId(null);
+                  }}
+                  onQuantityChange={setQuantity}
+                />
+              </div>
+
+              {/* Seat Selection */}
+              {ENABLE_SEATING && selectedTierId && purchaseType === "tier" && seatingChart?.sections?.length > 0 && (
+                <div className="bg-card rounded-xl shadow-md p-6">
+                  <h3 className="font-bold text-foreground text-lg mb-4">Select Your Seats</h3>
+                  {(seatingChart as any).seatingStyle === "TABLE_BASED" ? (
+                    <InteractiveSeatingChart
+                      eventId={eventId}
+                      onSeatSelect={handleBallroomSeatSelect}
+                      onSeatDeselect={handleBallroomSeatDeselect}
+                      selectedSeats={selectedSeats as any}
+                      className="min-h-[400px]"
+                    />
+                  ) : (
+                    <SeatSelection
+                      eventId={eventId}
+                      ticketTierId={selectedTierId}
+                      requiredSeats={quantity}
+                      onSeatsSelected={handleSeatsSelected}
+                    />
+                  )}
+                </div>
               )}
 
               {/* Buyer Info */}
-              {!showPayment && (selectedTierId || selectedBundleId) && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.35 }}
-                  className="bg-white rounded-lg shadow-md p-6"
-                >
-                  <h3 className="font-semibold text-foreground mb-4">Your Information</h3>
+              {hasSelection && (
+                <div className="bg-card rounded-xl shadow-md p-6">
+                  <h3 className="font-bold text-foreground text-lg mb-4">Your Information</h3>
 
-                  {/* Cash payment login notice */}
-                  {paymentMethod === "cash" && !currentUser && (
-                    <div className="bg-warning/10 border border-warning/30 rounded-lg p-3 mb-4">
-                      <p className="text-sm text-foreground">
-                        <strong>Note:</strong> Cash payments require you to be signed in.
-                        <Link href={`/login?redirect=/events/${eventId}/checkout`} className="text-primary underline ml-1">
-                          Sign in here
-                        </Link>
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Show logged-in user info for cash payments */}
                   {paymentMethod === "cash" && currentUser && (
                     <div className="bg-success/10 border border-success/30 rounded-lg p-3 mb-4">
-                      <p className="text-sm text-success">
-                        ✓ Signed in as <strong>{currentUser.email}</strong>
+                      <p className="text-sm text-success flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4" />
+                        Signed in as <strong>{currentUser.email}</strong>
                       </p>
                     </div>
                   )}
 
-                  <div className="space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
                         Full Name <span className="text-destructive">*</span>
@@ -1178,13 +702,12 @@ export default function CheckoutPage() {
                         onChange={(e) => setBuyerName(e.target.value)}
                         placeholder="John Doe"
                         data-testid="buyer-name"
-                        className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-muted-foreground"
-                        required
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
-                        Email Address <span className="text-destructive">*</span>
+                        Email <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="email"
@@ -1192,206 +715,234 @@ export default function CheckoutPage() {
                         onChange={(e) => setBuyerEmail(e.target.value)}
                         placeholder="john@example.com"
                         data-testid="buyer-email"
-                        className="w-full px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-muted-foreground"
-                        required
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                       />
                     </div>
                   </div>
-                </motion.div>
+                </div>
               )}
+            </div>
 
-              {/* Discount Code */}
-              {!showPayment && (selectedTierId || selectedBundleId) && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.35 }}
-                  className="bg-white rounded-lg shadow-md p-6"
-                >
-                  <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <Tag className="w-5 h-5" />
-                    Discount Code
-                    <span className="text-xs font-normal text-muted-foreground">(optional)</span>
-                  </h3>
-
-                  {/* Applied Discount Display */}
-                  {appliedDiscount ? (
-                    <div className="bg-success/10 border-2 border-success/30 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-semibold text-success text-lg">
-                            {appliedDiscount.code}
-                          </p>
-                          <p className="text-sm text-success mt-1">
-                            {appliedDiscount.discountType === "PERCENTAGE"
-                              ? `${appliedDiscount.discountValue}% off`
-                              : `$${(appliedDiscount.discountValue / 100).toFixed(2)} off`}
-                            {" - "}
-                            You save ${(appliedDiscount.discountAmountCents / 100).toFixed(2)}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={handleRemoveDiscount}
-                          className="p-2 text-success hover:bg-success/20 rounded-lg transition-colors"
-                          title="Remove discount"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Discount Code Input */}
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={discountCode}
-                          onChange={(e) => {
-                            setDiscountCode(e.target.value.toUpperCase());
-                            setDiscountError(null);
-                          }}
-                          onKeyPress={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              handleApplyDiscount();
-                            }
-                          }}
-                          placeholder="Have a code? Enter it here"
-                          data-testid="discount-code-input"
-                          className="flex-1 px-4 py-3 border border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-muted-foreground uppercase"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleApplyDiscount}
-                          data-testid="apply-discount-btn"
-                          className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium whitespace-nowrap"
-                        >
-                          Apply
-                        </button>
-                      </div>
-
-                      {/* Discount Error Message */}
-                      {discountError && (
-                        <motion.p
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-sm text-destructive mt-2 flex items-center gap-1"
-                        >
-                          {discountError}
-                        </motion.p>
-                      )}
-                    </>
-                  )}
-                </motion.div>
-              )}
-
+            {/* Right Column: Summary + Payment (2 cols) */}
+            <div className="lg:col-span-2 space-y-6">
               {/* Order Summary */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.4 }}
-                className="bg-white rounded-lg shadow-md p-6"
-              >
-                <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <Ticket className="w-5 h-5" />
-                  Order Summary
-                </h3>
+              <div className="bg-card rounded-xl shadow-md p-6 sticky top-20">
+                <h3 className="font-bold text-foreground text-lg mb-4">Order Summary</h3>
 
-                {selectedTier || selectedBundle ? (
+                {hasSelection ? (
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
-                      {purchaseType === "bundle" && selectedBundle ? (
-                        <>
-                          <div className="flex-1">
-                            <span className="text-foreground font-medium">{selectedBundle.name}</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {selectedBundle.includedTiers.map((includedTier: any) => (
-                                <span
-                                  key={includedTier.tierId}
-                                  className="text-xs px-1.5 py-0.5 bg-accent text-primary rounded"
-                                >
-                                  {includedTier.quantity}x {includedTier.tierName}
-                                </span>
-                              ))}
-                            </div>
-                            <span className="text-xs text-muted-foreground">Quantity: {quantity}</span>
-                          </div>
-                          <span className="font-medium ml-2">${(subtotal / 100).toFixed(2)}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-muted-foreground">
-                            {selectedTier?.name} x {quantity}
-                          </span>
-                          <span className="font-medium">${(subtotal / 100).toFixed(2)}</span>
-                        </>
-                      )}
+                    {/* Line item */}
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {purchaseType === "bundle" ? selectedBundle?.name : selectedTier?.name} x {quantity}
+                      </span>
+                      <span className="font-medium">${(subtotal / 100).toFixed(2)}</span>
                     </div>
 
+                    {/* Discount */}
                     {appliedDiscount && (
-                      <div className="flex items-center justify-between text-sm bg-success/10 -mx-2 px-2 py-2 rounded">
-                        <span className="text-success font-medium flex items-center gap-1">
+                      <div className="flex justify-between text-sm bg-success/10 -mx-2 px-2 py-2 rounded">
+                        <span className="text-success flex items-center gap-1">
                           <Tag className="w-4 h-4" />
-                          Discount ({appliedDiscount.code})
+                          {appliedDiscount.code}
                         </span>
-                        <span className="font-medium text-success">
-                          -${(appliedDiscount.discountAmountCents / 100).toFixed(2)}
-                        </span>
+                        <span className="text-success">-${(discountAmount / 100).toFixed(2)}</span>
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Platform Fee</span>
-                      <span className="font-medium">${(platformFee / 100).toFixed(2)}</span>
-                    </div>
+                    {/* Fees */}
+                    {(platformFee > 0 || processingFee > 0) && (
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Fees</span>
+                          <span className="font-medium">${((platformFee + processingFee) / 100).toFixed(2)}</span>
+                        </div>
+                      </>
+                    )}
 
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Processing Fee</span>
-                      <span className="font-medium">${(processingFee / 100).toFixed(2)}</span>
-                    </div>
-
+                    {/* Total */}
                     <div className="border-t pt-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-foreground">Total</span>
-                        <span className="text-2xl font-bold text-foreground">
-                          ${(total / 100).toFixed(2)}
-                        </span>
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-lg font-bold">Total</span>
+                        <span className="text-2xl font-bold text-primary">${(total / 100).toFixed(2)}</span>
                       </div>
                     </div>
 
-                    {!showPayment && (
+                    {/* Discount Code Input */}
+                    {!appliedDiscount && (
+                      <div className="pt-4 border-t">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={discountCode}
+                            onChange={(e) => {
+                              setDiscountCode(e.target.value.toUpperCase());
+                              setDiscountError(null);
+                            }}
+                            placeholder="Discount code"
+                            className="flex-1 px-3 py-2 border border-border rounded-lg text-sm uppercase"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleApplyDiscount}
+                            className="px-4 py-2 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                        {discountError && (
+                          <p className="text-sm text-destructive mt-1">{discountError}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {appliedDiscount && (
                       <button
                         type="button"
-                        id="continue-payment-btn"
-                        data-testid="continue-to-payment"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          // DEBUG: Change button text to confirm click handler runs
-                          const btn = document.getElementById('continue-payment-btn');
-                          if (btn) btn.textContent = 'Processing...';
-                          handleContinueToPayment();
-                        }}
-                        disabled={!buyerEmail || !buyerName}
-                        className={`w-full px-6 py-4 rounded-lg font-semibold transition-all ${
-                          buyerEmail && buyerName
-                            ? "bg-primary text-white hover:bg-primary/90 shadow-md hover:shadow-lg"
-                            : "bg-muted text-muted-foreground cursor-not-allowed"
-                        }`}
+                        onClick={() => setAppliedDiscount(null)}
+                        className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
                       >
-                        Continue to Payment
+                        <X className="w-3 h-3" />
+                        Remove discount
                       </button>
+                    )}
+
+                    {/* Payment Section */}
+                    {hasBuyerInfo && hasRequiredSeats && (
+                      <div className="pt-4 border-t space-y-4">
+                        <h4 className="font-semibold text-foreground">Payment Method</h4>
+
+                        {/* Free order */}
+                        {total === 0 ? (
+                          <button
+                            type="button"
+                            onClick={handleFreeOrder}
+                            disabled={isProcessing}
+                            className="w-full px-6 py-4 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 disabled:opacity-50"
+                          >
+                            {isProcessing ? "Processing..." : "Complete Free Order"}
+                          </button>
+                        ) : (
+                          <>
+                            {/* Payment method selector */}
+                            <div className="grid grid-cols-3 gap-2">
+                              {hasStripeConfigured && (
+                                <button
+                                  type="button"
+                                  onClick={() => setPaymentMethod("card")}
+                                  className={`p-3 rounded-lg border-2 transition-all text-center ${
+                                    paymentMethod === "card"
+                                      ? "border-primary bg-primary/5"
+                                      : "border-border hover:border-primary/50"
+                                  }`}
+                                >
+                                  <CreditCard className="w-5 h-5 mx-auto mb-1" />
+                                  <span className="text-xs">Card</span>
+                                </button>
+                              )}
+                              {hasPayPalConfigured && (
+                                <button
+                                  type="button"
+                                  onClick={() => setPaymentMethod("paypal")}
+                                  className={`p-3 rounded-lg border-2 transition-all text-center ${
+                                    paymentMethod === "paypal"
+                                      ? "border-[#0070BA] bg-blue-50"
+                                      : "border-border hover:border-[#0070BA]/50"
+                                  }`}
+                                >
+                                  <span className="text-[#003087] font-bold text-sm">Pay</span>
+                                  <span className="text-[#0070BA] font-bold text-sm">Pal</span>
+                                </button>
+                              )}
+                              {hasCashConfigured && (
+                                <button
+                                  type="button"
+                                  onClick={() => setPaymentMethod("cash")}
+                                  className={`p-3 rounded-lg border-2 transition-all text-center ${
+                                    paymentMethod === "cash"
+                                      ? "border-success bg-success/5"
+                                      : "border-border hover:border-success/50"
+                                  }`}
+                                >
+                                  <Banknote className="w-5 h-5 mx-auto mb-1" />
+                                  <span className="text-xs">Cash</span>
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Payment Form */}
+                            {paymentMethod === "card" && hasStripeConfigured && (
+                              <StripeCheckout
+                                total={total / 100}
+                                connectedAccountId={paymentConfig?.stripeConnectAccountId || ""}
+                                platformFee={platformFee + processingFee}
+                                orderId={orderId || undefined}
+                                orderNumber={`ORD-${Date.now()}`}
+                                billingContact={{
+                                  givenName: buyerName.split(" ")[0],
+                                  familyName: buyerName.split(" ").slice(1).join(" "),
+                                  email: buyerEmail,
+                                }}
+                                onPaymentSuccess={(result) => handlePaymentSuccess({ paymentIntentId: result.paymentIntentId })}
+                                onPaymentError={handlePaymentError}
+                              />
+                            )}
+
+                            {paymentMethod === "paypal" && hasPayPalConfigured && (
+                              <PayPalPayment
+                                amount={total}
+                                platformFee={platformFee + processingFee}
+                                orderId={orderId || undefined}
+                                description={`${eventDetails.name} - ${selectedTier?.name || selectedBundle?.name} x ${quantity}`}
+                                organizerPaypalMerchantId={paymentConfig?.paypalMerchantId}
+                                onSuccess={(paypalOrderId) => handlePaymentSuccess({ paymentId: paypalOrderId })}
+                                onError={handlePaymentError}
+                              />
+                            )}
+
+                            {paymentMethod === "cash" && (
+                              <div className="space-y-3">
+                                <div className="bg-warning/10 border border-warning/30 rounded-lg p-3">
+                                  <p className="text-sm text-foreground flex items-start gap-2">
+                                    <AlertTriangle className="w-4 h-4 text-warning flex-shrink-0 mt-0.5" />
+                                    Payment must be verified by staff before tickets are activated.
+                                  </p>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={handleCashPayment}
+                                  disabled={isProcessing}
+                                  className="w-full px-6 py-4 bg-success text-white rounded-xl font-semibold hover:bg-success/90 disabled:opacity-50"
+                                >
+                                  {isProcessing ? "Processing..." : "Confirm Cash Payment"}
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Missing requirements message */}
+                    {!canCheckout && hasSelection && (
+                      <div className="pt-4 border-t">
+                        <p className="text-sm text-muted-foreground text-center">
+                          {!hasBuyerInfo && "Enter your name and email to continue"}
+                          {hasBuyerInfo && !hasRequiredSeats && `Select ${quantity} seat${quantity > 1 ? "s" : ""} to continue`}
+                        </p>
+                      </div>
                     )}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground text-sm">Select a ticket type to continue</p>
+                  <p className="text-muted-foreground text-center py-8">
+                    Select tickets to see your order summary
+                  </p>
                 )}
-              </motion.div>
-            </motion.div>
+              </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
       <PublicFooter />
     </>
   );

@@ -46,30 +46,71 @@ export const USER_ROLES = {
 /**
  * Staff roles for event-specific staff members
  *
- * HIERARCHY:
- * - TEAM_MEMBERS: Business partners who work directly with organizers
- *   - Can get up to 100% commission (they're partners, not employees)
- *   - Can assign ASSOCIATES as sub-sellers WITHOUT organizer permission
- *   - Can manage their own sub-seller network
+ * NEW SIMPLIFIED MODEL (2 roles):
+ * - MANAGER: Full access to sales, can invite their own sellers
+ *   - Can sell all ticket tiers
+ *   - Can earn commission + override on team sales
+ *   - Can invite SELLERS via self-service link
+ *   - Can scan tickets if canScan is enabled
  *
- * - ASSOCIATES: Sub-sellers assigned by TEAM_MEMBERS
- *   - Receive ticket allocations from their parent TEAM_MEMBER
- *   - Earn commission split determined by the TEAM_MEMBER who assigned them
- *   - Cannot assign their own sub-sellers (unless explicitly enabled)
+ * - SELLER: Assigned sellers who earn commission on their sales
+ *   - Can sell assigned ticket tiers
+ *   - Earns commission on own sales only
+ *   - Can scan tickets if canScan is enabled
  *
- * - STAFF: Door staff for ticket scanning
- *   - Primarily scan tickets at event entrance
- *   - Can sell tickets if organizer permits
- *   - Cannot assign sub-sellers
+ * LEGACY ROLES (kept for backward compatibility):
+ * - STAFF: Maps to MANAGER with canScan=true
+ * - TEAM_MEMBERS: Maps to MANAGER
+ * - ASSOCIATES: Maps to SELLER
  */
 export const STAFF_ROLES = {
-  /** Door staff - Can scan tickets, can sell only if organizer permits */
+  // New simplified roles
+  /** Manager - Full access, can invite sellers, can scan if enabled */
+  MANAGER: "MANAGER",
+  /** Seller - Sells assigned tiers, earns commission, can scan if enabled */
+  SELLER: "SELLER",
+
+  // Legacy roles (kept for backward compatibility)
+  /** @deprecated Use MANAGER with canScan=true instead */
   STAFF: "STAFF",
-  /** Business partners - Can get up to 100% commission, can assign Associates as sub-sellers */
+  /** @deprecated Use MANAGER instead */
   TEAM_MEMBERS: "TEAM_MEMBERS",
-  /** Sub-sellers assigned by Team Members - earn commission from ticket sales */
+  /** @deprecated Use SELLER instead */
   ASSOCIATES: "ASSOCIATES",
 } as const;
+
+/**
+ * Map legacy roles to new simplified roles
+ */
+export function mapToNewRole(role: StaffRole): "MANAGER" | "SELLER" {
+  switch (role) {
+    case "MANAGER":
+      return "MANAGER";
+    case "SELLER":
+      return "SELLER";
+    case "STAFF":
+    case "TEAM_MEMBERS":
+      return "MANAGER";
+    case "ASSOCIATES":
+      return "SELLER";
+    default:
+      return "SELLER";
+  }
+}
+
+/**
+ * Check if a role is a manager-level role (can invite sellers)
+ */
+export function isManagerRole(role: StaffRole): boolean {
+  return role === "MANAGER" || role === "STAFF" || role === "TEAM_MEMBERS";
+}
+
+/**
+ * Check if a role is a seller-level role
+ */
+export function isSellerRole(role: StaffRole): boolean {
+  return role === "SELLER" || role === "ASSOCIATES";
+}
 
 /**
  * Staff roles for restaurant-specific staff members
@@ -195,6 +236,10 @@ export function getRoleName(role: UserRole | StaffRole | RestaurantStaffRole): s
     [USER_ROLES.ORGANIZER]: "Event Organizer",
     [USER_ROLES.RESTAURATEUR]: "Restaurateur",
     [USER_ROLES.USER]: "User",
+    // New simplified roles
+    [STAFF_ROLES.MANAGER]: "Manager",
+    [STAFF_ROLES.SELLER]: "Seller",
+    // Legacy roles
     [STAFF_ROLES.STAFF]: "Door Staff",
     [STAFF_ROLES.TEAM_MEMBERS]: "Team Member",
     [STAFF_ROLES.ASSOCIATES]: "Associate",
@@ -213,10 +258,16 @@ export function getRoleDescription(role: UserRole | StaffRole | RestaurantStaffR
     [USER_ROLES.ORGANIZER]: "Create and manage events, ticket tiers, and staff members",
     [USER_ROLES.RESTAURATEUR]: "Create and manage restaurants, menus, orders, and restaurant staff",
     [USER_ROLES.USER]: "Browse events and purchase tickets",
+    // New simplified roles
+    [STAFF_ROLES.MANAGER]:
+      "Full sales access - can sell all tiers, invite sellers, and earn override commission on team sales. Can scan if enabled.",
+    [STAFF_ROLES.SELLER]:
+      "Ticket seller - sells assigned tiers and earns commission. Can scan if enabled.",
+    // Legacy roles
     [STAFF_ROLES.STAFF]:
       "Scan and validate tickets at event entrance, can sell if organizer permits",
     [STAFF_ROLES.TEAM_MEMBERS]:
-      "Business partner - can earn up to 100% commission, can assign Associates as sub-sellers without organizer permission",
+      "Business partner - can earn up to 100% commission, can assign Associates as sub-sellers",
     [STAFF_ROLES.ASSOCIATES]:
       "Sub-seller assigned by a Team Member - receives ticket allocation and earns commission from sales",
     [RESTAURANT_STAFF_ROLES.RESTAURANT_MANAGER]:

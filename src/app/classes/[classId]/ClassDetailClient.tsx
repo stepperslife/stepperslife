@@ -1,11 +1,12 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   Calendar,
   MapPin,
@@ -20,6 +21,10 @@ import {
   Ticket,
   CalendarPlus,
   ChevronDown,
+  Bell,
+  CheckCircle,
+  Loader2,
+  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -32,6 +37,7 @@ import { formatEventDate, formatEventTime } from "@/lib/date-format";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 interface EnrollmentTier {
   _id: string;
@@ -85,12 +91,35 @@ interface ClassDetailClientProps {
 
 export default function ClassDetailClient({ classId, mockData }: ClassDetailClientProps) {
   const router = useRouter();
+  const { user } = useAuth();
+
+  // Waitlist state
+  const [showWaitlistModal, setShowWaitlistModal] = useState(false);
+  const [waitlistName, setWaitlistName] = useState("");
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [isJoiningWaitlist, setIsJoiningWaitlist] = useState(false);
+  const [waitlistSuccess, setWaitlistSuccess] = useState(false);
+  const [waitlistError, setWaitlistError] = useState<string | null>(null);
 
   // Only query Convex if we don't have mock data
   const convexClassDetails = useQuery(
     api.public.queries.getPublicClassDetails,
     mockData ? "skip" : { classId: classId as Id<"events"> }
   );
+
+  // Waitlist queries
+  const waitlistCount = useQuery(
+    api.waitlist.queries.getWaitlistCount,
+    mockData ? "skip" : { eventId: classId as Id<"events"> }
+  );
+
+  const isOnWaitlist = useQuery(
+    api.waitlist.queries.checkUserOnWaitlist,
+    mockData || !user?.email ? "skip" : { eventId: classId as Id<"events">, email: user.email }
+  );
+
+  // Waitlist mutation
+  const joinWaitlist = useMutation(api.waitlist.mutations.joinWaitlist);
 
   // Use mock data if available, otherwise use Convex data
   const classDetails = mockData || convexClassDetails;
@@ -112,6 +141,41 @@ export default function ClassDetailClient({ classId, mockData }: ClassDetailClie
     }
     // Navigate to class-specific checkout page
     router.push(`/classes/${classId}/checkout`);
+  };
+
+  // Handle joining waitlist
+  const handleJoinWaitlist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsJoiningWaitlist(true);
+    setWaitlistError(null);
+
+    try {
+      await joinWaitlist({
+        eventId: classId as Id<"events">,
+        email: waitlistEmail,
+        name: waitlistName,
+        quantity: 1,
+      });
+      setWaitlistSuccess(true);
+      // Reset form
+      setWaitlistName("");
+      setWaitlistEmail("");
+    } catch (error) {
+      setWaitlistError(error instanceof Error ? error.message : "Failed to join waitlist");
+    } finally {
+      setIsJoiningWaitlist(false);
+    }
+  };
+
+  // Open waitlist modal with pre-filled email if logged in
+  const openWaitlistModal = () => {
+    if (user?.email) {
+      setWaitlistEmail(user.email);
+      setWaitlistName(user.name || "");
+    }
+    setWaitlistSuccess(false);
+    setWaitlistError(null);
+    setShowWaitlistModal(true);
   };
 
   if (classDetails === undefined) {
@@ -392,9 +456,24 @@ export default function ClassDetailClient({ classId, mockData }: ClassDetailClie
                           <Button size="lg" className="px-8" disabled>
                             Class Ended
                           </Button>
+                        ) : isOnWaitlist ? (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <CheckCircle className="w-5 h-5 text-success" />
+                            <span>You're on the waitlist!</span>
+                          </div>
                         ) : (
-                          <Button size="lg" className="px-8" disabled>
-                            Sold Out
+                          <Button
+                            size="lg"
+                            className="px-8"
+                            variant="secondary"
+                            onClick={openWaitlistModal}
+                            data-testid="join-waitlist-btn"
+                          >
+                            <Bell className="w-5 h-5 mr-2" />
+                            Join Waitlist
+                            {waitlistCount !== undefined && waitlistCount > 0 && (
+                              <span className="ml-2 text-xs opacity-70">({waitlistCount})</span>
+                            )}
                           </Button>
                         )}
                       </div>
@@ -638,6 +717,115 @@ export default function ClassDetailClient({ classId, mockData }: ClassDetailClie
           </div>
         </div>
       </div>
+
+      {/* Waitlist Modal */}
+      {showWaitlistModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="relative w-full max-w-md bg-card rounded-xl shadow-2xl p-6"
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setShowWaitlistModal(false)}
+              className="absolute top-4 right-4 p-1 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {waitlistSuccess ? (
+              /* Success State */
+              <div className="text-center py-4">
+                <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-success" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">You're on the Waitlist!</h3>
+                <p className="text-muted-foreground mb-6">
+                  We'll notify you by email if a spot becomes available for this class.
+                </p>
+                <Button onClick={() => setShowWaitlistModal(false)} className="w-full">
+                  Got it
+                </Button>
+              </div>
+            ) : (
+              /* Form State */
+              <>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Bell className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">Join Waitlist</h3>
+                    <p className="text-sm text-muted-foreground">Get notified when a spot opens up</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleJoinWaitlist} className="space-y-4">
+                  <div>
+                    <label htmlFor="waitlist-name" className="block text-sm font-medium text-foreground mb-1">
+                      Your Name
+                    </label>
+                    <input
+                      id="waitlist-name"
+                      type="text"
+                      value={waitlistName}
+                      onChange={(e) => setWaitlistName(e.target.value)}
+                      required
+                      className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="waitlist-email" className="block text-sm font-medium text-foreground mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      id="waitlist-email"
+                      type="email"
+                      value={waitlistEmail}
+                      onChange={(e) => setWaitlistEmail(e.target.value)}
+                      required
+                      className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+
+                  {waitlistError && (
+                    <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-sm text-destructive">
+                      {waitlistError}
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 pt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowWaitlistModal(false)}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={isJoiningWaitlist} className="flex-1">
+                      {isJoiningWaitlist ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Joining...
+                        </>
+                      ) : (
+                        "Join Waitlist"
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </>
+            )}
+          </motion.div>
+        </div>
+      )}
+
       <PublicFooter />
     </>
   );

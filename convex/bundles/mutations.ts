@@ -405,3 +405,279 @@ export const deleteTicketBundle = mutation({
     return { success: true };
   },
 });
+
+// =====================================================
+// SIMPLIFIED BUNDLE CREATION HELPERS
+// =====================================================
+
+/**
+ * Quick Couple Bundle - Create a 2-ticket bundle with automatic discount
+ *
+ * Instead of manually specifying all the tier details, just provide:
+ * - The event ID and tier ID
+ * - A discount percentage
+ *
+ * The system automatically creates a "Couples Bundle" with 2 tickets.
+ */
+export const createCouplesBundle = mutation({
+  args: {
+    eventId: v.id("events"),
+    tierId: v.id("ticketTiers"),
+    discountPercent: v.number(), // e.g., 10 for 10% off
+    quantity: v.optional(v.number()), // Total bundles available (default: 50)
+    bundleName: v.optional(v.string()), // Default: "Couples Bundle"
+    saleEnd: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // Get tier details
+    const tier = await ctx.db.get(args.tierId);
+    if (!tier) throw new Error("Ticket tier not found");
+
+    // Get event details
+    const event = await ctx.db.get(args.eventId);
+    if (!event) throw new Error("Event not found");
+
+    // Calculate bundle price (2 tickets with discount)
+    const regularPrice = tier.price * 2;
+    const bundlePrice = Math.round(regularPrice * (1 - args.discountPercent / 100));
+
+    // Create the bundle
+    const bundleId = await ctx.db.insert("ticketBundles", {
+      bundleType: "SINGLE_EVENT",
+      eventId: args.eventId,
+      name: args.bundleName || "Couples Bundle",
+      description: `Save ${args.discountPercent}% when you buy 2 ${tier.name} tickets together!`,
+      price: bundlePrice,
+      includedTiers: [
+        {
+          tierId: args.tierId,
+          tierName: tier.name,
+          quantity: 2,
+          eventId: args.eventId,
+          eventName: event.name,
+        },
+      ],
+      totalQuantity: args.quantity || 50,
+      sold: 0,
+      regularPrice,
+      savings: regularPrice - bundlePrice,
+      saleEnd: args.saleEnd,
+      isActive: true,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return {
+      bundleId,
+      bundlePrice,
+      regularPrice,
+      savings: regularPrice - bundlePrice,
+      savingsPercent: args.discountPercent,
+    };
+  },
+});
+
+/**
+ * Quick Group Bundle - Create a group ticket bundle (4, 6, 8, or 10 tickets)
+ *
+ * Common for dance events where groups want to attend together.
+ * Larger groups get bigger discounts.
+ */
+export const createGroupBundle = mutation({
+  args: {
+    eventId: v.id("events"),
+    tierId: v.id("ticketTiers"),
+    groupSize: v.union(v.literal(4), v.literal(6), v.literal(8), v.literal(10)),
+    discountPercent: v.number(),
+    quantity: v.optional(v.number()), // Total bundles available
+    bundleName: v.optional(v.string()),
+    saleEnd: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const tier = await ctx.db.get(args.tierId);
+    if (!tier) throw new Error("Ticket tier not found");
+
+    const event = await ctx.db.get(args.eventId);
+    if (!event) throw new Error("Event not found");
+
+    const regularPrice = tier.price * args.groupSize;
+    const bundlePrice = Math.round(regularPrice * (1 - args.discountPercent / 100));
+
+    const defaultName = `Group of ${args.groupSize} Bundle`;
+
+    const bundleId = await ctx.db.insert("ticketBundles", {
+      bundleType: "SINGLE_EVENT",
+      eventId: args.eventId,
+      name: args.bundleName || defaultName,
+      description: `Save ${args.discountPercent}% when you buy ${args.groupSize} ${tier.name} tickets together!`,
+      price: bundlePrice,
+      includedTiers: [
+        {
+          tierId: args.tierId,
+          tierName: tier.name,
+          quantity: args.groupSize,
+          eventId: args.eventId,
+          eventName: event.name,
+        },
+      ],
+      totalQuantity: args.quantity || 25,
+      sold: 0,
+      regularPrice,
+      savings: regularPrice - bundlePrice,
+      saleEnd: args.saleEnd,
+      isActive: true,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return {
+      bundleId,
+      groupSize: args.groupSize,
+      bundlePrice,
+      regularPrice,
+      savings: regularPrice - bundlePrice,
+      savingsPercent: args.discountPercent,
+      pricePerPerson: Math.round(bundlePrice / args.groupSize),
+    };
+  },
+});
+
+/**
+ * VIP Bundle - Combine VIP and General Admission tickets
+ *
+ * Perfect for groups where some want VIP and others want GA.
+ * Example: "2 VIP + 2 GA at 15% off"
+ */
+export const createMixedBundle = mutation({
+  args: {
+    eventId: v.id("events"),
+    tiers: v.array(
+      v.object({
+        tierId: v.id("ticketTiers"),
+        quantity: v.number(),
+      })
+    ),
+    discountPercent: v.number(),
+    bundleName: v.string(),
+    description: v.optional(v.string()),
+    quantity: v.optional(v.number()),
+    saleEnd: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const event = await ctx.db.get(args.eventId);
+    if (!event) throw new Error("Event not found");
+
+    // Build included tiers with full details
+    let regularPrice = 0;
+    let totalTickets = 0;
+    const includedTiers = [];
+
+    for (const tierSpec of args.tiers) {
+      const tier = await ctx.db.get(tierSpec.tierId);
+      if (!tier) throw new Error(`Ticket tier ${tierSpec.tierId} not found`);
+
+      regularPrice += tier.price * tierSpec.quantity;
+      totalTickets += tierSpec.quantity;
+
+      includedTiers.push({
+        tierId: tierSpec.tierId,
+        tierName: tier.name,
+        quantity: tierSpec.quantity,
+        eventId: args.eventId,
+        eventName: event.name,
+      });
+    }
+
+    const bundlePrice = Math.round(regularPrice * (1 - args.discountPercent / 100));
+
+    const bundleId = await ctx.db.insert("ticketBundles", {
+      bundleType: "SINGLE_EVENT",
+      eventId: args.eventId,
+      name: args.bundleName,
+      description:
+        args.description || `Save ${args.discountPercent}% on this mixed ticket bundle!`,
+      price: bundlePrice,
+      includedTiers,
+      totalQuantity: args.quantity || 20,
+      sold: 0,
+      regularPrice,
+      savings: regularPrice - bundlePrice,
+      saleEnd: args.saleEnd,
+      isActive: true,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return {
+      bundleId,
+      totalTickets,
+      bundlePrice,
+      regularPrice,
+      savings: regularPrice - bundlePrice,
+      savingsPercent: args.discountPercent,
+    };
+  },
+});
+
+/**
+ * Table Bundle - Create a bundle for a table with seats
+ *
+ * Perfect for seated events where tables are sold as units.
+ */
+export const createTableBundle = mutation({
+  args: {
+    eventId: v.id("events"),
+    tierId: v.id("ticketTiers"), // Should be a table tier
+    seatsPerTable: v.number(),
+    discountPercent: v.number(),
+    quantity: v.optional(v.number()), // Number of tables available
+    bundleName: v.optional(v.string()),
+    saleEnd: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const tier = await ctx.db.get(args.tierId);
+    if (!tier) throw new Error("Ticket tier not found");
+
+    const event = await ctx.db.get(args.eventId);
+    if (!event) throw new Error("Event not found");
+
+    // Calculate price for table (seats × seat price with discount)
+    const regularPrice = tier.price * args.seatsPerTable;
+    const bundlePrice = Math.round(regularPrice * (1 - args.discountPercent / 100));
+
+    const bundleId = await ctx.db.insert("ticketBundles", {
+      bundleType: "SINGLE_EVENT",
+      eventId: args.eventId,
+      name: args.bundleName || `Table of ${args.seatsPerTable}`,
+      description: `Reserve a full table with ${args.seatsPerTable} seats and save ${args.discountPercent}%!`,
+      price: bundlePrice,
+      includedTiers: [
+        {
+          tierId: args.tierId,
+          tierName: tier.name,
+          quantity: args.seatsPerTable,
+          eventId: args.eventId,
+          eventName: event.name,
+        },
+      ],
+      totalQuantity: args.quantity || 10,
+      sold: 0,
+      regularPrice,
+      savings: regularPrice - bundlePrice,
+      saleEnd: args.saleEnd,
+      isActive: true,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return {
+      bundleId,
+      seatsPerTable: args.seatsPerTable,
+      bundlePrice,
+      regularPrice,
+      pricePerSeat: Math.round(bundlePrice / args.seatsPerTable),
+      savings: regularPrice - bundlePrice,
+      savingsPercent: args.discountPercent,
+    };
+  },
+});

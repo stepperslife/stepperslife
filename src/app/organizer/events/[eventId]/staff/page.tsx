@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-type StaffRole = "STAFF" | "TEAM_MEMBERS" | "ASSOCIATES";
+type StaffRole = "STAFF" | "TEAM_MEMBERS" | "ASSOCIATES" | "MANAGER" | "SELLER";
 
 // Recursive component for hierarchy tree visualization
 function HierarchyNode({
@@ -198,7 +198,7 @@ export default function StaffManagementPage() {
   );
   const [bulkCommissionValue, setBulkCommissionValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRole, setSelectedRole] = useState<StaffRole>("TEAM_MEMBERS");
+  const [selectedRole, setSelectedRole] = useState<StaffRole>("MANAGER");
   const [viewMode, setViewMode] = useState<"list" | "hierarchy">("list");
   const [currentUser, setCurrentUser] = useState<any>(null);
 
@@ -305,7 +305,7 @@ export default function StaffManagementPage() {
         name: staffName,
         phone: staffPhone || undefined,
         role: selectedRole,
-        canScan: selectedRole === "TEAM_MEMBERS" ? canScan : undefined,
+        canScan: canScan,
         commissionType,
         commissionValue: commissionAmount,
       });
@@ -859,51 +859,53 @@ export default function StaffManagementPage() {
               {/* Role Selection */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-3">Role</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   {[
-                    { value: "STAFF", label: "Door Staff", desc: "Scans tickets at entry" },
                     {
-                      value: "TEAM_MEMBERS",
-                      label: "Team Member",
-                      desc: "Sells tickets with commission",
+                      value: "MANAGER",
+                      label: "Manager",
+                      desc: "Full access, can invite sellers, earns override",
                     },
                     {
-                      value: "ASSOCIATES",
-                      label: "Associate",
-                      desc: "Sub-seller under team member",
+                      value: "SELLER",
+                      label: "Seller",
+                      desc: "Sells assigned tiers, earns commission",
                     },
                   ].map((role) => (
                     <button
                       key={role.value}
                       onClick={() => setSelectedRole(role.value as StaffRole)}
-                      className={`p-3 border-2 rounded-lg transition-all text-left ${
+                      className={`p-4 border-2 rounded-lg transition-all text-left ${
                         selectedRole === role.value
                           ? "border-primary bg-accent"
                           : "border hover:border"
                       }`}
                     >
-                      <p className="font-semibold text-foreground text-sm">{role.label}</p>
+                      <p className="font-semibold text-foreground">{role.label}</p>
                       <p className="text-xs text-muted-foreground mt-1">{role.desc}</p>
                     </button>
                   ))}
                 </div>
 
-                {/* Additional Permissions for Team Members */}
-                {selectedRole === "TEAM_MEMBERS" && (
-                  <div className="mt-4 p-3 bg-card rounded-lg">
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={canScan}
-                        onChange={(e) => setCanScan(e.target.checked)}
-                        className="w-4 h-4 text-primary rounded border focus:ring-ring"
-                      />
-                      <span className="text-sm text-foreground">
-                        Also allow this seller to scan tickets at entry
+                {/* Scan Permission - available for both roles */}
+                <div className="mt-4 p-3 bg-card rounded-lg border">
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={canScan}
+                      onChange={(e) => setCanScan(e.target.checked)}
+                      className="w-4 h-4 text-primary rounded border focus:ring-ring"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-foreground">
+                        Can scan tickets at door
                       </span>
-                    </label>
-                  </div>
-                )}
+                      <p className="text-xs text-muted-foreground">
+                        Enable if they will work check-in
+                      </p>
+                    </div>
+                  </label>
+                </div>
               </div>
 
               {/* Staff Information */}
@@ -948,8 +950,8 @@ export default function StaffManagementPage() {
                 </div>
               </div>
 
-              {/* Commission Structure (only for TEAM_MEMBERS and ASSOCIATES roles) */}
-              {(selectedRole === "TEAM_MEMBERS" || selectedRole === "ASSOCIATES") && (
+              {/* Commission Structure (for all selling roles) */}
+              {(selectedRole === "MANAGER" || selectedRole === "SELLER" || selectedRole === "TEAM_MEMBERS" || selectedRole === "ASSOCIATES") && (
                 <div className="border-t pt-6">
                   <h3 className="font-semibold text-foreground mb-4">Commission Structure</h3>
 
@@ -1095,25 +1097,28 @@ export default function StaffManagementPage() {
                 </div>
               </div>
 
-              {/* Scanning Permission for Team Members */}
-              {editingStaff.role === "TEAM_MEMBERS" && (
-                <div className="p-3 bg-card rounded-lg">
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={canScan}
-                      onChange={(e) => setCanScan(e.target.checked)}
-                      className="w-4 h-4 text-primary rounded border focus:ring-ring"
-                    />
-                    <span className="text-sm text-foreground">
-                      Also allow this seller to scan tickets at entry
+              {/* Scanning Permission - available for all roles */}
+              <div className="p-3 bg-card rounded-lg border">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={canScan}
+                    onChange={(e) => setCanScan(e.target.checked)}
+                    className="w-4 h-4 text-primary rounded border focus:ring-ring"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-foreground">
+                      Can scan tickets at door
                     </span>
-                  </label>
-                </div>
-              )}
+                    <p className="text-xs text-muted-foreground">
+                      Enable if they will work check-in
+                    </p>
+                  </div>
+                </label>
+              </div>
 
-              {/* Commission Structure (only for TEAM_MEMBERS and ASSOCIATES roles) */}
-              {(editingStaff.role === "TEAM_MEMBERS" || editingStaff.role === "ASSOCIATES") && (
+              {/* Commission Structure (for all selling roles) */}
+              {(editingStaff.role === "TEAM_MEMBERS" || editingStaff.role === "ASSOCIATES" || editingStaff.role === "MANAGER" || editingStaff.role === "SELLER") && (
                 <div className="border-t pt-6">
                   <h3 className="font-semibold text-foreground mb-4">Commission Structure</h3>
 

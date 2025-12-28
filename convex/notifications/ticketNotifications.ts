@@ -103,10 +103,10 @@ export const sendCashOrderConfirmation = action({
 
     // Fetch order data using internal mutation
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = await ctx.runMutation(
-      internal.notifications.ticketNotifications.getOrderDataForEmail as any,
-      { orderId: args.orderId }
-    );
+    const getOrderDataFn = (internal as any).notifications?.ticketNotifications?.getOrderDataForEmail;
+    const data = getOrderDataFn
+      ? await ctx.runMutation(getOrderDataFn, { orderId: args.orderId })
+      : { success: false, error: "Internal function not found" };
 
     if (!data.success || !data.order || !data.event || !data.tickets) {
       console.error(`[sendCashOrderConfirmation] Failed to get order data:`, data.error);
@@ -199,10 +199,10 @@ export const resendTicketConfirmation = action({
 
     // Fetch order data using internal mutation
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = await ctx.runMutation(
-      internal.notifications.ticketNotifications.getOrderDataForEmail as any,
-      { orderId: args.orderId }
-    );
+    const getOrderDataFn = (internal as any).notifications?.ticketNotifications?.getOrderDataForEmail;
+    const data = getOrderDataFn
+      ? await ctx.runMutation(getOrderDataFn, { orderId: args.orderId })
+      : { success: false, error: "Internal function not found" };
 
     if (!data.success || !data.order || !data.event || !data.tickets) {
       throw new Error(data.error || "Failed to get order data");

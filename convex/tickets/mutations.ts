@@ -1673,3 +1673,143 @@ export const duplicateTicketTier = mutation({
     };
   },
 });
+
+// =====================================================
+// SIMPLIFIED EARLY BIRD PRICING HELPERS
+// =====================================================
+
+/**
+ * Quick Early Bird Setup - Simplified way to add early bird pricing
+ *
+ * Instead of manually configuring pricingTiers with timestamps,
+ * just specify a discount and end date.
+ *
+ * Example: "20% off until Dec 31" automatically creates:
+ * - Early Bird tier: 80% of base price, ends Dec 31
+ * - Regular tier: 100% of base price, starts Dec 31
+ */
+export const setupEarlyBirdPricing = mutation({
+  args: {
+    tierId: v.id("ticketTiers"),
+    discountPercent: v.number(), // e.g., 20 for 20% off
+    earlyBirdEndDate: v.number(), // Timestamp when early bird ends
+    earlyBirdName: v.optional(v.string()), // Default: "Early Bird"
+    regularName: v.optional(v.string()), // Default: "Regular"
+  },
+  handler: async (ctx, args) => {
+    const tier = await ctx.db.get(args.tierId);
+    if (!tier) throw new Error("Ticket tier not found");
+
+    // Calculate early bird price (discount from base price)
+    const regularPrice = tier.price;
+    const earlyBirdPrice = Math.round(regularPrice * (1 - args.discountPercent / 100));
+
+    // Create pricing tiers
+    const pricingTiers = [
+      {
+        name: args.earlyBirdName || "Early Bird",
+        price: earlyBirdPrice,
+        availableFrom: Date.now(), // Start immediately
+        availableUntil: args.earlyBirdEndDate,
+      },
+      {
+        name: args.regularName || "Regular",
+        price: regularPrice,
+        availableFrom: args.earlyBirdEndDate,
+        // No availableUntil - runs until sale end
+      },
+    ];
+
+    await ctx.db.patch(args.tierId, {
+      pricingTiers,
+      updatedAt: Date.now(),
+    });
+
+    return {
+      success: true,
+      earlyBirdPrice,
+      regularPrice,
+      savings: regularPrice - earlyBirdPrice,
+      savingsPercent: args.discountPercent,
+      earlyBirdEnds: args.earlyBirdEndDate,
+    };
+  },
+});
+
+/**
+ * Three-Tier Pricing Setup (Early Bird → Regular → Last Chance)
+ *
+ * Common pattern for events that want to reward early buyers
+ * and create urgency near the event date.
+ */
+export const setupThreeTierPricing = mutation({
+  args: {
+    tierId: v.id("ticketTiers"),
+    earlyBirdDiscountPercent: v.number(), // e.g., 30 for 30% off
+    earlyBirdEndDate: v.number(),
+    lastChancePremiumPercent: v.number(), // e.g., 20 for 20% markup
+    lastChanceStartDate: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const tier = await ctx.db.get(args.tierId);
+    if (!tier) throw new Error("Ticket tier not found");
+
+    const regularPrice = tier.price;
+    const earlyBirdPrice = Math.round(regularPrice * (1 - args.earlyBirdDiscountPercent / 100));
+    const lastChancePrice = Math.round(regularPrice * (1 + args.lastChancePremiumPercent / 100));
+
+    const pricingTiers = [
+      {
+        name: "Early Bird",
+        price: earlyBirdPrice,
+        availableFrom: Date.now(),
+        availableUntil: args.earlyBirdEndDate,
+      },
+      {
+        name: "Regular",
+        price: regularPrice,
+        availableFrom: args.earlyBirdEndDate,
+        availableUntil: args.lastChanceStartDate,
+      },
+      {
+        name: "Last Chance",
+        price: lastChancePrice,
+        availableFrom: args.lastChanceStartDate,
+      },
+    ];
+
+    await ctx.db.patch(args.tierId, {
+      pricingTiers,
+      updatedAt: Date.now(),
+    });
+
+    return {
+      success: true,
+      earlyBirdPrice,
+      regularPrice,
+      lastChancePrice,
+      earlyBirdSavings: regularPrice - earlyBirdPrice,
+      lastChancePremium: lastChancePrice - regularPrice,
+    };
+  },
+});
+
+/**
+ * Clear early bird pricing - revert to simple base price
+ */
+export const clearEarlyBirdPricing = mutation({
+  args: {
+    tierId: v.id("ticketTiers"),
+  },
+  handler: async (ctx, args) => {
+    const tier = await ctx.db.get(args.tierId);
+    if (!tier) throw new Error("Ticket tier not found");
+
+    await ctx.db.patch(args.tierId, {
+      pricingTiers: undefined,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true, basePrice: tier.price };
+  },
+});
