@@ -2,7 +2,8 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Package, ShoppingCart, DollarSign, AlertCircle, Store, Users, ShoppingBag, Tag, Sparkles, TrendingUp, Search, ChevronDown, X } from "lucide-react";
+import { Package, ShoppingCart, DollarSign, AlertCircle, Store, Users, ShoppingBag, Tag, Sparkles, TrendingUp, Search, ChevronDown, X, Heart } from "lucide-react";
+import { WishlistButton } from "@/components/marketplace/WishlistButton";
 import { VendorTierBadge } from "@/components/marketplace/VendorTierBadge";
 import Link from "next/link";
 import Image from "next/image";
@@ -640,6 +641,11 @@ export default function ShopPage() {
                                 )}
                               </div>
                             </div>
+
+                            {/* Wishlist Button - Bottom Right */}
+                            <div className="absolute bottom-3 right-3">
+                              <WishlistButton productId={product._id} size="sm" />
+                            </div>
                           </div>
                         </Link>
                       </motion.div>
@@ -686,9 +692,12 @@ export default function ShopPage() {
 
                       {/* Right: Content */}
                       <div className="flex-1 flex flex-col justify-center min-w-0">
-                        <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                          {product.name}
-                        </h3>
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                            {product.name}
+                          </h3>
+                          <WishlistButton productId={product._id} size="sm" />
+                        </div>
 
                         {/* Vendor Info */}
                         {product.vendor ? (
@@ -782,6 +791,11 @@ export default function ShopPage() {
                             </span>
                           </div>
                         )}
+
+                        {/* Wishlist Button - Bottom Right */}
+                        <div className="absolute bottom-3 right-3">
+                          <WishlistButton productId={product._id} size="sm" />
+                        </div>
                       </div>
 
                       <div className="p-4 space-y-2">

@@ -1685,6 +1685,16 @@ export default defineSchema({
     .index("by_restaurant", ["restaurantId"])
     .index("by_user_restaurant", ["userId", "restaurantId"]),
 
+  // Product Wishlists - Users can save products for later
+  productWishlists: defineTable({
+    userId: v.id("users"),
+    productId: v.id("products"),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_product", ["productId"])
+    .index("by_user_product", ["userId", "productId"]),
+
   // ==========================================
   // VENDOR MARKETPLACE MODULE - Multi-Vendor Store System
   // ==========================================

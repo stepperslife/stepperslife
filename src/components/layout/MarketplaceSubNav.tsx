@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Package, HelpCircle, DollarSign, Store } from "lucide-react";
+import { ShoppingBag, Package, HelpCircle, DollarSign, Store, Heart } from "lucide-react";
 
 export function MarketplaceSubNav() {
   const pathname = usePathname();
 
   const navItems = [
     { href: "/marketplace", label: "Browse Products", icon: ShoppingBag },
+    { href: "/marketplace/wishlist", label: "Wishlist", icon: Heart },
     { href: "/vendor/apply", label: "Create Store", icon: Store },
     { href: "/marketplace/pricing", label: "Pricing", icon: DollarSign },
   ];

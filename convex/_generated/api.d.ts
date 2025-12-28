@@ -77,6 +77,7 @@ import type * as platformDebt_queries from "../platformDebt/queries.js";
 import type * as productOrders_mutations from "../productOrders/mutations.js";
 import type * as productOrders_queries from "../productOrders/queries.js";
 import type * as productReviews from "../productReviews.js";
+import type * as productWishlists from "../productWishlists.js";
 import type * as products_mutations from "../products/mutations.js";
 import type * as products_orders from "../products/orders.js";
 import type * as products_queries from "../products/queries.js";
@@ -195,6 +196,7 @@ declare const fullApi: ApiFromModules<{
   "productOrders/mutations": typeof productOrders_mutations;
   "productOrders/queries": typeof productOrders_queries;
   productReviews: typeof productReviews;
+  productWishlists: typeof productWishlists;
   "products/mutations": typeof products_mutations;
   "products/orders": typeof products_orders;
   "products/queries": typeof products_queries;
