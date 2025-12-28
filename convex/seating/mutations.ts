@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "../_generated/server";
+import { mutation, internalMutation } from "../_generated/server";
 import { requireEventOwnership } from "../lib/auth";
 
 /**
@@ -662,5 +662,138 @@ export const cleanupExpiredSessionHolds = mutation({
     }
 
     return { success: true, cleanedCount };
+  },
+});
+
+/**
+ * INTERNAL: Create test seating chart without auth (for seeding/testing)
+ * This should only be called from CLI during development/testing
+ */
+export const seedTestSeatingChart = internalMutation({
+  args: {
+    eventId: v.id("events"),
+  },
+  handler: async (ctx, args) => {
+    // Check if seating chart already exists
+    const existing = await ctx.db
+      .query("seatingCharts")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+      .first();
+
+    if (existing) {
+      return { seatingChartId: existing._id, message: "Seating chart already exists" };
+    }
+
+    // Create a realistic ballroom layout: 8 round tables with 8 seats each
+    type SeatType = "STANDARD" | "VIP" | "WHEELCHAIR" | "COMPANION" | "BLOCKED" | "STANDING" | "PARKING" | "TENT";
+    type SeatStatus = "AVAILABLE" | "RESERVED" | "UNAVAILABLE";
+    type TableShape = "ROUND" | "RECTANGULAR" | "SQUARE" | "CUSTOM";
+
+    const generateSeats = (tableId: string): Array<{
+      id: string;
+      number: string;
+      type: SeatType;
+      status: SeatStatus;
+      position: { angle: number };
+    }> => {
+      const seats = [];
+      for (let i = 1; i <= 8; i++) {
+        seats.push({
+          id: `${tableId}-seat-${i}`,
+          number: `${i}`,
+          type: (i === 1 ? "VIP" : "STANDARD") as SeatType,
+          status: "AVAILABLE" as SeatStatus,
+          position: {
+            angle: (i - 1) * 45, // 360 / 8 = 45 degrees per seat
+          },
+        });
+      }
+      return seats;
+    };
+
+    const createTable = (id: string, num: number, x: number, y: number) => ({
+      id,
+      number: num as number | string,
+      x,
+      y,
+      shape: "ROUND" as TableShape,
+      width: 80,
+      height: 80,
+      capacity: 8,
+      rotation: 0,
+      seats: generateSeats(id),
+    });
+
+    // 8 tables in a 3-2-3 arrangement
+    const tables = [
+      // Front row (3 tables)
+      createTable("table-1", 1, 120, 100),
+      createTable("table-2", 2, 280, 100),
+      createTable("table-3", 3, 440, 100),
+      // Middle row (2 tables)
+      createTable("table-4", 4, 200, 220),
+      createTable("table-5", 5, 360, 220),
+      // Back row (3 tables)
+      createTable("table-6", 6, 120, 340),
+      createTable("table-7", 7, 280, 340),
+      createTable("table-8", 8, 440, 340),
+    ];
+
+    const sections = [
+      {
+        id: "main-floor",
+        name: "Main Floor",
+        color: "#3B82F6",
+        x: 0,
+        y: 0,
+        width: 600,
+        height: 500,
+        containerType: "TABLES" as const,
+        tables,
+      },
+    ];
+
+    const seatingChartId = await ctx.db.insert("seatingCharts", {
+      eventId: args.eventId,
+      name: "Ballroom Seating",
+      seatingStyle: "TABLE_BASED",
+      sections,
+      totalSeats: 64, // 8 tables x 8 seats
+      reservedSeats: 0,
+      isActive: true,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return { seatingChartId, message: "Created ballroom seating chart with 8 tables (64 seats)" };
+  },
+});
+
+/**
+ * Link seating chart sections to ticket tiers for pricing
+ */
+export const linkSectionToTicketTier = internalMutation({
+  args: {
+    seatingChartId: v.id("seatingCharts"),
+    sectionId: v.string(),
+    ticketTierId: v.id("ticketTiers"),
+  },
+  handler: async (ctx, args) => {
+    const chart = await ctx.db.get(args.seatingChartId);
+    if (!chart) throw new Error("Seating chart not found");
+
+    const updatedSections = (chart.sections || []).map((section: any) => {
+      if (section.id === args.sectionId) {
+        return { ...section, ticketTierId: args.ticketTierId };
+      }
+      return section;
+    });
+
+    await ctx.db.patch(args.seatingChartId, {
+      sections: updatedSections,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true, message: `Linked section ${args.sectionId} to ticket tier` };
   },
 });

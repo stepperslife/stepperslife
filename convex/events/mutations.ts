@@ -1031,3 +1031,26 @@ export const deleteEvent = mutation({
     return { success: true, eventId: args.eventId };
   },
 });
+
+/**
+ * Admin-only: Update event dates (for testing purposes)
+ */
+export const updateEventDates = internalMutation({
+  args: {
+    eventId: v.id("events"),
+    startDate: v.number(),
+    endDate: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const event = await ctx.db.get(args.eventId);
+    if (!event) throw new Error("Event not found");
+
+    await ctx.db.patch(args.eventId, {
+      startDate: args.startDate,
+      endDate: args.endDate,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true, message: "Event dates updated" };
+  },
+});

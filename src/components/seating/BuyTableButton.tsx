@@ -22,7 +22,8 @@ export default function BuyTableButton({
 }: BuyTableButtonProps) {
   if (availableSeats === 0) return null;
 
-  const totalPrice = availableSeats * pricePerSeat;
+  const totalPriceCents = availableSeats * pricePerSeat;
+  const totalPriceDollars = totalPriceCents / 100; // Convert from cents to dollars
   const isPartiallyFilled = availableSeats < totalSeats;
 
   return (
@@ -46,7 +47,7 @@ export default function BuyTableButton({
             : `Buy Entire Table ${tableNumber}`}
         </span>
         <span className="text-xs opacity-90 flex items-center gap-1">
-          <DollarSign className="w-3 h-3" />${totalPrice.toFixed(2)} total
+          <DollarSign className="w-3 h-3" />${totalPriceDollars.toFixed(2)} total
         </span>
       </div>
     </button>
