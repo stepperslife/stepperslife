@@ -190,8 +190,8 @@ export const seedRestaurants = mutation({
         slug: "soul-food-spot",
         description: "Authentic soul food in the heart of Chicago. Famous for our fried chicken and mac & cheese.",
         cuisine: ["Soul Food", "American", "Southern"],
-        logoUrl: "https://images.unsplash.com/photo-1623855244605-ed5c86548028?w=200&q=80",
-        coverImageUrl: "https://images.unsplash.com/photo-1623855244605-ed5c86548028?w=800&q=80",
+        logoUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&q=80",
+        coverImageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80",
         acceptingOrders: true,
         estimatedPickupTime: 30,
         address: "123 Soul Street",
@@ -619,6 +619,25 @@ export const updateInternal = internalMutation({
   handler: async (ctx, args) => {
     const { id, ...updates } = args;
     await ctx.db.patch(id, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+    return { success: true };
+  },
+});
+
+/**
+ * Admin fix for updating restaurant images (no auth required - for setup/seeding only)
+ */
+export const fixRestaurantImage = mutation({
+  args: {
+    restaurantId: v.id("restaurants"),
+    logoUrl: v.optional(v.string()),
+    coverImageUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { restaurantId, ...updates } = args;
+    await ctx.db.patch(restaurantId, {
       ...updates,
       updatedAt: Date.now(),
     });

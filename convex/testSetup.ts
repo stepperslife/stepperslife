@@ -71,14 +71,13 @@ export const completeSetup = action({
     });
     steps.push("✓ Order acceptance enabled");
 
-    // 2. Create test customer account
-    const testCustomer = await ctx.runMutation(api.testing.setup.createTestUser, {});
-    steps.push(`✓ Test customer: ${testCustomer.email} (${testCustomer.created ? "created" : "exists"})`);
+    // Test customer creation skipped - use registration flow instead
+    steps.push("ℹ Use registration form to create test customer");
 
     return {
       success: true,
       restaurantId: restaurant._id,
-      testCustomerEmail: testCustomer.email,
+      testCustomerEmail: "register via /auth/register",
       testCustomerPassword: "TestPassword123!",
       steps,
     };

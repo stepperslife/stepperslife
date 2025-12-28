@@ -625,101 +625,13 @@ export const seedMarketplace = mutation({
       }
     }
 
-    // ==========================================
-    // SAMPLE ORDERS - For testing order flow
-    // ==========================================
-    const sampleOrders = [
-      {
-        orderNumber: "SL-TEST-001",
-        items: [
-          {
-            productId: "test" as any, // Will be ignored in display
-            productName: "Classic Stepping Polo - Premium",
-            variantId: "polo-l-black",
-            variantName: "Large / Black",
-            quantity: 2,
-            price: 5999,
-            totalPrice: 11998,
-          },
-          {
-            productId: "test" as any,
-            productName: "Stepping Silhouette Gold Earrings",
-            quantity: 1,
-            price: 4499,
-            totalPrice: 4499,
-          },
-        ],
-        customerEmail: "demo@stepperslife.com",
-        customerName: "Demo Customer",
-        customerPhone: "(312) 555-1234",
-        subtotal: 16497,
-        shippingCost: 999,
-        taxAmount: 1443,
-        totalAmount: 18939,
-        paymentStatus: "PENDING" as const,
-        fulfillmentStatus: "PENDING" as const,
-        shippingMethod: "DELIVERY" as const,
-        shippingAddress: {
-          name: "Demo Customer",
-          address1: "123 Demo Street",
-          city: "Chicago",
-          state: "IL",
-          zipCode: "60601",
-          country: "United States",
-        },
-        createdAt: now - 2 * 24 * 60 * 60 * 1000, // 2 days ago
-        updatedAt: now,
-      },
-      {
-        orderNumber: "SL-TEST-002",
-        items: [
-          {
-            productId: "test" as any,
-            productName: "Professional Dance Shoes - Men's Oxford",
-            variantId: "shoe-m-10",
-            variantName: "Size 10",
-            quantity: 1,
-            price: 14999,
-            totalPrice: 14999,
-          },
-        ],
-        customerEmail: "test@example.com",
-        customerName: "Test Buyer",
-        customerPhone: "(404) 555-9876",
-        subtotal: 14999,
-        shippingCost: 0,
-        taxAmount: 1312,
-        totalAmount: 16311,
-        paymentStatus: "PENDING" as const,
-        fulfillmentStatus: "PROCESSING" as const,
-        shippingMethod: "PICKUP" as const,
-        shippingAddress: {
-          name: "Test Buyer",
-          address1: "456 Test Ave",
-          city: "Atlanta",
-          state: "GA",
-          zipCode: "30309",
-          country: "United States",
-        },
-        pickupLocation: "Will pick up at Saturday's event",
-        createdAt: now - 5 * 24 * 60 * 60 * 1000, // 5 days ago
-        updatedAt: now - 3 * 24 * 60 * 60 * 1000,
-      },
-    ];
-
-    // Insert sample orders
-    let orderCount = 0;
-    for (const order of sampleOrders) {
-      await ctx.db.insert("productOrders", order);
-      orderCount++;
-    }
+    // Note: Sample orders removed - they require valid product IDs
+    // Orders should be created through the normal checkout flow
 
     return {
-      message: "🎉 Marketplace seeded successfully!",
+      message: "Marketplace seeded successfully!",
       vendorCount: vendors.length,
       productCount: productCount,
-      orderCount: orderCount,
-      testOrderNumbers: ["SL-TEST-001", "SL-TEST-002"],
     };
   },
 });

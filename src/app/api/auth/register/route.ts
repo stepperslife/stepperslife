@@ -46,18 +46,39 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       // If getUserByEmail throws an error (user not found), that's expected
       // Continue with registration
+      console.log("[Register] User lookup returned error (expected for new users):", error);
     }
 
     // Hash the password using centralized utility
-    const hashedPassword = await hashPassword(password);
+    let hashedPassword: string;
+    try {
+      hashedPassword = await hashPassword(password);
+      console.log("[Register] Password hashed successfully");
+    } catch (hashError) {
+      console.error("[Register] Password hashing failed:", hashError);
+      return NextResponse.json(
+        { error: "Failed to process registration. Please try again." },
+        { status: 500 }
+      );
+    }
 
     // Create the user in Convex
-    const userId = await convex.mutation(api.users.mutations.createUser, {
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      passwordHash: hashedPassword, // Fixed: was 'password', should be 'passwordHash'
-      role: "organizer", // Default role
-    });
+    let userId;
+    try {
+      userId = await convex.mutation(api.users.mutations.createUser, {
+        name: name.trim(),
+        email: email.toLowerCase().trim(),
+        passwordHash: hashedPassword,
+        role: "user", // Default role - users can become organizers when they create events
+      });
+      console.log("[Register] User created successfully:", userId);
+    } catch (createError) {
+      console.error("[Register] Convex createUser failed:", createError);
+      return NextResponse.json(
+        { error: "Failed to create user account. Please try again." },
+        { status: 500 }
+      );
+    }
 
     if (!userId) {
       return NextResponse.json({ error: "Failed to create user account" }, { status: 500 });
@@ -68,8 +89,9 @@ export async function POST(request: NextRequest) {
       await convex.mutation(api.credits.mutations.initializeCredits, {
         organizerId: userId,
       });
-    } catch (error) {
-      console.error("Failed to initialize credits:", error);
+      console.log("[Register] Credits initialized for user:", userId);
+    } catch (creditError) {
+      console.error("[Register] Failed to initialize credits:", creditError);
       // Don't fail registration if credits initialization fails
     }
 
@@ -82,7 +104,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("[Register] Unexpected registration error:", error);
     return NextResponse.json(
       { error: "An error occurred during registration. Please try again." },
       { status: 500 }
