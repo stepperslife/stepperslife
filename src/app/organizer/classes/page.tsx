@@ -15,6 +15,7 @@ import {
   GraduationCap,
   Copy,
   BarChart3,
+  Ticket,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
@@ -334,6 +335,16 @@ export default function OrganizerClassesPage() {
                         >
                           <Edit className="w-4 h-4" />
                           Edit
+                        </Link>
+
+                        {/* Enrollments - Manage class packages */}
+                        <Link
+                          href={`/organizer/classes/${classItem._id}/enrollments`}
+                          className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-success/30 bg-success/5 text-success rounded-lg hover:bg-success/10 transition-colors"
+                          data-testid={`class-enrollments-btn-${classItem._id}`}
+                        >
+                          <Ticket className="w-4 h-4" />
+                          Packages
                         </Link>
 
                         {/* Duplicate - Secondary Action */}
