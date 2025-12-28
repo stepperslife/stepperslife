@@ -114,6 +114,7 @@ import type * as upload from "../upload.js";
 import type * as users_admin from "../users/admin.js";
 import type * as users_mutations from "../users/mutations.js";
 import type * as users_queries from "../users/queries.js";
+import type * as vendorCoupons from "../vendorCoupons.js";
 import type * as vendorEarnings from "../vendorEarnings.js";
 import type * as vendorPayouts from "../vendorPayouts.js";
 import type * as vendors from "../vendors.js";
@@ -233,6 +234,7 @@ declare const fullApi: ApiFromModules<{
   "users/admin": typeof users_admin;
   "users/mutations": typeof users_mutations;
   "users/queries": typeof users_queries;
+  vendorCoupons: typeof vendorCoupons;
   vendorEarnings: typeof vendorEarnings;
   vendorPayouts: typeof vendorPayouts;
   vendors: typeof vendors;

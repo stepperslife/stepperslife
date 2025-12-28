@@ -1805,6 +1805,48 @@ export default defineSchema({
     .index("by_vendor", ["vendorId"])
     .index("by_status", ["status"]),
 
+  // Vendor Coupons - Discount codes for vendor products
+  vendorCoupons: defineTable({
+    vendorId: v.id("vendors"),
+    code: v.string(), // Coupon code (uppercase)
+    description: v.optional(v.string()),
+    discountType: v.union(
+      v.literal("PERCENTAGE"),
+      v.literal("FIXED_AMOUNT")
+    ),
+    discountValue: v.number(), // Percentage (1-100) or cents for fixed
+    minPurchaseAmount: v.optional(v.number()), // Minimum order in cents
+    maxDiscountAmount: v.optional(v.number()), // Cap for percentage discounts in cents
+    maxUses: v.optional(v.number()), // Total usage limit
+    maxUsesPerCustomer: v.optional(v.number()), // Per-customer limit
+    usedCount: v.number(), // Current usage count
+    applicableProductIds: v.optional(v.array(v.id("products"))), // Specific products only
+    validFrom: v.optional(v.number()),
+    validUntil: v.optional(v.number()),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_vendor", ["vendorId"])
+    .index("by_code", ["code"])
+    .index("by_vendor_code", ["vendorId", "code"])
+    .index("by_active", ["isActive"]),
+
+  // Vendor Coupon Usage - Track coupon redemptions
+  vendorCouponUsage: defineTable({
+    couponId: v.id("vendorCoupons"),
+    vendorId: v.id("vendors"),
+    orderId: v.id("productOrders"),
+    userId: v.id("users"),
+    userEmail: v.string(),
+    discountAmountCents: v.number(),
+    usedAt: v.number(),
+  })
+    .index("by_coupon", ["couponId"])
+    .index("by_user", ["userId"])
+    .index("by_user_coupon", ["userId", "couponId"])
+    .index("by_vendor", ["vendorId"]),
+
   // ==========================================
   // PUSH NOTIFICATIONS MODULE - PWA Notifications
   // ==========================================

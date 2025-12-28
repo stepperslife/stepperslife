@@ -11,6 +11,7 @@ import {
   Settings,
   Store,
   ExternalLink,
+  Ticket,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -33,6 +34,11 @@ const NAV_ITEMS = [
     name: "Earnings",
     href: "/vendor/dashboard/earnings",
     icon: DollarSign,
+  },
+  {
+    name: "Coupons",
+    href: "/vendor/dashboard/coupons",
+    icon: Ticket,
   },
   {
     name: "Payouts",
