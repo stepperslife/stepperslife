@@ -29,6 +29,8 @@ import { formatEventDate, formatEventTime, formatEventDateTime } from "@/lib/dat
 import { SocialShareButtons } from "@/components/events/SocialShareButtons";
 import InteractiveSeatingChart from "@/components/seating/InteractiveSeatingChart";
 import HotelSection from "@/components/hotels/HotelSection";
+import { StickyCartBar } from "@/components/events/StickyCartBar";
+import { useEventCart } from "@/contexts/EventCartContext";
 
 interface EventDetailClientProps {
   eventId: Id<"events">;
@@ -37,6 +39,12 @@ interface EventDetailClientProps {
 export default function EventDetailClient({ eventId }: EventDetailClientProps) {
   const router = useRouter();
   const ENABLE_SEATING = process.env.NEXT_PUBLIC_ENABLE_SEATING_CHARTS === "true";
+  const { setEventId } = useEventCart();
+
+  // Initialize event cart with this event's ID
+  useEffect(() => {
+    setEventId(eventId);
+  }, [eventId, setEventId]);
 
   const eventDetails = useQuery(api.public.queries.getPublicEventDetails, {
     eventId,
@@ -1094,6 +1102,9 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Sticky Cart Bar for event purchases */}
+      <StickyCartBar eventId={eventId} />
     </div>
   );
 }

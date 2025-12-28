@@ -10,6 +10,7 @@ import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CartProvider } from "@/contexts/CartContext";
 import { FoodCartProvider } from "@/contexts/FoodCartContext";
+import { EventCartProvider } from "@/contexts/EventCartContext";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { FloatingScanButton } from "@/components/FloatingScanButton";
@@ -115,10 +116,12 @@ export default function RootLayout({
           <ConvexClientProvider>
             <CartProvider>
               <FoodCartProvider>
-                {children}
-                <ShoppingCart />
-                <MobileBottomNav />
-                <FloatingScanButton />
+                <EventCartProvider>
+                  {children}
+                  <ShoppingCart />
+                  <MobileBottomNav />
+                  <FloatingScanButton />
+                </EventCartProvider>
               </FoodCartProvider>
             </CartProvider>
           </ConvexClientProvider>

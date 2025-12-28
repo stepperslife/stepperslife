@@ -564,6 +564,79 @@ export default function CheckoutPage() {
     );
   }
 
+  // Show helpful error states when tickets aren't available
+  const ticketingStatus = eventDetails?.ticketingStatus;
+  if (ticketingStatus && ticketingStatus.status !== "available") {
+    const statusConfig: Record<string, { icon: React.ReactNode; title: string; color: string }> = {
+      event_ended: {
+        icon: <Calendar className="w-10 h-10 text-muted-foreground" />,
+        title: "Event Has Ended",
+        color: "bg-muted-foreground/10",
+      },
+      hidden: {
+        icon: <Clock className="w-10 h-10 text-warning" />,
+        title: "Tickets Coming Soon",
+        color: "bg-warning/10",
+      },
+      payment_not_configured: {
+        icon: <AlertCircle className="w-10 h-10 text-warning" />,
+        title: "Tickets Unavailable",
+        color: "bg-warning/10",
+      },
+      sold_out: {
+        icon: <Ticket className="w-10 h-10 text-destructive" />,
+        title: "Sold Out",
+        color: "bg-destructive/10",
+      },
+    };
+
+    const config = statusConfig[ticketingStatus.status] || statusConfig.hidden;
+
+    return (
+      <>
+        <PublicHeader />
+        <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-card rounded-2xl shadow-lg p-8 max-w-md text-center border border-border"
+          >
+            <div className={`w-16 h-16 ${config.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
+              {config.icon}
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-2">{config.title}</h2>
+            <p className="text-muted-foreground mb-6">{ticketingStatus.message}</p>
+            <div className="space-y-3">
+              <Link
+                href={`/events/${eventId}`}
+                className="block w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
+              >
+                Back to Event
+              </Link>
+              {ticketingStatus.status === "sold_out" && (
+                <button
+                  type="button"
+                  className="block w-full px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors"
+                >
+                  Join Waitlist
+                </button>
+              )}
+              {(ticketingStatus.status === "payment_not_configured" || ticketingStatus.status === "hidden") && eventDetails?.organizer?.email && (
+                <a
+                  href={`mailto:${eventDetails.organizer.email}?subject=Question about ${eventDetails.name}`}
+                  className="block w-full px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors"
+                >
+                  Contact Organizer
+                </a>
+              )}
+            </div>
+          </motion.div>
+        </div>
+        <PublicFooter />
+      </>
+    );
+  }
+
   return (
     <>
       <PublicHeader />

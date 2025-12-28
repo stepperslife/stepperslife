@@ -355,12 +355,52 @@ export const getPublicEventDetails = query({
       imageUrl = url ?? undefined;
     }
 
+    // Determine ticketing status for better error messaging
+    const now = Date.now();
+    const isPastEvent = event.endDate ? event.endDate < now : false;
+    const allTiersSoldOut = ticketTiers && ticketTiers.length > 0
+      ? ticketTiers.every((tier: any) => tier.sold >= tier.quantity)
+      : false;
+
+    let ticketingStatus: {
+      status: "available" | "hidden" | "payment_not_configured" | "sold_out" | "event_ended";
+      message: string;
+    };
+
+    if (isPastEvent) {
+      ticketingStatus = {
+        status: "event_ended",
+        message: "This event has already taken place.",
+      };
+    } else if (!event.ticketsVisible) {
+      ticketingStatus = {
+        status: "hidden",
+        message: "Tickets are not yet available for this event. Check back soon!",
+      };
+    } else if (!paymentConfig?.isActive) {
+      ticketingStatus = {
+        status: "payment_not_configured",
+        message: "The organizer is still setting up ticket sales. Please check back later or contact the organizer.",
+      };
+    } else if (allTiersSoldOut) {
+      ticketingStatus = {
+        status: "sold_out",
+        message: "All tickets for this event have sold out!",
+      };
+    } else {
+      ticketingStatus = {
+        status: "available",
+        message: "Tickets available for purchase.",
+      };
+    }
+
     return {
       ...event,
       imageUrl,
       tickets,
       ticketTiers,
       bundles,
+      ticketingStatus,
       organizer: {
         name: organizer?.name,
         email: organizer?.email,

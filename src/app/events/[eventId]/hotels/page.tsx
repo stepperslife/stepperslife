@@ -153,7 +153,8 @@ export default function HotelBookingPage() {
   // Payment config
   const hasStripeConfigured = !!paymentConfig?.stripeConnectAccountId;
   const hasPayPalConfigured = !!paymentConfig?.paypalMerchantId;
-  const canCheckout = guestName.trim() && guestEmail.trim() && availability?.available;
+  const hasPaymentMethod = hasStripeConfigured || hasPayPalConfigured;
+  const canCheckout = guestName.trim() && guestEmail.trim() && availability?.available && hasPaymentMethod;
 
   // Loading state
   const isLoading = eventDetails === undefined || hotelPackages === undefined;
@@ -805,8 +806,27 @@ export default function HotelBookingPage() {
                 </div>
               </div>
 
-              {/* Create Reservation Button */}
-              {!reservationId && (
+              {/* Payment Not Configured Warning - Show instead of button */}
+              {!hasPaymentMethod && (
+                <div className="flex items-start gap-3 p-4 bg-warning/10 border border-warning/20 rounded-lg">
+                  <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-warning">Payment Not Available</p>
+                    <p className="text-sm text-muted-foreground">
+                      The organizer has not set up payment processing for this event. Please contact the organizer to complete your booking.
+                    </p>
+                    <Link
+                      href={`/events/${eventId}`}
+                      className="text-sm text-primary hover:underline mt-2 inline-block"
+                    >
+                      Go to event page for contact info →
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Create Reservation Button - Only show when payment is configured */}
+              {!reservationId && hasPaymentMethod && (
                 <button
                   type="button"
                   onClick={handleCreateReservation}
@@ -847,19 +867,6 @@ export default function HotelBookingPage() {
                   onSuccess={handlePaymentSuccess}
                   onError={handlePaymentError}
                 />
-              )}
-
-              {/* Warning */}
-              {!hasStripeConfigured && !hasPayPalConfigured && (
-                <div className="flex items-start gap-3 p-4 bg-warning/10 border border-warning/20 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-warning">Payment Not Configured</p>
-                    <p className="text-sm text-muted-foreground">
-                      The organizer has not set up payment processing for this event.
-                    </p>
-                  </div>
-                </div>
               )}
             </motion.section>
           )}
