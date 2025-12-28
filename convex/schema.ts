@@ -2081,4 +2081,114 @@ export default defineSchema({
     .index("by_product_and_status", ["productId", "status"])
     .index("by_product_and_rating", ["productId", "rating"])
     .index("by_status", ["status"]),
+
+  // ==========================================
+  // HOTEL/TRAVEL BOOKING MODULE
+  // Organizers can add hotel packages to their events
+  // ==========================================
+
+  // Hotel packages added by organizers to their events
+  hotelPackages: defineTable({
+    eventId: v.id("events"),
+    organizerId: v.id("users"),
+
+    // Hotel info
+    hotelName: v.string(),
+    address: v.string(),
+    city: v.string(),
+    state: v.string(),
+    description: v.optional(v.string()),
+    amenities: v.optional(v.array(v.string())), // ["WiFi", "Pool", "Parking", "Breakfast"]
+    starRating: v.optional(v.number()), // 1-5 stars
+    images: v.optional(v.array(v.string())), // Image URLs
+
+    // Room types with pricing
+    roomTypes: v.array(
+      v.object({
+        id: v.string(), // Unique room type ID
+        name: v.string(), // "Standard King", "Deluxe Suite"
+        pricePerNightCents: v.number(),
+        quantity: v.number(), // Total rooms available
+        sold: v.number(), // Rooms booked
+        maxGuests: v.number(),
+        description: v.optional(v.string()),
+      })
+    ),
+
+    // Event-specific dates (suggested check-in/out)
+    checkInDate: v.number(), // Suggested check-in (day before event)
+    checkOutDate: v.number(), // Suggested check-out (day after event)
+
+    // Booking settings
+    bookingCutoffHours: v.optional(v.number()), // Hours before event to stop bookings
+    specialInstructions: v.optional(v.string()), // Special booking instructions
+
+    // Contact info (optional - for direct booking inquiries)
+    contactName: v.optional(v.string()),
+    contactPhone: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+
+    // Status
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_event", ["eventId"])
+    .index("by_organizer", ["organizerId"])
+    .index("by_active", ["isActive"]),
+
+  // Hotel reservations (customer bookings)
+  hotelReservations: defineTable({
+    packageId: v.id("hotelPackages"),
+    eventId: v.id("events"),
+    roomTypeId: v.string(),
+
+    // Guest info
+    userId: v.id("users"),
+    guestName: v.string(),
+    guestEmail: v.string(),
+    guestPhone: v.optional(v.string()),
+
+    // Booking details
+    checkInDate: v.number(),
+    checkOutDate: v.number(),
+    numberOfNights: v.number(),
+    numberOfRooms: v.number(),
+    numberOfGuests: v.number(),
+
+    // Pricing
+    pricePerNightCents: v.number(),
+    subtotalCents: v.number(), // pricePerNight * nights * rooms
+    platformFeeCents: v.number(), // Platform fee
+    totalCents: v.number(), // subtotal + platformFee
+
+    // Payment
+    paymentMethod: v.union(v.literal("STRIPE"), v.literal("PAYPAL")),
+    stripePaymentIntentId: v.optional(v.string()),
+    paypalOrderId: v.optional(v.string()),
+
+    // Status
+    status: v.union(
+      v.literal("PENDING"), // Awaiting payment
+      v.literal("CONFIRMED"), // Payment complete
+      v.literal("CANCELLED"), // Guest cancelled
+      v.literal("REFUNDED") // Refunded
+    ),
+
+    // Optional: Link to ticket order (for bundled bookings)
+    orderId: v.optional(v.id("orders")),
+
+    // Additional info
+    specialRequests: v.optional(v.string()),
+    confirmationNumber: v.string(), // Unique confirmation code
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_event", ["eventId"])
+    .index("by_package", ["packageId"])
+    .index("by_user", ["userId"])
+    .index("by_status", ["status"])
+    .index("by_confirmation", ["confirmationNumber"]),
 });

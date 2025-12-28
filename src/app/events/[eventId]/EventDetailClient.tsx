@@ -28,6 +28,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { formatEventDate, formatEventTime, formatEventDateTime } from "@/lib/date-format";
 import { SocialShareButtons } from "@/components/events/SocialShareButtons";
 import InteractiveSeatingChart from "@/components/seating/InteractiveSeatingChart";
+import HotelSection from "@/components/hotels/HotelSection";
 
 interface EventDetailClientProps {
   eventId: Id<"events">;
@@ -592,6 +593,9 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     </div>
                   </motion.div>
                 )}
+
+              {/* Hotels Section - Partner Hotels for the Event */}
+              <HotelSection eventId={eventId} />
 
               {/* Door Price Display for FREE_EVENT */}
               {eventDetails.eventType === "FREE_EVENT" && eventDetails.doorPrice && (
