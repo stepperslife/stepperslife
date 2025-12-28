@@ -1,13 +1,13 @@
 "use client";
 
 import { useCart } from "@/contexts/CartContext";
-import { X, Trash2, Plus, Minus, ShoppingBag, Package } from "lucide-react";
+import { X, Trash2, Plus, Minus, ShoppingBag, Package, Store, Building2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function ShoppingCart() {
-  const { items, removeItemByIndex, updateQuantityByIndex, getSubtotal, isCartOpen, setIsCartOpen } =
+  const { items, removeItemByIndex, updateQuantityByIndex, getSubtotal, getItemsByVendor, getVendorCount, isCartOpen, setIsCartOpen } =
     useCart();
 
   const router = useRouter();
@@ -75,82 +75,119 @@ export function ShoppingCart() {
             </div>
           ) : (
             <div className="space-y-4">
-              {items.map((item, index) => (
-                <div
-                  key={`${item.productId}-${item.variantId || 'default'}-${index}`}
-                  className="flex gap-4 p-4 bg-muted rounded-lg"
-                >
-                  {/* Product Image */}
-                  <div className="relative w-20 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-                    {item.productImage ? (
-                      <Image
-                        src={item.productImage}
-                        alt={item.productName}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                    )}
-                  </div>
+              {/* Multi-vendor notice */}
+              {getVendorCount() > 1 && (
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+                  <p className="text-sm text-foreground flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-primary flex-shrink-0" />
+                    Items from <strong>{getVendorCount()} vendors</strong>
+                  </p>
+                </div>
+              )}
 
-                  {/* Product Details */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
-                      {item.productName}
-                    </h3>
-                    {item.variantName && (
-                      <p className="text-xs text-muted-foreground mb-1">
-                        {item.variantName}
-                      </p>
-                    )}
-                    <p className="text-sm text-muted-foreground mb-2">
-                      ${(item.productPrice / 100).toFixed(2)} each
-                    </p>
-
-                    {/* Quantity Controls */}
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center border border-input rounded-lg">
-                        <button
-                          type="button"
-                          onClick={() => updateQuantityByIndex(index, item.quantity - 1)}
-                          className="p-1 hover:bg-muted rounded-l-lg"
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <span className="px-3 py-1 font-semibold min-w-[2rem] text-center">
-                          {item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => updateQuantityByIndex(index, item.quantity + 1)}
-                          className="p-1 hover:bg-muted rounded-r-lg"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => removeItemByIndex(index)}
-                        className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                        aria-label="Remove from cart"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+              {/* Items grouped by vendor */}
+              {getItemsByVendor().map((vendorGroup) => (
+                <div key={vendorGroup.vendorId} className="space-y-3">
+                  {/* Vendor header (only show if multiple vendors) */}
+                  {getVendorCount() > 1 && (
+                    <div className="flex items-center gap-2 py-2 px-3 bg-muted/50 rounded-lg">
+                      <Store className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium text-foreground">{vendorGroup.vendorName}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        ${(vendorGroup.subtotal / 100).toFixed(2)}
+                      </span>
                     </div>
-                  </div>
+                  )}
 
-                  {/* Item Total */}
-                  <div className="text-right">
-                    <p className="font-bold text-foreground">
-                      ${((item.productPrice * item.quantity) / 100).toFixed(2)}
-                    </p>
-                  </div>
+                  {/* Vendor items */}
+                  {vendorGroup.items.map((item) => {
+                    // Find the actual index in the flat items array for update/remove operations
+                    const actualIndex = items.findIndex(
+                      (i) =>
+                        i.productId === item.productId &&
+                        i.variantId === item.variantId &&
+                        JSON.stringify(i.productOptions) === JSON.stringify(item.productOptions)
+                    );
+
+                    return (
+                      <div
+                        key={`${item.productId}-${item.variantId || 'default'}-${actualIndex}`}
+                        className="flex gap-4 p-4 bg-muted rounded-lg"
+                      >
+                        {/* Product Image */}
+                        <div className="relative w-20 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                          {item.productImage ? (
+                            <Image
+                              src={item.productImage}
+                              alt={item.productName}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Package className="w-8 h-8 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Product Details */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
+                            {item.productName}
+                          </h3>
+                          {item.variantName && (
+                            <p className="text-xs text-muted-foreground mb-1">
+                              {item.variantName}
+                            </p>
+                          )}
+                          <p className="text-sm text-muted-foreground mb-2">
+                            ${(item.productPrice / 100).toFixed(2)} each
+                          </p>
+
+                          {/* Quantity Controls */}
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center border border-input rounded-lg">
+                              <button
+                                type="button"
+                                onClick={() => updateQuantityByIndex(actualIndex, item.quantity - 1)}
+                                className="p-1 hover:bg-muted rounded-l-lg"
+                                aria-label="Decrease quantity"
+                              >
+                                <Minus className="w-4 h-4" />
+                              </button>
+                              <span className="px-3 py-1 font-semibold min-w-[2rem] text-center">
+                                {item.quantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => updateQuantityByIndex(actualIndex, item.quantity + 1)}
+                                className="p-1 hover:bg-muted rounded-r-lg"
+                                aria-label="Increase quantity"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => removeItemByIndex(actualIndex)}
+                              className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                              aria-label="Remove from cart"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Item Total */}
+                        <div className="text-right">
+                          <p className="font-bold text-foreground">
+                            ${((item.productPrice * item.quantity) / 100).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
             </div>

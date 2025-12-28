@@ -38,6 +38,15 @@ export interface CartItem {
   optionsPriceModifier?: number; // Total price from options
 }
 
+// Group cart items by vendor for multi-vendor display
+export interface VendorGroup {
+  vendorId: string;
+  vendorName: string;
+  items: CartItem[];
+  subtotal: number;
+  itemCount: number;
+}
+
 interface CartContextType {
   items: CartItem[];
   addToCart: (item: CartItem) => void;
@@ -48,6 +57,8 @@ interface CartContextType {
   clearCart: () => void;
   getItemCount: () => number;
   getSubtotal: () => number;
+  getItemsByVendor: () => VendorGroup[];
+  getVendorCount: () => number;
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
 }
@@ -179,6 +190,45 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return items.reduce((total, item) => total + (item.productPrice * item.quantity), 0);
   };
 
+  // Group items by vendor for multi-vendor display
+  const getItemsByVendor = (): VendorGroup[] => {
+    const vendorMap = new Map<string, VendorGroup>();
+
+    items.forEach(item => {
+      const vendorId = item.vendorId || 'stepperslife'; // Default vendor for items without vendorId
+      const vendorName = item.vendorName || 'SteppersLife Marketplace';
+
+      if (!vendorMap.has(vendorId)) {
+        vendorMap.set(vendorId, {
+          vendorId,
+          vendorName,
+          items: [],
+          subtotal: 0,
+          itemCount: 0,
+        });
+      }
+
+      const group = vendorMap.get(vendorId)!;
+      group.items.push(item);
+      group.subtotal += item.productPrice * item.quantity;
+      group.itemCount += item.quantity;
+    });
+
+    // Sort by vendor name alphabetically
+    return Array.from(vendorMap.values()).sort((a, b) =>
+      a.vendorName.localeCompare(b.vendorName)
+    );
+  };
+
+  // Get number of unique vendors in cart
+  const getVendorCount = (): number => {
+    const vendorIds = new Set<string>();
+    items.forEach(item => {
+      vendorIds.add(item.vendorId || 'stepperslife');
+    });
+    return vendorIds.size;
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -191,6 +241,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         getItemCount,
         getSubtotal,
+        getItemsByVendor,
+        getVendorCount,
         isCartOpen,
         setIsCartOpen
       }}

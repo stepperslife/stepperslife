@@ -1,7 +1,7 @@
 "use client";
 
-import { useCart } from "@/contexts/CartContext";
-import { ArrowLeft, Package, Loader2, Truck, Store, CreditCard, AlertTriangle, LogIn, Lock } from "lucide-react";
+import { useCart, VendorGroup } from "@/contexts/CartContext";
+import { ArrowLeft, Package, Loader2, Truck, Store, CreditCard, AlertTriangle, LogIn, Lock, Building2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -110,7 +110,7 @@ function PaymentForm({
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, getSubtotal, clearCart } = useCart();
+  const { items, getSubtotal, clearCart, getItemsByVendor, getVendorCount } = useCart();
   const createOrder = useMutation(api.productOrders.mutations.createProductOrder);
   const updatePaymentStatus = useMutation(api.productOrders.mutations.updatePaymentStatus);
   const currentUser = useQuery(api.users.queries.getCurrentUser);
@@ -861,52 +861,86 @@ export default function CheckoutPage() {
               <div className="bg-card rounded-xl shadow-md p-6 sticky top-4">
                 <h2 className="text-xl font-bold text-foreground mb-4">Order Summary</h2>
 
-                {/* Cart Items */}
+                {/* Multi-vendor notice */}
+                {getVendorCount() > 1 && (
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4">
+                    <p className="text-sm text-foreground">
+                      <Building2 className="w-4 h-4 inline-block mr-1.5 text-primary" />
+                      Your order includes items from <strong>{getVendorCount()} vendors</strong>
+                    </p>
+                  </div>
+                )}
+
+                {/* Cart Items Grouped by Vendor */}
                 <div className="space-y-4 mb-4 max-h-80 overflow-y-auto">
-                  {items.map((item, index) => (
-                    <div
-                      key={`${item.productId}-${item.variantId || "default"}-${index}`}
-                      className="flex gap-3 pb-4 border-b border-border"
-                    >
-                      {item.productImage ? (
-                        <div className="relative w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-                          <Image
-                            src={item.productImage}
-                            alt={item.productName}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Package className="w-6 h-6 text-muted-foreground" />
+                  {getItemsByVendor().map((vendorGroup) => (
+                    <div key={vendorGroup.vendorId} className="space-y-3">
+                      {/* Vendor Header */}
+                      {getVendorCount() > 1 && (
+                        <div className="flex items-center gap-2 py-1.5 px-2 bg-muted/50 rounded-lg -mx-1">
+                          <Store className="w-4 h-4 text-primary" />
+                          <span className="text-sm font-medium text-foreground">{vendorGroup.vendorName}</span>
+                          <span className="text-xs text-muted-foreground ml-auto">
+                            {vendorGroup.itemCount} item{vendorGroup.itemCount !== 1 ? 's' : ''}
+                          </span>
                         </div>
                       )}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-foreground text-sm line-clamp-2">
-                          {item.productName}
-                        </h3>
-                        {item.variantName && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {item.variantName}
-                          </p>
-                        )}
-                        {item.variationAttributes && Object.keys(item.variationAttributes).length > 0 && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {Object.entries(item.variationAttributes)
-                              .map(([key, value]) => `${key}: ${value}`)
-                              .join(", ")}
-                          </p>
-                        )}
-                        <div className="flex justify-between items-center mt-2">
-                          <p className="text-sm text-muted-foreground">
-                            Qty: {item.quantity}
-                          </p>
-                          <p className="text-sm font-semibold text-foreground">
-                            ${((item.productPrice * item.quantity) / 100).toFixed(2)}
-                          </p>
+
+                      {/* Vendor Items */}
+                      {vendorGroup.items.map((item, index) => (
+                        <div
+                          key={`${item.productId}-${item.variantId || "default"}-${index}`}
+                          className="flex gap-3 pb-3 border-b border-border last:border-0"
+                        >
+                          {item.productImage ? (
+                            <div className="relative w-14 h-14 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                              <Image
+                                src={item.productImage}
+                                alt={item.productName}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-14 h-14 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                              <Package className="w-5 h-5 text-muted-foreground" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-foreground text-sm line-clamp-2">
+                              {item.productName}
+                            </h3>
+                            {item.variantName && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {item.variantName}
+                              </p>
+                            )}
+                            {item.variationAttributes && Object.keys(item.variationAttributes).length > 0 && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {Object.entries(item.variationAttributes)
+                                  .map(([key, value]) => `${key}: ${value}`)
+                                  .join(", ")}
+                              </p>
+                            )}
+                            <div className="flex justify-between items-center mt-1">
+                              <p className="text-xs text-muted-foreground">
+                                Qty: {item.quantity}
+                              </p>
+                              <p className="text-sm font-semibold text-foreground">
+                                ${((item.productPrice * item.quantity) / 100).toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      ))}
+
+                      {/* Vendor Subtotal (only show if multiple vendors) */}
+                      {getVendorCount() > 1 && (
+                        <div className="flex justify-between text-sm pt-1 pb-2">
+                          <span className="text-muted-foreground">Vendor subtotal</span>
+                          <span className="font-medium text-foreground">${(vendorGroup.subtotal / 100).toFixed(2)}</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
