@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { ArrowLeft, Calendar, MapPin, FileText, BookOpen, Save } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, FileText, BookOpen, Save, Repeat, Info } from "lucide-react";
 import Link from "next/link";
 import { ImageUpload } from "@/components/upload/ImageUpload";
 import { getTimezoneFromLocation, getTimezoneName } from "@/lib/timezone";
@@ -62,6 +62,12 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
   const [endDate, setEndDate] = useState("");
   const [timezone, setTimezone] = useState("America/New_York");
   const [detectedTimezone, setDetectedTimezone] = useState("");
+
+  // Recurring Class Settings
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringPattern, setRecurringPattern] = useState<"weekly" | "biweekly" | "monthly">("weekly");
+  const [seriesEndDate, setSeriesEndDate] = useState("");
+  const [sessionCount, setSessionCount] = useState(0);
 
   // Location
   const [venueName, setVenueName] = useState("");
@@ -133,6 +139,44 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
     }
   }, [city, state]);
 
+  // Calculate number of recurring sessions
+  useEffect(() => {
+    if (!isRecurring || !startDate || !seriesEndDate) {
+      setSessionCount(0);
+      return;
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(seriesEndDate);
+
+    if (end <= start) {
+      setSessionCount(0);
+      return;
+    }
+
+    let count = 1; // Include the first session
+    const current = new Date(start);
+
+    while (current < end) {
+      switch (recurringPattern) {
+        case "weekly":
+          current.setDate(current.getDate() + 7);
+          break;
+        case "biweekly":
+          current.setDate(current.getDate() + 14);
+          break;
+        case "monthly":
+          current.setMonth(current.getMonth() + 1);
+          break;
+      }
+      if (current <= end) {
+        count++;
+      }
+    }
+
+    setSessionCount(count);
+  }, [isRecurring, startDate, seriesEndDate, recurringPattern]);
+
   const handleCategoryToggle = (category: string) => {
     if (categories.includes(category)) {
       setCategories(categories.filter((c) => c !== category));
@@ -175,6 +219,11 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
     if (!city) missingFields.push("City");
     if (!state) missingFields.push("State");
 
+    // Recurring class validation
+    if (isRecurring && !seriesEndDate) {
+      missingFields.push("Series End Date (for recurring class)");
+    }
+
     if (missingFields.length > 0) {
       alert(
         `Please fill in the following required fields:\n\n${missingFields.map((f) => `• ${f}`).join("\n")}`
@@ -207,18 +256,14 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
       const eventTimeLiteral = formatDate(startDateObj, "h:mm a");
 
       if (mode === "create") {
-        const classData = {
+        const baseClassData = {
           name: className,
           eventType: "CLASS" as const,
           description,
           categories,
           classLevel: classLevel || undefined,
           classDays: classDays.length > 0 ? classDays : undefined,
-          startDate: startDateUTC,
-          endDate: endDateUTC,
           timezone,
-          eventDateLiteral,
-          eventTimeLiteral,
           eventTimezone: timezone,
           location: {
             venueName: venueName || undefined,
@@ -232,7 +277,62 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
           images: uploadedImageId ? [uploadedImageId] : undefined,
         };
 
-        await createEvent(classData);
+        if (isRecurring && sessionCount > 1) {
+          // Generate unique series ID
+          const seriesId = crypto.randomUUID();
+
+          // Calculate all session dates
+          const sessionDates: Date[] = [];
+          const current = new Date(startDateObj);
+          const seriesEnd = new Date(seriesEndDate);
+
+          while (current <= seriesEnd && sessionDates.length < 52) { // Max 52 sessions (1 year weekly)
+            sessionDates.push(new Date(current));
+            switch (recurringPattern) {
+              case "weekly":
+                current.setDate(current.getDate() + 7);
+                break;
+              case "biweekly":
+                current.setDate(current.getDate() + 14);
+                break;
+              case "monthly":
+                current.setMonth(current.getMonth() + 1);
+                break;
+            }
+          }
+
+          // Calculate duration (difference between start and end time)
+          const classDuration = endDateUTC - startDateUTC;
+
+          // Create all sessions
+          for (let i = 0; i < sessionDates.length; i++) {
+            const sessionStart = sessionDates[i];
+            const sessionEnd = new Date(sessionStart.getTime() + classDuration);
+
+            const sessionData = {
+              ...baseClassData,
+              startDate: sessionStart.getTime(),
+              endDate: sessionEnd.getTime(),
+              eventDateLiteral: formatDate(sessionStart, "MMMM d, yyyy"),
+              eventTimeLiteral: formatDate(sessionStart, "h:mm a"),
+              seriesId,
+              seriesPosition: i + 1,
+            };
+
+            await createEvent(sessionData);
+          }
+        } else {
+          // Single class (no recurrence)
+          const classData = {
+            ...baseClassData,
+            startDate: startDateUTC,
+            endDate: endDateUTC,
+            eventDateLiteral,
+            eventTimeLiteral,
+          };
+          await createEvent(classData);
+        }
+
         router.push("/organizer/classes");
       } else if (mode === "edit" && classId) {
         const updateData = {
@@ -484,6 +584,116 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
             )}
           </div>
 
+          {/* Recurring Class Settings */}
+          {mode === "create" && (
+            <div className="bg-card rounded-lg shadow-sm border p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Repeat className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-semibold text-foreground">Recurring Class</h2>
+              </div>
+
+              {/* Toggle */}
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground">Make this a recurring class</label>
+                  <p className="text-xs text-muted-foreground">Automatically create multiple sessions on a schedule</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsRecurring(!isRecurring)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    isRecurring ? "bg-primary" : "bg-muted"
+                  }`}
+                  data-testid="recurring-toggle"
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      isRecurring ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {isRecurring && (
+                <div className="space-y-4 pt-4 border-t border-border">
+                  {/* Recurrence Pattern */}
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Repeat Every
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: "weekly" as const, label: "Week" },
+                        { value: "biweekly" as const, label: "2 Weeks" },
+                        { value: "monthly" as const, label: "Month" },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setRecurringPattern(option.value)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            recurringPattern === option.value
+                              ? "bg-primary text-white"
+                              : "bg-muted text-foreground hover:bg-accent"
+                          }`}
+                          data-testid={`recurring-pattern-${option.value}`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Series End Date */}
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">
+                      Series End Date *
+                    </label>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Sessions will be created up to this date
+                    </p>
+                    <input
+                      type="date"
+                      value={seriesEndDate}
+                      onChange={(e) => setSeriesEndDate(e.target.value)}
+                      min={startDate ? startDate.split("T")[0] : undefined}
+                      className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                      data-testid="series-end-date"
+                    />
+                  </div>
+
+                  {/* Session Count Preview */}
+                  {sessionCount > 0 && (
+                    <div className="flex items-start gap-2 p-3 bg-primary/10 rounded-lg">
+                      <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {sessionCount} class session{sessionCount > 1 ? "s" : ""} will be created
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Starting {startDate ? formatDate(new Date(startDate), "MMMM d, yyyy") : "..."} and repeating{" "}
+                          {recurringPattern === "weekly" && "every week"}
+                          {recurringPattern === "biweekly" && "every 2 weeks"}
+                          {recurringPattern === "monthly" && "every month"}{" "}
+                          until {seriesEndDate ? formatDate(new Date(seriesEndDate), "MMMM d, yyyy") : "..."}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {isRecurring && startDate && !seriesEndDate && (
+                    <div className="flex items-start gap-2 p-3 bg-warning/10 rounded-lg">
+                      <Info className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-muted-foreground">
+                        Please select an end date for the series
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Location */}
           <div className="bg-card rounded-lg shadow-sm border p-6">
             <div className="flex items-center gap-2 mb-4">
@@ -604,12 +814,20 @@ export default function ClassForm({ mode, classId }: ClassFormProps) {
               {isSubmitting ? (
                 <>
                   <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-                  {mode === "create" ? "Creating..." : "Saving..."}
+                  {isRecurring && sessionCount > 1
+                    ? `Creating ${sessionCount} sessions...`
+                    : mode === "create"
+                    ? "Creating..."
+                    : "Saving..."}
                 </>
               ) : (
                 <>
                   <Save className="w-5 h-5" />
-                  {mode === "create" ? "Create Class" : "Save Changes"}
+                  {mode === "create"
+                    ? isRecurring && sessionCount > 1
+                      ? `Create ${sessionCount} Sessions`
+                      : "Create Class"
+                    : "Save Changes"}
                 </>
               )}
             </button>

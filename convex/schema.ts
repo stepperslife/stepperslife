@@ -111,6 +111,10 @@ export default defineSchema({
     // Class-specific: Skill level (Beginner, Intermediate, Advanced)
     classLevel: v.optional(v.string()),
 
+    // Recurring class series: Links all sessions of a recurring class together
+    seriesId: v.optional(v.string()), // UUID shared by all sessions in a series
+    seriesPosition: v.optional(v.number()), // Position in series (1, 2, 3...)
+
     // Status
     status: v.optional(
       v.union(
@@ -163,7 +167,8 @@ export default defineSchema({
     .index("by_event_type", ["eventType"])
     .index("by_start_date", ["startDate"])
     .index("by_published", ["status", "startDate"])
-    .index("by_claimable", ["isClaimable"]),
+    .index("by_claimable", ["isClaimable"])
+    .index("by_series", ["seriesId"]),
 
   // Organizer credit balance for pre-purchase model
   organizerCredits: defineTable({
@@ -488,8 +493,20 @@ export default defineSchema({
     autoAssignToNewEvents: v.optional(v.boolean()), // Auto-assign this staff/sub-seller to new events created by organizer or when parent joins new event
 
     // Role and permissions
-    role: v.union(v.literal("STAFF"), v.literal("TEAM_MEMBERS"), v.literal("ASSOCIATES")),
-    canScan: v.optional(v.boolean()), // Team members and associates can also scan if approved by organizer
+    // Legacy roles: STAFF, TEAM_MEMBERS, ASSOCIATES
+    // New simplified roles: MANAGER, SELLER
+    role: v.union(
+      v.literal("STAFF"),
+      v.literal("TEAM_MEMBERS"),
+      v.literal("ASSOCIATES"),
+      v.literal("MANAGER"),
+      v.literal("SELLER")
+    ),
+    canScan: v.optional(v.boolean()), // Permission to scan tickets at the door (toggle per person)
+
+    // Self-service invite system (for managers to invite their own sellers)
+    inviteCode: v.optional(v.string()), // Unique code for self-service seller invites
+    inviteCodeExpiresAt: v.optional(v.number()), // When the invite code expires
 
     // Commission
     commissionType: v.optional(v.union(v.literal("PERCENTAGE"), v.literal("FIXED"))),
@@ -531,7 +548,8 @@ export default defineSchema({
     .index("by_event", ["eventId"])
     .index("by_referral_code", ["referralCode"])
     .index("by_assigned_by", ["assignedByStaffId"]) // Query all sub-sellers assigned by a staff member
-    .index("by_hierarchy_level", ["hierarchyLevel"]), // Query staff by level
+    .index("by_hierarchy_level", ["hierarchyLevel"]) // Query staff by level
+    .index("by_invite_code", ["inviteCode"]), // For self-service seller signup
 
   // Staff sales tracking
   staffSales: defineTable({
@@ -1967,4 +1985,48 @@ export default defineSchema({
     .index("by_event", ["eventId"])
     .index("by_type", ["transactionType"])
     .index("by_organizer_and_created", ["organizerId", "createdAt"]),
+
+  // Product Reviews - Customer reviews for marketplace products
+  productReviews: defineTable({
+    productId: v.id("products"),
+    userId: v.id("users"),
+    orderId: v.optional(v.id("productOrders")), // Link to order for verified purchase badge
+
+    // Review content
+    rating: v.number(), // 1-5 stars
+    title: v.optional(v.string()), // Optional review title
+    content: v.optional(v.string()), // Review text
+    images: v.optional(v.array(v.string())), // Optional review images
+
+    // Verification
+    isVerifiedPurchase: v.boolean(), // True if user actually bought the product
+
+    // Helpful votes
+    helpfulVotes: v.number(), // Count of "was this helpful?" clicks
+    helpfulVoters: v.optional(v.array(v.id("users"))), // Users who voted helpful
+
+    // Vendor response
+    vendorResponse: v.optional(v.string()),
+    vendorRespondedAt: v.optional(v.number()),
+
+    // Moderation
+    status: v.union(
+      v.literal("PENDING"), // Awaiting moderation
+      v.literal("APPROVED"), // Visible to all
+      v.literal("REJECTED"), // Hidden (spam, inappropriate)
+      v.literal("FLAGGED") // Needs review
+    ),
+    moderatedBy: v.optional(v.id("users")),
+    moderatedAt: v.optional(v.number()),
+    moderationNotes: v.optional(v.string()),
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_product", ["productId"])
+    .index("by_user", ["userId"])
+    .index("by_product_and_status", ["productId", "status"])
+    .index("by_product_and_rating", ["productId", "rating"])
+    .index("by_status", ["status"]),
 });

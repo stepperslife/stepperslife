@@ -47,8 +47,14 @@ export const addStaffMember = mutation({
     name: v.string(),
     email: v.string(),
     phone: v.optional(v.string()),
-    role: v.union(v.literal("TEAM_MEMBERS"), v.literal("STAFF"), v.literal("ASSOCIATES")),
-    canScan: v.optional(v.boolean()), // Team members can also scan if approved
+    role: v.union(
+      v.literal("TEAM_MEMBERS"),
+      v.literal("STAFF"),
+      v.literal("ASSOCIATES"),
+      v.literal("MANAGER"),
+      v.literal("SELLER")
+    ),
+    canScan: v.optional(v.boolean()), // Any staff can scan if approved
     commissionType: v.optional(v.union(v.literal("PERCENTAGE"), v.literal("FIXED"))),
     commissionValue: v.optional(v.number()),
     allocatedTickets: v.optional(v.number()),
@@ -132,7 +138,7 @@ export const addStaffMember = mutation({
       hierarchyLevel,
       // TEAM_MEMBERS are business partners - they can assign sub-sellers (Associates) by default
       // STAFF and ASSOCIATES cannot assign sub-sellers unless explicitly enabled
-      canAssignSubSellers: args.role === "TEAM_MEMBERS" ? true : false,
+      canAssignSubSellers: args.role === "TEAM_MEMBERS" || args.role === "MANAGER" ? true : false,
       maxSubSellers: undefined,
       parentCommissionPercent: undefined,
       subSellerCommissionPercent: undefined,
@@ -514,20 +520,25 @@ export const createCashSale = mutation({
           break; // Stop if parent not found or inactive
         }
 
-        // Calculate parent's commission (their percentage of the child's commission)
+        // Calculate parent's commission (their percentage of the parent's original commission)
+        // Example: Parent has 10%, gives sub-seller 60/40 split
+        // - Sub-seller gets 60% of 10% = 6%
+        // - Parent keeps 40% of 10% = 4%
         const parentCommissionPercent = currentStaff.parentCommissionPercent || 0;
+        const parentCommissionRate = parentStaff.commissionPercent || parentStaff.commissionValue || 0;
         let parentCommission = 0;
 
         if (currentStaff.commissionType === "PERCENTAGE") {
-          // Parent gets their % of the ticket price per ticket
+          // Parent gets their % of THEIR original commission rate
+          // parentCommissionRate (10%) * parentCommissionPercent (40%) / 100 = 4%
           parentCommission = Math.round(
-            ((ticketTier.price * parentCommissionPercent) / 100) * args.quantity
+            ((ticketTier.price * parentCommissionRate * parentCommissionPercent) / 10000) * args.quantity
           );
         } else if (currentStaff.commissionType === "FIXED") {
-          // Parent gets their % of the fixed commission
-          const childCommissionValue = currentStaff.commissionValue || 0;
+          // Parent gets their % of their fixed commission
+          const parentFixedValue = parentStaff.commissionValue || 0;
           parentCommission = Math.round(
-            ((childCommissionValue * parentCommissionPercent) / 100) * args.quantity
+            ((parentFixedValue * parentCommissionPercent) / 100) * args.quantity
           );
         }
 
@@ -703,6 +714,8 @@ export const assignSubSellerForTesting = mutation({
     allocatedTickets: v.optional(v.number()),
     commissionType: v.union(v.literal("PERCENTAGE"), v.literal("FIXED")),
     commissionValue: v.number(),
+    parentCommissionPercent: v.optional(v.number()), // What % parent keeps from sub-seller sales
+    subSellerCommissionPercent: v.optional(v.number()), // What % sub-seller gets
   },
   handler: async (ctx, args) => {
     // Get parent staff
@@ -793,8 +806,8 @@ export const assignSubSellerForTesting = mutation({
       hierarchyLevel,
       canAssignSubSellers: false,
       maxSubSellers: undefined,
-      parentCommissionPercent: 0,
-      subSellerCommissionPercent: 0,
+      parentCommissionPercent: args.parentCommissionPercent ?? 0,
+      subSellerCommissionPercent: args.subSellerCommissionPercent ?? 0,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -1495,5 +1508,355 @@ export const copyRosterFromEvent = mutation({
       staffCopied: sourceStaff.length,
       message: `Successfully copied ${sourceStaff.length} staff members to target event`,
     };
+  },
+});
+
+/**
+ * Add a staff member for testing purposes - bypasses authentication
+ * TESTING MODE ONLY
+ */
+export const addStaffMemberForTesting = mutation({
+  args: {
+    eventId: v.id("events"),
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    role: v.union(
+      v.literal("TEAM_MEMBERS"),
+      v.literal("STAFF"),
+      v.literal("ASSOCIATES"),
+      v.literal("MANAGER"),
+      v.literal("SELLER")
+    ),
+    canScan: v.optional(v.boolean()),
+    commissionType: v.optional(v.union(v.literal("PERCENTAGE"), v.literal("FIXED"))),
+    commissionValue: v.optional(v.number()),
+    allocatedTickets: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    console.warn("[addStaffMemberForTesting] TESTING MODE - No auth required");
+
+    // Get event
+    const event = await ctx.db.get(args.eventId);
+    if (!event) {
+      throw new Error("Event not found");
+    }
+
+    if (!event.organizerId) {
+      throw new Error("Event has no organizer");
+    }
+
+    // Check if staff user exists, create if not
+    let staffUser = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (!staffUser) {
+      const newUserId = await ctx.db.insert("users", {
+        email: args.email,
+        name: args.name,
+        role: "user",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      staffUser = await ctx.db.get(newUserId);
+    }
+
+    // Generate unique referral code
+    let referralCode = generateReferralCode(args.name);
+    let attempts = 0;
+    while (attempts < 10) {
+      const existing = await ctx.db
+        .query("eventStaff")
+        .withIndex("by_referral_code", (q) => q.eq("referralCode", referralCode))
+        .first();
+
+      if (!existing) break;
+      referralCode = generateReferralCode(args.name);
+      attempts++;
+    }
+
+    // Create staff member record
+    const staffId = await ctx.db.insert("eventStaff", {
+      eventId: args.eventId,
+      organizerId: event.organizerId,
+      staffUserId: staffUser!._id,
+      email: args.email,
+      name: args.name,
+      phone: args.phone,
+      role: args.role,
+      canScan: args.canScan || args.role === STAFF_ROLES.STAFF,
+      commissionType: args.commissionType,
+      commissionValue: args.commissionValue,
+      commissionPercent: args.commissionType === "PERCENTAGE" ? args.commissionValue : undefined,
+      commissionEarned: 0,
+      allocatedTickets: args.allocatedTickets,
+      cashCollected: 0,
+      isActive: true,
+      ticketsSold: 0,
+      referralCode,
+      hierarchyLevel: 1,
+      canAssignSubSellers: args.role === "TEAM_MEMBERS" || args.role === "MANAGER" ? true : false,
+      maxSubSellers: undefined,
+      parentCommissionPercent: undefined,
+      subSellerCommissionPercent: undefined,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return {
+      staffId,
+      referralCode,
+    };
+  },
+});
+
+// ============================================================================
+// SELF-SERVICE INVITE SYSTEM
+// Managers can generate invite links for sellers to self-register
+// ============================================================================
+
+/**
+ * Generate a unique invite code for a manager to share with potential sellers
+ * The code expires after 7 days
+ */
+export const generateSellerInviteCode = mutation({
+  args: {
+    eventId: v.id("events"),
+  },
+  handler: async (ctx, args) => {
+    const user = await getAuthenticatedUser(ctx);
+
+    // Find manager's staff record for this event
+    const managerStaff = await ctx.db
+      .query("eventStaff")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("staffUserId"), user._id),
+          q.eq(q.field("isActive"), true),
+          q.or(
+            q.eq(q.field("role"), "MANAGER"),
+            q.eq(q.field("role"), "TEAM_MEMBERS"),
+            q.eq(q.field("role"), "STAFF")
+          )
+        )
+      )
+      .first();
+
+    if (!managerStaff) {
+      throw new Error("You must be a manager for this event to generate invite codes");
+    }
+
+    // Generate unique invite code
+    const inviteCode = `INV-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+    // Expires in 7 days
+    const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+
+    // Update manager record with invite code
+    await ctx.db.patch(managerStaff._id, {
+      inviteCode,
+      inviteCodeExpiresAt: expiresAt,
+      updatedAt: Date.now(),
+    });
+
+    return {
+      inviteCode,
+      expiresAt,
+      inviteUrl: `/join/${inviteCode}`,
+    };
+  },
+});
+
+/**
+ * Get invite code info - public query for the join page
+ */
+export const getInviteCodeInfo = mutation({
+  args: {
+    inviteCode: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Find the staff record with this invite code
+    const manager = await ctx.db
+      .query("eventStaff")
+      .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
+      .first();
+
+    if (!manager) {
+      return { valid: false, error: "Invalid invite code" };
+    }
+
+    // Check if expired
+    if (manager.inviteCodeExpiresAt && manager.inviteCodeExpiresAt < Date.now()) {
+      return { valid: false, error: "This invite code has expired" };
+    }
+
+    // Get event details
+    const event = manager.eventId ? await ctx.db.get(manager.eventId) : null;
+
+    return {
+      valid: true,
+      managerName: manager.name,
+      eventId: manager.eventId,
+      eventName: event?.name || "Unknown Event",
+      eventDate: event?.startDate,
+    };
+  },
+});
+
+/**
+ * Join as a seller via invite code (self-registration)
+ */
+export const joinViaInviteCode = mutation({
+  args: {
+    inviteCode: v.string(),
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Find the manager with this invite code
+    const manager = await ctx.db
+      .query("eventStaff")
+      .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
+      .first();
+
+    if (!manager) {
+      throw new Error("Invalid invite code");
+    }
+
+    // Check if expired
+    if (manager.inviteCodeExpiresAt && manager.inviteCodeExpiresAt < Date.now()) {
+      throw new Error("This invite code has expired");
+    }
+
+    if (!manager.eventId) {
+      throw new Error("Invalid invite - no event associated");
+    }
+
+    // Check if this email is already staff for this event
+    const existingStaff = await ctx.db
+      .query("eventStaff")
+      .withIndex("by_event", (q) => q.eq("eventId", manager.eventId!))
+      .filter((q) =>
+        q.and(q.eq(q.field("email"), args.email), q.eq(q.field("isActive"), true))
+      )
+      .first();
+
+    if (existingStaff) {
+      throw new Error("You are already a staff member for this event");
+    }
+
+    // Create or get user record
+    let sellerUser = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (!sellerUser) {
+      const newUserId = await ctx.db.insert("users", {
+        email: args.email,
+        name: args.name,
+        role: "user",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      sellerUser = await ctx.db.get(newUserId);
+    }
+
+    // Generate unique referral code
+    let referralCode = generateReferralCode(args.name);
+    let attempts = 0;
+    while (attempts < 10) {
+      const existing = await ctx.db
+        .query("eventStaff")
+        .withIndex("by_referral_code", (q) => q.eq("referralCode", referralCode))
+        .first();
+
+      if (!existing) break;
+      referralCode = generateReferralCode(args.name);
+      attempts++;
+    }
+
+    // Calculate hierarchy level (parent + 1)
+    const hierarchyLevel = (manager.hierarchyLevel || 1) + 1;
+
+    // Create seller record
+    const sellerId = await ctx.db.insert("eventStaff", {
+      eventId: manager.eventId,
+      organizerId: manager.organizerId,
+      staffUserId: sellerUser!._id,
+      email: args.email,
+      name: args.name,
+      phone: args.phone,
+      role: "SELLER",
+      canScan: false, // Sellers can't scan by default
+      commissionType: manager.commissionType || "PERCENTAGE",
+      commissionValue: manager.commissionValue ? manager.commissionValue * 0.6 : 10, // Default 60% of manager's commission or 10%
+      commissionPercent: manager.commissionPercent ? manager.commissionPercent * 0.6 : 10,
+      commissionEarned: 0,
+      allocatedTickets: 0,
+      cashCollected: 0,
+      isActive: true,
+      ticketsSold: 0,
+      referralCode,
+      assignedByStaffId: manager._id,
+      hierarchyLevel,
+      canAssignSubSellers: false,
+      maxSubSellers: undefined,
+      parentCommissionPercent: 40, // Manager keeps 40% of seller's portion
+      subSellerCommissionPercent: 60, // Seller gets 60%
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return {
+      sellerId,
+      referralCode,
+      message: "Successfully joined as a seller!",
+    };
+  },
+});
+
+/**
+ * Toggle scan permission for any staff member
+ * Can be used by organizers to enable/disable scanning for managers or sellers
+ */
+export const toggleStaffScanPermission = mutation({
+  args: {
+    staffId: v.id("eventStaff"),
+    canScan: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getAuthenticatedUser(ctx);
+
+    const staff = await ctx.db.get(args.staffId);
+    if (!staff) {
+      throw new Error("Staff member not found");
+    }
+
+    // Get event to verify organizer
+    if (!staff.eventId) {
+      throw new Error("Cannot modify global staff scan permission here");
+    }
+
+    const event = await ctx.db.get(staff.eventId);
+    if (!event) {
+      throw new Error("Event not found");
+    }
+
+    // Only organizer or admin can toggle scan permission
+    if (event.organizerId !== user._id && user.role !== "admin") {
+      throw new Error("Only the event organizer can modify scan permissions");
+    }
+
+    await ctx.db.patch(args.staffId, {
+      canScan: args.canScan,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true, canScan: args.canScan };
   },
 });

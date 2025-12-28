@@ -30,6 +30,7 @@ import ProductOptionInput, {
 } from "@/components/marketplace/ProductOptionInput";
 import { VendorTierBadge } from "@/components/marketplace/VendorTierBadge";
 import { VariationSelector } from "@/components/products/VariationSelector";
+import { ProductReviews } from "@/components/marketplace/ProductReviews";
 
 // Type definitions
 interface ProductVariant {
@@ -818,6 +819,13 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Product Reviews Section */}
+        {productId && (
+          <div className="mt-12">
+            <ProductReviews productId={productId} />
+          </div>
+        )}
       </main>
       </div>
       <PublicFooter />

@@ -43,6 +43,9 @@ export const createEvent = mutation({
     // Class-specific fields
     classDays: v.optional(v.array(v.number())), // Days of week: 0=Sun, 1=Mon, ... 6=Sat
     classLevel: v.optional(v.string()), // Skill level: Beginner, Intermediate, Advanced
+    // Recurring class series
+    seriesId: v.optional(v.string()), // UUID shared by all sessions in a series
+    seriesPosition: v.optional(v.number()), // Position in series (1, 2, 3...)
   },
   handler: async (ctx, args) => {
     try {
@@ -94,6 +97,9 @@ export const createEvent = mutation({
         // Class-specific: days of the week and skill level
         classDays: args.classDays,
         classLevel: args.classLevel,
+        // Recurring class series
+        seriesId: args.seriesId,
+        seriesPosition: args.seriesPosition,
         // PRODUCTION: Create events as DRAFT by default
         // Organizers must explicitly publish events after setup
         status: "DRAFT",

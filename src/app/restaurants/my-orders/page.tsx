@@ -21,7 +21,10 @@ import {
   RefreshCw,
   LogIn,
   Loader2,
+  RotateCcw,
 } from "lucide-react";
+import { useFoodCart } from "@/contexts/FoodCartContext";
+import { useRouter } from "next/navigation";
 import type { Id, Doc } from "@/convex/_generated/dataModel";
 
 type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY_FOR_PICKUP" | "COMPLETED" | "CANCELLED";
@@ -67,12 +70,44 @@ export default function MyFoodOrdersPage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
+  const { reorderItems } = useFoodCart();
+  const router = useRouter();
 
   // Get food orders for the current user
   const orders = useQuery(
     api.foodOrders.getByCustomer,
     user?._id ? { customerId: user._id as Id<"users"> } : "skip"
   );
+
+  // Get all restaurants to map IDs to slugs/names
+  const restaurants = useQuery(api.restaurants.getAll, {});
+
+  // Create a map of restaurant ID to restaurant info
+  const restaurantMap = new Map<string, { slug: string; name: string }>();
+  restaurants?.forEach((r: { _id: Id<"restaurants">; slug: string; name: string }) => {
+    restaurantMap.set(r._id, { slug: r.slug, name: r.name });
+  });
+
+  // Handle reorder click
+  const handleReorder = (order: FoodOrder) => {
+    const restaurant = restaurantMap.get(order.restaurantId);
+    if (!restaurant) {
+      alert("Restaurant not found. Please browse restaurants to place a new order.");
+      return;
+    }
+
+    // Convert order items to cart items
+    const cartItems = order.items.map(item => ({
+      menuItemId: item.menuItemId as unknown as string,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      notes: item.notes,
+    }));
+
+    reorderItems(order.restaurantId, restaurant.slug, restaurant.name, cartItems);
+    router.push(`/restaurants/${restaurant.slug}`);
+  };
 
   // Loading state
   if (authLoading) {
@@ -343,12 +378,13 @@ export default function MyFoodOrdersPage() {
                           </span>
                         )}
                         {order.status === "COMPLETED" && (
-                          <Link
-                            href={`/restaurants`}
-                            className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
+                          <button
+                            onClick={() => handleReorder(order)}
+                            className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 inline-flex items-center gap-2"
                           >
+                            <RotateCcw className="h-4 w-4" />
                             Order Again
-                          </Link>
+                          </button>
                         )}
                       </div>
                     </div>

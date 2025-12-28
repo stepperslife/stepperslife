@@ -28,6 +28,7 @@ interface FoodCartContextType {
   getSubtotal: () => number;
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
+  reorderItems: (restaurantId: string, restaurantSlug: string, restaurantName: string, items: FoodCartItem[]) => void;
 }
 
 const MAX_QUANTITY = 99;
@@ -193,6 +194,28 @@ export function FoodCartProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const reorderItems = useCallback((
+    restaurantId: string,
+    restaurantSlug: string,
+    restaurantName: string,
+    items: FoodCartItem[]
+  ) => {
+    // Replace entire cart with the reorder items
+    setCart({
+      restaurantId,
+      restaurantSlug,
+      restaurantName,
+      items: items.map(item => ({
+        menuItemId: item.menuItemId,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        notes: item.notes,
+      })),
+    });
+    setIsCartOpen(true);
+  }, []);
+
   const getItemCount = useCallback(() => {
     return cart.items.reduce((total, item) => total + item.quantity, 0);
   }, [cart.items]);
@@ -213,6 +236,7 @@ export function FoodCartProvider({ children }: { children: React.ReactNode }) {
         getSubtotal,
         isCartOpen,
         setIsCartOpen,
+        reorderItems,
       }}
     >
       {children}

@@ -18,7 +18,15 @@ import {
   Star,
   Users,
   Ticket,
+  CalendarPlus,
+  ChevronDown,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
 import { formatEventDate, formatEventTime } from "@/lib/date-format";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -167,6 +175,83 @@ export default function ClassDetailClient({ classId, mockData }: ClassDetailClie
       navigator.clipboard.writeText(window.location.href);
       alert("Link copied to clipboard!");
     }
+  };
+
+  // Helper to get location string from location object
+  const getLocationString = () => {
+    if (!classDetails?.location) return 'Online';
+    if (typeof classDetails.location === 'string') return classDetails.location;
+    const loc = classDetails.location;
+    return `${loc.venueName || ''} ${loc.address || ''}, ${loc.city || ''}, ${loc.state || ''} ${loc.zipCode || ''}`.trim() || 'Online';
+  };
+
+  // Generate Google Calendar URL
+  const generateGoogleCalendarUrl = () => {
+    if (!classDetails?.startDate) return null;
+
+    const startDate = new Date(classDetails.startDate);
+    const endDate = classDetails.endDate ? new Date(classDetails.endDate) : new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default 2 hours
+
+    // Format dates as YYYYMMDDTHHmmssZ
+    const formatDate = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    };
+
+    const params = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: classDetails.name,
+      dates: `${formatDate(startDate)}/${formatDate(endDate)}`,
+      details: classDetails.description || `Class: ${classDetails.name}`,
+      location: getLocationString(),
+      sf: 'true',
+    });
+
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  };
+
+  // Generate ICS file content for Apple Calendar/Outlook
+  const generateIcsContent = () => {
+    if (!classDetails?.startDate) return null;
+
+    const startDate = new Date(classDetails.startDate);
+    const endDate = classDetails.endDate ? new Date(classDetails.endDate) : new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+
+    const formatDate = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    };
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//SteppersLife//Class Calendar//EN',
+      'BEGIN:VEVENT',
+      `DTSTART:${formatDate(startDate)}`,
+      `DTEND:${formatDate(endDate)}`,
+      `SUMMARY:${classDetails.name}`,
+      `DESCRIPTION:${(classDetails.description || '').replace(/\n/g, '\\n').substring(0, 200)}`,
+      `LOCATION:${getLocationString()}`,
+      `URL:${typeof window !== 'undefined' ? window.location.href : ''}`,
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+
+    return icsContent;
+  };
+
+  // Download ICS file
+  const downloadIcs = () => {
+    const icsContent = generateIcsContent();
+    if (!icsContent) return;
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${classDetails.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const isPast = classDetails.endDate ? classDetails.endDate < Date.now() : false;
@@ -392,7 +477,7 @@ export default function ClassDetailClient({ classId, mockData }: ClassDetailClie
                   {classDetails.startDate && (
                     <div className="flex items-start gap-3 mb-4 pb-4 border-b border-border" data-testid="class-date">
                       <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      <div>
+                      <div className="flex-1">
                         <p className="font-semibold text-foreground">
                           {formatEventDate(classDetails.startDate, classDetails.timezone)}
                         </p>
@@ -405,6 +490,43 @@ export default function ClassDetailClient({ classId, mockData }: ClassDetailClie
                           <p className="text-sm text-muted-foreground mt-1">
                             {classDetails.eventTimeLiteral}
                           </p>
+                        )}
+                        {/* Add to Calendar */}
+                        {!isPast && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button
+                                type="button"
+                                className="mt-2 inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors"
+                                data-testid="add-to-calendar-btn"
+                              >
+                                <CalendarPlus className="w-4 h-4" />
+                                Add to Calendar
+                                <ChevronDown className="w-3 h-3" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem asChild>
+                                <a
+                                  href={generateGoogleCalendarUrl() || '#'}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 cursor-pointer"
+                                >
+                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.568 8.16l-6.72 6.72a.752.752 0 01-.528.24.752.752 0 01-.528-.24l-3.36-3.36a.75.75 0 111.056-1.056l2.832 2.832 6.192-6.192a.75.75 0 111.056 1.056z"/>
+                                  </svg>
+                                  Google Calendar
+                                </a>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={downloadIcs} className="flex items-center gap-2 cursor-pointer">
+                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                                </svg>
+                                Apple Calendar / Outlook
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         )}
                       </div>
                     </div>
