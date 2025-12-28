@@ -40,6 +40,7 @@ import type * as files_queries from "../files/queries.js";
 import type * as flyers_mutations from "../flyers/mutations.js";
 import type * as flyers_queries from "../flyers/queries.js";
 import type * as foodOrders from "../foodOrders.js";
+import type * as instructorAnalytics from "../instructorAnalytics.js";
 import type * as lib_activationCodes from "../lib/activationCodes.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_helpers from "../lib/helpers.js";
@@ -160,6 +161,7 @@ declare const fullApi: ApiFromModules<{
   "flyers/mutations": typeof flyers_mutations;
   "flyers/queries": typeof flyers_queries;
   foodOrders: typeof foodOrders;
+  instructorAnalytics: typeof instructorAnalytics;
   "lib/activationCodes": typeof lib_activationCodes;
   "lib/auth": typeof lib_auth;
   "lib/helpers": typeof lib_helpers;

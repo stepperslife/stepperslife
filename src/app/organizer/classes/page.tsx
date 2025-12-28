@@ -14,6 +14,7 @@ import {
   MapPin,
   GraduationCap,
   Copy,
+  BarChart3,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
@@ -159,14 +160,24 @@ export default function OrganizerClassesPage() {
                 Classes you created and manage as an instructor
               </p>
             </div>
-            <Link
-              href="/organizer/classes/create"
-              className="flex items-center justify-center gap-2 px-4 py-2.5 md:px-6 md:py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg w-full sm:w-auto"
-              data-testid="create-class-btn"
-            >
-              <Plus className="w-5 h-5" />
-              Create Class
-            </Link>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Link
+                href="/organizer/classes/analytics"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 md:px-6 md:py-3 border border-primary/30 text-primary rounded-lg hover:bg-primary/10 transition-colors w-full sm:w-auto"
+                data-testid="analytics-btn"
+              >
+                <BarChart3 className="w-5 h-5" />
+                Analytics
+              </Link>
+              <Link
+                href="/organizer/classes/create"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 md:px-6 md:py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg w-full sm:w-auto"
+                data-testid="create-class-btn"
+              >
+                <Plus className="w-5 h-5" />
+                Create Class
+              </Link>
+            </div>
           </div>
         </div>
       </motion.header>
