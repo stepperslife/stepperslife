@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
-import { useMutation } from "convex/react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
@@ -28,6 +28,26 @@ export function ImageUpload({
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch URL from storage ID if we have an ID but no URL
+  const fetchedImageUrl = useQuery(
+    api.files.queries.getImageUrl,
+    currentImageId ? { storageId: currentImageId } : "skip"
+  );
+
+  // Update preview when fetched URL becomes available
+  useEffect(() => {
+    if (fetchedImageUrl && !previewUrl) {
+      setPreviewUrl(fetchedImageUrl);
+    }
+  }, [fetchedImageUrl, previewUrl]);
+
+  // Also update if currentImageUrl prop changes
+  useEffect(() => {
+    if (currentImageUrl) {
+      setPreviewUrl(currentImageUrl);
+    }
+  }, [currentImageUrl]);
 
   const generateUploadUrl = useMutation(api.files.mutations.generateUploadUrl);
 
