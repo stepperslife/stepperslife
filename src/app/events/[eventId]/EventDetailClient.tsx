@@ -366,64 +366,132 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
             </div>
           </motion.div>
 
-          {/* Tab Navigation */}
+          {/* Selection Cards - User Friendly */}
           {(hasTickets || hasHotels || hasBundles) && (
             <div className="bg-card rounded-xl border border-border mb-4 overflow-hidden">
-              {/* Tab Headers */}
-              <div className="flex border-b border-border">
-                {hasTickets && (
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("tickets")}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
-                      activeTab === "tickets"
-                        ? "bg-primary/10 text-primary border-b-2 border-primary -mb-px"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    }`}
-                  >
-                    <Ticket className="w-4 h-4" />
-                    <span>Tickets</span>
-                    {hasTickets && (
-                      <span className="px-1.5 py-0.5 bg-muted rounded text-xs">
-                        {eventDetails.ticketTiers?.length}
+              {/* Header */}
+              <div className="px-4 pt-4 pb-2">
+                <h2 className="text-lg font-semibold text-foreground">What would you like?</h2>
+                <p className="text-sm text-muted-foreground">Select an option to see choices</p>
+              </div>
+
+              {/* Selection Cards */}
+              <div className="px-4 pb-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {/* Tickets Card */}
+                  {hasTickets && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("tickets")}
+                      className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all ${
+                        activeTab === "tickets"
+                          ? "border-primary bg-primary/5 shadow-md"
+                          : "border-border hover:border-primary/50 hover:bg-muted/50"
+                      }`}
+                    >
+                      {/* Radio indicator */}
+                      <div className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        activeTab === "tickets" ? "border-primary bg-primary" : "border-muted-foreground"
+                      }`}>
+                        {activeTab === "tickets" && (
+                          <div className="w-2 h-2 bg-white rounded-full" />
+                        )}
+                      </div>
+
+                      <Ticket className={`w-8 h-8 mb-2 ${activeTab === "tickets" ? "text-primary" : "text-muted-foreground"}`} />
+                      <span className={`font-semibold ${activeTab === "tickets" ? "text-primary" : "text-foreground"}`}>
+                        Tickets
                       </span>
-                    )}
-                  </button>
-                )}
-                {hasHotels && (
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("hotels")}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
-                      activeTab === "hotels"
-                        ? "bg-primary/10 text-primary border-b-2 border-primary -mb-px"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    }`}
-                  >
-                    <Hotel className="w-4 h-4" />
-                    <span>Hotels</span>
-                    <span className="px-1.5 py-0.5 bg-muted rounded text-xs">
-                      {hotelPackages?.length}
-                    </span>
-                  </button>
-                )}
-                {hasBundles && (
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("bundles")}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
-                      activeTab === "bundles"
-                        ? "bg-primary/10 text-primary border-b-2 border-primary -mb-px"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    }`}
-                  >
-                    <Package className="w-4 h-4" />
-                    <span>Bundles</span>
-                    <span className="px-1.5 py-0.5 bg-success/20 text-success rounded text-xs font-semibold">
-                      Save
-                    </span>
-                  </button>
-                )}
+                      <span className="text-xs text-muted-foreground mt-1">
+                        {eventDetails.ticketTiers?.length} option{(eventDetails.ticketTiers?.length || 0) !== 1 ? "s" : ""}
+                      </span>
+                      {eventDetails.ticketTiers && eventDetails.ticketTiers.length > 0 && (
+                        <span className="text-xs font-medium text-success mt-1">
+                          from ${(Math.min(...eventDetails.ticketTiers.map((t: any) => t.currentPrice || t.price)) / 100).toFixed(0)}
+                        </span>
+                      )}
+                    </button>
+                  )}
+
+                  {/* Hotels Card */}
+                  {hasHotels && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("hotels")}
+                      className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all ${
+                        activeTab === "hotels"
+                          ? "border-primary bg-primary/5 shadow-md"
+                          : "border-border hover:border-primary/50 hover:bg-muted/50"
+                      }`}
+                    >
+                      {/* Radio indicator */}
+                      <div className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        activeTab === "hotels" ? "border-primary bg-primary" : "border-muted-foreground"
+                      }`}>
+                        {activeTab === "hotels" && (
+                          <div className="w-2 h-2 bg-white rounded-full" />
+                        )}
+                      </div>
+
+                      <Hotel className={`w-8 h-8 mb-2 ${activeTab === "hotels" ? "text-primary" : "text-muted-foreground"}`} />
+                      <span className={`font-semibold ${activeTab === "hotels" ? "text-primary" : "text-foreground"}`}>
+                        Hotel
+                      </span>
+                      <span className="text-xs text-muted-foreground mt-1">
+                        {hotelPackages?.length} hotel{(hotelPackages?.length || 0) !== 1 ? "s" : ""}
+                      </span>
+                      {hotelPackages && hotelPackages.length > 0 && (
+                        <span className="text-xs font-medium text-success mt-1">
+                          from ${(Math.min(...hotelPackages.flatMap((h: any) => h.roomTypes.map((r: any) => r.pricePerNightCents))) / 100).toFixed(0)}/night
+                        </span>
+                      )}
+                    </button>
+                  )}
+
+                  {/* Bundles Card */}
+                  {hasBundles && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("bundles")}
+                      className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all ${
+                        activeTab === "bundles"
+                          ? "border-success bg-success/5 shadow-md"
+                          : "border-border hover:border-success/50 hover:bg-muted/50"
+                      }`}
+                    >
+                      {/* Radio indicator */}
+                      <div className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        activeTab === "bundles" ? "border-success bg-success" : "border-muted-foreground"
+                      }`}>
+                        {activeTab === "bundles" && (
+                          <div className="w-2 h-2 bg-white rounded-full" />
+                        )}
+                      </div>
+
+                      <Package className={`w-8 h-8 mb-2 ${activeTab === "bundles" ? "text-success" : "text-muted-foreground"}`} />
+                      <span className={`font-semibold ${activeTab === "bundles" ? "text-success" : "text-foreground"}`}>
+                        Bundle
+                      </span>
+                      <span className="text-xs text-muted-foreground mt-1">
+                        Best value
+                      </span>
+                      <span className="text-xs font-bold text-success mt-1 px-2 py-0.5 bg-success/10 rounded">
+                        SAVE {eventBundles?.[0]?.percentageSavings || 10}%
+                      </span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Divider with selected label */}
+              <div className="border-t border-border">
+                <div className="px-4 py-2 bg-muted/30">
+                  <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                    {activeTab === "tickets" && <><Ticket className="w-4 h-4" /> Select your tickets:</>}
+                    {activeTab === "hotels" && <><Hotel className="w-4 h-4" /> Choose your hotel:</>}
+                    {activeTab === "bundles" && <><Package className="w-4 h-4" /> Pick a bundle deal:</>}
+                  </p>
+                </div>
               </div>
 
               {/* Tab Content */}
