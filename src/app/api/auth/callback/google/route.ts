@@ -15,6 +15,10 @@ import { createAndSetSession } from "@/lib/auth/session-manager";
 import { getBaseUrl } from "@/lib/constants/app-config";
 
 export async function GET(request: NextRequest) {
+  // Get base URL early for all redirects (prevents localhost issues)
+  const baseUrl = getBaseUrl(request);
+  console.log("[Google OAuth] Using base URL for redirects:", baseUrl);
+
   try {
     // Get OAuth code and state from query params
     const code = request.nextUrl.searchParams.get("code");
@@ -29,14 +33,14 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error("[Google OAuth] Error from Google:", error);
       return NextResponse.redirect(
-        new URL(`/login?error=${encodeURIComponent(error)}`, request.url)
+        new URL(`/login?error=${encodeURIComponent(error)}`, baseUrl)
       );
     }
 
     // Validate required params
     if (!code || !encryptedState) {
       console.error("[Google OAuth] Missing params - code:", !!code, "state:", !!encryptedState);
-      return NextResponse.redirect(new URL("/login?error=missing_params", request.url));
+      return NextResponse.redirect(new URL("/login?error=missing_params", baseUrl));
     }
 
     // Decrypt and verify the state parameter
@@ -46,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     if (!stateData) {
       console.error("[Google OAuth] Failed to decrypt state or state expired");
-      return NextResponse.redirect(new URL("/login?error=invalid_state", request.url));
+      return NextResponse.redirect(new URL("/login?error=invalid_state", baseUrl));
     }
 
     // Get callback URL from decrypted state
@@ -73,9 +77,7 @@ export async function GET(request: NextRequest) {
     const user = await convex.query(api.users.queries.getUserById, { userId });
     console.log("[Google OAuth] User role:", user?.role);
 
-    // Redirect to callback URL with session using centralized base URL utility
-    const baseUrl = getBaseUrl(request);
-    console.log("[Google OAuth] Base URL:", baseUrl);
+    // Redirect to callback URL with session
     console.log("[Google OAuth] Full redirect URL:", new URL(callbackUrl, baseUrl).toString());
 
     const response = NextResponse.redirect(new URL(callbackUrl, baseUrl));
@@ -100,7 +102,7 @@ export async function GET(request: NextRequest) {
     console.error("[Google OAuth] Callback error:", error);
     console.error("[Google OAuth] Error stack:", error.stack);
     return NextResponse.redirect(
-      new URL(`/login?error=${encodeURIComponent(error.message)}`, request.url)
+      new URL(`/login?error=${encodeURIComponent(error.message)}`, baseUrl)
     );
   }
 }

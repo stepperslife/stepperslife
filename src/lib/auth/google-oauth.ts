@@ -152,6 +152,13 @@ export async function exchangeCodeForToken(code: string): Promise<{
   refreshToken?: string;
   expiresIn: number;
 }> {
+  // Log what we're sending (mask secrets)
+  console.log("[Google OAuth] Token exchange request:");
+  console.log("[Google OAuth]   client_id:", GOOGLE_CLIENT_ID?.substring(0, 20) + "...");
+  console.log("[Google OAuth]   client_secret:", GOOGLE_CLIENT_SECRET ? "[SET]" : "[NOT SET]");
+  console.log("[Google OAuth]   redirect_uri:", REDIRECT_URI);
+  console.log("[Google OAuth]   code:", code?.substring(0, 10) + "...");
+
   const response = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: {
@@ -168,6 +175,9 @@ export async function exchangeCodeForToken(code: string): Promise<{
 
   if (!response.ok) {
     const error = await response.text();
+    console.error("[Google OAuth] Token exchange FAILED:");
+    console.error("[Google OAuth]   Status:", response.status);
+    console.error("[Google OAuth]   Error:", error);
     throw new Error(`Failed to exchange code for token: ${error}`);
   }
 
