@@ -690,7 +690,7 @@ test.describe("Restaurants Feature", () => {
 
       // Update payment status to paid
       await client.mutation(api.foodOrders.updatePaymentStatus, {
-        id: testOrderId,
+        orderId: testOrderId,
         paymentStatus: "paid",
         paymentMethod: "cash",
       });

@@ -536,14 +536,14 @@ export default function EditProductPage() {
                 </div>
               ) : (
                 <div
-                  {...primaryDropzone.getRootProps()}
+                  {...(primaryDropzone.getRootProps() as React.HTMLAttributes<HTMLDivElement>)}
                   className={`w-full h-64 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors ${
                     primaryDropzone.isDragActive
                       ? "border-primary bg-accent"
                       : "border hover:border-primary hover:bg-card"
                   } ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                  <input {...primaryDropzone.getInputProps()} />
+                  <input {...(primaryDropzone.getInputProps() as React.InputHTMLAttributes<HTMLInputElement>)} />
                   {uploadProgress.primary ? (
                     <div className="text-center">
                       <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
@@ -609,14 +609,14 @@ export default function EditProductPage() {
 
               {/* Drop Zone */}
               <div
-                {...additionalDropzone.getRootProps()}
+                {...(additionalDropzone.getRootProps() as React.HTMLAttributes<HTMLDivElement>)}
                 className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors ${
                   additionalDropzone.isDragActive
                     ? "border-primary bg-accent"
                     : "border hover:border-primary hover:bg-card"
                 } ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                <input {...additionalDropzone.getInputProps()} />
+                <input {...(additionalDropzone.getInputProps() as React.InputHTMLAttributes<HTMLInputElement>)} />
                 {isUploading &&
                 Object.keys(uploadProgress).some((k) => k.startsWith("additional-")) ? (
                   <div className="text-center">

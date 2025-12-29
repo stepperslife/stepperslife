@@ -16,7 +16,7 @@ test.describe("PayPal Payment Availability", () => {
     // Find an event
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available for testing");
+      test.skip(true, "No events available for testing");
       return;
     }
 
@@ -26,7 +26,7 @@ test.describe("PayPal Payment Availability", () => {
     // Click buy tickets
     const buyButton = page.locator('button:has-text("Buy Tickets"), a:has-text("Get Tickets")');
     if (!(await buyButton.isVisible())) {
-      test.skip("Event does not have buy tickets button");
+      test.skip(true, "Event does not have buy tickets button");
       return;
     }
 
@@ -86,7 +86,7 @@ test.describe("PayPal Payment Availability", () => {
 
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available");
+      test.skip(true, "No events available");
       return;
     }
 
@@ -95,7 +95,7 @@ test.describe("PayPal Payment Availability", () => {
 
     const buyButton = page.locator('button:has-text("Buy Tickets"), a:has-text("Get Tickets")');
     if (!(await buyButton.isVisible())) {
-      test.skip("No buy button");
+      test.skip(true, "No buy button");
       return;
     }
 

@@ -23,7 +23,7 @@ import {
   Globe,
   Tag,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface FormData {
   // Contact Info

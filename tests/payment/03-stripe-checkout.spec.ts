@@ -30,7 +30,7 @@ test.describe("Stripe Credit Card Checkout", () => {
     // Step 2: Find and click on an event
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available for testing");
+      test.skip(true, "No events available for testing");
       return;
     }
 
@@ -42,7 +42,7 @@ test.describe("Stripe Credit Card Checkout", () => {
       'button:has-text("Buy Tickets"), a:has-text("Get Tickets"), button:has-text("Get Tickets"), [data-testid="buy-tickets-btn"]'
     );
     if (!(await buyButton.isVisible())) {
-      test.skip("Event does not have buy tickets button - may be free or sold out");
+      test.skip(true, "Event does not have buy tickets button - may be free or sold out");
       return;
     }
 
@@ -112,7 +112,7 @@ test.describe("Stripe Credit Card Checkout", () => {
         await zipInput.fill(STRIPE_TEST_CARDS.success.zip);
       }
     } else {
-      test.skip("Stripe card form not found - event may use different payment method");
+      test.skip(true, "Stripe card form not found - event may use different payment method");
       return;
     }
 
@@ -152,7 +152,7 @@ test.describe("Stripe Credit Card Checkout", () => {
 
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available");
+      test.skip(true, "No events available");
       return;
     }
 
@@ -161,7 +161,7 @@ test.describe("Stripe Credit Card Checkout", () => {
 
     const buyButton = page.locator('button:has-text("Buy Tickets"), a:has-text("Get Tickets")');
     if (!(await buyButton.isVisible())) {
-      test.skip("No buy button");
+      test.skip(true, "No buy button");
       return;
     }
 
@@ -205,7 +205,7 @@ test.describe("Stripe Credit Card Checkout", () => {
       const cvcInput = stripeFrame.locator('[name="cvc"]');
       await cvcInput.fill(STRIPE_TEST_CARDS.declined.cvc);
     } else {
-      test.skip("Stripe form not found");
+      test.skip(true, "Stripe form not found");
       return;
     }
 
@@ -241,7 +241,7 @@ test.describe("Stripe Credit Card Checkout", () => {
 
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available");
+      test.skip(true, "No events available");
       return;
     }
 
@@ -250,7 +250,7 @@ test.describe("Stripe Credit Card Checkout", () => {
 
     const buyButton = page.locator('button:has-text("Buy Tickets"), a:has-text("Get Tickets")');
     if (!(await buyButton.isVisible())) {
-      test.skip("No buy button");
+      test.skip(true, "No buy button");
       return;
     }
 
@@ -294,7 +294,7 @@ test.describe("Stripe Credit Card Checkout", () => {
       const cvcInput = stripeFrame.locator('[name="cvc"]');
       await cvcInput.fill(STRIPE_TEST_CARDS.insufficientFunds.cvc);
     } else {
-      test.skip("Stripe form not found");
+      test.skip(true, "Stripe form not found");
       return;
     }
 
@@ -318,7 +318,7 @@ test.describe("Stripe Payment Element Features", () => {
 
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available");
+      test.skip(true, "No events available");
       return;
     }
 
@@ -327,7 +327,7 @@ test.describe("Stripe Payment Element Features", () => {
 
     const buyButton = page.locator('button:has-text("Buy Tickets"), a:has-text("Get Tickets")');
     if (!(await buyButton.isVisible())) {
-      test.skip("No buy button");
+      test.skip(true, "No buy button");
       return;
     }
 
@@ -360,7 +360,7 @@ test.describe("Stripe Payment Element Features", () => {
       expect(hasStripe).toBe(true);
     } else {
       // May be using different payment method
-      test.skip("Stripe element not found - event may use different payment");
+      test.skip(true, "Stripe element not found - event may use different payment");
     }
   });
 });

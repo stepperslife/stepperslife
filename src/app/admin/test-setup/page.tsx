@@ -261,7 +261,7 @@ export default function TestSetupPage() {
         // Mark as paid
         try {
           await updatePayment({
-            id: orderResult.orderId,
+            orderId: orderResult.orderId,
             paymentStatus: "paid",
             paymentMethod: "cash",
           });

@@ -6,9 +6,10 @@
  * - Sends to Customer, Vendor(s), and Staff
  * - Tracks all results for audit logging
  * - Validates email addresses before sending
+ * - Uses Postal (self-hosted) for email delivery
  */
 
-import { Resend } from "resend";
+import { sendPostalEmail, FROM_EMAIL as POSTAL_FROM } from "./client";
 import {
   EmailSendResult,
   EmailRecipientType,
@@ -23,7 +24,6 @@ import {
   generateVendorReceipt,
   generateStaffNotification,
   isValidEmail,
-  formatCurrency,
 } from "./receipt-templates";
 
 // ============================================================================
@@ -34,23 +34,20 @@ const MAX_RETRIES = parseInt(process.env.EMAIL_MAX_RETRIES || "3");
 const RETRY_DELAY_MS = parseInt(process.env.EMAIL_RETRY_DELAY_MS || "1000");
 const STAFF_EMAIL = process.env.STAFF_NOTIFICATION_EMAIL || "thestepperslife@gmail.com";
 const STAFF_ENABLED = process.env.STAFF_NOTIFICATION_ENABLED !== "false";
-const FROM_EMAIL = process.env.FROM_EMAIL || "SteppersLife Marketplace <marketplace@stepperslife.com>";
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "support@stepperslife.com";
+const FROM_EMAIL = process.env.FROM_EMAIL || POSTAL_FROM;
 
 // ============================================================================
-// EMAIL SERVICE CLASS
+// EMAIL SERVICE CLASS (Uses Postal - self-hosted)
 // ============================================================================
 
 export class EmailService {
-  private resend: Resend | null;
   private fromEmail: string;
+  private configured: boolean;
 
   constructor() {
-    if (process.env.RESEND_API_KEY) {
-      this.resend = new Resend(process.env.RESEND_API_KEY);
-    } else {
-      console.warn("[EmailService] RESEND_API_KEY not configured - emails disabled");
-      this.resend = null;
+    this.configured = !!process.env.POSTAL_API_KEY;
+    if (!this.configured) {
+      console.warn("[EmailService] POSTAL_API_KEY not configured - emails disabled");
     }
     this.fromEmail = FROM_EMAIL;
   }
@@ -64,6 +61,7 @@ export class EmailService {
 
   /**
    * Send email with retry logic and exponential backoff
+   * Uses Postal (self-hosted) for delivery
    */
   private async sendWithRetry(
     to: string,
@@ -85,12 +83,12 @@ export class EmailService {
       };
     }
 
-    // Check if Resend is configured
-    if (!this.resend) {
-      console.error("[EmailService] Resend not configured");
+    // Check if Postal is configured
+    if (!this.configured) {
+      console.error("[EmailService] Postal not configured");
       return {
         success: false,
-        error: "Email service not configured (RESEND_API_KEY missing)",
+        error: "Email service not configured (POSTAL_API_KEY missing)",
         attempts: 0,
         recipientType,
         recipientEmail: to,
@@ -105,19 +103,16 @@ export class EmailService {
           `[EmailService] Attempt ${attempt}/${MAX_RETRIES} - Sending ${recipientType} email to ${to} for order ${orderNumber}`
         );
 
-        const response = await this.resend.emails.send({
+        const response = await sendPostalEmail({
           from: this.fromEmail,
           to,
           subject,
           html,
           text,
-          headers: {
-            "X-Entity-Ref-ID": `${orderNumber}-${recipientType}-${Date.now()}`,
-          },
         });
 
-        if (response.error) {
-          lastError = response.error.message;
+        if (!response.success) {
+          lastError = response.error || "Unknown error";
           console.error(
             `[EmailService] Attempt ${attempt}/${MAX_RETRIES} failed: ${lastError}`
           );
@@ -130,11 +125,11 @@ export class EmailService {
           }
         } else {
           console.log(
-            `[EmailService] Successfully sent ${recipientType} email to ${to} (messageId: ${response.data?.id})`
+            `[EmailService] Successfully sent ${recipientType} email to ${to} (messageId: ${response.messageId})`
           );
           return {
             success: true,
-            messageId: response.data?.id,
+            messageId: response.messageId,
             attempts: attempt,
             recipientType,
             recipientEmail: to,
@@ -407,7 +402,7 @@ export class EmailService {
    * Check if email service is configured
    */
   isConfigured(): boolean {
-    return this.resend !== null;
+    return this.configured;
   }
 
   /**

@@ -49,7 +49,10 @@ export default function UsersManagementPage() {
     }
   };
 
-  const handleDeleteUser = async (userId: Id<"users">) => {
+  const handleDeleteUser = async (userId: Id<"users">, userName?: string) => {
+    if (!confirm(`Are you sure you want to delete ${userName || "this user"}?`)) {
+      return;
+    }
     try {
       await deleteUser({ userId });
       toast.success("User deleted successfully");

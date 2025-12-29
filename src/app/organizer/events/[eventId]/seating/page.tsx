@@ -103,7 +103,7 @@ export default function SeatingChartBuilderPage() {
   const [quickTableShape, setQuickTableShape] = useState<TableShape>("ROUND");
 
   // Convex queries and mutations
-  const event = useQuery(api.events.queries.getEvent, { eventId });
+  const event = useQuery(api.events.queries.getEventById, { eventId });
   const existingChart = useQuery(api.seating.queries.getEventSeatingChart, { eventId });
   const createSeatingChart = useMutation(api.seating.mutations.createSeatingChart);
   const updateSeatingChart = useMutation(api.seating.mutations.updateSeatingChart);

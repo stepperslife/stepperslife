@@ -25,7 +25,7 @@ import {
   CreditCard,
   Sparkles
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 // Plan details for display
 const PLAN_DETAILS: Record<string, { name: string; price: string; features: string[] }> = {

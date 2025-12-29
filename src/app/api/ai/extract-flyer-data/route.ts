@@ -5,10 +5,15 @@ import { getJwtSecretEncoded } from "@/lib/auth/jwt-secret";
 
 const JWT_SECRET = getJwtSecretEncoded();
 
-// Initialize Gemini AI (if API key is available)
+// Gemini 1.5 Flash (FREE tier, PRIMARY)
+// Free: 1,500 requests/day, 60/min - no credit card required
+// Get key at: https://aistudio.google.com/app/apikey
 const genAI = process.env.GEMINI_API_KEY
   ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
   : null;
+
+// Ollama (self-hosted, FALLBACK) - for local development
+const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434";
 
 // Type definitions for extracted data
 interface ExtractedData {
@@ -310,43 +315,8 @@ function parseExtractionResponse(
 }
 
 /**
- * Extract flyer data using Ollama Vision
- */
-async function extractWithOllama(base64Image: string): Promise<ExtractionResult> {
-  const ollamaUrl = process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434";
-
-  const ollamaResponse = await fetch(`${ollamaUrl}/api/generate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "llama3.2-vision:11b",
-      prompt: EXTRACTION_PROMPT,
-      images: [base64Image],
-      stream: false,
-      options: {
-        temperature: 0.1,
-        num_predict: 4096,
-      },
-    }),
-  });
-
-  if (!ollamaResponse.ok) {
-    const errorText = await ollamaResponse.text();
-    throw new Error(`Ollama API error: ${ollamaResponse.status} ${errorText}`);
-  }
-
-  const ollamaData = await ollamaResponse.json();
-  const extractedText = ollamaData.response;
-
-  if (!extractedText) {
-    throw new Error("No response from Ollama");
-  }
-
-  return parseExtractionResponse(extractedText, "ollama-llama3.2-vision");
-}
-
-/**
- * Extract flyer data using Gemini Vision
+ * Extract flyer data using Gemini 1.5 Flash (FREE tier)
+ * Primary provider - works in production on Coolify
  */
 async function extractWithGemini(
   base64Image: string,
@@ -379,9 +349,43 @@ async function extractWithGemini(
 }
 
 /**
+ * Extract flyer data using Ollama Vision (self-hosted)
+ * Fallback provider - for local development
+ */
+async function extractWithOllama(base64Image: string): Promise<ExtractionResult> {
+  const ollamaResponse = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "llama3.2-vision:11b",
+      prompt: EXTRACTION_PROMPT,
+      images: [base64Image],
+      stream: false,
+      options: {
+        temperature: 0.1,
+        num_predict: 4096,
+      },
+    }),
+  });
+
+  if (!ollamaResponse.ok) {
+    const errorText = await ollamaResponse.text();
+    throw new Error(`Ollama API error: ${ollamaResponse.status} ${errorText}`);
+  }
+
+  const ollamaData = await ollamaResponse.json();
+  const extractedText = ollamaData.response;
+
+  if (!extractedText) {
+    throw new Error("No response from Ollama");
+  }
+
+  return parseExtractionResponse(extractedText, "ollama-llama3.2-vision");
+}
+
+/**
  * Main POST handler
- * Supports provider selection via query param: ?provider=ollama|gemini|auto
- * Default: auto (tries Ollama first, falls back to Gemini)
+ * Uses Gemini (FREE) as primary, Ollama as fallback
  */
 export async function POST(request: NextRequest) {
   try {
@@ -400,10 +404,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No filepath provided" }, { status: 400 });
     }
 
-    // Get provider preference from query params
-    const searchParams = request.nextUrl.searchParams;
-    const preferredProvider = searchParams.get("provider") || "auto";
-
     // Get image data
     let imageData: { base64: string; mimeType: string };
     try {
@@ -419,47 +419,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Try Gemini first (FREE tier), fallback to Ollama
     let result: ExtractionResult;
     let fallbackUsed = false;
 
-    // Provider selection logic
-    if (preferredProvider === "gemini") {
-      // Use Gemini only
-      if (!process.env.GEMINI_API_KEY) {
-        return NextResponse.json(
-          { error: "Gemini API not configured - GEMINI_API_KEY not set" },
-          { status: 503 }
-        );
-      }
-      result = await extractWithGemini(imageData.base64, imageData.mimeType);
-    } else if (preferredProvider === "ollama") {
-      // Use Ollama only
-      result = await extractWithOllama(imageData.base64);
-    } else {
-      // Auto mode: try Ollama first, fall back to Gemini
+    if (genAI) {
+      // Primary: Gemini 1.5 Flash (FREE)
       try {
-        result = await extractWithOllama(imageData.base64);
-      } catch (ollamaError) {
-        console.warn("[AI Extraction] Ollama failed, trying Gemini fallback:", ollamaError);
+        result = await extractWithGemini(imageData.base64, imageData.mimeType);
+      } catch (geminiError) {
+        console.warn("[AI Extraction] Gemini failed, trying Ollama fallback:", geminiError);
 
-        // Check if Gemini is available for fallback
-        if (!process.env.GEMINI_API_KEY) {
-          // No fallback available, re-throw Ollama error
-          throw ollamaError;
-        }
-
-        // Try Gemini as fallback
+        // Fallback to Ollama (local dev)
         try {
-          result = await extractWithGemini(imageData.base64, imageData.mimeType);
+          result = await extractWithOllama(imageData.base64);
           fallbackUsed = true;
-        } catch (geminiError) {
-          // Both failed
-          console.error("[AI Extraction] Both Ollama and Gemini failed");
+        } catch (ollamaError) {
+          console.error("[AI Extraction] Both Gemini and Ollama failed");
           throw new Error(
-            `All AI providers failed. Ollama: ${ollamaError instanceof Error ? ollamaError.message : "Unknown"}. Gemini: ${geminiError instanceof Error ? geminiError.message : "Unknown"}`
+            `AI extraction failed. Gemini: ${geminiError instanceof Error ? geminiError.message : "Unknown"}. Ollama: ${ollamaError instanceof Error ? ollamaError.message : "Unknown"}`
           );
         }
       }
+    } else {
+      // No Gemini key - use Ollama only
+      result = await extractWithOllama(imageData.base64);
     }
 
     // Return the result
@@ -497,16 +481,15 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET handler to check provider status
+ * GET handler to check AI provider status
  */
 export async function GET() {
-  const ollamaUrl = process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434";
   const geminiAvailable = !!process.env.GEMINI_API_KEY;
 
   // Check Ollama availability
   let ollamaAvailable = false;
   try {
-    const response = await fetch(`${ollamaUrl}/api/tags`, {
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/tags`, {
       method: "GET",
       signal: AbortSignal.timeout(5000),
     });
@@ -517,17 +500,20 @@ export async function GET() {
 
   return NextResponse.json({
     providers: {
-      ollama: {
-        available: ollamaAvailable,
-        url: ollamaUrl,
-        model: "llama3.2-vision:11b",
-      },
       gemini: {
         available: geminiAvailable,
         model: "gemini-1.5-flash",
+        tier: "FREE",
+        primary: true,
+      },
+      ollama: {
+        available: ollamaAvailable,
+        url: OLLAMA_BASE_URL,
+        model: "llama3.2-vision:11b",
+        primary: false,
       },
     },
-    defaultProvider: "auto",
-    recommendation: ollamaAvailable ? "ollama" : geminiAvailable ? "gemini" : "none",
+    strategy: "Gemini (FREE) primary, Ollama fallback",
+    recommendation: geminiAvailable ? "gemini" : ollamaAvailable ? "ollama" : "none",
   });
 }

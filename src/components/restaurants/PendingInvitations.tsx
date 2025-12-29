@@ -4,7 +4,7 @@ import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { UtensilsCrossed, Check, X, Clock, Shield, ShieldCheck } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { useState } from "react";
 
 interface PendingInvitationsProps {

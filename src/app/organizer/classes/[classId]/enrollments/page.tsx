@@ -157,23 +157,22 @@ export default function ClassEnrollmentsPage({ params }: PageProps) {
 
   const handleDeleteTier = async (tierId: Id<"ticketTiers">) => {
     setTierToDelete(tierId);
-    deleteConfirmDialog.open();
-  };
-
-  const confirmDeleteTier = async () => {
-    if (!tierToDelete) return;
-
-    const tierId = tierToDelete;
-    deleteConfirmDialog.close();
-    setTierToDelete(null);
-
-    try {
-      await deleteTier({ tierId });
-      toast.success("Enrollment tier deleted successfully!");
-    } catch (error: any) {
-      console.error("Delete tier error:", error);
-      toast.error(error.message || "Failed to delete enrollment tier");
-    }
+    deleteConfirmDialog.showConfirm({
+      title: "Delete Enrollment Option?",
+      description: "Are you sure you want to delete this enrollment option? This action cannot be undone.",
+      confirmText: "Delete",
+      variant: "destructive",
+      onConfirm: async () => {
+        try {
+          await deleteTier({ tierId });
+          setTierToDelete(null);
+          toast.success("Enrollment tier deleted successfully!");
+        } catch (error: any) {
+          console.error("Delete tier error:", error);
+          toast.error(error.message || "Failed to delete enrollment tier");
+        }
+      },
+    });
   };
 
   const handleOpenDuplicate = (tierId: Id<"ticketTiers">, tierNameStr: string) => {
@@ -690,15 +689,7 @@ export default function ClassEnrollmentsPage({ params }: PageProps) {
       )}
 
       {/* Delete Confirmation */}
-      <ConfirmDialog
-        open={deleteConfirmDialog.isOpen}
-        onOpenChange={deleteConfirmDialog.setOpen}
-        title="Delete Enrollment Option?"
-        description="Are you sure you want to delete this enrollment option? This action cannot be undone."
-        confirmText="Delete"
-        variant="destructive"
-        onConfirm={confirmDeleteTier}
-      />
+      <ConfirmDialog {...deleteConfirmDialog.props} />
     </div>
   );
 }

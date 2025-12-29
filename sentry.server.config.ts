@@ -2,8 +2,9 @@ import * as Sentry from "@sentry/nextjs";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+// GlitchTip (self-hosted, Sentry-compatible) - errors.toolboxhosting.com
 Sentry.init({
-  dsn: process.env.SENTRY_DSN || "https://aba7ae328b85a86cfffc763b430dc463@o4510231346216960.ingest.us.sentry.io/4510231347920896",
+  dsn: process.env.SENTRY_DSN,
 
   // Lower sampling rate in production to reduce costs and improve performance
   tracesSampleRate: isProduction ? 0.1 : 1.0,
@@ -12,6 +13,9 @@ Sentry.init({
   debug: false,
 
   environment: process.env.NODE_ENV || "production",
+
+  // Only initialize if DSN is configured
+  enabled: !!process.env.SENTRY_DSN,
 
   beforeSend(event) {
     // Filter out Square payment warnings

@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { CartProvider } from "@/contexts/CartContext";
 import { FoodCartProvider } from "@/contexts/FoodCartContext";
 import { EventCartProvider } from "@/contexts/EventCartContext";
+import { UnifiedCartProvider } from "@/contexts/UnifiedCartContext";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { FloatingScanButton } from "@/components/FloatingScanButton";
@@ -117,10 +118,12 @@ export default function RootLayout({
             <CartProvider>
               <FoodCartProvider>
                 <EventCartProvider>
-                  {children}
-                  <ShoppingCart />
-                  <MobileBottomNav />
-                  <FloatingScanButton />
+                  <UnifiedCartProvider>
+                    {children}
+                    <ShoppingCart />
+                    <MobileBottomNav />
+                    <FloatingScanButton />
+                  </UnifiedCartProvider>
                 </EventCartProvider>
               </FoodCartProvider>
             </CartProvider>

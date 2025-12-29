@@ -5,14 +5,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { sendPostalEmail } from '@/lib/email/client';
 import {
   generateClassReminderEmail,
   generateEventReminderEmail,
   generateMultiClassReminderEmail,
 } from '@/lib/email/templates/reminder-templates';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface ClassReminderRequest {
   type: 'class' | 'event' | 'multi-class';
@@ -63,8 +61,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.RESEND_API_KEY) {
-      console.error('[ClassReminder] RESEND_API_KEY not configured');
+    if (!process.env.POSTAL_API_KEY) {
+      console.error('[ClassReminder] POSTAL_API_KEY not configured');
       return NextResponse.json(
         { error: 'Email service not configured' },
         { status: 500 }
@@ -148,21 +146,21 @@ export async function POST(request: NextRequest) {
         break;
     }
 
-    const { data: emailData, error } = await resend.emails.send({
+    const emailResponse = await sendPostalEmail({
       from: fromAddress,
       to: data.studentEmail,
       subject: emailResult.subject,
       html: emailResult.html,
     });
 
-    if (error) {
-      console.error('[ClassReminder] Resend error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (!emailResponse.success) {
+      console.error('[ClassReminder] Postal error:', emailResponse.error);
+      return NextResponse.json({ error: emailResponse.error }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      messageId: emailData?.id,
+      messageId: emailResponse.messageId,
       type: data.type,
       sentTo: data.studentEmail,
       subject: emailResult.subject,

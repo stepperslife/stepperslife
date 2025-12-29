@@ -2,6 +2,16 @@
  * Test Data Constants for Classes E2E Tests
  */
 
+// Re-export account constants for convenience
+export {
+  STUDENT_ACCOUNT,
+  INSTRUCTOR_ACCOUNT,
+  ADMIN_ACCOUNT,
+  STUDENT_ACCOUNT_2,
+  INSTRUCTOR_ACCOUNT_2,
+  type TestAccount,
+} from "./test-accounts";
+
 // Test Class Data
 export const TEST_CLASS_DATA = {
   namePrefix: "E2E Test Class",

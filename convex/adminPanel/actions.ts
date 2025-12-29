@@ -5,7 +5,7 @@ import { action } from "../_generated/server";
 import { internal } from "../_generated/api";
 
 /**
- * Refund order (admin action - calls Square API + updates database)
+ * Refund order (admin action - processes refund via Stripe API + updates database)
  */
 export const refundOrder = action({
   args: {
@@ -26,12 +26,13 @@ export const refundOrder = action({
       throw new Error("Can only refund completed orders");
     }
 
-    // Process actual refund via Square API if payment exists
-    if (order.paymentMethod === "SQUARE" && order.paymentId) {
+    // Process refund via Stripe API if payment exists
+    if (order.paymentId && order.paymentId.startsWith("pi_")) {
+      // Stripe payment - use Stripe refund
       const refundResult = await ctx.runAction(
-        (internal as any).payments.actions.processSquareRefund,
+        internal.payments.actions.processStripeRefund,
         {
-          paymentId: order.paymentId,
+          paymentIntentId: order.paymentId,
           amountCents: order.totalCents,
           orderId: args.orderId,
           reason: args.reason,
@@ -41,6 +42,12 @@ export const refundOrder = action({
       if (!refundResult.success) {
         throw new Error(`Refund processing failed: ${refundResult.error}`);
       }
+    } else if (order.paymentMethod === "PAYPAL" && order.paymentId) {
+      // PayPal payments require manual refund through PayPal dashboard
+      console.warn("[Refund] PayPal payment - manual refund required via PayPal dashboard");
+    } else if (order.paymentMethod === "CASH" || order.paymentMethod === "CASH_APP") {
+      // Cash/CashApp payments don't need API refund
+      console.log("[Refund] Cash/CashApp payment - no API refund needed");
     } else if (!order.paymentId) {
       console.warn("[Refund] No payment ID found - marking as refunded without processing payment");
     }

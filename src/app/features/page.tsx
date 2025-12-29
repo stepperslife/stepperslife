@@ -352,7 +352,7 @@ export default function FeaturesPage() {
                     {(upcomingEvents?.slice(0, 4) || []).map((event, index) => (
                       <Link
                         key={event._id || index}
-                        href={`/events/${event.slug || event._id}`}
+                        href={`/events/${event._id}`}
                         className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
                       >
                         <div className="relative h-32">
@@ -422,7 +422,7 @@ export default function FeaturesPage() {
                     {(upcomingClasses?.slice(0, 4) || []).map((classItem, index) => (
                       <Link
                         key={classItem._id || index}
-                        href={`/classes/${classItem.slug || classItem._id}`}
+                        href={`/classes/${classItem._id}`}
                         className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
                       >
                         <div className="relative h-32">
@@ -608,7 +608,7 @@ export default function FeaturesPage() {
                       >
                         <div className="relative h-32">
                           <Image
-                            src={restaurant.coverImageUrl || restaurant.imageUrl || "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400&q=80"}
+                            src={restaurant.coverImageUrl || restaurant.logoUrl || "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400&q=80"}
                             alt={restaurant.name}
                             fill
                             className="object-cover"
@@ -616,9 +616,9 @@ export default function FeaturesPage() {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                           <div className="absolute top-2 right-2">
                             <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                              restaurant.isAcceptingOrders ? "bg-success text-white" : "bg-muted text-muted-foreground"
+                              restaurant.acceptingOrders ? "bg-success text-white" : "bg-muted text-muted-foreground"
                             }`}>
-                              {restaurant.isAcceptingOrders ? "Open" : "Closed"}
+                              {restaurant.acceptingOrders ? "Open" : "Closed"}
                             </span>
                           </div>
                           <div className="absolute bottom-2 left-2 right-2">

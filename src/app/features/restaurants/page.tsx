@@ -395,7 +395,7 @@ export default function RestaurantsFeaturesPage() {
                       {/* Restaurant Image */}
                       <div className="relative h-40 overflow-hidden">
                         <Image
-                          src={restaurant.coverImageUrl || restaurant.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&q=80"}
+                          src={restaurant.coverImageUrl || restaurant.logoUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&q=80"}
                           alt={restaurant.name}
                           fill
                           className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -403,9 +403,9 @@ export default function RestaurantsFeaturesPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         <div className="absolute top-3 right-3">
                           <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            restaurant.isAcceptingOrders ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"
+                            restaurant.acceptingOrders ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"
                           }`}>
-                            {restaurant.isAcceptingOrders ? "Open" : "Closed"}
+                            {restaurant.acceptingOrders ? "Open" : "Closed"}
                           </span>
                         </div>
                         <div className="absolute bottom-3 left-3 right-3">

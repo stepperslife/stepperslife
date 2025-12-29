@@ -16,6 +16,15 @@ import { PortfolioGrid } from "@/components/shadcn-studio/blocks/portfolio-01/po
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 
+// Extended type for class events with class-specific fields
+// These fields map to schema: classLevel -> level, etc.
+type ClassEvent = {
+  level?: string; // Maps to classLevel in schema
+  instructorName?: string; // Planned field
+  classType?: string; // Planned field
+  [key: string]: unknown;
+};
+
 // Class types for filtering (only 3 main types)
 const CLASS_TYPES = ["Steppin", "Line Dancing", "Walking"];
 
@@ -649,7 +658,7 @@ export default function ClassesListClient() {
                     <div key={columnIndex} className="grid gap-3 sm:gap-4">
                       {classes
                         .filter((_, index) => index % 4 === columnIndex)
-                        .map((classItem) => (
+                        .map((classItem: typeof classes[0] & ClassEvent) => (
                           <Link
                             key={classItem._id}
                             href={`/classes/${classItem._id}`}
@@ -717,7 +726,7 @@ export default function ClassesListClient() {
               ) : viewMode === "list" ? (
                 /* List View - Horizontal cards with details */
                 <div data-testid="classes-grid" className="space-y-4">
-                  {classes.map((classItem) => (
+                  {classes.map((classItem: typeof classes[0] & ClassEvent) => (
                     <Link
                       key={classItem._id}
                       href={`/classes/${classItem._id}`}
@@ -808,7 +817,7 @@ export default function ClassesListClient() {
               ) : (
                 /* Default Grid View - 2x3 columns with details */
                 <div data-testid="classes-grid" className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
-                  {classes.map((classItem) => (
+                  {classes.map((classItem: typeof classes[0] & ClassEvent) => (
                     <Link
                       key={classItem._id}
                       href={`/classes/${classItem._id}`}

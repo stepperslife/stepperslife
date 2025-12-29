@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { sendPostalEmail } from '@/lib/email/client';
 import {
   generateInstructorDailyDigest,
   generateInstructorWeeklyDigest,
@@ -14,8 +14,6 @@ import {
   InstructorWeeklyDigestData,
   NoActivityDigestData,
 } from '@/lib/email/templates/digest-templates';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 type DigestRequest =
   | ({ type: 'daily' } & InstructorDailyDigestData)
@@ -33,8 +31,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.RESEND_API_KEY) {
-      console.error('[InstructorDigest] RESEND_API_KEY not configured');
+    if (!process.env.POSTAL_API_KEY) {
+      console.error('[InstructorDigest] POSTAL_API_KEY not configured');
       return NextResponse.json(
         { error: 'Email service not configured' },
         { status: 500 }
@@ -58,21 +56,21 @@ export async function POST(request: NextRequest) {
         break;
     }
 
-    const { data: emailData, error } = await resend.emails.send({
+    const emailResponse = await sendPostalEmail({
       from: 'SteppersLife <noreply@stepperslife.com>',
       to: data.instructorEmail,
       subject: emailResult.subject,
       html: emailResult.html,
     });
 
-    if (error) {
-      console.error('[InstructorDigest] Resend error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (!emailResponse.success) {
+      console.error('[InstructorDigest] Postal error:', emailResponse.error);
+      return NextResponse.json({ error: emailResponse.error }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      messageId: emailData?.id,
+      messageId: emailResponse.messageId,
       type: data.type,
       sentTo: data.instructorEmail,
       subject: emailResult.subject,

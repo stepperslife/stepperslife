@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
+import { sendPostalEmail } from "@/lib/email/client";
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+const postalConfigured = !!process.env.POSTAL_API_KEY;
 
 const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@stepperslife.com";
 const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "support@stepperslife.com";
@@ -119,8 +117,8 @@ export async function POST(request: NextRequest) {
   const requestStartTime = Date.now();
 
   try {
-    if (!resend) {
-      console.error("[SUPPORT_EMAIL] RESEND_API_KEY is not configured");
+    if (!postalConfigured) {
+      console.error("[SUPPORT_EMAIL] POSTAL_API_KEY is not configured");
       return NextResponse.json(
         { error: "Email service not configured", code: "EMAIL_SERVICE_UNAVAILABLE" },
         { status: 500 }
@@ -146,19 +144,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send email to support team
+    // Send email to support team via Postal (self-hosted)
     const supportEmailContent = supportEmailTemplate(body);
     console.log(`[SUPPORT_EMAIL] Sending support request from ${userEmail}`);
 
-    const supportEmailResponse = await resend.emails.send({
+    const supportEmailResponse = await sendPostalEmail({
       from: `SteppersLife Support <${FROM_EMAIL}>`,
       to: SUPPORT_EMAIL,
-      replyTo: userEmail !== "anonymous" && emailRegex.test(userEmail) ? userEmail : undefined,
       subject: supportEmailContent.subject,
       html: supportEmailContent.html,
     });
 
-    if (supportEmailResponse.error) {
+    if (!supportEmailResponse.success) {
       console.error(`[SUPPORT_EMAIL] Failed to send to support:`, supportEmailResponse.error);
       return NextResponse.json(
         { error: "Failed to send support request", code: "SEND_FAILED" },
@@ -170,7 +167,7 @@ export async function POST(request: NextRequest) {
     if (userEmail !== "anonymous" && emailRegex.test(userEmail)) {
       const userConfirmation = userConfirmationTemplate(body);
       try {
-        await resend.emails.send({
+        await sendPostalEmail({
           from: `SteppersLife <${FROM_EMAIL}>`,
           to: userEmail,
           subject: userConfirmation.subject,
@@ -209,7 +206,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     service: "support-email",
-    configured: !!resend,
+    configured: postalConfigured,
     supportEmail: SUPPORT_EMAIL,
     timestamp: new Date().toISOString(),
   });

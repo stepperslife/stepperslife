@@ -14,7 +14,7 @@ export default function PastEventsPage() {
   // Filter to past events
   const now = Date.now();
   const pastEvents = staffDashboard?.filter(
-    (position) => position.event && new Date(position.event.startDate).getTime() < now
+    (position) => position.event && (position.event.startDate ?? 0) < now
   ) || [];
 
   return (
@@ -64,7 +64,7 @@ export default function PastEventsPage() {
                         <CheckCircle className="h-4 w-4 text-success" />
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(position.event.startDate).toLocaleDateString()}
+                        {new Date(position.event.startDate ?? 0).toLocaleDateString()}
                       </p>
                     </div>
                   </div>

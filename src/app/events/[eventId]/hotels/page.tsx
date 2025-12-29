@@ -45,7 +45,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 // Amenity display helpers
 const AMENITY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -625,18 +625,18 @@ export default function HotelBookingPage() {
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">
                           ${((selectedRoomType?.pricePerNightCents || 0) / 100).toFixed(2)} x{" "}
-                          {availability.nights} night{availability.nights > 1 ? "s" : ""} x{" "}
+                          {availability.nights ?? 0} night{(availability.nights ?? 0) > 1 ? "s" : ""} x{" "}
                           {numberOfRooms} room{numberOfRooms > 1 ? "s" : ""}
                         </span>
-                        <span>${(availability.subtotalCents / 100).toFixed(2)}</span>
+                        <span>${((availability.subtotalCents ?? 0) / 100).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Platform fee (5%)</span>
-                        <span>${(availability.platformFeeCents / 100).toFixed(2)}</span>
+                        <span>${((availability.platformFeeCents ?? 0) / 100).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between font-bold text-lg pt-2 border-t border-border">
                         <span>Total</span>
-                        <span className="text-primary">${(availability.totalCents / 100).toFixed(2)}</span>
+                        <span className="text-primary">${((availability.totalCents ?? 0) / 100).toFixed(2)}</span>
                       </div>
                     </div>
                   ) : (
@@ -800,7 +800,7 @@ export default function HotelBookingPage() {
                   <div className="flex justify-between font-bold text-lg pt-2 border-t border-border">
                     <span>Total</span>
                     <span className="text-primary">
-                      ${(availability.totalCents / 100).toFixed(2)}
+                      ${((availability.totalCents ?? 0) / 100).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -843,7 +843,7 @@ export default function HotelBookingPage() {
                       Processing...
                     </span>
                   ) : (
-                    `Complete Booking - $${(availability.totalCents / 100).toFixed(2)}`
+                    `Complete Booking - $${((availability.totalCents ?? 0) / 100).toFixed(2)}`
                   )}
                 </button>
               )}
@@ -851,18 +851,25 @@ export default function HotelBookingPage() {
               {/* Payment Forms */}
               {reservationId && paymentMethod === "STRIPE" && (
                 <StripeCheckout
-                  amount={availability.totalCents}
-                  description={`Hotel: ${selectedHotel?.hotelName} - ${selectedRoomType?.name}`}
-                  eventId={eventId}
+                  total={(availability.totalCents ?? 0) / 100}
+                  connectedAccountId=""
+                  platformFee={availability.platformFeeCents ?? 0}
                   orderId={reservationId}
-                  onSuccess={handlePaymentSuccess}
-                  onError={handlePaymentError}
+                  orderNumber={`HOTEL-${Date.now()}`}
+                  billingContact={{
+                    givenName: guestName.split(" ")[0],
+                    familyName: guestName.split(" ").slice(1).join(" "),
+                    email: guestEmail,
+                  }}
+                  onPaymentSuccess={(result) => handlePaymentSuccess(result.paymentIntentId)}
+                  onPaymentError={handlePaymentError}
+                  onBack={() => setPaymentMethod("STRIPE")}
                 />
               )}
 
               {reservationId && paymentMethod === "PAYPAL" && (
                 <PayPalPayment
-                  amount={availability.totalCents}
+                  amount={availability.totalCents ?? 0}
                   description={`Hotel: ${selectedHotel?.hotelName} - ${selectedRoomType?.name}`}
                   onSuccess={handlePaymentSuccess}
                   onError={handlePaymentError}

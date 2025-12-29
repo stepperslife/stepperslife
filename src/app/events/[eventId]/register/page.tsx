@@ -20,7 +20,7 @@ import {
 import Link from "next/link";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import QRCode from "react-qr-code";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function FreeEventRegisterPage() {
   const params = useParams();
@@ -163,7 +163,7 @@ export default function FreeEventRegisterPage() {
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex flex-col items-center">
                   <div className="bg-white p-4 rounded-lg border-4 border-border">
-                    <QRCode value={ticketUrl} size={200} />
+                    <QRCodeSVG value={ticketUrl} size={200} />
                   </div>
                   <p className="text-sm text-muted-foreground mt-4 font-mono">
                     {registrationData.ticketCode}

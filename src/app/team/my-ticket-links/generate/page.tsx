@@ -71,7 +71,7 @@ export default function GenerateLinksPage() {
                       <h3 className="text-lg font-semibold">{position.event.name}</h3>
                       <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                         <Calendar className="h-4 w-4" />
-                        {new Date(position.event.startDate).toLocaleDateString()}
+                        {new Date(position.event.startDate ?? 0).toLocaleDateString()}
                       </div>
                       <p className="text-sm text-primary mt-1">
                         {position.ticketsRemaining} tickets available

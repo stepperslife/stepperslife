@@ -32,7 +32,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface BookingDetails {
   packageId: string;
@@ -462,12 +462,19 @@ export default function HotelCheckoutPage() {
               {/* Payment Forms */}
               {reservationId && paymentMethod === "STRIPE" && (
                 <StripeCheckout
-                  amount={bookingDetails.totalCents}
-                  description={`Hotel: ${bookingDetails.hotelName} - ${bookingDetails.roomTypeName}`}
-                  eventId={eventId}
+                  total={bookingDetails.totalCents / 100}
+                  connectedAccountId=""
+                  platformFee={bookingDetails.platformFeeCents}
                   orderId={reservationId}
-                  onSuccess={handlePaymentSuccess}
-                  onError={handlePaymentError}
+                  orderNumber={`HOTEL-${Date.now()}`}
+                  billingContact={{
+                    givenName: guestName.split(" ")[0],
+                    familyName: guestName.split(" ").slice(1).join(" "),
+                    email: guestEmail,
+                  }}
+                  onPaymentSuccess={(result) => handlePaymentSuccess(result.paymentIntentId)}
+                  onPaymentError={handlePaymentError}
+                  onBack={() => setPaymentMethod("STRIPE")}
                 />
               )}
 

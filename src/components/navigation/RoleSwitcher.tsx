@@ -42,6 +42,11 @@ const ROLE_CONFIG: Record<
     description: "Manage your restaurant",
     dashboardPath: "/restaurateur/dashboard",
   },
+  vendor: {
+    label: "Vendor",
+    description: "Sell products in marketplace",
+    dashboardPath: "/vendor/dashboard",
+  },
   user: {
     label: "Customer",
     description: "Browse and purchase tickets",

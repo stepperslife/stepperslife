@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Search, Calendar, MapPin, Gift, Filter, X, Clock, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { formatEventDate } from "@/lib/date-format";
 import debounce from "lodash/debounce";
 import { EVENT_CATEGORIES } from "@/lib/constants";

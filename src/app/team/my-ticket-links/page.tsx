@@ -93,7 +93,7 @@ export default function MyTicketLinksPage() {
                       <div>
                         <p className="font-semibold">{position.event.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(position.event.startDate).toLocaleDateString()}
+                          {new Date(position.event.startDate ?? 0).toLocaleDateString()}
                         </p>
                       </div>
                     </div>

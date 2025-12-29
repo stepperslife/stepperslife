@@ -97,26 +97,25 @@ export default function SettingsPage() {
 
   const handleDisconnectProcessor = async (processor: "stripe" | "paypal") => {
     setProcessorToDisconnect(processor);
-    confirmDialog.open();
-  };
-
-  const confirmDisconnectProcessor = async () => {
-    if (!processorToDisconnect) return;
-
-    const processor = processorToDisconnect;
-    confirmDialog.close();
-    setProcessorToDisconnect(null);
-
-    try {
-      setIsProcessing(true);
-      await disconnectProcessor({ processor });
-      toast.success(`${processor === "stripe" ? "Stripe" : "PayPal"} disconnected successfully`);
-    } catch (error) {
-      console.error(`Error disconnecting ${processor}:`, error);
-      toast.error(`Failed to disconnect ${processor}`);
-    } finally {
-      setIsProcessing(false);
-    }
+    confirmDialog.showConfirm({
+      title: `Disconnect ${processor === "stripe" ? "Stripe" : "PayPal"}?`,
+      description: `Are you sure you want to disconnect your ${processor === "stripe" ? "Stripe" : "PayPal"} account? You will no longer be able to receive payments through this provider.`,
+      confirmText: "Disconnect",
+      variant: "destructive",
+      onConfirm: async () => {
+        try {
+          setIsProcessing(true);
+          await disconnectProcessor({ processor });
+          setProcessorToDisconnect(null);
+          toast.success(`${processor === "stripe" ? "Stripe" : "PayPal"} disconnected successfully`);
+        } catch (error) {
+          console.error(`Error disconnecting ${processor}:`, error);
+          toast.error(`Failed to disconnect ${processor}`);
+        } finally {
+          setIsProcessing(false);
+        }
+      },
+    });
   };
 
   const handleTogglePaymentMethod = async (
@@ -490,15 +489,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Disconnect Payment Processor Confirmation */}
-      <ConfirmDialog
-        open={confirmDialog.isOpen}
-        onOpenChange={confirmDialog.setOpen}
-        title={`Disconnect ${processorToDisconnect === "stripe" ? "Stripe" : "PayPal"}?`}
-        description={`Are you sure you want to disconnect your ${processorToDisconnect === "stripe" ? "Stripe" : "PayPal"} account? You will no longer be able to accept ${processorToDisconnect === "stripe" ? "credit card" : "PayPal"} payments until you reconnect.`}
-        confirmText="Disconnect"
-        variant="destructive"
-        onConfirm={confirmDisconnectProcessor}
-      />
+      <ConfirmDialog {...confirmDialog.props} />
     </div>
   );
 }

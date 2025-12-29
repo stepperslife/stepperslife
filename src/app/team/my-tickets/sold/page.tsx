@@ -106,7 +106,7 @@ export default function SoldTicketsPage() {
                       <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {new Date(position.event.startDate).toLocaleDateString()}
+                          {new Date(position.event.startDate ?? 0).toLocaleDateString()}
                         </div>
                         <div className="flex items-center gap-1">
                           <Ticket className="h-3 w-3" />

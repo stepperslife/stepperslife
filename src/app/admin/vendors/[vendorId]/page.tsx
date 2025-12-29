@@ -23,7 +23,7 @@ import {
   Settings,
   Loader2,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 type VendorStatus = "PENDING" | "APPROVED" | "SUSPENDED" | "REJECTED";
 

@@ -686,7 +686,7 @@ export default function BulkFlyerUploadPage() {
           </h2>
 
           <div
-            {...getRootProps()}
+            {...(getRootProps() as React.HTMLAttributes<HTMLDivElement>)}
             className={`
               border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-all
               ${
@@ -696,7 +696,7 @@ export default function BulkFlyerUploadPage() {
               }
             `}
           >
-            <input {...getInputProps()} />
+            <input {...(getInputProps() as React.InputHTMLAttributes<HTMLInputElement>)} />
             <Upload
               className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 ${isDragActive ? "text-indigo-500" : "text-slate-400"}`}
             />

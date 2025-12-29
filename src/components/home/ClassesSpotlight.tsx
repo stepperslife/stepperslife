@@ -9,9 +9,18 @@ import { BookOpen, GraduationCap, Calendar, MapPin, Clock } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
+// Type for class-specific fields that extend the base Event type
+interface ClassExtensions {
+  level?: string;
+  instructorName?: string;
+  instructorPhoto?: string;
+  schedule?: string;
+  duration?: string;
+}
+
 export function ClassesSpotlight() {
   // Fetch real classes from Convex
-  const classes = useQuery(api.public.queries.getPublishedClasses);
+  const classes = useQuery(api.public.queries.getPublishedClasses, {});
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
@@ -30,7 +39,7 @@ export function ClassesSpotlight() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5, ease: "easeOut" as const },
     },
   };
 
@@ -169,7 +178,7 @@ export function ClassesSpotlight() {
                       </div>
                     )}
                     {/* Level Badge */}
-                    {classItem.level && (
+                    {(classItem as unknown as ClassExtensions).level && (
                       <motion.div
                         className="absolute left-3 top-3"
                         initial={{ scale: 0, rotate: -10 }}
@@ -177,7 +186,7 @@ export function ClassesSpotlight() {
                         transition={{ type: "spring", delay: 0.2 + index * 0.1 }}
                       >
                         <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                          {classItem.level}
+                          {(classItem as unknown as ClassExtensions).level}
                         </span>
                       </motion.div>
                     )}
@@ -189,7 +198,7 @@ export function ClassesSpotlight() {
 
                   <div className="p-5">
                     {/* Instructor */}
-                    {classItem.instructorName && (
+                    {(classItem as unknown as ClassExtensions).instructorName && (
                       <motion.div
                         className="mb-3 flex items-center gap-2"
                         initial={{ opacity: 0, x: -10 }}
@@ -197,10 +206,10 @@ export function ClassesSpotlight() {
                         transition={{ delay: 0.3 + index * 0.1 }}
                       >
                         <div className="relative h-8 w-8 overflow-hidden rounded-full ring-2 ring-primary/20 bg-muted flex items-center justify-center">
-                          {classItem.instructorPhoto ? (
+                          {(classItem as unknown as ClassExtensions).instructorPhoto ? (
                             <Image
-                              src={classItem.instructorPhoto}
-                              alt={classItem.instructorName}
+                              src={(classItem as unknown as ClassExtensions).instructorPhoto!}
+                              alt={(classItem as unknown as ClassExtensions).instructorName!}
                               fill
                               sizes="32px"
                               className="object-cover"
@@ -208,12 +217,12 @@ export function ClassesSpotlight() {
                             />
                           ) : (
                             <span className="text-xs font-medium">
-                              {classItem.instructorName.charAt(0)}
+                              {(classItem as unknown as ClassExtensions).instructorName!.charAt(0)}
                             </span>
                           )}
                         </div>
                         <span className="text-sm font-medium text-card-foreground">
-                          {classItem.instructorName}
+                          {(classItem as unknown as ClassExtensions).instructorName}
                         </span>
                       </motion.div>
                     )}
@@ -229,10 +238,10 @@ export function ClassesSpotlight() {
 
                     <div className="mb-4 space-y-2 text-sm">
                       {/* Schedule info */}
-                      {classItem.schedule && (
+                      {(classItem as unknown as ClassExtensions).schedule && (
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <Calendar className="h-4 w-4" />
-                          <span>{classItem.schedule}</span>
+                          <span>{(classItem as unknown as ClassExtensions).schedule}</span>
                         </div>
                       )}
                       {/* Location */}
@@ -247,10 +256,10 @@ export function ClassesSpotlight() {
                         </div>
                       )}
                       {/* Duration */}
-                      {classItem.duration && (
+                      {(classItem as unknown as ClassExtensions).duration && (
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <Clock className="h-4 w-4" />
-                          <span>{classItem.duration}</span>
+                          <span>{(classItem as unknown as ClassExtensions).duration}</span>
                         </div>
                       )}
                     </div>

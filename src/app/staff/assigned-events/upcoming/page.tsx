@@ -113,7 +113,7 @@ export default function UpcomingEventsPage() {
                         <MapPin className="h-4 w-4" />
                         {typeof event.location === 'string'
                           ? event.location
-                          : event.location && [event.location.venueName, event.location.city, event.location.state].filter(Boolean).join(', ')}
+                          : event.location && [(event.location as any).venueName, (event.location as any).city, (event.location as any).state].filter(Boolean).join(', ')}
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4" />

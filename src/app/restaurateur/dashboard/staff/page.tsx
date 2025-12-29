@@ -18,7 +18,7 @@ import {
   AlertCircle,
   ChevronDown,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 type StaffRole = "RESTAURANT_MANAGER" | "RESTAURANT_STAFF";
 type StaffStatus = "PENDING" | "ACTIVE" | "INACTIVE";
@@ -58,7 +58,7 @@ export default function StaffManagementPage() {
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(null);
 
   // Auto-select first restaurant
-  const restaurantId = selectedRestaurantId || myRestaurants?.[0]?._id;
+  const restaurantId = selectedRestaurantId || myRestaurants?.[0]?.restaurant._id;
 
   // Get staff for selected restaurant
   const staff = useQuery(
@@ -149,8 +149,8 @@ export default function StaffManagementPage() {
               className="px-4 py-2 border border-input rounded-lg bg-background"
             >
               {myRestaurants.map((r) => (
-                <option key={r._id} value={r._id}>
-                  {r.name}
+                <option key={r.restaurant._id} value={r.restaurant._id}>
+                  {r.restaurant.name}
                 </option>
               ))}
             </select>

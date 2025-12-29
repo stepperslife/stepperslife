@@ -4,7 +4,17 @@ import { PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 import { isTestingModeAllowed } from "../lib/auth";
 
 /**
- * Get current authenticated user
+ * Get the currently authenticated user from the database.
+ * Uses JWT identity from ctx.auth to look up user by email.
+ *
+ * @returns User document if authenticated and found, null otherwise
+ *
+ * @security In development, returns a test admin user if no identity.
+ *           In production, requires valid authentication.
+ *
+ * @example
+ * const currentUser = useQuery(api.users.queries.getCurrentUser)
+ * if (!currentUser) redirect('/login')
  */
 export const getCurrentUser = query({
   args: {},
@@ -93,7 +103,13 @@ export const getIdentityDebug = query({
 });
 
 /**
- * Get user by ID (includes password hash - use getUserByIdPublic for client-facing endpoints)
+ * Get user by ID (internal use only - includes password hash).
+ * For client-facing endpoints, use getUserByIdPublic instead.
+ *
+ * @param userId - The user document ID
+ * @returns Full user document including passwordHash
+ *
+ * @security This query exposes sensitive data. Only use server-side.
  */
 export const getUserById = query({
   args: { userId: v.id("users") },
@@ -113,7 +129,14 @@ export const getByIdInternal = internalQuery({
 });
 
 /**
- * Get user by ID without password hash (safe for client-facing endpoints)
+ * Get user by ID with sensitive fields removed (safe for client use).
+ * Excludes passwordHash from the returned document.
+ *
+ * @param userId - The user document ID
+ * @returns User document without passwordHash, or null if not found
+ *
+ * @example
+ * const profile = useQuery(api.users.queries.getUserByIdPublic, { userId: profileId })
  */
 export const getUserByIdPublic = query({
   args: { userId: v.id("users") },
@@ -146,7 +169,15 @@ export const getUserByEmail = query({
 });
 
 /**
- * Get Stripe Connect account info for current user
+ * Get Stripe Connect account status for the current authenticated user.
+ * Used to check if organizer has completed Stripe onboarding.
+ *
+ * @returns Object with stripeConnectedAccountId, setup status, and payment acceptance flag
+ * @returns null if user not authenticated or not found
+ *
+ * @example
+ * const stripeInfo = useQuery(api.users.queries.getStripeConnectAccount)
+ * if (!stripeInfo?.stripeAccountSetupComplete) showOnboardingPrompt()
  */
 export const getStripeConnectAccount = query({
   args: {},

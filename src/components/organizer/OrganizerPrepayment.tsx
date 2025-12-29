@@ -15,7 +15,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 type PaymentMethod = "stripe" | "paypal";
 

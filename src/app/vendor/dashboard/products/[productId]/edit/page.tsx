@@ -19,7 +19,7 @@ import {
   Trash2,
   Boxes,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { ProductImageUpload } from "@/components/marketplace/ProductImageUpload";
 import { VariationManager } from "@/components/products/VariationManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

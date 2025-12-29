@@ -17,7 +17,7 @@ import {
   CheckCircle,
   ImageIcon,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { VendorBrandingUpload } from "@/components/marketplace/VendorBrandingUpload";
 
 const STORE_CATEGORIES = [

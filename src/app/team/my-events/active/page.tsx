@@ -14,7 +14,7 @@ export default function ActiveEventsPage() {
   // Filter to upcoming events
   const now = Date.now();
   const activeEvents = staffDashboard?.filter(
-    (position) => position.event && new Date(position.event.startDate).getTime() >= now
+    (position) => position.event && (position.event.startDate ?? 0) >= now
   ) || [];
 
   return (
@@ -62,7 +62,7 @@ export default function ActiveEventsPage() {
                       <h3 className="text-xl font-semibold">{position.event.name}</h3>
                       <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                         <Calendar className="h-4 w-4" />
-                        {new Date(position.event.startDate).toLocaleDateString("en-US", {
+                        {new Date(position.event.startDate ?? 0).toLocaleDateString("en-US", {
                           weekday: "long",
                           year: "numeric",
                           month: "long",

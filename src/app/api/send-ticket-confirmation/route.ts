@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
+import { sendPostalEmail } from "@/lib/email/client";
 import QRCode from "qrcode";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface Ticket {
   _id: string;
@@ -59,8 +57,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.RESEND_API_KEY) {
-      console.error("RESEND_API_KEY is not configured");
+    if (!process.env.POSTAL_API_KEY) {
+      console.error("POSTAL_API_KEY is not configured");
       return NextResponse.json(
         { error: "Email service not configured" },
         { status: 500 }
@@ -307,24 +305,21 @@ export async function POST(request: NextRequest) {
 </html>
     `;
 
-    // Send email via Resend
-    const emailResponse = await resend.emails.send({
+    // Send email via Postal (self-hosted)
+    const emailResponse = await sendPostalEmail({
       from: "SteppersLife Events <events@stepperslife.com>",
       to: email,
       subject: `Your Tickets for ${event.name} - ${formattedDate}`,
       html: htmlEmail,
-      headers: {
-        "X-Entity-Ref-ID": orderDetails._id,
-      },
     });
 
-    if (emailResponse.error) {
-      throw new Error(emailResponse.error.message);
+    if (!emailResponse.success) {
+      throw new Error(emailResponse.error || "Failed to send email");
     }
 
     return NextResponse.json({
       success: true,
-      emailId: emailResponse.data?.id,
+      emailId: emailResponse.messageId,
       message: "Ticket confirmation email sent successfully",
     });
   } catch (error) {

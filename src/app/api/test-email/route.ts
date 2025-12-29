@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { sendPostalEmail } from '@/lib/email/client';
 import { BWTemplate } from '@/lib/email/templates/base-bw-template';
 import {
   generateEnrollmentCancellationEmail,
@@ -25,8 +25,6 @@ import {
   generateInstructorWeeklyDigest,
   generateNoActivityDigest,
 } from '@/lib/email/templates/digest-templates';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Sample data for testing
 const SAMPLE_DATA = {
@@ -511,9 +509,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.RESEND_API_KEY) {
+    if (!process.env.POSTAL_API_KEY) {
       return NextResponse.json(
-        { error: 'RESEND_API_KEY not configured' },
+        { error: 'POSTAL_API_KEY not configured' },
         { status: 500 }
       );
     }
@@ -537,21 +535,21 @@ export async function POST(request: NextRequest) {
       'no-activity-digest': 'SteppersLife <noreply@stepperslife.com>',
     };
 
-    const { data, error } = await resend.emails.send({
+    const emailResponse = await sendPostalEmail({
       from: fromAddresses[template] || 'SteppersLife <noreply@stepperslife.com>',
       to: email,
       subject: `[TEST] ${subject}`,
       html,
     });
 
-    if (error) {
-      console.error('Resend error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (!emailResponse.success) {
+      console.error('Postal error:', emailResponse.error);
+      return NextResponse.json({ error: emailResponse.error }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      messageId: data?.id,
+      messageId: emailResponse.messageId,
       template,
       sentTo: email,
       subject: `[TEST] ${subject}`

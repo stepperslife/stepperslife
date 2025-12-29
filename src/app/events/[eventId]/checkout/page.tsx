@@ -53,13 +53,16 @@ import {
   LogIn,
   CreditCard,
   Banknote,
+  Calendar,
+  Clock,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const params = useParams();
@@ -185,7 +188,7 @@ export default function CheckoutPage() {
   // Check if form is complete
   const hasSelection = selectedTierId || selectedBundleId;
   const hasBuyerInfo = buyerName.trim() && buyerEmail.trim();
-  const requiresSeats = purchaseType === "tier" && seatingChart?.sections?.length > 0;
+  const requiresSeats = purchaseType === "tier" && (seatingChart?.sections?.length ?? 0) > 0;
   const hasRequiredSeats = !requiresSeats || selectedSeats.length === quantity;
   const canCheckout = hasSelection && hasBuyerInfo && hasRequiredSeats;
 
@@ -294,8 +297,8 @@ export default function CheckoutPage() {
         });
       }
 
-      setOrderId(newOrderId);
-      return newOrderId;
+      setOrderId(newOrderId ?? null);
+      return newOrderId ?? null;
     } catch (error: any) {
       toast.error(error.message || "Failed to create order");
       return null;
@@ -676,7 +679,9 @@ export default function CheckoutPage() {
                       {eventDetails.startDate && format(new Date(eventDetails.startDate), "EEE, MMM d 'at' h:mm a")}
                     </p>
                     <p className="text-sm text-muted-foreground truncate">
-                      {eventDetails.location?.venueName}, {eventDetails.location?.city}
+                      {typeof eventDetails.location === "object"
+                        ? `${eventDetails.location.venueName ?? ""}, ${eventDetails.location.city}`
+                        : eventDetails.location}
                     </p>
                   </div>
                 </div>
@@ -728,7 +733,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* Seat Selection */}
-              {ENABLE_SEATING && selectedTierId && purchaseType === "tier" && seatingChart?.sections?.length > 0 && (
+              {ENABLE_SEATING && selectedTierId && purchaseType === "tier" && (seatingChart?.sections?.length ?? 0) > 0 && (
                 <div className="bg-card rounded-xl shadow-md p-6">
                   <h3 className="font-bold text-foreground text-lg mb-4">Select Your Seats</h3>
                   {(seatingChart as any).seatingStyle === "TABLE_BASED" ? (
@@ -958,6 +963,7 @@ export default function CheckoutPage() {
                                 }}
                                 onPaymentSuccess={(result) => handlePaymentSuccess({ paymentIntentId: result.paymentIntentId })}
                                 onPaymentError={handlePaymentError}
+                                onBack={() => setPaymentMethod("cash")}
                               />
                             )}
 

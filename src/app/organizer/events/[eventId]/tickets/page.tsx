@@ -229,23 +229,22 @@ export default function TicketTiersPage() {
 
   const handleDeleteTier = async (tierId: Id<"ticketTiers">) => {
     setTierToDelete(tierId);
-    deleteConfirmDialog.open();
-  };
-
-  const confirmDeleteTier = async () => {
-    if (!tierToDelete) return;
-
-    const tierId = tierToDelete;
-    deleteConfirmDialog.close();
-    setTierToDelete(null);
-
-    try {
-      await deleteTier({ tierId });
-      toast.success("Ticket tier deleted successfully!");
-    } catch (error: any) {
-      console.error("Delete tier error:", error);
-      toast.error(error.message || "Failed to delete ticket tier");
-    }
+    deleteConfirmDialog.showConfirm({
+      title: "Delete Ticket Tier?",
+      description: "Are you sure you want to delete this ticket tier? This action cannot be undone.",
+      confirmText: "Delete",
+      variant: "destructive",
+      onConfirm: async () => {
+        try {
+          await deleteTier({ tierId });
+          setTierToDelete(null);
+          toast.success("Ticket tier deleted successfully!");
+        } catch (error: any) {
+          console.error("Delete tier error:", error);
+          toast.error(error.message || "Failed to delete ticket tier");
+        }
+      },
+    });
   };
 
   // Handle opening duplicate dialog
@@ -670,15 +669,7 @@ export default function TicketTiersPage() {
       )}
 
       {/* Delete Ticket Tier Confirmation */}
-      <ConfirmDialog
-        open={deleteConfirmDialog.isOpen}
-        onOpenChange={deleteConfirmDialog.setOpen}
-        title="Delete Ticket Tier?"
-        description="Are you sure you want to delete this ticket tier? This action cannot be undone."
-        confirmText="Delete"
-        variant="destructive"
-        onConfirm={confirmDeleteTier}
-      />
+      <ConfirmDialog {...deleteConfirmDialog.props} />
     </div>
   );
 }

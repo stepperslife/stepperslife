@@ -296,7 +296,7 @@ export default function RestaurateurOrdersClient() {
   };
 
   const handleMarkPaid = async (orderId: Id<"foodOrders">) => {
-    await updatePaymentStatus({ id: orderId, paymentStatus: "paid", paymentMethod: "cash" });
+    await updatePaymentStatus({ orderId, paymentStatus: "paid", paymentMethod: "cash" });
   };
 
   const filteredOrders = orders?.filter((order: FoodOrder) =>

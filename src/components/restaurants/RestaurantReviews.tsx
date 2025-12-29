@@ -36,7 +36,7 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
   const handleVoteHelpful = async (reviewId: Id<"restaurantReviews">) => {
     if (!userId) return;
     try {
-      await voteHelpful({ reviewId, userId });
+      await voteHelpful({ reviewId });
     } catch (err) {
       console.error("Failed to vote:", err);
     }
@@ -46,7 +46,7 @@ export function RestaurantReviews({ restaurantId, userId }: RestaurantReviewsPro
     if (!userId) return;
     if (window.confirm("Are you sure you want to report this review?")) {
       try {
-        await reportReview({ reviewId, userId });
+        await reportReview({ reviewId });
       } catch (err) {
         console.error("Failed to report:", err);
       }

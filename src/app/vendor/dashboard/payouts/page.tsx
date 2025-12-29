@@ -16,7 +16,7 @@ import {
   Loader2,
   Plus,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 type PayoutStatus = "PENDING" | "APPROVED" | "PROCESSING" | "COMPLETED" | "FAILED";
 

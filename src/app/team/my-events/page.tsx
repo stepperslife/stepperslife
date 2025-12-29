@@ -14,10 +14,10 @@ export default function MyEventsPage() {
   // Separate active (upcoming) and past events
   const now = Date.now();
   const activeEvents = staffDashboard?.filter(
-    (position) => position.event && new Date(position.event.startDate).getTime() >= now
+    (position) => position.event && (position.event.startDate ?? 0) >= now
   ) || [];
   const pastEvents = staffDashboard?.filter(
-    (position) => position.event && new Date(position.event.startDate).getTime() < now
+    (position) => position.event && (position.event.startDate ?? 0) < now
   ) || [];
 
   const totalEvents = (activeEvents?.length || 0) + (pastEvents?.length || 0);
@@ -106,7 +106,7 @@ export default function MyEventsPage() {
                     <div>
                       <p className="font-semibold">{position.event.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(position.event.startDate).toLocaleDateString()}
+                        {new Date(position.event.startDate ?? 0).toLocaleDateString()}
                       </p>
                     </div>
                   </div>

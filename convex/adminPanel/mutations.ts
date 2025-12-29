@@ -560,7 +560,7 @@ export const createAdminUser = mutation({
 });
 
 /**
- * Mark order as refunded (internal mutation - called after Square refund succeeds)
+ * Mark order as refunded (internal mutation - called after Stripe/PayPal refund succeeds)
  */
 export const markOrderRefunded = internalMutation({
   args: {

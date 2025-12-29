@@ -3,8 +3,19 @@ import { query } from "../_generated/server";
 import { EVENT_CATEGORIES } from "../../src/lib/constants";
 
 /**
- * Get all published events (public API for stepperslife.com)
- * By default, excludes past events
+ * Get all published events for the public homepage and browse pages.
+ * Filters out CLASS type events (use getPublishedClasses for those).
+ *
+ * @param limit - Maximum number of events to return
+ * @param category - Filter by event category (e.g., "Steppin", "Line Dancing")
+ * @param searchTerm - Filter by name, description, or city
+ * @param includePast - Include past events (default: false)
+ *
+ * @returns Array of events with image URLs resolved and hotel availability info
+ *
+ * @example
+ * // Get next 10 upcoming Steppin events
+ * useQuery(api.public.queries.getPublishedEvents, { limit: 10, category: "Steppin" })
  */
 export const getPublishedEvents = query({
   args: {
@@ -98,8 +109,13 @@ export const getPublishedEvents = query({
 });
 
 /**
- * Get upcoming published events (for homepage feed)
- * Excludes CLASS type events - classes have their own dedicated queries
+ * Get upcoming published events for homepage featured section.
+ * Returns events sorted by start date (soonest first).
+ * Excludes CLASS type events - use getPublishedClasses for those.
+ *
+ * @param limit - Maximum number of events (default: 20)
+ *
+ * @returns Array of upcoming events sorted by start date
  */
 export const getUpcomingEvents = query({
   args: {
@@ -205,7 +221,20 @@ export const getPastEvents = query({
 });
 
 /**
- * Get public event details by ID
+ * Get complete public event details for the event detail page.
+ * Includes ticket tiers with dynamic pricing, bundles, ticketing status,
+ * and organizer information.
+ *
+ * @param eventId - The event ID to fetch
+ *
+ * @returns Full event details with:
+ *   - Event data with resolved image URL
+ *   - ticketTiers with current pricing (early bird, regular, etc.)
+ *   - bundles with availability and savings calculations
+ *   - ticketingStatus indicating availability, sold out, or why tickets are hidden
+ *   - Organizer name and email
+ *
+ * @returns null if event not found or not published
  */
 export const getPublicEventDetails = query({
   args: {
@@ -547,9 +576,16 @@ export const getFeaturedEvents = query({
 });
 
 /**
- * Get event categories with counts
- * Returns all 10 approved categories from EVENT_CATEGORIES constant
- * Excludes CLASS type events - classes have their own dedicated queries
+ * Get all event categories with event counts for filter UI.
+ * Returns all 10 approved categories from EVENT_CATEGORIES constant.
+ * Excludes CLASS type events in counts.
+ *
+ * @returns Array of { name: string, count: number } for each category
+ *
+ * @example
+ * // Use for category filter chips
+ * const categories = useQuery(api.public.queries.getCategories)
+ * // Returns: [{ name: "Steppin", count: 15 }, { name: "Line Dancing", count: 8 }, ...]
  */
 export const getCategories = query({
   args: {},

@@ -63,7 +63,7 @@ export default function AssignedTicketsPage() {
                       <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          {new Date(position.event.startDate).toLocaleDateString()}
+                          {new Date(position.event.startDate ?? 0).toLocaleDateString()}
                         </div>
                       </div>
                     </div>

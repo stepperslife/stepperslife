@@ -29,7 +29,7 @@ test.describe("Admin Role Permissions", () => {
       expect(page.url()).not.toContain("/login");
       expect(page.url()).toContain("/organizer");
     } else {
-      test.skip("Admin login failed - check credentials");
+      test.skip(true, "Admin login failed - check credentials");
     }
   });
 
@@ -44,7 +44,7 @@ test.describe("Admin Role Permissions", () => {
       expect(page.url()).not.toContain("/login");
       expect(page.url()).not.toContain("unauthorized");
     } else {
-      test.skip("Admin login failed - check credentials");
+      test.skip(true, "Admin login failed - check credentials");
     }
   });
 
@@ -58,7 +58,7 @@ test.describe("Admin Role Permissions", () => {
       // Should have access
       expect(page.url()).not.toContain("/login");
     } else {
-      test.skip("Admin login failed - check credentials");
+      test.skip(true, "Admin login failed - check credentials");
     }
   });
 
@@ -72,7 +72,7 @@ test.describe("Admin Role Permissions", () => {
       // Should have access
       expect(page.url()).not.toContain("/login");
     } else {
-      test.skip("Admin login failed - check credentials");
+      test.skip(true, "Admin login failed - check credentials");
     }
   });
 });
@@ -92,7 +92,7 @@ test.describe("Organizer Role Permissions", () => {
       // Should not redirect to login
       expect(page.url()).not.toContain("/login");
     } else {
-      test.skip("Organizer login failed - check credentials");
+      test.skip(true, "Organizer login failed - check credentials");
     }
   });
 
@@ -106,7 +106,7 @@ test.describe("Organizer Role Permissions", () => {
       // Should have access
       expect(page.url()).not.toContain("/login");
     } else {
-      test.skip("Organizer login failed - check credentials");
+      test.skip(true, "Organizer login failed - check credentials");
     }
   });
 
@@ -120,7 +120,7 @@ test.describe("Organizer Role Permissions", () => {
       // Should have access
       expect(page.url()).not.toContain("/login");
     } else {
-      test.skip("Organizer login failed - check credentials");
+      test.skip(true, "Organizer login failed - check credentials");
     }
   });
 
@@ -134,7 +134,7 @@ test.describe("Organizer Role Permissions", () => {
       // Should have access
       expect(page.url()).not.toContain("/login");
     } else {
-      test.skip("Organizer login failed - check credentials");
+      test.skip(true, "Organizer login failed - check credentials");
     }
   });
 
@@ -153,7 +153,7 @@ test.describe("Organizer Role Permissions", () => {
 
       expect(isRedirected).toBe(true);
     } else {
-      test.skip("Organizer login failed - check credentials");
+      test.skip(true, "Organizer login failed - check credentials");
     }
   });
 });
@@ -189,7 +189,7 @@ test.describe("User Role Permissions", () => {
       // Should have access (either page loads or redirects if no tickets)
       expect(page.url()).not.toContain("/login");
     } else {
-      test.skip("User login failed - check credentials");
+      test.skip(true, "User login failed - check credentials");
     }
   });
 
@@ -208,7 +208,7 @@ test.describe("User Role Permissions", () => {
 
       expect(isRestricted).toBe(true);
     } else {
-      test.skip("User login failed - check credentials");
+      test.skip(true, "User login failed - check credentials");
     }
   });
 
@@ -227,7 +227,7 @@ test.describe("User Role Permissions", () => {
 
       expect(isRestricted).toBe(true);
     } else {
-      test.skip("User login failed - check credentials");
+      test.skip(true, "User login failed - check credentials");
     }
   });
 
@@ -246,7 +246,7 @@ test.describe("User Role Permissions", () => {
 
       expect(isRestricted).toBe(true);
     } else {
-      test.skip("User login failed - check credentials");
+      test.skip(true, "User login failed - check credentials");
     }
   });
 
@@ -265,7 +265,7 @@ test.describe("User Role Permissions", () => {
 
       expect(isRestricted).toBe(true);
     } else {
-      test.skip("User login failed - check credentials");
+      test.skip(true, "User login failed - check credentials");
     }
   });
 });

@@ -36,7 +36,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { convertToCSV, downloadCSV, generateAttendeeExportFilename } from "@/lib/csv";
 import dynamic from "next/dynamic";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 // Dynamic import for heavy BundleEditor (only loaded when viewing bundles tab)
 const BundleEditor = dynamic(

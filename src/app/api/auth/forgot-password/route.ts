@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { api } from "@/convex/_generated/api";
-import { Resend } from "resend";
+import { sendPostalEmail } from "@/lib/email/client";
 import { randomBytes, createHash } from "crypto";
 import { convexClient as convex } from "@/lib/auth/convex-client";
 import { getBaseUrl } from "@/lib/constants/app-config";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,7 +41,7 @@ export async function POST(request: NextRequest) {
     const baseUrl = getBaseUrl(request);
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
-    await resend.emails.send({
+    await sendPostalEmail({
       from: "Steppers Life Events <noreply@events.stepperslife.com>",
       to: email,
       subject: "Reset Your Password - Steppers Life Events",

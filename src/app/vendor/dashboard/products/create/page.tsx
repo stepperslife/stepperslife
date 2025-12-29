@@ -17,7 +17,7 @@ import {
   Loader2,
   ImagePlus,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { ProductImageUpload } from "@/components/marketplace/ProductImageUpload";
 
 const PRODUCT_CATEGORIES = [

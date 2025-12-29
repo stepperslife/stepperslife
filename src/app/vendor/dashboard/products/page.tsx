@@ -18,7 +18,7 @@ import {
   Filter,
   Copy,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 const STATUS_LABELS: Record<"ACTIVE" | "DRAFT" | "ARCHIVED", { label: string; color: string }> = {
   ACTIVE: { label: "Active", color: "bg-success/20 text-success dark:bg-success/20 dark:text-success" },

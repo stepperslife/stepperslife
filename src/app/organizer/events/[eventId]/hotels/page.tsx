@@ -558,7 +558,21 @@ export default function OrganizerHotelsPage() {
                         size="sm"
                         onClick={() => {
                           setPackageToDelete(pkg._id);
-                          deleteConfirmDialog.open();
+                          deleteConfirmDialog.showConfirm({
+                            title: "Delete Hotel Package",
+                            description: "Are you sure you want to delete this hotel package? This action cannot be undone.",
+                            confirmText: "Delete",
+                            variant: "destructive",
+                            onConfirm: async () => {
+                              try {
+                                await deleteHotelPackage({ packageId: pkg._id });
+                                toast.success("Hotel package deleted");
+                                setPackageToDelete(null);
+                              } catch (error: any) {
+                                toast.error(error.message || "Failed to delete");
+                              }
+                            },
+                          });
                         }}
                       >
                         <Trash2 className="w-4 h-4 text-destructive" />
@@ -916,14 +930,7 @@ export default function OrganizerHotelsPage() {
       )}
 
       {/* Delete Confirmation Dialog */}
-      <ConfirmDialog
-        {...deleteConfirmDialog.props}
-        title="Delete Hotel Package"
-        description="Are you sure you want to delete this hotel package? This action cannot be undone."
-        confirmLabel="Delete"
-        variant="destructive"
-        onConfirm={handleDeletePackage}
-      />
+      <ConfirmDialog {...deleteConfirmDialog.props} />
     </div>
   );
 }

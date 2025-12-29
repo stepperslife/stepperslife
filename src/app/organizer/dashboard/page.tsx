@@ -26,14 +26,15 @@ export default function OrganizerDashboardPage() {
     currentUser?._id ? { userId: currentUser._id } : "skip"
   );
   const credits = useQuery(api.credits.queries.getMyCredits);
+  const earnings = useQuery(api.orders.queries.getOrganizerEarnings);
 
-  const isLoading = events === undefined || credits === undefined;
+  const isLoading = events === undefined || credits === undefined || earnings === undefined;
 
   // Calculate dashboard statistics
   const totalTicketsAllocated =
     events?.reduce((sum, event) => sum + (event.totalTickets || 0), 0) || 0;
-  const totalTicketsSold = events?.reduce((sum, event) => sum + (event.ticketsSold || 0), 0) || 0;
-  const totalRevenue = 0; // TODO: Calculate from orders/tickets
+  const totalTicketsSold = earnings?.ticketsSold || 0;
+  const totalRevenue = earnings?.totalRevenueCents || 0;
   const percentageUsed = credits ? (credits.creditsUsed / credits.creditsTotal) * 100 : 0;
 
   // Get upcoming events

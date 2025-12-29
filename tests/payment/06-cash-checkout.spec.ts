@@ -16,7 +16,7 @@ test.describe("Cash Payment Availability", () => {
     // Find an event
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available for testing");
+      test.skip(true, "No events available for testing");
       return;
     }
 
@@ -26,7 +26,7 @@ test.describe("Cash Payment Availability", () => {
     // Click buy tickets
     const buyButton = page.locator('button:has-text("Buy Tickets"), a:has-text("Get Tickets")');
     if (!(await buyButton.isVisible())) {
-      test.skip("Event does not have buy tickets button");
+      test.skip(true, "Event does not have buy tickets button");
       return;
     }
 
@@ -85,7 +85,7 @@ test.describe("Cash Payment Availability", () => {
 
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available");
+      test.skip(true, "No events available");
       return;
     }
 
@@ -94,7 +94,7 @@ test.describe("Cash Payment Availability", () => {
 
     const buyButton = page.locator('button:has-text("Buy Tickets"), a:has-text("Get Tickets")');
     if (!(await buyButton.isVisible())) {
-      test.skip("No buy button");
+      test.skip(true, "No buy button");
       return;
     }
 
@@ -135,7 +135,7 @@ test.describe("Cash Payment Availability", () => {
       const altCashOption = page.locator('input[value="cash"], :has-text("Cash"):not(:has-text("CashApp"))').first();
       if (!(await altCashOption.isVisible({ timeout: 5000 }).catch(() => false))) {
         console.log("Cash payment not available for this event");
-        test.skip("Cash payment not configured");
+        test.skip(true, "Cash payment not configured");
         return;
       }
       await altCashOption.click();
@@ -185,7 +185,7 @@ test.describe("Cash Payment Availability", () => {
 
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available");
+      test.skip(true, "No events available");
       return;
     }
 
@@ -194,7 +194,7 @@ test.describe("Cash Payment Availability", () => {
 
     const buyButton = page.locator('button:has-text("Buy Tickets"), a:has-text("Get Tickets")');
     if (!(await buyButton.isVisible())) {
-      test.skip("No buy button");
+      test.skip(true, "No buy button");
       return;
     }
 
@@ -244,7 +244,7 @@ test.describe("Cash Payment Edge Cases", () => {
 
     const eventCard = page.locator('[href^="/events/"]').first();
     if (!(await eventCard.isVisible())) {
-      test.skip("No events available");
+      test.skip(true, "No events available");
       return;
     }
 
@@ -253,7 +253,7 @@ test.describe("Cash Payment Edge Cases", () => {
 
     const buyButton = page.locator('button:has-text("Buy Tickets"), a:has-text("Get Tickets")');
     if (!(await buyButton.isVisible())) {
-      test.skip("No buy button");
+      test.skip(true, "No buy button");
       return;
     }
 

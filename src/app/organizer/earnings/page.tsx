@@ -19,21 +19,30 @@ export default function EarningsPage() {
   const events = useQuery(api.events.queries.getOrganizerEvents, {
     userId: currentUser?._id,
   });
+  const earnings = useQuery(api.orders.queries.getOrganizerEarnings);
+  const eventRevenue = useQuery(api.orders.queries.getEventRevenueBreakdown);
 
-  const isLoading = currentUser === undefined || events === undefined;
+  const isLoading = currentUser === undefined || events === undefined || earnings === undefined || eventRevenue === undefined;
 
   // Show loading while Convex queries are loading
   if (isLoading || currentUser === null) {
     return <LoadingSpinner fullPage text="Loading earnings..." />;
   }
 
-  // Calculate earnings
-  // Note: Revenue calculation would require fetching orders for each event
-  // For now, using ticketsSold as a placeholder until revenue tracking is implemented
-  const totalRevenue = 0; // TODO: Calculate from orders
-  const pendingPayout = totalRevenue; // TODO: Calculate actual pending amount
-  const totalPaidOut = 0; // TODO: Get from payouts table
-  const nextPayoutDate = "Next Monday"; // TODO: Calculate actual payout date
+  // Calculate earnings from real data
+  const totalRevenue = (earnings?.totalRevenueCents || 0) / 100;
+  const pendingPayout = (earnings?.pendingPayoutCents || 0) / 100;
+  const totalPaidOut = (earnings?.totalPaidOutCents || 0) / 100;
+
+  // Calculate next payout date (next Monday)
+  const getNextMonday = () => {
+    const today = new Date();
+    const daysUntilMonday = (8 - today.getDay()) % 7 || 7;
+    const nextMonday = new Date(today);
+    nextMonday.setDate(today.getDate() + daysUntilMonday);
+    return nextMonday.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+  };
+  const nextPayoutDate = pendingPayout > 0 ? getNextMonday() : "No pending payout";
 
   const stats = [
     {
@@ -217,30 +226,33 @@ export default function EarningsPage() {
             </div>
           </div>
 
-          {events && events.length > 0 ? (
+          {eventRevenue && eventRevenue.length > 0 ? (
             <>
               {/* Mobile Card View */}
               <div className="md:hidden divide-y divide-border">
-                {events.slice(0, 10).map((event) => {
-                  const revenue = 0; // TODO: Calculate from orders
-                  const ticketsSold = event.ticketsSold || 0;
+                {eventRevenue.slice(0, 10).map((event) => {
+                  const revenue = event.revenueCents / 100;
 
                   return (
-                    <div key={event._id} className="p-4">
+                    <div key={event.eventId} className="p-4">
                       <div className="flex items-start justify-between mb-2">
                         <Link
-                          href={`/organizer/events/${event._id}`}
+                          href={`/organizer/events/${event.eventId}`}
                           className="text-sm font-medium text-primary hover:underline"
                         >
-                          {event.name}
+                          {event.eventName}
                         </Link>
-                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-warning/10 text-warning">
-                          Pending
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          event.status === "pending"
+                            ? "bg-warning/10 text-warning"
+                            : "bg-muted text-muted-foreground"
+                        }`}>
+                          {event.status === "pending" ? "Pending" : "No Sales"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">
-                          {ticketsSold.toLocaleString()} tickets sold
+                          {event.ticketsSold.toLocaleString()} tickets sold
                         </span>
                         <span className="font-medium text-foreground">
                           ${revenue.toLocaleString()}
@@ -271,29 +283,32 @@ export default function EarningsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-border">
-                    {events.slice(0, 10).map((event) => {
-                      const revenue = 0; // TODO: Calculate from orders
-                      const ticketsSold = event.ticketsSold || 0;
+                    {eventRevenue.slice(0, 10).map((event) => {
+                      const revenue = event.revenueCents / 100;
 
                       return (
-                        <tr key={event._id} className="hover:bg-muted">
+                        <tr key={event.eventId} className="hover:bg-muted">
                           <td className="px-6 py-4">
                             <Link
-                              href={`/organizer/events/${event._id}`}
+                              href={`/organizer/events/${event.eventId}`}
                               className="text-sm font-medium text-primary hover:underline"
                             >
-                              {event.name}
+                              {event.eventName}
                             </Link>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                            {ticketsSold.toLocaleString()}
+                            {event.ticketsSold.toLocaleString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                             ${revenue.toLocaleString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-warning/10 text-warning">
-                              Pending
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              event.status === "pending"
+                                ? "bg-warning/10 text-warning"
+                                : "bg-muted text-muted-foreground"
+                            }`}>
+                              {event.status === "pending" ? "Pending" : "No Sales"}
                             </span>
                           </td>
                         </tr>

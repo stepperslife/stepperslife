@@ -138,7 +138,7 @@ export default function RestaurantPricingPage() {
 
   const tiers = pricingModel === "A" ? optionATiers : optionBTiers;
 
-  const getPrice = (tier: typeof optionATiers[0]) => {
+  const getPrice = (tier: typeof optionATiers[0] | typeof optionBTiers[0]) => {
     if (tier.price === 0) return 0;
     if (billingPeriod === "annual") {
       return Math.round(tier.price * (1 - annualDiscount));

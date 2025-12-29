@@ -20,6 +20,36 @@ const TEST_ACCOUNTS = {
     password: "Test123!",
     dashboardUrl: "/user/dashboard",
   },
+  admin: {
+    email: "ira@irawatkins.com",
+    password: "Bobby321!",
+    dashboardUrl: "/admin",
+  },
+  organizer: {
+    email: "e2e-organizer@stepperslife.com",
+    password: "TestPassword123!",
+    dashboardUrl: "/organizer/dashboard",
+  },
+  staff: {
+    email: "e2e-staff@stepperslife.com",
+    password: "TestPassword123!",
+    dashboardUrl: "/staff/dashboard",
+  },
+  team: {
+    email: "e2e-team@stepperslife.com",
+    password: "TestPassword123!",
+    dashboardUrl: "/team/dashboard",
+  },
+  restaurateur: {
+    email: "e2e-restaurateur@stepperslife.com",
+    password: "TestPassword123!",
+    dashboardUrl: "/restaurateur/dashboard",
+  },
+  vendor: {
+    email: "e2e-vendor@stepperslife.com",
+    password: "TestPassword123!",
+    dashboardUrl: "/vendor/dashboard",
+  },
 };
 
 // Expected navigation structure for each role

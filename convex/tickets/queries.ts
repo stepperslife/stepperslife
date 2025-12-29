@@ -3,7 +3,19 @@ import { query } from "../_generated/server";
 import { getCurrentUser, requireEventOwnership } from "../lib/auth";
 
 /**
- * Get all tickets for current user with full event details
+ * Get all tickets for the currently authenticated user with enriched details.
+ * Used for "My Tickets" page showing purchased tickets.
+ *
+ * @returns Array of tickets with:
+ *   - Event details (name, date, location, image)
+ *   - Tier information (name, price)
+ *   - Order details (total, payment date)
+ *   - Seat information (section, row, seat number) if reserved seating
+ *
+ * @throws Error if user is not authenticated
+ *
+ * @example
+ * const myTickets = useQuery(api.tickets.queries.getMyTickets)
  */
 export const getMyTickets = query({
   args: {},
@@ -279,7 +291,18 @@ export const getOrderDetails = query({
 });
 
 /**
- * Get ticket details by ticket code (for QR code scanning/validation)
+ * Get ticket details by ticket code for QR code scanning and validation.
+ * Used by staff/organizers at event check-in.
+ *
+ * @param ticketCode - The unique ticket code (from QR scan or manual entry)
+ *
+ * @returns Object with ticket, event, tier, order, attendee, and seat info
+ * @returns null if ticket not found
+ *
+ * @example
+ * // Staff check-in page
+ * const ticketInfo = useQuery(api.tickets.queries.getTicketByCode, { ticketCode: scannedCode })
+ * if (ticketInfo?.ticket.status === 'USED') showAlreadyScannedError()
  */
 export const getTicketByCode = query({
   args: {
@@ -382,8 +405,23 @@ export const getTicketByCode = query({
 });
 
 /**
- * Get current price for a ticket tier based on pricing tiers
- * Returns the active price tier and when the next price change occurs
+ * Get the current active price for a ticket tier based on pricing tiers.
+ * Handles early bird, regular, and late pricing automatically.
+ *
+ * @param tierId - The ticket tier ID
+ *
+ * @returns Object with:
+ *   - currentPrice: Active price in dollars
+ *   - tierName: Name of current pricing tier (e.g., "Early Bird")
+ *   - nextPriceChange: Timestamp when price changes
+ *   - nextPrice: What the price will change to
+ *   - savings: How much buyer saves by purchasing now
+ *
+ * @throws Error if ticket tier not found
+ *
+ * @example
+ * const pricing = useQuery(api.tickets.queries.getCurrentPrice, { tierId })
+ * // Show: "Early Bird: $50 (Save $25, price increases in 3 days)"
  */
 export const getCurrentPrice = query({
   args: {

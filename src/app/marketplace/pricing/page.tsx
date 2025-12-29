@@ -175,7 +175,7 @@ export default function MarketplacePricingPage() {
                     </div>
                     {tier.price > 0 && billingPeriod === "annual" && (
                       <p className="text-sm text-muted-foreground mt-1">
-                        Billed annually (${(parseFloat(getPrice(tier)) * 12).toFixed(2)}/year)
+                        Billed annually (${(parseFloat(String(getPrice(tier))) * 12).toFixed(2)}/year)
                       </p>
                     )}
                     {tier.price === 0 && (

@@ -275,7 +275,7 @@ export function PublicHeader({
                         )}
 
                         {/* Vendor links - for vendors/admins */}
-                        {(user?.role === "vendor" || user?.role === "admin") && (
+                        {((user?.role as string) === "vendor" || user?.role === "admin") && (
                           <>
                             <div className="border-t border-border my-1" />
                             <Link
@@ -475,7 +475,7 @@ export function PublicHeader({
                   )}
 
                   {/* Vendor links - for vendors/admins */}
-                  {(user?.role === "vendor" || user?.role === "admin") && (
+                  {((user?.role as string) === "vendor" || user?.role === "admin") && (
                     <>
                       <div className="border-t border-border my-2" />
                       <Link

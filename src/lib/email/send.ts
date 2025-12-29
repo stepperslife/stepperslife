@@ -1,4 +1,4 @@
-import { resend, FROM_EMAIL } from './client'
+import { sendPostalEmail, FROM_EMAIL, type PostalEmailResult } from './client'
 import {
   welcomeEmailTemplate,
   ticketPurchaseEmailTemplate,
@@ -14,43 +14,19 @@ import {
   type VendorApprovalEmailData,
 } from './templates'
 
-export type EmailResult = {
-  success: boolean
-  messageId?: string
-  error?: string
-}
+export type EmailResult = PostalEmailResult
 
 async function sendEmail(
   to: string,
   subject: string,
   html: string
 ): Promise<EmailResult> {
-  if (!resend) {
-    console.warn('Email not sent - Resend client not configured')
-    return { success: false, error: 'Email service not configured' }
-  }
-
-  try {
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to,
-      subject,
-      html,
-    })
-
-    if (error) {
-      console.error('Failed to send email:', error)
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, messageId: data?.id }
-  } catch (err) {
-    console.error('Email sending error:', err)
-    return { 
-      success: false, 
-      error: err instanceof Error ? err.message : 'Unknown error' 
-    }
-  }
+  return sendPostalEmail({
+    to,
+    from: FROM_EMAIL,
+    subject,
+    html,
+  })
 }
 
 export async function sendWelcomeEmail(data: WelcomeEmailData): Promise<EmailResult> {

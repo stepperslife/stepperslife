@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
+import { sendPostalEmail } from "@/lib/email/client";
 import {
   customerOrderConfirmationTemplate,
   customerStatusUpdateTemplate,
@@ -8,9 +8,7 @@ import {
   RestaurantData,
 } from "@/lib/email/foodOrderTemplates";
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+const postalConfigured = !!process.env.POSTAL_API_KEY;
 
 const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@stepperslife.com";
 
@@ -30,9 +28,9 @@ export async function POST(request: NextRequest) {
   const requestStartTime = Date.now();
 
   try {
-    // FAILURE POINT 1: Missing RESEND_API_KEY
-    if (!resend) {
-      console.error("[FOOD_ORDER_EMAIL] RESEND_API_KEY is not configured");
+    // FAILURE POINT 1: Missing POSTAL_API_KEY
+    if (!postalConfigured) {
+      console.error("[FOOD_ORDER_EMAIL] POSTAL_API_KEY is not configured");
       return NextResponse.json(
         {
           error: "Email service not configured",
@@ -127,40 +125,25 @@ export async function POST(request: NextRequest) {
         throw new Error(`Unknown email type: ${type}`);
     }
 
-    // FAILURE POINT 7: Resend API failure
+    // Send via Postal (self-hosted)
     console.log(`[FOOD_ORDER_EMAIL] Sending ${type} email to ${to} for order ${order.orderNumber}`);
 
-    const emailResponse = await resend.emails.send({
+    const emailResponse = await sendPostalEmail({
       from: `SteppersLife Food Orders <${FROM_EMAIL}>`,
       to: to,
       subject: emailContent.subject,
       html: emailContent.html,
-      headers: {
-        "X-Order-Number": order.orderNumber,
-        "X-Email-Type": type,
-      },
     });
 
-    // FAILURE POINT 8: Resend API error response
-    if (emailResponse.error) {
-      console.error(`[FOOD_ORDER_EMAIL] Resend API error:`, emailResponse.error);
-
-      // FAILURE POINT 9: Rate limiting
-      if (emailResponse.error.message?.includes("rate limit")) {
-        return NextResponse.json(
-          {
-            error: "Rate limit exceeded. Please try again later.",
-            code: "RATE_LIMITED"
-          },
-          { status: 429 }
-        );
-      }
+    // Check for Postal API errors
+    if (!emailResponse.success) {
+      console.error(`[FOOD_ORDER_EMAIL] Postal API error:`, emailResponse.error);
 
       return NextResponse.json(
         {
           error: "Failed to send email",
           code: "SEND_FAILED",
-          details: emailResponse.error.message
+          details: emailResponse.error
         },
         { status: 500 }
       );
@@ -171,7 +154,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      emailId: emailResponse.data?.id,
+      emailId: emailResponse.messageId,
       orderNumber: order.orderNumber,
       type: type,
       message: `${type} email sent successfully to ${to}`,
@@ -197,7 +180,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   const status = {
     service: "food-order-email",
-    resendConfigured: !!resend,
+    configured: postalConfigured,
     fromEmail: FROM_EMAIL,
     timestamp: new Date().toISOString(),
   };

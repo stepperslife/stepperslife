@@ -22,7 +22,7 @@ import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { formatEventDate, formatEventTime } from "@/lib/date-format";
 
 interface EnrollmentTier {
@@ -289,7 +289,7 @@ export default function ClassCheckoutPage() {
                         : "Date TBD"}
                     </span>
                   </div>
-                  {classDetails.location && (
+                  {classDetails.location && typeof classDetails.location === "object" && (
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-muted-foreground" />
                       <span>

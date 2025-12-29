@@ -39,7 +39,7 @@ export const initializeCredits = mutation({
 });
 
 /**
- * Purchase additional ticket credits with Square
+ * Purchase additional ticket credits via Stripe or PayPal
  */
 export const purchaseCredits = mutation({
   args: {

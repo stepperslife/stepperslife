@@ -19,7 +19,7 @@ if (!STRIPE_WEBHOOK_SECRET) {
 // Initialize Stripe client
 const stripe = STRIPE_SECRET_KEY
   ? new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: "2025-10-29.clover",
+      apiVersion: "2025-12-15.clover",
     })
   : null;
 
@@ -250,7 +250,6 @@ async function handleProductOrderPayment(paymentIntent: Stripe.PaymentIntent) {
             vendorId: vendorId as any,
             orderId: orderId as any,
             orderNumber: orderData.orderNumber,
-            orderDate: orderData.createdAt,
             grossAmount: orderData.subtotal, // Use subtotal (before tax/shipping) for commission
             commissionRate: commissionPercent,
           });

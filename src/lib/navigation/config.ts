@@ -31,6 +31,7 @@ import {
   MoreHorizontal,
   Briefcase,
   PieChart,
+  ImagePlus,
 } from "lucide-react";
 import { RoleNavigation } from "./types";
 
@@ -81,6 +82,12 @@ export const adminNavigation: RoleNavigation = {
           href: "/admin/events",
           icon: Calendar,
           description: "Manage all events",
+        },
+        {
+          label: "AI Flyer Import",
+          href: "/admin/events/upload-flyers",
+          icon: ImagePlus,
+          description: "Upload event postcards for AI extraction",
         },
         {
           label: "CRM",

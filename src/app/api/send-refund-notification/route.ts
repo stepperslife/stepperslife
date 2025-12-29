@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
+import { sendPostalEmail } from "@/lib/email/client";
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+const postalConfigured = !!process.env.POSTAL_API_KEY;
 
 const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@stepperslife.com";
 
@@ -175,8 +173,8 @@ export async function POST(request: NextRequest) {
   const requestStartTime = Date.now();
 
   try {
-    if (!resend) {
-      console.error("[REFUND_EMAIL] RESEND_API_KEY is not configured");
+    if (!postalConfigured) {
+      console.error("[REFUND_EMAIL] POSTAL_API_KEY is not configured");
       return NextResponse.json(
         { error: "Email service not configured", code: "EMAIL_SERVICE_UNAVAILABLE" },
         { status: 500 }
@@ -207,15 +205,15 @@ export async function POST(request: NextRequest) {
     const emailContent = refundNotificationTemplate(body);
     console.log(`[REFUND_EMAIL] Sending refund notification to ${email} for order ${orderNumber}`);
 
-    // Send email
-    const emailResponse = await resend.emails.send({
+    // Send email via Postal (self-hosted)
+    const emailResponse = await sendPostalEmail({
       from: `SteppersLife <${FROM_EMAIL}>`,
       to: email,
       subject: emailContent.subject,
       html: emailContent.html,
     });
 
-    if (emailResponse.error) {
+    if (!emailResponse.success) {
       console.error(`[REFUND_EMAIL] Failed to send:`, emailResponse.error);
       return NextResponse.json(
         { error: "Failed to send refund notification", code: "SEND_FAILED" },
@@ -229,7 +227,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: "Refund notification sent successfully",
-      emailId: emailResponse.data?.id,
+      emailId: emailResponse.messageId,
     });
 
   } catch (error) {
@@ -250,7 +248,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     service: "refund-notification",
-    configured: !!resend,
+    configured: postalConfigured,
     timestamp: new Date().toISOString(),
   });
 }

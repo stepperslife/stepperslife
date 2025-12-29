@@ -98,15 +98,11 @@ export const sendCashOrderConfirmation = action({
   args: {
     orderId: v.id("orders"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; error?: string; skipped?: boolean; reason?: string; emailId?: string; message?: string }> => {
     console.log(`[sendCashOrderConfirmation] Sending confirmation for order ${args.orderId}`);
 
     // Fetch order data using internal mutation
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getOrderDataFn = (internal as any).notifications?.ticketNotifications?.getOrderDataForEmail;
-    const data = getOrderDataFn
-      ? await ctx.runMutation(getOrderDataFn, { orderId: args.orderId })
-      : { success: false, error: "Internal function not found" };
+    const data = await ctx.runMutation(internal.notifications.ticketNotifications.getOrderDataForEmail, { orderId: args.orderId });
 
     if (!data.success || !data.order || !data.event || !data.tickets) {
       console.error(`[sendCashOrderConfirmation] Failed to get order data:`, data.error);
@@ -131,8 +127,7 @@ export const sendCashOrderConfirmation = action({
     };
 
     // Prepare tickets for email API
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ticketsForEmail = tickets.map((ticket: any) => ({
+    const ticketsForEmail = tickets.map((ticket) => ({
       _id: ticket._id,
       _creationTime: ticket.createdAt,
       orderId: args.orderId,
@@ -148,7 +143,7 @@ export const sendCashOrderConfirmation = action({
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://stepperslife.com";
 
     try {
-      const response = await fetch(`${baseUrl}/api/send-ticket-confirmation`, {
+      const response: Response = await fetch(`${baseUrl}/api/send-ticket-confirmation`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -190,7 +185,7 @@ export const resendTicketConfirmation = action({
   args: {
     orderId: v.id("orders"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; emailId?: string; message?: string }> => {
     // Verify user is authenticated
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -198,11 +193,7 @@ export const resendTicketConfirmation = action({
     }
 
     // Fetch order data using internal mutation
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getOrderDataFn = (internal as any).notifications?.ticketNotifications?.getOrderDataForEmail;
-    const data = getOrderDataFn
-      ? await ctx.runMutation(getOrderDataFn, { orderId: args.orderId })
-      : { success: false, error: "Internal function not found" };
+    const data = await ctx.runMutation(internal.notifications.ticketNotifications.getOrderDataForEmail, { orderId: args.orderId });
 
     if (!data.success || !data.order || !data.event || !data.tickets) {
       throw new Error(data.error || "Failed to get order data");
@@ -225,8 +216,7 @@ export const resendTicketConfirmation = action({
     };
 
     // Prepare tickets for email API
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ticketsForEmail = tickets.map((ticket: any) => ({
+    const ticketsForEmail = tickets.map((ticket) => ({
       _id: ticket._id,
       _creationTime: ticket.createdAt,
       orderId: args.orderId,
@@ -241,7 +231,7 @@ export const resendTicketConfirmation = action({
     // Call the ticket confirmation API endpoint
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://stepperslife.com";
 
-    const response = await fetch(`${baseUrl}/api/send-ticket-confirmation`, {
+    const response: Response = await fetch(`${baseUrl}/api/send-ticket-confirmation`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 "use node";
 
 import { v } from "convex/values";
-import { action } from "../_generated/server";
+import { internalAction } from "../_generated/server";
 import Stripe from "stripe";
 
 // Initialize Stripe client
@@ -19,9 +19,9 @@ const stripe = STRIPE_SECRET_KEY
   : null;
 
 /**
- * Process refund via Stripe API
+ * Process refund via Stripe API (internal - called from admin actions)
  */
-export const processStripeRefund = action({
+export const processStripeRefund = internalAction({
   args: {
     paymentIntentId: v.string(),
     amountCents: v.optional(v.number()), // If not provided, refunds full amount
@@ -68,61 +68,5 @@ export const processStripeRefund = action({
         error: error?.message || "Refund processing failed",
       };
     }
-  },
-});
-
-/**
- * @deprecated Use processStripeRefund instead
- * Kept for backwards compatibility during migration
- */
-export const processSquareRefund = action({
-  args: {
-    paymentId: v.string(),
-    amountCents: v.number(),
-    orderId: v.id("orders"),
-    reason: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    console.warn("[DEPRECATED] processSquareRefund called - Square has been removed. Use processStripeRefund instead.");
-
-    // Try to process as Stripe refund if the paymentId looks like a Stripe payment intent
-    if (args.paymentId.startsWith("pi_")) {
-      if (!stripe) {
-        return {
-          success: false,
-          error: "Stripe is not configured",
-        };
-      }
-
-      try {
-        const refund = await stripe.refunds.create({
-          payment_intent: args.paymentId,
-          amount: args.amountCents,
-          reason: "requested_by_customer",
-          metadata: {
-            orderId: args.orderId,
-            reason: args.reason || "Customer refund requested",
-          },
-        });
-
-        return {
-          success: true,
-          refundId: refund.id,
-          status: refund.status,
-          amountRefunded: refund.amount,
-        };
-      } catch (error: any) {
-        console.error("[Stripe Refund via deprecated Square endpoint] Error:", error);
-        return {
-          success: false,
-          error: error?.message || "Refund processing failed",
-        };
-      }
-    }
-
-    return {
-      success: false,
-      error: "Square payments are no longer supported. Please contact support for refunds on legacy Square payments.",
-    };
   },
 });
