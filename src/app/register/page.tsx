@@ -406,7 +406,7 @@ export default function RegisterPage() {
                 >
                   I agree to the{" "}
                   <Link
-                    href="/terms"
+                    href="/terms-of-service"
                     className="text-primary hover:underline font-medium"
                     target="_blank"
                   >
@@ -414,7 +414,7 @@ export default function RegisterPage() {
                   </Link>{" "}
                   and{" "}
                   <Link
-                    href="/privacy"
+                    href="/privacy-policy"
                     className="text-primary hover:underline font-medium"
                     target="_blank"
                   >

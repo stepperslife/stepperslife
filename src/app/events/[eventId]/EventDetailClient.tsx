@@ -28,6 +28,7 @@ import {
   Minus,
   Plus,
   ShoppingCart,
+  ZoomIn,
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
@@ -268,19 +269,23 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
             className="bg-card rounded-xl border border-border p-4 mb-4"
           >
             <div className="flex gap-4">
-              {/* Small Flyer */}
+              {/* Small Flyer - Clickable to enlarge */}
               <div
                 onClick={() => setShowFlyerModal(true)}
-                className="relative w-24 h-32 sm:w-32 sm:h-44 flex-shrink-0 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                className="group relative w-24 h-32 sm:w-32 sm:h-44 flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
               >
                 <Image
                   src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80"}
                   alt={eventDetails.name}
                   fill
                   sizes="128px"
-                  className="object-cover"
+                  className="object-cover transition-transform group-hover:scale-105"
                   priority
                 />
+                {/* Hover overlay with zoom icon */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
+                  <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
                 {/* Event Type Badge */}
                 <div className="absolute top-1 left-1">
                   <span

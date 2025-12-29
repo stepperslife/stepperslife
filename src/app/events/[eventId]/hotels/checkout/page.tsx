@@ -506,11 +506,11 @@ export default function HotelCheckoutPage() {
               <p>Your payment is secure and encrypted.</p>
               <p className="mt-1">
                 By completing this reservation, you agree to our{" "}
-                <Link href="/terms" className="text-primary hover:underline">
+                <Link href="/terms-of-service" className="text-primary hover:underline">
                   Terms
                 </Link>{" "}
                 and{" "}
-                <Link href="/privacy" className="text-primary hover:underline">
+                <Link href="/privacy-policy" className="text-primary hover:underline">
                   Privacy Policy
                 </Link>
               </p>

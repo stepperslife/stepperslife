@@ -442,14 +442,14 @@ export default function SettingsPage() {
           </div>
           <div className="p-6 space-y-3">
             <Link
-              href="/privacy"
+              href="/privacy-policy"
               className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               <span className="font-medium text-foreground">Privacy Policy</span>
               <ExternalLink className="w-4 h-4 text-muted-foreground" />
             </Link>
             <Link
-              href="/terms"
+              href="/terms-of-service"
               className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               <span className="font-medium text-foreground">Terms of Service</span>
