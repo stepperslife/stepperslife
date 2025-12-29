@@ -22,6 +22,12 @@ import {
   TrendingDown,
   Package,
   Zap,
+  Hotel,
+  ChevronDown,
+  ChevronUp,
+  Minus,
+  Plus,
+  ShoppingCart,
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,6 +37,9 @@ import InteractiveSeatingChart from "@/components/seating/InteractiveSeatingChar
 import HotelSection from "@/components/hotels/HotelSection";
 import { StickyCartBar } from "@/components/events/StickyCartBar";
 import { useEventCart } from "@/contexts/EventCartContext";
+
+// Tab type for purchase options
+type PurchaseTab = "tickets" | "hotels" | "bundles";
 
 interface EventDetailClientProps {
   eventId: Id<"events">;
@@ -53,6 +62,17 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
     ? useQuery(api.seating.queries.getPublicSeatingChart, { eventId })
     : null;
   const eventBundles = useQuery(api.bundles.queries.getBundlesForPublicEvent, { eventId });
+  const hotelPackages = useQuery(api.hotels.queries.getHotelPackagesForEvent, { eventId });
+
+  // Determine which tabs are available
+  const hasTickets = (eventDetails?.ticketTiers?.length ?? 0) > 0;
+  const hasHotels = (hotelPackages?.length ?? 0) > 0;
+  const hasBundles = (eventBundles?.length ?? 0) > 0;
+
+  // UI state
+  const [activeTab, setActiveTab] = useState<PurchaseTab>("tickets");
+  const [showDescription, setShowDescription] = useState(false);
+  const [ticketQuantities, setTicketQuantities] = useState<Record<string, number>>({});
 
   // Waitlist state
   const [showWaitlistModal, setShowWaitlistModal] = useState(false);
@@ -202,37 +222,33 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
     ) ?? false;
 
   return (
-    <div className="min-h-screen bg-muted">
-      {/* Header */}
+    <div className="min-h-screen bg-muted pb-24">
+      {/* Compact Header */}
       <header className="bg-card shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            {/* Left: Logo + Back */}
-            <div className="flex items-center gap-4">
-              {/* Logo - Home Link */}
+            <div className="flex items-center gap-3">
               <Link href="/" className="flex-shrink-0">
                 <Image
                   src="/logo.png"
                   alt="SteppersLife"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
                 />
               </Link>
-
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors"
+                className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm"
               >
-                <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium hidden sm:inline">Back to Events</span>
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Back</span>
               </Link>
             </div>
-
             <button
               type="button"
               onClick={handleShare}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <Share2 className="w-4 h-4" />
               <span className="hidden sm:inline">Share</span>
@@ -242,33 +258,33 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
       </header>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Top Section: Flyer (Left) + Event Info (Right) */}
-          <div className="grid md:grid-cols-5 gap-8 mb-8">
-            {/* Flyer Image - Left (2/5 width) */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="md:col-span-2"
-            >
-              <div className="relative w-full bg-muted rounded-xl overflow-hidden shadow-lg sticky top-24">
-                <div onClick={() => setShowFlyerModal(true)} className="cursor-pointer aspect-[3/4]">
-                  <Image
-                    src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80"}
-                    alt={eventDetails.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 40vw"
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-
+      <div className="container mx-auto px-4 py-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Compact Hero: Flyer + Event Info Side by Side */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="bg-card rounded-xl border border-border p-4 mb-4"
+          >
+            <div className="flex gap-4">
+              {/* Small Flyer */}
+              <div
+                onClick={() => setShowFlyerModal(true)}
+                className="relative w-24 h-32 sm:w-32 sm:h-44 flex-shrink-0 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+              >
+                <Image
+                  src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80"}
+                  alt={eventDetails.name}
+                  fill
+                  sizes="128px"
+                  className="object-cover"
+                  priority
+                />
                 {/* Event Type Badge */}
-                <div className="absolute top-4 left-4">
+                <div className="absolute top-1 left-1">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold shadow-lg ${
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
                       eventDetails.eventType === "SAVE_THE_DATE"
                         ? "bg-warning text-white"
                         : eventDetails.eventType === "FREE_EVENT"
@@ -277,498 +293,526 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                     }`}
                   >
                     {eventDetails.eventType === "SAVE_THE_DATE"
-                      ? "Save the Date"
+                      ? "Soon"
                       : eventDetails.eventType === "FREE_EVENT"
-                        ? "Pay at the Door"
-                        : "Ticketed Event"}
+                        ? "Free"
+                        : "Tickets"}
                   </span>
                 </div>
-
-                {/* Past Event Badge */}
                 {isPast && (
-                  <div className="absolute top-4 right-4">
-                    <span className="px-3 py-1 bg-muted text-foreground rounded-full text-xs font-semibold shadow-lg">
-                      Past Event
-                    </span>
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <span className="text-white text-xs font-semibold">Past</span>
                   </div>
                 )}
               </div>
-            </motion.div>
 
-            {/* Event Info - Right (3/5 width) */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="md:col-span-3"
-            >
-              {/* Event Title */}
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                {eventDetails.name}
-              </h1>
+              {/* Event Info */}
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg sm:text-xl font-bold text-foreground mb-2 line-clamp-2">
+                  {eventDetails.name}
+                </h1>
 
-              {/* Categories */}
-              {eventDetails.categories && eventDetails.categories.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {eventDetails.categories.map((category) => (
-                    <span
-                      key={category}
-                      className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm"
-                    >
-                      {category}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Event Details Card */}
-              <div className="bg-card rounded-lg border border-border p-6 mb-6">
                 {/* Date & Time */}
                 {eventDetails.startDate && (
-                  <div className="flex items-start gap-3 mb-4 pb-4 border-b border-border">
-                    <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-semibold text-foreground">
-                        {formatEventDate(eventDetails.startDate, eventDetails.timezone)}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatEventTime(eventDetails.startDate, eventDetails.timezone)}
-                        {eventDetails.endDate &&
-                          ` - ${formatEventTime(eventDetails.endDate, eventDetails.timezone)}`}
-                      </p>
-                    </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1.5">
+                    <Calendar className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">
+                      {formatEventDate(eventDetails.startDate, eventDetails.timezone)}
+                      {" · "}
+                      {formatEventTime(eventDetails.startDate, eventDetails.timezone)}
+                    </span>
                   </div>
                 )}
 
                 {/* Location */}
                 {eventDetails.location && typeof eventDetails.location === "object" && (
-                  <div className="flex items-start gap-3 mb-4">
-                    <MapPin className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-semibold text-foreground">
-                        {eventDetails.location.venueName}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {eventDetails.location.address}
-                        <br />
-                        {eventDetails.location.city}, {eventDetails.location.state}{" "}
-                        {eventDetails.location.zipCode}
-                      </p>
-                      <a
-                        href={`https://maps.google.com/?q=${encodeURIComponent(
-                          `${eventDetails.location.address}, ${eventDetails.location.city}, ${eventDetails.location.state}`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline text-sm mt-1 inline-flex items-center gap-1"
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1.5">
+                    <MapPin className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">
+                      {eventDetails.location.venueName}, {eventDetails.location.city}
+                    </span>
+                  </div>
+                )}
+
+                {/* Organizer */}
+                {(eventDetails.organizer || eventDetails.organizerName) && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Users className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">
+                      By {eventDetails.organizer?.name || eventDetails.organizerName}
+                    </span>
+                  </div>
+                )}
+
+                {/* Categories */}
+                {eventDetails.categories && eventDetails.categories.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {eventDetails.categories.slice(0, 3).map((category) => (
+                      <span
+                        key={category}
+                        className="px-2 py-0.5 bg-accent text-accent-foreground rounded text-xs"
                       >
-                        View Map
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
+                        {category}
+                      </span>
+                    ))}
                   </div>
                 )}
               </div>
+            </div>
+          </motion.div>
 
-              {/* Ticket Tiers Display for TICKETED_EVENT */}
-              {eventDetails.eventType === "TICKETED_EVENT" &&
-                eventDetails.ticketTiers &&
-                eventDetails.ticketTiers.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.5 }}
-                    className="mb-6"
+          {/* Tab Navigation */}
+          {(hasTickets || hasHotels || hasBundles) && (
+            <div className="bg-card rounded-xl border border-border mb-4 overflow-hidden">
+              {/* Tab Headers */}
+              <div className="flex border-b border-border">
+                {hasTickets && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("tickets")}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
+                      activeTab === "tickets"
+                        ? "bg-primary/10 text-primary border-b-2 border-primary -mb-px"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
                   >
-                    <div className="bg-card rounded-lg border border-border p-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Ticket className="w-5 h-5 text-primary" />
-                        <h3 className="text-lg font-semibold text-foreground">Available Tickets</h3>
-                      </div>
-                      <div className="space-y-3">
-                        {eventDetails.ticketTiers.map((tier: any, index: number) => {
-                          const isSoldOut =
-                            tier.quantity !== undefined &&
-                            tier.sold !== undefined &&
-                            tier.quantity - tier.sold <= 0;
-                          const showEarlyBird = tier.isEarlyBird && tier.currentTierName;
-                          const nextPriceIncrease =
-                            tier.nextPriceChange && tier.nextPriceChange.price > tier.currentPrice;
+                    <Ticket className="w-4 h-4" />
+                    <span>Tickets</span>
+                    {hasTickets && (
+                      <span className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                        {eventDetails.ticketTiers?.length}
+                      </span>
+                    )}
+                  </button>
+                )}
+                {hasHotels && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("hotels")}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
+                      activeTab === "hotels"
+                        ? "bg-primary/10 text-primary border-b-2 border-primary -mb-px"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <Hotel className="w-4 h-4" />
+                    <span>Hotels</span>
+                    <span className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      {hotelPackages?.length}
+                    </span>
+                  </button>
+                )}
+                {hasBundles && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("bundles")}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
+                      activeTab === "bundles"
+                        ? "bg-primary/10 text-primary border-b-2 border-primary -mb-px"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <Package className="w-4 h-4" />
+                    <span>Bundles</span>
+                    <span className="px-1.5 py-0.5 bg-success/20 text-success rounded text-xs font-semibold">
+                      Save
+                    </span>
+                  </button>
+                )}
+              </div>
 
-                          return (
-                            <motion.div
-                              key={tier._id}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
-                              className={`border rounded-lg p-4 hover:shadow-md transition-shadow ${
-                                showEarlyBird
-                                  ? "bg-warning/10 border-warning"
-                                  : "bg-primary/10 border-primary"
-                              }`}
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <p className="font-semibold text-foreground">{tier.name}</p>
-                                    {showEarlyBird && (
-                                      <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-warning text-white rounded-full font-medium">
-                                        <Zap className="w-3 h-3" />
-                                        {tier.currentTierName}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {tier.description && (
-                                    <p className="text-sm text-muted-foreground">{tier.description}</p>
+              {/* Tab Content */}
+              <div className="p-4">
+                <AnimatePresence mode="wait">
+                  {/* TICKETS TAB */}
+                  {activeTab === "tickets" && hasTickets && (
+                    <motion.div
+                      key="tickets"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-3"
+                    >
+                      {eventDetails.ticketTiers?.map((tier: any) => {
+                        const isSoldOut =
+                          tier.quantity !== undefined &&
+                          tier.sold !== undefined &&
+                          tier.quantity - tier.sold <= 0;
+                        const available = (tier.quantity ?? 0) - (tier.sold ?? 0);
+                        const qty = ticketQuantities[tier._id] || 0;
+
+                        return (
+                          <div
+                            key={tier._id}
+                            className={`border rounded-lg p-4 transition-all ${
+                              isSoldOut
+                                ? "border-border bg-muted/50 opacity-60"
+                                : qty > 0
+                                  ? "border-primary bg-primary/5"
+                                  : "border-border hover:border-primary/50"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-semibold text-foreground">{tier.name}</h4>
+                                  {tier.isEarlyBird && tier.currentTierName && (
+                                    <span className="flex items-center gap-0.5 text-xs px-1.5 py-0.5 bg-warning text-white rounded font-medium">
+                                      <Zap className="w-3 h-3" />
+                                      {tier.currentTierName}
+                                    </span>
                                   )}
                                 </div>
-                                <div className="text-right ml-2">
-                                  <p
-                                    className={`font-bold text-xl ${showEarlyBird ? "text-warning" : "text-primary"}`}
-                                  >
-                                    ${(tier.currentPrice / 100).toFixed(2)}
+                                {tier.description && (
+                                  <p className="text-sm text-muted-foreground mb-1">{tier.description}</p>
+                                )}
+                                <p className={`text-xs ${isSoldOut ? "text-destructive" : "text-success"}`}>
+                                  {isSoldOut ? "Sold out" : `${available} available`}
+                                </p>
+                              </div>
+
+                              <div className="flex flex-col items-end gap-2">
+                                <div className="text-right">
+                                  <p className="text-lg font-bold text-primary">
+                                    ${((tier.currentPrice || tier.price) / 100).toFixed(2)}
                                   </p>
-                                  {showEarlyBird && tier.price !== tier.currentPrice && (
-                                    <p className="text-sm text-muted-foreground line-through">
+                                  {tier.isEarlyBird && tier.price !== tier.currentPrice && (
+                                    <p className="text-xs text-muted-foreground line-through">
                                       ${(tier.price / 100).toFixed(2)}
                                     </p>
                                   )}
                                 </div>
-                              </div>
 
-                              {nextPriceIncrease && (
-                                <div className="mt-2 mb-2 p-2 bg-warning/10 border border-warning rounded text-sm">
-                                  <p className="text-warning font-medium">
-                                    Price increases to $
-                                    {(tier.nextPriceChange.price / 100).toFixed(2)} on{" "}
-                                    {format(tier.nextPriceChange.date, "MMM d, yyyy")}
-                                  </p>
-                                </div>
-                              )}
-
-                              {tier.quantity !== undefined && tier.sold !== undefined && (
-                                <div className="flex items-center justify-between gap-2 mt-2">
-                                  <p
-                                    className={`text-sm font-medium ${
-                                      tier.quantity - tier.sold > 0
-                                        ? "text-success"
-                                        : "text-destructive"
-                                    }`}
-                                  >
-                                    {tier.quantity - tier.sold > 0
-                                      ? `${tier.quantity - tier.sold} tickets available`
-                                      : "Sold out"}
-                                  </p>
-                                  {isSoldOut && (
+                                {/* Quantity Selector */}
+                                {!isSoldOut && showTickets ? (
+                                  <div className="flex items-center gap-2">
                                     <button
                                       type="button"
-                                      onClick={() => handleJoinWaitlist(tier._id)}
-                                      className="flex items-center gap-1 px-3 py-1 bg-warning text-white rounded text-sm font-medium hover:bg-warning/90 transition-colors"
+                                      onClick={() =>
+                                        setTicketQuantities((prev) => ({
+                                          ...prev,
+                                          [tier._id]: Math.max(0, (prev[tier._id] || 0) - 1),
+                                        }))
+                                      }
+                                      disabled={qty === 0}
+                                      className="w-8 h-8 flex items-center justify-center border border-border rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                      <Bell className="w-3 h-3" />
-                                      Waitlist
+                                      <Minus className="w-4 h-4" />
                                     </button>
-                                  )}
-                                </div>
-                              )}
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-              {/* Ticket Bundles Display */}
-              {eventDetails.eventType === "TICKETED_EVENT" &&
-                eventBundles &&
-                eventBundles.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.7 }}
-                    className="mb-6"
-                  >
-                    <div className="bg-card rounded-lg border border-border p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                          <Package className="w-5 h-5 text-primary" />
-                          <h3 className="text-lg font-semibold text-foreground">Ticket Bundles</h3>
-                          <span className="text-xs px-2 py-0.5 bg-success/10 text-success rounded-full font-medium">
-                            Save More
-                          </span>
-                        </div>
-                        <Link
-                          href="/events"
-                          className="text-sm text-primary hover:text-primary font-medium flex items-center gap-1"
-                        >
-                          View All Events
-                          <ExternalLink className="w-3 h-3" />
-                        </Link>
-                      </div>
-                      <div className="space-y-3">
-                        {eventBundles.map((bundle: any, index: number) => (
-                          <motion.div
-                            key={bundle._id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3, delay: 0.8 + index * 0.1 }}
-                            className="bg-accent border border-accent rounded-lg p-4 hover:shadow-md transition-all cursor-pointer"
-                            onClick={() => router.push(`/bundles/${bundle._id}`)}
-                          >
-                            <div className="flex justify-between items-start mb-2">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                  <p className="font-semibold text-foreground">{bundle.name}</p>
-                                  <span className="flex items-center gap-1 text-xs px-2 py-0.5 bg-success text-white rounded-full font-bold">
-                                    <TrendingDown className="w-3 h-3" />
-                                    Save {bundle.percentageSavings}%
-                                  </span>
-                                  {bundle.bundleType === "MULTI_EVENT" && (
-                                    <span className="text-xs px-2 py-0.5 bg-primary text-white rounded-full font-medium">
-                                      Multi-Event
-                                    </span>
-                                  )}
-                                </div>
-                                {bundle.description && (
-                                  <p className="text-sm text-muted-foreground mb-2">{bundle.description}</p>
-                                )}
-
-                                {/* Show events for multi-event bundles */}
-                                {bundle.bundleType === "MULTI_EVENT" &&
-                                  bundle.events &&
-                                  bundle.events.length > 0 && (
-                                    <div className="mb-2">
-                                      <p className="text-xs text-muted-foreground mb-1">
-                                        Includes {bundle.events.length} events:
-                                      </p>
-                                      <div className="flex flex-wrap gap-1">
-                                        {bundle.events.map((event: any) => (
-                                          <span
-                                            key={event._id}
-                                            className="text-xs px-2 py-0.5 bg-accent text-accent-foreground rounded border border-border"
-                                          >
-                                            <Calendar className="w-3 h-3 inline mr-1" />
-                                            {event.name}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                {/* Show included tickets */}
-                                <div className="flex flex-wrap gap-1">
-                                  {bundle.includedTiersDetails?.slice(0, 3).map((tier: any) => (
-                                    <span
-                                      key={tier.tierId}
-                                      className="text-xs px-2 py-0.5 bg-accent text-accent-foreground rounded"
+                                    <span className="w-8 text-center font-semibold">{qty}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setTicketQuantities((prev) => ({
+                                          ...prev,
+                                          [tier._id]: Math.min(available, (prev[tier._id] || 0) + 1),
+                                        }))
+                                      }
+                                      disabled={qty >= available}
+                                      className="w-8 h-8 flex items-center justify-center border border-border rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                      {tier.quantity}x {tier.tierName}
-                                    </span>
-                                  ))}
-                                  {bundle.includedTiersDetails &&
-                                    bundle.includedTiersDetails.length > 3 && (
-                                      <span className="text-xs px-2 py-0.5 text-accent-foreground font-medium">
-                                        +{bundle.includedTiersDetails.length - 3} more
-                                      </span>
-                                    )}
+                                      <Plus className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                ) : isSoldOut ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleJoinWaitlist(tier._id)}
+                                    className="px-3 py-1.5 bg-warning text-white rounded text-xs font-medium hover:bg-warning/90"
+                                  >
+                                    <Bell className="w-3 h-3 inline mr-1" />
+                                    Waitlist
+                                  </button>
+                                ) : null}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Ticket selection summary */}
+                      {Object.values(ticketQuantities).some((q) => q > 0) && (
+                        <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">
+                              {Object.values(ticketQuantities).reduce((sum, q) => sum + q, 0)} ticket(s) selected
+                            </span>
+                            <Link
+                              href={`/events/${eventId}/checkout`}
+                              className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
+                            >
+                              Continue to Checkout
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {/* HOTELS TAB */}
+                  {activeTab === "hotels" && hasHotels && (
+                    <motion.div
+                      key="hotels"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-4"
+                    >
+                      {hotelPackages?.map((hotel: any) => {
+                        const nights = Math.ceil(
+                          (hotel.checkOutDate - hotel.checkInDate) / (1000 * 60 * 60 * 24)
+                        );
+                        return (
+                          <div key={hotel._id} className="border border-border rounded-lg overflow-hidden">
+                            {/* Hotel Header */}
+                            <div className="p-4 bg-muted/30">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <h4 className="font-semibold text-foreground">{hotel.hotelName}</h4>
+                                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                    <MapPin className="w-3 h-3" />
+                                    {hotel.city}, {hotel.state}
+                                  </p>
+                                </div>
+                                <div className="text-right text-sm text-muted-foreground">
+                                  <p>{format(new Date(hotel.checkInDate), "MMM d")} - {format(new Date(hotel.checkOutDate), "MMM d")}</p>
+                                  <p className="text-xs">{nights} night{nights > 1 ? "s" : ""}</p>
                                 </div>
                               </div>
-                              <div className="text-right ml-2">
-                                <p className="font-bold text-primary text-xl">
-                                  ${(bundle.price / 100).toFixed(2)}
-                                </p>
-                                {bundle.regularPrice && (
-                                  <p className="text-sm text-muted-foreground line-through">
-                                    ${(bundle.regularPrice / 100).toFixed(2)}
-                                  </p>
-                                )}
+                            </div>
+
+                            {/* Room Types - ALL VISIBLE */}
+                            <div className="p-4 space-y-3">
+                              {hotel.roomTypes.map((room: any) => {
+                                const available = room.quantity - room.sold;
+                                const isSoldOut = available <= 0;
+
+                                return (
+                                  <div
+                                    key={room.id}
+                                    className={`border rounded-lg p-3 ${
+                                      isSoldOut ? "border-border bg-muted/30 opacity-60" : "border-border hover:border-primary/50"
+                                    }`}
+                                  >
+                                    <div className="flex items-center justify-between gap-4">
+                                      <div className="flex-1">
+                                        <p className="font-medium text-foreground">{room.name}</p>
+                                        {room.description && (
+                                          <p className="text-sm text-muted-foreground">{room.description}</p>
+                                        )}
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                          <Users className="w-3 h-3 inline mr-1" />
+                                          Up to {room.maxGuests} guests
+                                        </p>
+                                      </div>
+                                      <div className="text-right">
+                                        <p className="font-bold text-primary">
+                                          ${(room.pricePerNightCents / 100).toFixed(0)}
+                                          <span className="text-xs font-normal text-muted-foreground">/night</span>
+                                        </p>
+                                        <p className={`text-xs ${isSoldOut ? "text-destructive" : "text-success"}`}>
+                                          {isSoldOut ? "Sold out" : `${available} left`}
+                                        </p>
+                                      </div>
+                                      {!isSoldOut && (
+                                        <Link
+                                          href={`/events/${eventId}/hotels`}
+                                          className="px-3 py-1.5 bg-primary text-white rounded text-sm font-medium hover:bg-primary/90"
+                                        >
+                                          Book
+                                        </Link>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+
+                  {/* BUNDLES TAB */}
+                  {activeTab === "bundles" && hasBundles && (
+                    <motion.div
+                      key="bundles"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-3"
+                    >
+                      {eventBundles?.map((bundle: any) => (
+                        <div
+                          key={bundle._id}
+                          className="border border-border rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer"
+                          onClick={() => router.push(`/bundles/${bundle._id}`)}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-semibold text-foreground">{bundle.name}</h4>
+                                <span className="flex items-center gap-0.5 text-xs px-1.5 py-0.5 bg-success text-white rounded font-bold">
+                                  <TrendingDown className="w-3 h-3" />
+                                  Save {bundle.percentageSavings}%
+                                </span>
+                              </div>
+                              {bundle.description && (
+                                <p className="text-sm text-muted-foreground mb-2">{bundle.description}</p>
+                              )}
+                              <div className="flex flex-wrap gap-1">
+                                {bundle.includedTiersDetails?.map((tier: any) => (
+                                  <span
+                                    key={tier.tierId}
+                                    className="text-xs px-2 py-0.5 bg-muted rounded"
+                                  >
+                                    {tier.quantity}x {tier.tierName}
+                                  </span>
+                                ))}
                               </div>
                             </div>
-                            <div className="mt-2 flex items-center justify-between">
-                              <p className="text-sm font-medium text-success">
-                                {bundle.available} bundle{bundle.available !== 1 ? "s" : ""}{" "}
-                                available
+                            <div className="text-right">
+                              <p className="text-lg font-bold text-primary">
+                                ${(bundle.price / 100).toFixed(2)}
                               </p>
-                              <button
-                                type="button" className="text-sm text-primary hover:text-primary font-medium">
-                                View Details →
-                              </button>
+                              {bundle.regularPrice && (
+                                <p className="text-sm text-muted-foreground line-through">
+                                  ${(bundle.regularPrice / 100).toFixed(2)}
+                                </p>
+                              )}
+                              <p className="text-xs text-success mt-1">
+                                {bundle.available} available
+                              </p>
                             </div>
-                          </motion.div>
-                        ))}
-                      </div>
+                          </div>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+          )}
+
+          {/* Door Price for FREE_EVENT */}
+          {eventDetails.eventType === "FREE_EVENT" && eventDetails.doorPrice && (
+            <div className="bg-card rounded-xl border border-border p-4 mb-4">
+              <div className="bg-success/10 border border-success/30 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-success flex items-center gap-2">
+                      <Ticket className="w-4 h-4" />
+                      Pay at the Door
+                    </p>
+                    <p className="text-success font-bold text-lg">{eventDetails.doorPrice}</p>
+                  </div>
+                  {isUpcoming && (
+                    <Link
+                      href={`/events/${eventId}/register`}
+                      className="px-4 py-2 bg-success text-white rounded-lg font-medium hover:bg-success/90"
+                    >
+                      Register Free
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Save the Date Message */}
+          {eventDetails.eventType === "SAVE_THE_DATE" && (
+            <div className="bg-card rounded-xl border border-border p-4 mb-4">
+              <div className="bg-warning/10 border border-warning/30 rounded-lg p-4 text-center">
+                <Clock className="w-8 h-8 text-warning mx-auto mb-2" />
+                <p className="text-warning font-semibold">Tickets Coming Soon!</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Save this date. Tickets will be available for purchase soon.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* View Seating Chart Button */}
+          {ENABLE_SEATING && seatingChart && seatingChart.sections.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowSeatingModal(true)}
+              className="w-full mb-4 flex items-center justify-center gap-2 px-4 py-3 bg-card border border-border text-foreground rounded-xl hover:bg-muted transition-colors"
+            >
+              <MapPin className="w-5 h-5 text-primary" />
+              View Seating Chart
+            </button>
+          )}
+
+          {/* About This Event - Collapsible */}
+          {eventDetails.description && (
+            <div className="bg-card rounded-xl border border-border overflow-hidden mb-4">
+              <button
+                type="button"
+                onClick={() => setShowDescription(!showDescription)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors"
+              >
+                <span className="font-semibold text-foreground">About This Event</span>
+                {showDescription ? (
+                  <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                )}
+              </button>
+              <AnimatePresence>
+                {showDescription && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-4 pb-4">
+                      <p className="text-muted-foreground whitespace-pre-wrap">{eventDetails.description}</p>
                     </div>
                   </motion.div>
                 )}
-
-              {/* Hotels Section - Partner Hotels for the Event */}
-              <HotelSection eventId={eventId} />
-
-              {/* Door Price Display for FREE_EVENT */}
-              {eventDetails.eventType === "FREE_EVENT" && eventDetails.doorPrice && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.5 }}
-                  className="mb-6"
-                >
-                  <div className="bg-card rounded-lg border border-border p-6">
-                    <div className="bg-success/10 border border-success rounded-lg p-4 shadow-sm">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Ticket className="w-5 h-5 text-success" />
-                        <p className="font-semibold text-success">Door Price</p>
-                      </div>
-                      <p className="text-success font-bold text-lg">{eventDetails.doorPrice}</p>
-                      <p className="text-xs text-success mt-1">Payment accepted at venue</p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* View Seating Chart Button */}
-              {ENABLE_SEATING && seatingChart && seatingChart.sections.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.6 }}
-                  className="mb-6"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setShowSeatingModal(true)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-primary/40 text-primary rounded-lg hover:bg-accent transition-colors font-medium"
-                  >
-                    <MapPin className="w-5 h-5" />
-                    View Seating Chart
-                  </button>
-                </motion.div>
-              )}
-
-              {/* CTA Button */}
-              {showTickets && eventDetails.ticketTiers && eventDetails.ticketTiers.length > 0 ? (
-                allTicketsSoldOut ? (
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="mb-6"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => handleJoinWaitlist()}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-warning text-white rounded-lg hover:bg-warning/90 transition-colors font-semibold text-lg shadow-md hover:shadow-lg"
-                    >
-                      <Bell className="w-5 h-5" />
-                      Join Waitlist
-                    </button>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="mb-6"
-                  >
-                    <Link
-                      href={`/events/${eventId}/checkout`}
-                      data-testid="buy-tickets-btn"
-                      className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold text-lg shadow-md hover:shadow-lg"
-                    >
-                      <Ticket className="w-5 h-5" />
-                      Buy Tickets
-                    </Link>
-                  </motion.div>
-                )
-              ) : eventDetails.eventType === "FREE_EVENT" && isUpcoming ? (
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="mb-6"
-                >
-                  <Link
-                    href={`/events/${eventId}/register`}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-success text-white rounded-lg hover:bg-success/90 transition-colors font-semibold text-lg"
-                  >
-                    <Ticket className="w-5 h-5" />
-                    Register Free
-                  </Link>
-                </motion.div>
-              ) : eventDetails.eventType === "SAVE_THE_DATE" ? (
-                <div className="text-center p-4 bg-warning/10 border border-warning rounded-lg mb-6">
-                  <Clock className="w-8 h-8 text-warning mx-auto mb-2" />
-                  <p className="text-sm text-warning font-medium">Tickets coming soon!</p>
-                  <p className="text-xs text-warning mt-1">Save this date on your calendar</p>
-                </div>
-              ) : isPast ? (
-                <div className="text-center p-4 bg-muted border border-border rounded-lg mb-6">
-                  <p className="text-sm text-muted-foreground">This event has ended</p>
-                </div>
-              ) : null}
-
-              {/* Ticket Info */}
-              {!eventDetails.ticketsVisible && eventDetails.eventType === "TICKETED_EVENT" && (
-                <div className="p-3 bg-muted border border-border rounded-lg mb-6">
-                  <p className="text-xs text-muted-foreground">
-                    Ticket sales have not started yet. Check back soon!
-                  </p>
-                </div>
-              )}
-
-              {/* Organizer */}
-              {(eventDetails.organizer || eventDetails.organizerName) && (
-                <div className="bg-card rounded-lg border border-border p-6">
-                  <h3 className="text-lg font-semibold text-foreground mb-3">Organized By</h3>
-                  <p className="text-foreground font-medium text-xl">
-                    {eventDetails.organizer?.name ||
-                      eventDetails.organizerName ||
-                      "Event Organizer"}
-                  </p>
-                  {eventDetails.organizer?.email && (
-                    <a
-                      href={`mailto:${eventDetails.organizer.email}`}
-                      className="text-primary hover:underline text-sm mt-2 inline-block"
-                    >
-                      Contact Organizer
-                    </a>
-                  )}
-                  {/* Show credit line only for admin-posted events */}
-                  {eventDetails.isClaimable && (
-                    <p className="text-[7pt] text-muted-foreground mt-2">posted by stepperslife.com</p>
-                  )}
-                </div>
-              )}
-
-              {/* Social Share Buttons */}
-              <div className="mt-6">
-                <SocialShareButtons
-                  eventName={eventDetails.name}
-                  eventUrl={typeof window !== "undefined" ? window.location.href : ""}
-                  eventDate={
-                    eventDetails.startDate
-                      ? formatEventDate(eventDetails.startDate, eventDetails.timezone)
-                      : ""
-                  }
-                  hasTickets={showTickets}
-                />
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Description Section - Full Width Below */}
-          {eventDetails.description && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="mt-8"
-            >
-              <div className="bg-card rounded-lg border border-border p-6 md:p-8">
-                <h2 className="text-2xl font-bold text-foreground mb-4">About This Event</h2>
-                <div className="prose max-w-none text-foreground">
-                  <p className="whitespace-pre-wrap">{eventDetails.description}</p>
-                </div>
-              </div>
-            </motion.div>
+              </AnimatePresence>
+            </div>
           )}
+
+          {/* Organizer + Share */}
+          <div className="bg-card rounded-xl border border-border p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                {(eventDetails.organizer || eventDetails.organizerName) && (
+                  <>
+                    <p className="text-sm text-muted-foreground">Organized by</p>
+                    <p className="font-medium text-foreground">
+                      {eventDetails.organizer?.name || eventDetails.organizerName}
+                    </p>
+                    {eventDetails.organizer?.email && (
+                      <a
+                        href={`mailto:${eventDetails.organizer.email}`}
+                        className="text-primary hover:underline text-sm"
+                      >
+                        Contact
+                      </a>
+                    )}
+                  </>
+                )}
+              </div>
+              <SocialShareButtons
+                eventName={eventDetails.name}
+                eventUrl={typeof window !== "undefined" ? window.location.href : ""}
+                eventDate={
+                  eventDetails.startDate
+                    ? formatEventDate(eventDetails.startDate, eventDetails.timezone)
+                    : ""
+                }
+                hasTickets={showTickets}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
