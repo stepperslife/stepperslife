@@ -24,6 +24,8 @@ import {
   Copy,
   List,
   LayoutGrid,
+  MoreHorizontal,
+  MapPin,
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -759,225 +761,168 @@ export default function OrganizerEventsPage() {
             }}
           />
         ) : (
-          /* List View */
-          <div className="space-y-4">
+          /* List View - Clean Card Design */
+          <div className="space-y-3">
             {filteredEvents.map((event, index) => {
               const isUpcoming = event.startDate ? event.startDate > Date.now() : false;
               const isPast = event.endDate ? event.endDate < Date.now() : false;
+              const location = event.location as { city?: string; state?: string } | undefined;
 
               return (
                 <motion.div
                   key={event._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.1 * index }}
-                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  className="relative bg-white rounded-lg shadow-md border border-border overflow-hidden hover:shadow-lg transition-shadow"
+                  transition={{ duration: 0.3, delay: Math.min(0.1 * index, 0.5) }}
+                  className="group relative bg-white rounded-lg border border-border overflow-hidden hover:border-primary/30 hover:shadow-md transition-all duration-200"
                 >
+                  {/* Status Indicator - Left Border */}
+                  <div
+                    className={`absolute left-0 top-0 bottom-0 w-1 ${
+                      event.status === "PUBLISHED" ? "bg-success" : "bg-warning"
+                    }`}
+                  />
+
                   <div className="flex flex-col sm:flex-row">
                     {/* Selection Checkbox */}
-                    <div className="absolute top-3 left-3 md:top-4 md:left-4 z-10">
+                    <div className="absolute top-3 left-4 sm:left-5 z-20">
                       <input
                         type="checkbox"
                         checked={selectedEvents.has(event._id)}
                         onChange={() => toggleEventSelection(event._id)}
-                        className="w-4 h-4 md:w-5 md:h-5 text-primary bg-white border-2 border rounded focus:ring-2 focus:ring-ring cursor-pointer"
+                        className="w-4 h-4 text-primary bg-white border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary cursor-pointer shadow-sm"
                         onClick={(e) => e.stopPropagation()}
                       />
                     </div>
 
-                    {/* Event Image */}
-                    <div className="sm:w-48 h-28 sm:h-auto bg-muted flex-shrink-0">
+                    {/* Event Image - Square on desktop, 16:9 on mobile */}
+                    <div className="relative aspect-video sm:aspect-square sm:w-40 md:w-44 flex-shrink-0 overflow-hidden bg-muted">
+                      {/* Status Badge - Corner overlay */}
+                      <div
+                        className={`absolute top-2 right-2 z-10 px-2 py-0.5 text-xs font-semibold rounded-md shadow-sm ${
+                          event.status === "PUBLISHED"
+                            ? "bg-success text-white"
+                            : "bg-warning text-white"
+                        }`}
+                      >
+                        {event.status === "PUBLISHED" ? "Live" : "Draft"}
+                      </div>
+
                       {event.imageUrl && !failedImages.has(event._id) ? (
                         <img
                           src={event.imageUrl}
                           alt={event.name}
                           className="w-full h-full object-cover"
                           onError={() => {
-                            setFailedImages(prev => new Set(prev).add(event._id));
+                            setFailedImages((prev) => new Set(prev).add(event._id));
                           }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-primary">
-                          <Calendar className="w-10 h-10 md:w-12 md:h-12 text-white opacity-50" />
+                          <Calendar className="w-10 h-10 text-white opacity-50" />
                         </div>
                       )}
                     </div>
 
                     {/* Event Details */}
-                    <div className="flex-1 p-4 md:p-6">
-                      <div className="mb-2 md:mb-3">
-                        <h3 className="text-lg md:text-xl font-bold text-foreground mb-1.5 md:mb-2 pr-6">
+                    <div className="flex-1 p-4 sm:p-5 flex flex-col min-w-0">
+                      {/* Header Section */}
+                      <div className="mb-3">
+                        <h3 className="font-serif text-lg md:text-xl font-bold text-foreground line-clamp-1 mb-1">
                           {event.name}
                         </h3>
-                        <div className="flex flex-wrap items-center gap-2 text-xs md:text-sm text-muted-foreground">
+
+                        {/* Date & Location - Subtle */}
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                           {event.startDate && (
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                              <span className="text-xs md:text-sm">
-                                {formatEventDate(event.startDate, event.timezone)}
-                              </span>
+                            <span className="flex items-center gap-1.5">
+                              <Calendar className="w-3.5 h-3.5" />
+                              {formatEventDate(event.startDate, event.timezone)}
                             </span>
                           )}
-                          {event.eventType && (
-                            <span className="px-1.5 py-0.5 md:px-2 md:py-1 text-xs font-semibold bg-muted rounded-full">
-                              {event.eventType.replace("_", " ")}
-                            </span>
-                          )}
-                          {/* Status Badge */}
-                          {event.status === "PUBLISHED" ? (
-                            <span className="px-1.5 py-0.5 md:px-2 md:py-1 text-xs font-semibold bg-success/10 text-success rounded-full flex items-center gap-1">
-                              <Eye className="w-3 h-3" />
-                              Published
-                            </span>
-                          ) : (
-                            <span className="px-1.5 py-0.5 md:px-2 md:py-1 text-xs font-semibold bg-warning/10 text-warning rounded-full flex items-center gap-1">
-                              <EyeOff className="w-3 h-3" />
-                              Draft
-                            </span>
-                          )}
-                          {isPast && (
-                            <span className="px-1.5 py-0.5 md:px-2 md:py-1 text-xs font-semibold bg-muted text-muted-foreground rounded-full">
-                              Ended
-                            </span>
-                          )}
-                          {isUpcoming && (
-                            <span className="px-1.5 py-0.5 md:px-2 md:py-1 text-xs font-semibold bg-info/20 text-info rounded-full">
-                              Upcoming
+                          {location?.city && (
+                            <span className="flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5" />
+                              {location.city}
+                              {location.state ? `, ${location.state}` : ""}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      {/* Action Buttons - Mobile Optimized */}
-                      <div className="flex flex-wrap gap-2 md:gap-3 mt-3 md:mt-4">
-                        {/* Primary Actions - Always Visible */}
+                      {/* Tags Row - Minimal */}
+                      <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                        {event.eventType && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-md">
+                            {event.eventType.replace("_", " ")}
+                          </span>
+                        )}
+                        {isUpcoming && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-info/10 text-info rounded-md">
+                            Upcoming
+                          </span>
+                        )}
+                        {isPast && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-md">
+                            Past
+                          </span>
+                        )}
+                        {needsTickets(event) && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-warning/10 text-warning rounded-md">
+                            Needs Tickets
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Actions Row - Clean: Only 3 buttons */}
+                      <div className="flex items-center gap-2 mt-auto">
+                        {/* Primary: Edit */}
                         <Link
                           href={`/organizer/events/${event._id}/edit`}
-                          className="flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex-1 sm:flex-none"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
                         >
-                          <Edit className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                          <span>Edit</span>
+                          <Edit className="w-4 h-4" />
+                          Edit
                         </Link>
 
+                        {/* Secondary: Tickets */}
                         <Link
                           href={`/organizer/events/${event._id}/tickets`}
-                          className={`flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm rounded-lg transition-all flex-1 sm:flex-none relative ${
+                          className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg transition-colors ${
                             needsTickets(event)
-                              ? "bg-warning hover:bg-warning/90 text-white shadow-lg animate-pulse-glow"
-                              : "bg-primary hover:bg-primary/90 text-white"
+                              ? "bg-warning text-white hover:bg-warning/90"
+                              : "border border-primary/30 text-primary hover:bg-primary/5"
                           }`}
                         >
-                          <TicketCheck className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                          <span>Tickets</span>
-                          {needsTickets(event) ? (
-                            <span className="ml-0.5 md:ml-1 px-1.5 py-0.5 bg-destructive text-white rounded-full text-xs font-semibold">
-                              Required
-                            </span>
-                          ) : event.ticketTierCount !== undefined && event.ticketTierCount > 0 ? (
-                            <span className="ml-0.5 md:ml-1 px-1.5 py-0.5 bg-white/20 rounded-full text-xs font-semibold">
+                          <TicketCheck className="w-4 h-4" />
+                          Tickets
+                          {event.ticketTierCount !== undefined && event.ticketTierCount > 0 && (
+                            <span className="px-1.5 py-0.5 text-xs bg-primary/20 rounded">
                               {event.ticketTierCount}
                             </span>
-                          ) : null}
-                        </Link>
-
-                        {/* Publish/Unpublish Button - Prominent */}
-                        <button
-                          type="button"
-                          onClick={() => handleTogglePublish(event._id, event.status || "DRAFT")}
-                          className={`flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm rounded-lg transition-all flex-1 sm:flex-none font-semibold shadow-md ${
-                            event.status === "PUBLISHED"
-                              ? "bg-success hover:bg-success/90 text-white"
-                              : "bg-warning hover:bg-warning/90 text-white animate-pulse"
-                          }`}
-                        >
-                          {event.status === "PUBLISHED" ? (
-                            <>
-                              <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                              <span>Published</span>
-                            </>
-                          ) : (
-                            <>
-                              <EyeOff className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                              <span>Publish Now</span>
-                            </>
                           )}
-                        </button>
-
-                        {/* View Public - Desktop Only */}
-                        <Link
-                          href={`/events/${event._id}`}
-                          className="hidden md:flex items-center gap-2 px-4 py-2 text-sm border border rounded-lg hover:bg-card transition-colors"
-                        >
-                          <Calendar className="w-4 h-4" />
-                          View Public
                         </Link>
 
-                        {/* Duplicate Event Button */}
+                        {/* More Actions - Opens Quick Actions Modal */}
                         <button
                           type="button"
-                          onClick={() => handleOpenDuplicate(event._id, event.name)}
-                          className="flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-primary/30 bg-primary/5 text-primary rounded-lg hover:bg-primary/10 transition-colors flex-1 sm:flex-none"
+                          onClick={() => {
+                            setSelectedCalendarEvent({
+                              id: event._id,
+                              title: event.name,
+                              start: new Date(event.startDate || 0),
+                              imageUrl: event.imageUrl,
+                              status: event.status || "DRAFT",
+                              type: "event",
+                              eventType: event.eventType,
+                            });
+                            setShowQuickActions(true);
+                          }}
+                          className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          aria-label="More actions"
                         >
-                          <Copy className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                          <span>Duplicate</span>
+                          <MoreHorizontal className="w-4 h-4" />
                         </button>
-
-                        {/* Delete Event Button */}
-                        <button
-                          type="button"
-                          onClick={() => setShowSingleDeleteConfirm(event._id)}
-                          className="flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-destructive text-destructive rounded-lg hover:bg-destructive/10 transition-colors flex-1 sm:flex-none"
-                        >
-                          <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                          <span>Delete</span>
-                        </button>
-
-                        {/* Setup Payment - Prominent if needed */}
-                        {!event.paymentModelSelected && event.eventType === "TICKETED_EVENT" && (
-                          <Link
-                            href={`/organizer/events/${event._id}/payment-setup`}
-                            className="flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm bg-warning text-white rounded-lg hover:bg-warning/90 transition-colors flex-1 sm:flex-none"
-                          >
-                            <Settings className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                            <span className="hidden sm:inline">Setup Payment</span>
-                            <span className="sm:hidden">Payment</span>
-                          </Link>
-                        )}
-
-                        {/* Secondary Actions - Desktop Only */}
-                        {event.paymentModelSelected && (
-                          <>
-                            <Link
-                              href={`/organizer/events/${event._id}/staff`}
-                              className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm border border rounded-lg hover:bg-card transition-colors"
-                            >
-                              <Users className="w-4 h-4" />
-                              Staff
-                            </Link>
-                            <Link
-                              href={`/organizer/events/${event._id}/seating`}
-                              className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm border border-primary bg-accent text-primary rounded-lg hover:bg-accent transition-colors"
-                            >
-                              <Armchair className="w-4 h-4" />
-                              Seating
-                            </Link>
-                            <Link
-                              href={`/organizer/events/${event._id}#bundles`}
-                              className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm border border-success300 bg-success50 text-success700 rounded-lg hover:bg-success100 transition-colors"
-                            >
-                              <Package className="w-4 h-4" />
-                              Bundles
-                            </Link>
-                            <Link
-                              href={`/organizer/events/${event._id}`}
-                              className="hidden md:flex items-center gap-2 px-4 py-2 text-sm border border rounded-lg hover:bg-card transition-colors"
-                            >
-                              <BarChart3 className="w-4 h-4" />
-                              Dashboard
-                            </Link>
-                          </>
-                        )}
                       </div>
                     </div>
                   </div>

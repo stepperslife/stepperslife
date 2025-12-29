@@ -18,6 +18,7 @@ import {
   Ticket,
   List,
   LayoutGrid,
+  MoreHorizontal,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
@@ -336,160 +337,145 @@ export default function OrganizerClassesPage() {
             }}
           />
         ) : (
-          /* List View */
-          <div className="space-y-4">
+          /* List View - Clean Card Design */
+          <div className="space-y-3">
             {classes.map((classItem, index) => {
               const isUpcoming = classItem.startDate && classItem.startDate > Date.now();
               const isPast = classItem.endDate && classItem.endDate < Date.now();
+              const location = classItem.location as { city?: string; state?: string } | undefined;
 
               return (
                 <motion.div
                   key={classItem._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.1 * index }}
-                  className="bg-white rounded-lg shadow-md border border-border overflow-hidden hover:shadow-lg transition-shadow"
+                  transition={{ duration: 0.3, delay: Math.min(0.1 * index, 0.5) }}
+                  className="group relative bg-white rounded-lg border border-border overflow-hidden hover:border-primary/30 hover:shadow-md transition-all duration-200"
                   data-testid={`class-row-${classItem._id}`}
                 >
+                  {/* Status Indicator - Left Border */}
+                  <div
+                    className={`absolute left-0 top-0 bottom-0 w-1 ${
+                      classItem.status === "PUBLISHED" ? "bg-success" : "bg-warning"
+                    }`}
+                  />
+
                   <div className="flex flex-col sm:flex-row">
-                    {/* Class Image */}
-                    <div className="sm:w-48 h-28 sm:h-auto bg-muted flex-shrink-0">
+                    {/* Class Image - Square on desktop, 16:9 on mobile */}
+                    <div className="relative aspect-video sm:aspect-square sm:w-40 md:w-44 flex-shrink-0 overflow-hidden bg-muted">
+                      {/* Status Badge - Corner overlay */}
+                      <div
+                        className={`absolute top-2 right-2 z-10 px-2 py-0.5 text-xs font-semibold rounded-md shadow-sm ${
+                          classItem.status === "PUBLISHED"
+                            ? "bg-success text-white"
+                            : "bg-warning text-white"
+                        }`}
+                      >
+                        {classItem.status === "PUBLISHED" ? "Live" : "Draft"}
+                      </div>
+
                       {classItem.imageUrl && !failedImages.has(classItem._id) ? (
                         <img
                           src={classItem.imageUrl}
                           alt={classItem.name}
                           className="w-full h-full object-cover"
                           onError={() => {
-                            setFailedImages(prev => new Set(prev).add(classItem._id));
+                            setFailedImages((prev) => new Set(prev).add(classItem._id));
                           }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-primary">
-                          <BookOpen className="w-10 h-10 md:w-12 md:h-12 text-white opacity-50" />
+                          <BookOpen className="w-10 h-10 text-white opacity-50" />
                         </div>
                       )}
                     </div>
 
                     {/* Class Details */}
-                    <div className="flex-1 p-4 md:p-6">
+                    <div className="flex-1 p-4 sm:p-5 flex flex-col min-w-0">
+                      {/* Header Section */}
                       <div className="mb-3">
-                        <h3 className="text-lg md:text-xl font-bold text-foreground mb-2">
+                        <h3 className="font-serif text-lg md:text-xl font-bold text-foreground line-clamp-1 mb-1">
                           {classItem.name}
                         </h3>
-                        <div className="flex flex-wrap items-center gap-2 text-xs md:text-sm text-muted-foreground">
+
+                        {/* Date & Location - Subtle */}
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                           {classItem.startDate && (
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
+                            <span className="flex items-center gap-1.5">
+                              <Calendar className="w-3.5 h-3.5" />
                               {formatEventDate(classItem.startDate, classItem.timezone)}
                             </span>
                           )}
-                          {classItem.location && typeof classItem.location === "object" && (
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-4 h-4" />
-                              {classItem.location.city}, {classItem.location.state}
-                            </span>
-                          )}
-                          {/* Status Badge */}
-                          {classItem.status === "PUBLISHED" ? (
-                            <span className="px-2 py-1 text-xs font-semibold bg-success/10 text-success rounded-full flex items-center gap-1">
-                              <Eye className="w-3 h-3" />
-                              Published
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 text-xs font-semibold bg-warning/10 text-warning rounded-full flex items-center gap-1">
-                              <EyeOff className="w-3 h-3" />
-                              Draft
-                            </span>
-                          )}
-                          {isPast && (
-                            <span className="px-2 py-1 text-xs font-semibold bg-muted text-muted-foreground rounded-full">
-                              Ended
-                            </span>
-                          )}
-                          {isUpcoming && (
-                            <span className="px-2 py-1 text-xs font-semibold bg-info/20 text-info rounded-full">
-                              Upcoming
+                          {location?.city && (
+                            <span className="flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5" />
+                              {location.city}
+                              {location.state ? `, ${location.state}` : ""}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex flex-wrap gap-2 md:gap-3">
-                        {/* Edit - Primary Action */}
+                      {/* Tags Row - Minimal */}
+                      <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                        {classItem.danceStyle && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-md">
+                            {classItem.danceStyle.replace("_", " ")}
+                          </span>
+                        )}
+                        {isUpcoming && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-info/10 text-info rounded-md">
+                            Upcoming
+                          </span>
+                        )}
+                        {isPast && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-md">
+                            Past
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Actions Row - Clean: Only 3 buttons */}
+                      <div className="flex items-center gap-2 mt-auto">
+                        {/* Primary: Edit */}
                         <Link
                           href={`/organizer/classes/${classItem._id}/edit`}
-                          className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
                           data-testid={`class-edit-btn-${classItem._id}`}
                         >
                           <Edit className="w-4 h-4" />
                           Edit
                         </Link>
 
-                        {/* Enrollments - Manage class packages */}
+                        {/* Secondary: Packages */}
                         <Link
                           href={`/organizer/classes/${classItem._id}/enrollments`}
-                          className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-success/30 bg-success/5 text-success rounded-lg hover:bg-success/10 transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium border border-success/30 text-success rounded-lg hover:bg-success/5 transition-colors"
                           data-testid={`class-enrollments-btn-${classItem._id}`}
                         >
                           <Ticket className="w-4 h-4" />
                           Packages
                         </Link>
 
-                        {/* Duplicate - Secondary Action */}
+                        {/* More Actions - Opens Quick Actions Modal */}
                         <button
                           type="button"
-                          onClick={() => handleOpenDuplicate(classItem._id, classItem.name)}
-                          className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-primary/30 bg-primary/5 text-primary rounded-lg hover:bg-primary/10 transition-colors"
-                          data-testid={`class-duplicate-btn-${classItem._id}`}
+                          onClick={() => {
+                            setSelectedCalendarEvent({
+                              id: classItem._id,
+                              title: classItem.name,
+                              start: new Date(classItem.startDate || 0),
+                              imageUrl: classItem.imageUrl,
+                              status: classItem.status || "DRAFT",
+                              type: "class",
+                              danceStyle: classItem.danceStyle,
+                            });
+                            setShowQuickActions(true);
+                          }}
+                          className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          aria-label="More actions"
                         >
-                          <Copy className="w-4 h-4" />
-                          Duplicate
-                        </button>
-
-                        {/* View - Navigate to public page */}
-                        <Link
-                          href={`/classes/${classItem._id}`}
-                          className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-border rounded-lg hover:bg-muted transition-colors"
-                          data-testid={`class-view-btn-${classItem._id}`}
-                        >
-                          <Eye className="w-4 h-4" />
-                          View
-                        </Link>
-
-                        {/* Publish/Unpublish - Status control */}
-                        <button
-                          type="button"
-                          onClick={() => handleTogglePublish(classItem._id, classItem.status || "DRAFT")}
-                          className={`flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm rounded-lg transition-all font-semibold ${
-                            classItem.status === "PUBLISHED"
-                              ? "bg-success hover:bg-success/90 text-white"
-                              : "bg-warning hover:bg-warning/90 text-white"
-                          }`}
-                          data-testid={`class-publish-btn-${classItem._id}`}
-                        >
-                          {classItem.status === "PUBLISHED" ? (
-                            <>
-                              <Eye className="w-4 h-4" />
-                              Published
-                            </>
-                          ) : (
-                            <>
-                              <EyeOff className="w-4 h-4" />
-                              Publish
-                            </>
-                          )}
-                        </button>
-
-                        {/* Delete - Destructive action (always last) */}
-                        <button
-                          type="button"
-                          onClick={() => setShowDeleteConfirm(classItem._id)}
-                          className="flex items-center justify-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm border border-destructive text-destructive rounded-lg hover:bg-destructive/10 transition-colors"
-                          data-testid={`class-delete-btn-${classItem._id}`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          Delete
+                          <MoreHorizontal className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
