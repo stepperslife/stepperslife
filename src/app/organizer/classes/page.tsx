@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { OrganizerCalendar, CalendarEvent } from "@/components/organizer/OrganizerCalendar";
+import { CalendarEventQuickActions, QuickActionsEvent } from "@/components/organizer/CalendarEventQuickActions";
 
 export default function OrganizerClassesPage() {
   const router = useRouter();
@@ -52,6 +53,11 @@ export default function OrganizerClassesPage() {
 
   // View mode: list or calendar (default to calendar for CRM view)
   const [viewMode, setViewMode] = useState<"list" | "calendar">("calendar");
+
+  // Calendar quick actions state
+  const [selectedCalendarEvent, setSelectedCalendarEvent] = useState<QuickActionsEvent | null>(null);
+  const [showQuickActions, setShowQuickActions] = useState(false);
+  const [isQuickPublishing, setIsQuickPublishing] = useState(false);
 
   const [duplicateOptions, setDuplicateOptions] = useState({
     newName: "",
@@ -306,8 +312,20 @@ export default function OrganizerClassesPage() {
               },
             }))}
             onEventClick={(calEvent) => {
-              // Navigate to edit page (the detail page doesn't exist)
-              router.push(`/organizer/classes/${calEvent.id}/edit`);
+              // Show quick actions modal with all options
+              const classData = classes.find(c => c._id === calEvent.id);
+              if (classData) {
+                setSelectedCalendarEvent({
+                  id: classData._id,
+                  title: classData.name,
+                  start: new Date(classData.startDate || 0),
+                  imageUrl: classData.imageUrl,
+                  status: classData.status || "DRAFT",
+                  type: "class",
+                  danceStyle: classData.danceStyle,
+                });
+                setShowQuickActions(true);
+              }
             }}
             eventType="class"
             colorMap={{
@@ -641,6 +659,75 @@ export default function OrganizerClassesPage() {
             </motion.div>
           </div>
         )}
+
+        {/* Calendar Quick Actions Modal */}
+        <CalendarEventQuickActions
+          open={showQuickActions}
+          onClose={() => {
+            setShowQuickActions(false);
+            setSelectedCalendarEvent(null);
+          }}
+          event={selectedCalendarEvent}
+          onEdit={() => {
+            if (selectedCalendarEvent) {
+              router.push(`/organizer/classes/${selectedCalendarEvent.id}/edit`);
+            }
+          }}
+          onPackages={() => {
+            if (selectedCalendarEvent) {
+              router.push(`/organizer/classes/${selectedCalendarEvent.id}/enrollments`);
+            }
+          }}
+          onViewPublic={() => {
+            if (selectedCalendarEvent) {
+              router.push(`/classes/${selectedCalendarEvent.id}`);
+            }
+          }}
+          onPublish={async () => {
+            if (!selectedCalendarEvent) return;
+            setIsQuickPublishing(true);
+            try {
+              if (selectedCalendarEvent.status === "PUBLISHED") {
+                await unpublishEvent({
+                  eventId: selectedCalendarEvent.id as Id<"events">,
+                  status: "DRAFT",
+                });
+                toast.success("Class unpublished");
+                setSelectedCalendarEvent({
+                  ...selectedCalendarEvent,
+                  status: "DRAFT",
+                });
+              } else {
+                await publishEvent({ eventId: selectedCalendarEvent.id as Id<"events"> });
+                toast.success("Class published!");
+                setSelectedCalendarEvent({
+                  ...selectedCalendarEvent,
+                  status: "PUBLISHED",
+                });
+              }
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "Failed to update status");
+            } finally {
+              setIsQuickPublishing(false);
+            }
+          }}
+          onDuplicate={() => {
+            if (selectedCalendarEvent) {
+              handleOpenDuplicate(
+                selectedCalendarEvent.id as Id<"events">,
+                selectedCalendarEvent.title
+              );
+              setShowQuickActions(false);
+            }
+          }}
+          onDelete={() => {
+            if (selectedCalendarEvent) {
+              setShowDeleteConfirm(selectedCalendarEvent.id as Id<"events">);
+              setShowQuickActions(false);
+            }
+          }}
+          isPublishing={isQuickPublishing}
+        />
       </main>
     </div>
   );

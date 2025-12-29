@@ -33,6 +33,8 @@ import { useState, useEffect } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { WelcomePopup } from "@/components/organizer/WelcomePopup";
 import { OrganizerCalendar, CalendarEvent } from "@/components/organizer/OrganizerCalendar";
+import { CalendarEventQuickActions, QuickActionsEvent } from "@/components/organizer/CalendarEventQuickActions";
+import { toast } from "sonner";
 
 export default function OrganizerEventsPage() {
   const router = useRouter();
@@ -87,6 +89,12 @@ export default function OrganizerEventsPage() {
 
   // View mode: list or calendar (default to calendar for CRM view)
   const [viewMode, setViewMode] = useState<"list" | "calendar">("calendar");
+
+  // Calendar quick actions state
+  const [selectedCalendarEvent, setSelectedCalendarEvent] = useState<QuickActionsEvent | null>(null);
+  const [showQuickActions, setShowQuickActions] = useState(false);
+  const [isQuickPublishing, setIsQuickPublishing] = useState(false);
+
   const [duplicateOptions, setDuplicateOptions] = useState({
     newName: "",
     copyTickets: true,
@@ -727,8 +735,20 @@ export default function OrganizerEventsPage() {
               },
             }))}
             onEventClick={(calEvent) => {
-              // Navigate to event dashboard
-              router.push(`/organizer/events/${calEvent.id}`);
+              // Show quick actions modal instead of navigating
+              const eventData = filteredEvents.find(e => e._id === calEvent.id);
+              if (eventData) {
+                setSelectedCalendarEvent({
+                  id: eventData._id,
+                  title: eventData.name,
+                  start: new Date(eventData.startDate || 0),
+                  imageUrl: eventData.imageUrl,
+                  status: eventData.status || "DRAFT",
+                  type: "event",
+                  eventType: eventData.eventType,
+                });
+                setShowQuickActions(true);
+              }
             }}
             eventType="event"
             colorMap={{
@@ -1206,6 +1226,82 @@ export default function OrganizerEventsPage() {
             </motion.div>
           </div>
         )}
+
+        {/* Calendar Quick Actions Modal */}
+        <CalendarEventQuickActions
+          open={showQuickActions}
+          onClose={() => {
+            setShowQuickActions(false);
+            setSelectedCalendarEvent(null);
+          }}
+          event={selectedCalendarEvent}
+          onEdit={() => {
+            if (selectedCalendarEvent) {
+              router.push(`/organizer/events/${selectedCalendarEvent.id}/edit`);
+            }
+          }}
+          onTickets={() => {
+            if (selectedCalendarEvent) {
+              router.push(`/organizer/events/${selectedCalendarEvent.id}/tickets`);
+            }
+          }}
+          onViewPublic={() => {
+            if (selectedCalendarEvent) {
+              router.push(`/events/${selectedCalendarEvent.id}`);
+            }
+          }}
+          onDashboard={() => {
+            if (selectedCalendarEvent) {
+              router.push(`/organizer/events/${selectedCalendarEvent.id}`);
+            }
+          }}
+          onPublish={async () => {
+            if (!selectedCalendarEvent) return;
+            setIsQuickPublishing(true);
+            try {
+              const isPublished = selectedCalendarEvent.status === "PUBLISHED";
+              if (isPublished) {
+                await unpublishEvent({
+                  eventId: selectedCalendarEvent.id as Id<"events">,
+                  status: "DRAFT",
+                });
+                toast.success("Event unpublished");
+                setSelectedCalendarEvent({
+                  ...selectedCalendarEvent,
+                  status: "DRAFT",
+                });
+              } else {
+                await publishEvent({ eventId: selectedCalendarEvent.id as Id<"events"> });
+                toast.success("Event published!");
+                setSelectedCalendarEvent({
+                  ...selectedCalendarEvent,
+                  status: "PUBLISHED",
+                });
+              }
+            } catch (error) {
+              console.error("Failed to toggle publish status:", error);
+              toast.error(error instanceof Error ? error.message : "Failed to update event status");
+            } finally {
+              setIsQuickPublishing(false);
+            }
+          }}
+          onDuplicate={() => {
+            if (selectedCalendarEvent) {
+              const eventData = filteredEvents.find(e => e._id === selectedCalendarEvent.id);
+              if (eventData) {
+                handleOpenDuplicate(selectedCalendarEvent.id as Id<"events">, eventData.name);
+                setShowQuickActions(false);
+              }
+            }
+          }}
+          onDelete={() => {
+            if (selectedCalendarEvent) {
+              setShowSingleDeleteConfirm(selectedCalendarEvent.id as Id<"events">);
+              setShowQuickActions(false);
+            }
+          }}
+          isPublishing={isQuickPublishing}
+        />
       </main>
     </div>
   );
