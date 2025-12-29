@@ -16,6 +16,8 @@ import {
   Copy,
   BarChart3,
   Ticket,
+  List,
+  LayoutGrid,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatEventDate } from "@/lib/date-format";
@@ -24,6 +26,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { OrganizerCalendar, CalendarEvent } from "@/components/organizer/OrganizerCalendar";
 
 export default function OrganizerClassesPage() {
   const router = useRouter();
@@ -43,6 +46,13 @@ export default function OrganizerClassesPage() {
   // Duplicate class state
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [duplicatingClassId, setDuplicatingClassId] = useState<Id<"events"> | null>(null);
+
+  // Track failed images to show fallback
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  // View mode: list or calendar
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+
   const [duplicateOptions, setDuplicateOptions] = useState({
     newName: "",
     copyTickets: true,
@@ -228,7 +238,37 @@ export default function OrganizerClassesPage() {
           </div>
         </motion.div>
 
-        {/* Classes List */}
+        {/* View Toggle & Classes Header */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">My Classes</h2>
+          {/* View Toggle */}
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+            <button
+              onClick={() => setViewMode("list")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                viewMode === "list"
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
+              }`}
+            >
+              <List className="w-4 h-4" />
+              <span className="hidden sm:inline">List</span>
+            </button>
+            <button
+              onClick={() => setViewMode("calendar")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                viewMode === "calendar"
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+              <span className="hidden sm:inline">Calendar</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Classes Content */}
         {classes.length === 0 ? (
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -250,7 +290,33 @@ export default function OrganizerClassesPage() {
               Create Your First Class
             </Link>
           </motion.div>
+        ) : viewMode === "calendar" ? (
+          /* Calendar View */
+          <OrganizerCalendar
+            events={classes.map((classItem) => ({
+              id: classItem._id,
+              title: classItem.name,
+              start: classItem.startDate ? new Date(classItem.startDate) : new Date(),
+              end: classItem.endDate ? new Date(classItem.endDate) : (classItem.startDate ? new Date(classItem.startDate + 2 * 60 * 60 * 1000) : new Date()),
+              resource: {
+                imageUrl: classItem.imageUrl,
+                status: classItem.status,
+                type: classItem.danceStyle || "CLASS",
+              },
+            }))}
+            onEventClick={(calEvent) => {
+              router.push(`/organizer/classes/${calEvent.id}`);
+            }}
+            eventType="class"
+            colorMap={{
+              STEPPIN: "#8b5cf6",
+              LINE_DANCING: "#22c55e",
+              WALKIN: "#f59e0b",
+              CLASS: "#3b82f6",
+            }}
+          />
         ) : (
+          /* List View */
           <div className="space-y-4">
             {classes.map((classItem, index) => {
               const isUpcoming = classItem.startDate && classItem.startDate > Date.now();
@@ -268,11 +334,14 @@ export default function OrganizerClassesPage() {
                   <div className="flex flex-col sm:flex-row">
                     {/* Class Image */}
                     <div className="sm:w-48 h-28 sm:h-auto bg-muted flex-shrink-0">
-                      {classItem.imageUrl ? (
+                      {classItem.imageUrl && !failedImages.has(classItem._id) ? (
                         <img
                           src={classItem.imageUrl}
                           alt={classItem.name}
                           className="w-full h-full object-cover"
+                          onError={() => {
+                            setFailedImages(prev => new Set(prev).add(classItem._id));
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-primary">

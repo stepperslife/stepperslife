@@ -22,6 +22,8 @@ import {
   Eye,
   EyeOff,
   Copy,
+  List,
+  LayoutGrid,
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -30,6 +32,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { WelcomePopup } from "@/components/organizer/WelcomePopup";
+import { OrganizerCalendar, CalendarEvent } from "@/components/organizer/OrganizerCalendar";
 
 export default function OrganizerEventsPage() {
   const router = useRouter();
@@ -78,6 +81,12 @@ export default function OrganizerEventsPage() {
   // Duplicate event state
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [duplicatingEventId, setDuplicatingEventId] = useState<Id<"events"> | null>(null);
+
+  // Track failed images to show fallback
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  // View mode: list or calendar
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [duplicateOptions, setDuplicateOptions] = useState({
     newName: "",
     copyTickets: true,
@@ -596,8 +605,35 @@ export default function OrganizerEventsPage() {
         {/* My Events Section - Mobile Optimized */}
         <div className="mb-4 md:mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3 md:mb-4">
-            <h2 className="text-xl md:text-2xl font-bold text-foreground">My Events</h2>
-            {selectedEvents.size > 0 && (
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl md:text-2xl font-bold text-foreground">My Events</h2>
+              {/* View Toggle */}
+              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                    viewMode === "list"
+                      ? "bg-primary text-white shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                  <span className="hidden sm:inline">List</span>
+                </button>
+                <button
+                  onClick={() => setViewMode("calendar")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                    viewMode === "calendar"
+                      ? "bg-primary text-white shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                  <span className="hidden sm:inline">Calendar</span>
+                </button>
+              </div>
+            </div>
+            {selectedEvents.size > 0 && viewMode === "list" && (
               <motion.button
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -611,8 +647,8 @@ export default function OrganizerEventsPage() {
             )}
           </div>
 
-          {/* Quick Select Buttons - Mobile Optimized */}
-          {filteredEvents.length > 0 && (
+          {/* Quick Select Buttons - Mobile Optimized - List view only */}
+          {filteredEvents.length > 0 && viewMode === "list" && (
             <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-3 md:mb-4 p-3 md:p-4 bg-white rounded-lg border border-border">
               <span className="text-xs md:text-sm font-medium text-foreground w-full sm:w-auto mb-1 sm:mb-0">
                 Quick Select:
@@ -674,7 +710,34 @@ export default function OrganizerEventsPage() {
               Create Your First Event
             </Link>
           </motion.div>
+        ) : viewMode === "calendar" ? (
+          /* Calendar View */
+          <OrganizerCalendar
+            events={filteredEvents.map((event) => ({
+              id: event._id,
+              title: event.name,
+              start: event.startDate ? new Date(event.startDate) : new Date(),
+              end: event.endDate ? new Date(event.endDate) : (event.startDate ? new Date(event.startDate + 2 * 60 * 60 * 1000) : new Date()),
+              resource: {
+                imageUrl: event.imageUrl,
+                status: event.status,
+                type: event.eventType || "EVENT",
+                ticketsSold: event.ticketsSold || 0,
+              },
+            }))}
+            onEventClick={(calEvent) => {
+              router.push(`/organizer/events/${calEvent.id}`);
+            }}
+            eventType="event"
+            colorMap={{
+              TICKETED_EVENT: "#3b82f6",
+              TABLE_SEATING: "#8b5cf6",
+              FREE_EVENT: "#22c55e",
+              RSVP_ONLY: "#f59e0b",
+            }}
+          />
         ) : (
+          /* List View */
           <div className="space-y-4">
             {filteredEvents.map((event, index) => {
               const isUpcoming = event.startDate ? event.startDate > Date.now() : false;
@@ -703,11 +766,14 @@ export default function OrganizerEventsPage() {
 
                     {/* Event Image */}
                     <div className="sm:w-48 h-28 sm:h-auto bg-muted flex-shrink-0">
-                      {event.imageUrl ? (
+                      {event.imageUrl && !failedImages.has(event._id) ? (
                         <img
                           src={event.imageUrl}
                           alt={event.name}
                           className="w-full h-full object-cover"
+                          onError={() => {
+                            setFailedImages(prev => new Set(prev).add(event._id));
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-primary">
