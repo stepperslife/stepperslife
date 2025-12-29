@@ -50,8 +50,8 @@ export default function OrganizerClassesPage() {
   // Track failed images to show fallback
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
-  // View mode: list or calendar
-  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  // View mode: list or calendar (default to calendar for CRM view)
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("calendar");
 
   const [duplicateOptions, setDuplicateOptions] = useState({
     newName: "",
@@ -296,8 +296,9 @@ export default function OrganizerClassesPage() {
             events={classes.map((classItem) => ({
               id: classItem._id,
               title: classItem.name,
-              start: classItem.startDate ? new Date(classItem.startDate) : new Date(),
-              end: classItem.endDate ? new Date(classItem.endDate) : (classItem.startDate ? new Date(classItem.startDate + 2 * 60 * 60 * 1000) : new Date()),
+              // Use epoch (0) as fallback to avoid hydration mismatch from new Date()
+              start: new Date(classItem.startDate || 0),
+              end: new Date(classItem.endDate || classItem.startDate || 0),
               resource: {
                 imageUrl: classItem.imageUrl,
                 status: classItem.status,
@@ -305,7 +306,8 @@ export default function OrganizerClassesPage() {
               },
             }))}
             onEventClick={(calEvent) => {
-              router.push(`/organizer/classes/${calEvent.id}`);
+              // Navigate to edit page (the detail page doesn't exist)
+              router.push(`/organizer/classes/${calEvent.id}/edit`);
             }}
             eventType="class"
             colorMap={{

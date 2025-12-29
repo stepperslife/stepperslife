@@ -85,8 +85,8 @@ export default function OrganizerEventsPage() {
   // Track failed images to show fallback
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
-  // View mode: list or calendar
-  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  // View mode: list or calendar (default to calendar for CRM view)
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("calendar");
   const [duplicateOptions, setDuplicateOptions] = useState({
     newName: "",
     copyTickets: true,
@@ -716,8 +716,9 @@ export default function OrganizerEventsPage() {
             events={filteredEvents.map((event) => ({
               id: event._id,
               title: event.name,
-              start: event.startDate ? new Date(event.startDate) : new Date(),
-              end: event.endDate ? new Date(event.endDate) : (event.startDate ? new Date(event.startDate + 2 * 60 * 60 * 1000) : new Date()),
+              // Use epoch (0) as fallback to avoid hydration mismatch from new Date()
+              start: new Date(event.startDate || 0),
+              end: new Date(event.endDate || event.startDate || 0),
               resource: {
                 imageUrl: event.imageUrl,
                 status: event.status,
@@ -726,6 +727,7 @@ export default function OrganizerEventsPage() {
               },
             }))}
             onEventClick={(calEvent) => {
+              // Navigate to event dashboard
               router.push(`/organizer/events/${calEvent.id}`);
             }}
             eventType="event"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Calendar, dateFnsLocalizer, Views, View } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay, addMonths, subMonths } from "date-fns";
 import { enUS } from "date-fns/locale";
@@ -55,8 +55,16 @@ export function OrganizerCalendar({
   eventType,
   colorMap = {},
 }: OrganizerCalendarProps) {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  // Fix hydration: Don't render until client-side mounted
+  const [isMounted, setIsMounted] = useState(false);
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [view, setView] = useState<CalendarViewType>("month");
+
+  // Initialize on client-side only to avoid hydration mismatch
+  useEffect(() => {
+    setCurrentDate(new Date());
+    setIsMounted(true);
+  }, []);
 
   // Navigate to today
   const handleToday = useCallback(() => {
@@ -114,6 +122,7 @@ export function OrganizerCalendar({
 
   // Get title based on current view and date
   const title = useMemo(() => {
+    if (!currentDate) return "Loading...";
     if (view === "year") {
       return currentDate.getFullYear().toString();
     }
@@ -156,6 +165,30 @@ export function OrganizerCalendar({
 
   // Custom toolbar - we're rendering our own
   const CustomToolbar = () => null;
+
+  // Show loading skeleton until client-side mounted (prevents hydration mismatch)
+  if (!isMounted || !currentDate) {
+    return (
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border-b border-border bg-muted/30">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-muted rounded-lg animate-pulse" />
+            <div className="w-8 h-8 bg-muted rounded-lg animate-pulse" />
+            <div className="w-16 h-8 bg-muted rounded-lg animate-pulse" />
+            <div className="w-32 h-6 bg-muted rounded animate-pulse ml-2" />
+          </div>
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="w-14 h-8 bg-muted/80 rounded-md animate-pulse" />
+            ))}
+          </div>
+        </div>
+        <div className="p-4">
+          <div className="h-[700px] bg-muted/20 rounded-lg animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
