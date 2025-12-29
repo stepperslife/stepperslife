@@ -1107,7 +1107,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
       {/* Flyer Enlargement Modal */}
       <AnimatePresence>
-        {showFlyerModal && eventDetails.imageUrl && (
+        {showFlyerModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1134,7 +1134,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               {/* Full-size flyer image */}
               <div className="relative max-w-full max-h-[90vh]">
                 <Image
-                  src={eventDetails.imageUrl}
+                  src={eventDetails.imageUrl || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80"}
                   alt={eventDetails.name}
                   width={1200}
                   height={1600}
