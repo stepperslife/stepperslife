@@ -61,7 +61,7 @@ export function PublicHeader({
   const navigationLinks = [
     { href: "/events", label: "Events" },
     { href: "/classes", label: "Classes" },
-    { href: "/marketplace", label: "Marketplace" },
+    { href: "/marketplace", label: "Stores" },
     { href: "/restaurants", label: "Restaurants" },
   ];
 

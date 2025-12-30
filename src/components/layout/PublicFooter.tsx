@@ -37,7 +37,7 @@ export function PublicFooter() {
       title: "Resources",
       links: [
         { href: "/events", label: "Browse Events" },
-        { href: "/marketplace", label: "Marketplace" },
+        { href: "/marketplace", label: "Stores" },
         { href: "/restaurants", label: "Restaurants" },
         { href: "/my-tickets", label: "My Tickets" },
       ],
@@ -148,7 +148,7 @@ export function PublicFooter() {
               </li>
               <li>
                 <Link href="/marketplace" className="hover:text-primary transition-colors">
-                  Marketplace
+                  Stores
                 </Link>
               </li>
               <li>
