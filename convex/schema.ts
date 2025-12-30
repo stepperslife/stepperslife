@@ -111,6 +111,9 @@ export default defineSchema({
     // Class-specific: Skill level (Beginner, Intermediate, Advanced)
     classLevel: v.optional(v.string()),
 
+    // Class-specific: Dance style (Steppin, Salsa, Bachata, etc.)
+    danceStyle: v.optional(v.string()),
+
     // Recurring class series: Links all sessions of a recurring class together
     seriesId: v.optional(v.string()), // UUID shared by all sessions in a series
     seriesPosition: v.optional(v.number()), // Position in series (1, 2, 3...)
@@ -1957,7 +1960,7 @@ export default defineSchema({
     ),
 
     // Delivery details
-    messageId: v.optional(v.string()), // Resend message ID
+    messageId: v.optional(v.string()), // Postal message ID
     attempts: v.number(),
     lastAttemptAt: v.number(),
     errorMessage: v.optional(v.string()),

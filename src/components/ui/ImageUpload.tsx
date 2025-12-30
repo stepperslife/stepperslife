@@ -83,8 +83,9 @@ export function ImageUpload({
       } else {
         throw new Error("Failed to get image URL");
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to upload image");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to upload image";
+      setError(message);
       setPreview(currentImageUrl || null);
     } finally {
       setIsUploading(false);
@@ -107,6 +108,7 @@ export function ImageUpload({
         onChange={handleFileSelect}
         accept="image/*"
         className="hidden"
+        aria-label="Upload image file"
       />
 
       {preview ? (
@@ -123,6 +125,7 @@ export function ImageUpload({
               variant="secondary"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
+              aria-label="Change image"
             >
               {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Change"}
             </Button>
@@ -132,6 +135,7 @@ export function ImageUpload({
               variant="destructive"
               onClick={handleRemove}
               disabled={isUploading}
+              aria-label="Remove image"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -142,6 +146,7 @@ export function ImageUpload({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
+          aria-label="Upload image"
           className="w-full h-32 border-2 border-dashed border-input rounded-lg flex flex-col items-center justify-center gap-2 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
         >
           {isUploading ? (

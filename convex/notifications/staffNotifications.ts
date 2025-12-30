@@ -26,10 +26,11 @@ export const sendStaffInvitationEmail = action({
     const loginUrl = `${baseUrl}/login?redirect=${encodeURIComponent("/user/dashboard")}`;
     const roleLabel = args.role === "RESTAURANT_MANAGER" ? "Manager" : "Staff Member";
 
-    // Send email via Resend
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    // Send email via Postal (self-hosted at postal.toolboxhosting.com)
+    const POSTAL_API_KEY = process.env.POSTAL_API_KEY;
+    const POSTAL_API_URL = process.env.POSTAL_API_URL || 'https://postal.toolboxhosting.com';
 
-    if (!RESEND_API_KEY) {
+    if (!POSTAL_API_KEY) {
       // Log the failed attempt
       await ctx.runMutation(
         internal.notifications.staffNotifications.logNotification,
@@ -39,11 +40,11 @@ export const sendStaffInvitationEmail = action({
           title: `Staff Invitation - ${args.restaurantName}`,
           body: `${args.name} invited to ${args.restaurantName} as ${roleLabel}`,
           status: "FAILED",
-          error: "RESEND_API_KEY not configured",
+          error: "POSTAL_API_KEY not configured",
         }
       );
 
-      console.warn("RESEND_API_KEY not configured - email not sent");
+      console.warn("POSTAL_API_KEY not configured - email not sent");
       return { success: false, error: "Email service not configured" };
     }
 
@@ -105,23 +106,23 @@ export const sendStaffInvitationEmail = action({
     `.trim();
 
     try {
-      const response = await fetch("https://api.resend.com/emails", {
+      const response = await fetch(`${POSTAL_API_URL}/api/v1/send/message`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
+          "X-Server-API-Key": POSTAL_API_KEY,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           from: "SteppersLife <noreply@stepperslife.com>",
           to: [args.email],
           subject: `You're invited to join ${args.restaurantName} on SteppersLife`,
-          html: emailHtml,
+          html_body: emailHtml,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(`Resend API error: ${errorData}`);
+        throw new Error(`Postal API error: ${errorData}`);
       }
 
       const result = await response.json();
@@ -195,10 +196,11 @@ export const sendInvitationAcceptedEmail = action({
     restaurantName: v.string(),
   },
   handler: async (ctx, args): Promise<{ success: boolean; error?: string }> => {
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    const POSTAL_API_KEY = process.env.POSTAL_API_KEY;
+    const POSTAL_API_URL = process.env.POSTAL_API_URL || 'https://postal.toolboxhosting.com';
 
-    if (!RESEND_API_KEY) {
-      console.warn("RESEND_API_KEY not configured - email not sent");
+    if (!POSTAL_API_KEY) {
+      console.warn("POSTAL_API_KEY not configured - email not sent");
       return { success: false, error: "Email service not configured" };
     }
 
@@ -250,23 +252,23 @@ export const sendInvitationAcceptedEmail = action({
     `.trim();
 
     try {
-      const response = await fetch("https://api.resend.com/emails", {
+      const response = await fetch(`${POSTAL_API_URL}/api/v1/send/message`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
+          "X-Server-API-Key": POSTAL_API_KEY,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           from: "SteppersLife <noreply@stepperslife.com>",
           to: [args.ownerEmail],
           subject: `${args.staffName} joined ${args.restaurantName}`,
-          html: emailHtml,
+          html_body: emailHtml,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(`Resend API error: ${errorData}`);
+        throw new Error(`Postal API error: ${errorData}`);
       }
 
       return { success: true };

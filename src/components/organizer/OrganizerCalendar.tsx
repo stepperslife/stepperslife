@@ -32,9 +32,9 @@ export interface CalendarEvent {
   allDay?: boolean;
   resource?: {
     imageUrl?: string;
-    status: string;
-    type: string;
-    [key: string]: any;
+    status?: string;
+    type?: string;
+    [key: string]: unknown;
   };
 }
 
@@ -74,27 +74,22 @@ export function OrganizerCalendar({
   // Navigate previous/next
   const handleNavigate = useCallback(
     (direction: "prev" | "next") => {
-      if (view === "year") {
-        setCurrentDate((prev) =>
-          direction === "prev"
+      setCurrentDate((prev) => {
+        if (!prev) return new Date();
+        if (view === "year") {
+          return direction === "prev"
             ? new Date(prev.getFullYear() - 1, 0, 1)
-            : new Date(prev.getFullYear() + 1, 0, 1)
-        );
-      } else if (view === "month") {
-        setCurrentDate((prev) =>
-          direction === "prev" ? subMonths(prev, 1) : addMonths(prev, 1)
-        );
-      } else if (view === "week") {
-        setCurrentDate((prev) => {
+            : new Date(prev.getFullYear() + 1, 0, 1);
+        } else if (view === "month") {
+          return direction === "prev" ? subMonths(prev, 1) : addMonths(prev, 1);
+        } else if (view === "week") {
           const days = direction === "prev" ? -7 : 7;
           return new Date(prev.getTime() + days * 24 * 60 * 60 * 1000);
-        });
-      } else {
-        setCurrentDate((prev) => {
+        } else {
           const days = direction === "prev" ? -1 : 1;
           return new Date(prev.getTime() + days * 24 * 60 * 60 * 1000);
-        });
-      }
+        }
+      });
     },
     [view]
   );
@@ -144,7 +139,7 @@ export function OrganizerCalendar({
       const type = event.resource?.type;
       let backgroundColor = "#3b82f6"; // default blue
 
-      if (colorMap[type]) {
+      if (type && colorMap[type]) {
         backgroundColor = colorMap[type];
       }
 

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Email service not configured",
-          details: "RESEND_API_KEY environment variable is missing",
+          details: "POSTAL_API_KEY environment variable is missing",
           status: emailService.getStatus(),
         },
         { status: 500 }
@@ -89,7 +89,7 @@ export async function GET() {
     configured: emailService.isConfigured(),
     status: emailService.getStatus(),
     message: emailService.isConfigured()
-      ? "Email service is configured and ready"
-      : "Email service is not configured - RESEND_API_KEY is missing",
+      ? "Email service is configured and ready (Postal)"
+      : "Email service is not configured - POSTAL_API_KEY is missing",
   });
 }

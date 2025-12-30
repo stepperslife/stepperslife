@@ -184,8 +184,9 @@ NEXTAUTH_SECRET=your-secret-here
 GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
 
-# Email (Resend)
-RESEND_API_KEY=your-resend-key
+# Email (Postal - self-hosted at postal.toolboxhosting.com)
+POSTAL_API_KEY=your-postal-api-key
+POSTAL_API_URL=https://postal.toolboxhosting.com
 
 # Application Domain (optional, defaults shown)
 NEXT_PUBLIC_APP_DOMAIN=events.stepperslife.com
@@ -205,7 +206,7 @@ NEXT_PUBLIC_COOKIE_DOMAIN=.stepperslife.com
 - Ensure `oauth_state` cookie is being set and matches
 
 ### Password reset not working
-- Verify `RESEND_API_KEY` is set
+- Verify `POSTAL_API_KEY` is set
 - Check that reset token hasn't expired (1 hour)
 - Ensure database has `passwordResetToken` and `passwordResetExpiry` fields
 

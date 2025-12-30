@@ -5,10 +5,13 @@ out/
 build/
 dist/
 
-# Environment variables (local only)
+# Environment variables (NEVER commit production secrets)
+.env
 .env.local
 .env.*.local
-.env
+.env.production
+.env.staging
+.env.development
 
 # OS
 .DS_Store

@@ -4,6 +4,7 @@ import { internal } from "../_generated/api";
 import { parseEventDateTime } from "../lib/timezone";
 import { USER_ROLES, PRIMARY_ADMIN_EMAIL } from "../lib/roles";
 import { PermissionChecker, requireAdmin } from "../lib/permissions";
+import { requireAdmin as requireAdminAuth } from "../lib/auth";
 
 /**
  * Admin mutations - requires admin role
@@ -600,8 +601,8 @@ export const markEventAsClaimable = mutation({
     claimCode: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // TESTING MODE: Skip admin authentication
-    console.warn("[markEventAsClaimable] TESTING MODE - No admin auth check");
+    // PRODUCTION: Require admin authentication
+    await requireAdminAuth(ctx);
 
     // Get the event
     const event = await ctx.db.get(args.eventId);
@@ -630,8 +631,8 @@ export const unmarkEventAsClaimable = mutation({
     eventId: v.id("events"),
   },
   handler: async (ctx, args) => {
-    // TESTING MODE: Skip admin authentication
-    console.warn("[unmarkEventAsClaimable] TESTING MODE - No admin auth check");
+    // PRODUCTION: Require admin authentication
+    await requireAdminAuth(ctx);
 
     // Get the event
     const event = await ctx.db.get(args.eventId);
@@ -660,8 +661,8 @@ export const fixEventTimestamps = mutation({
     eventId: v.id("events"),
   },
   handler: async (ctx, args) => {
-    // TESTING MODE: Skip admin authentication
-    console.warn("[fixEventTimestamps] TESTING MODE - No admin auth check");
+    // PRODUCTION: Require admin authentication
+    await requireAdminAuth(ctx);
 
     // Get the event
     const event = await ctx.db.get(args.eventId);

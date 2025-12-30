@@ -3,6 +3,7 @@ import { mutation, action } from "../_generated/server";
 import { api } from "../_generated/api";
 import { Doc } from "../_generated/dataModel";
 import { getTimezoneFromLocation, parseEventDateTime } from "../lib/timezone";
+import { requireAdmin as requireAdminAuth } from "../lib/auth";
 
 /**
  * Log uploaded flyer to database
@@ -83,8 +84,8 @@ export const createClaimableEventFromFlyer = mutation({
     }),
   },
   handler: async (ctx, args) => {
-    // TESTING MODE: Skip admin authentication
-    console.warn("[createClaimableEventFromFlyer] TESTING MODE - No admin auth check");
+    // PRODUCTION: Require admin authentication
+    await requireAdminAuth(ctx);
 
     // Get the flyer
     const flyer = await ctx.db.get(args.flyerId);
@@ -597,8 +598,8 @@ export const deleteFlyerFromDb = mutation({
     flyerId: v.id("uploadedFlyers"),
   },
   handler: async (ctx, args) => {
-    // TESTING MODE: Skip admin authentication
-    console.warn("[deleteFlyerFromDb] TESTING MODE - No admin auth check");
+    // PRODUCTION: Require admin authentication
+    await requireAdminAuth(ctx);
 
     // Get the flyer
     const flyer = await ctx.db.get(args.flyerId);
@@ -630,10 +631,8 @@ export const deleteFlyer = mutation({
     flyerId: v.id("uploadedFlyers"),
   },
   handler: async (ctx, args) => {
-    // TESTING MODE: Skip admin authentication
-    console.warn(
-      "[deleteFlyer] TESTING MODE - No admin auth check (DEPRECATED - use deleteFlyerWithCleanup)"
-    );
+    // PRODUCTION: Require admin authentication
+    await requireAdminAuth(ctx);
 
     // Get the flyer
     const flyer = await ctx.db.get(args.flyerId);

@@ -9,6 +9,10 @@
 
 import { USER_ROLES, STAFF_ROLES, RESTAURANT_STAFF_ROLES, HIERARCHY_CONFIG, type UserRole, type StaffRole, type RestaurantStaffRole } from "./roles";
 import type { Doc, Id } from "../_generated/dataModel";
+import type { QueryCtx, MutationCtx } from "../_generated/server";
+
+/** Convex context type for queries and mutations */
+type ConvexCtx = QueryCtx | MutationCtx;
 
 /** Restaurant role includes OWNER plus staff roles */
 export type RestaurantRole = "OWNER" | RestaurantStaffRole;
@@ -47,7 +51,7 @@ export class PermissionChecker {
    * (Either admin, event organizer, or parent staff who assigned them)
    */
   static async canManageStaff(
-    ctx: any, // QueryCtx or MutationCtx
+    ctx: ConvexCtx,
     user: Doc<"users"> | null | undefined,
     staff: Doc<"eventStaff"> | null | undefined
   ): Promise<boolean> {
@@ -107,7 +111,7 @@ export class PermissionChecker {
    * Check if user can transfer tickets for an event
    */
   static async canTransferTickets(
-    ctx: any,
+    ctx: ConvexCtx,
     user: Doc<"users"> | null | undefined,
     eventId: Id<"events">
   ): Promise<boolean> {
@@ -123,9 +127,9 @@ export class PermissionChecker {
     // Check if user is active staff for this event
     const staff = await ctx.db
       .query("eventStaff")
-      .withIndex("by_event", (q: any) => q.eq("eventId", eventId))
-      .filter((q: any) => q.eq(q.field("staffUserId"), user._id))
-      .filter((q: any) => q.eq(q.field("isActive"), true))
+      .withIndex("by_event", (q) => q.eq("eventId", eventId))
+      .filter((q) => q.eq(q.field("staffUserId"), user._id))
+      .filter((q) => q.eq(q.field("isActive"), true))
       .first();
 
     return staff !== null;
@@ -135,7 +139,7 @@ export class PermissionChecker {
    * Check if user can scan tickets for an event
    */
   static async canScanTickets(
-    ctx: any,
+    ctx: ConvexCtx,
     user: Doc<"users"> | null | undefined,
     eventId: Id<"events">
   ): Promise<boolean> {
@@ -151,9 +155,9 @@ export class PermissionChecker {
     // Check if user is staff with scanning permissions
     const staff = await ctx.db
       .query("eventStaff")
-      .withIndex("by_event", (q: any) => q.eq("eventId", eventId))
-      .filter((q: any) => q.eq(q.field("staffUserId"), user._id))
-      .filter((q: any) => q.eq(q.field("isActive"), true))
+      .withIndex("by_event", (q) => q.eq("eventId", eventId))
+      .filter((q) => q.eq(q.field("staffUserId"), user._id))
+      .filter((q) => q.eq(q.field("isActive"), true))
       .first();
 
     if (!staff) return false;
@@ -172,7 +176,7 @@ export class PermissionChecker {
    * Check if user can sell tickets for an event
    */
   static async canSellTickets(
-    ctx: any,
+    ctx: ConvexCtx,
     user: Doc<"users"> | null | undefined,
     eventId: Id<"events">
   ): Promise<boolean> {
@@ -188,9 +192,9 @@ export class PermissionChecker {
     // Check if user is active SUPPORT_STAFF or SUB_RESELLER (or legacy SELLER)
     const staff = await ctx.db
       .query("eventStaff")
-      .withIndex("by_event", (q: any) => q.eq("eventId", eventId))
-      .filter((q: any) => q.eq(q.field("staffUserId"), user._id))
-      .filter((q: any) => q.eq(q.field("isActive"), true))
+      .withIndex("by_event", (q) => q.eq("eventId", eventId))
+      .filter((q) => q.eq(q.field("staffUserId"), user._id))
+      .filter((q) => q.eq(q.field("isActive"), true))
       .first();
 
     if (!staff) return false;
@@ -208,7 +212,7 @@ export class PermissionChecker {
    * Check if user can view event analytics
    */
   static async canViewAnalytics(
-    ctx: any,
+    ctx: ConvexCtx,
     user: Doc<"users"> | null | undefined,
     eventId: Id<"events">
   ): Promise<boolean> {
@@ -225,7 +229,7 @@ export class PermissionChecker {
    * Check if user can modify event details
    */
   static async canModifyEvent(
-    ctx: any,
+    ctx: ConvexCtx,
     user: Doc<"users"> | null | undefined,
     eventId: Id<"events">
   ): Promise<boolean> {
@@ -242,7 +246,7 @@ export class PermissionChecker {
    * Check if user can delete an event
    */
   static async canDeleteEvent(
-    ctx: any,
+    ctx: ConvexCtx,
     user: Doc<"users"> | null | undefined,
     eventId: Id<"events">
   ): Promise<boolean> {
@@ -326,7 +330,7 @@ export function requireOrganizer(user: Doc<"users"> | null | undefined): void {
 }
 
 export async function requireEventOrganizer(
-  ctx: any,
+  ctx: ConvexCtx,
   user: Doc<"users"> | null | undefined,
   eventId: Id<"events">
 ): Promise<void> {
@@ -337,7 +341,7 @@ export async function requireEventOrganizer(
 }
 
 export async function requireCanManageStaff(
-  ctx: any,
+  ctx: ConvexCtx,
   user: Doc<"users"> | null | undefined,
   staff: Doc<"eventStaff">
 ): Promise<void> {

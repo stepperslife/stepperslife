@@ -2,6 +2,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+
+/** Type-safe error message extraction */
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
 
 // Validate environment variables
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
@@ -55,23 +62,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No signature" }, { status: 400 });
     }
 
-    // Verify webhook signature
+    // Verify webhook signature - REQUIRED in production
     let event: Stripe.Event;
+    const isProduction = process.env.NODE_ENV === "production";
 
     if (STRIPE_WEBHOOK_SECRET) {
       try {
         event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
-      } catch (err: any) {
-        console.error("[Stripe Webhook] Signature verification failed:", err.message);
+      } catch (err: unknown) {
+        console.error("[Stripe Webhook] Signature verification failed:", getErrorMessage(err));
         return NextResponse.json(
-          { error: `Webhook signature verification failed: ${err.message}` },
+          { error: "Webhook signature verification failed" },
           { status: 400 }
         );
       }
+    } else if (isProduction) {
+      // Reject unverified webhooks in production
+      console.error("[Stripe Webhook] CRITICAL: No webhook secret in production!");
+      return NextResponse.json(
+        { error: "Webhook verification required" },
+        { status: 403 }
+      );
     } else {
       // Parse event without verification (development only)
-      console.warn("[Stripe Webhook] Processing webhook without signature verification");
-      event = JSON.parse(body) as Stripe.Event;
+      console.warn("[Stripe Webhook] DEV ONLY: Processing webhook without signature verification");
+      try {
+        event = JSON.parse(body) as Stripe.Event;
+      } catch {
+        return NextResponse.json(
+          { error: "Invalid webhook payload" },
+          { status: 400 }
+        );
+      }
     }
 
 
@@ -101,10 +123,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Stripe Webhook] Processing error:", error);
     return NextResponse.json(
-      { error: error.message || "Webhook processing failed" },
+      { error: getErrorMessage(error) || "Webhook processing failed" },
       { status: 500 }
     );
   }
@@ -124,12 +146,12 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   try {
     // Update order status in Convex
     await convex.mutation(api.orders.mutations.markOrderPaid, {
-      orderId: orderId as any,
+      orderId: orderId as Id<"orders">,
       paymentIntentId: session.payment_intent as string,
     });
 
-  } catch (error: any) {
-    console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error);
+  } catch (error: unknown) {
+    console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, getErrorMessage(error));
   }
 }
 
@@ -170,7 +192,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
   try {
     // Update order status in Convex
     await convex.mutation(api.orders.mutations.markOrderPaid, {
-      orderId: orderId as any,
+      orderId: orderId as Id<"orders">,
       paymentIntentId: paymentIntent.id,
     });
 
@@ -190,17 +212,17 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         console.log(
           `[Stripe Webhook] Recorded debt settlement for organizer ${organizerId}: $${(settlementAmount / 100).toFixed(2)}`
         );
-      } catch (settlementError: any) {
+      } catch (settlementError: unknown) {
         console.error(
           `[Stripe Webhook] Failed to record debt settlement for order ${orderId}:`,
-          settlementError
+          getErrorMessage(settlementError)
         );
         // Don't fail the order - the debt will be collected on the next payment
       }
     }
 
-  } catch (error: any) {
-    console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error);
+  } catch (error: unknown) {
+    console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, getErrorMessage(error));
   }
 }
 
@@ -230,7 +252,7 @@ async function handleProductOrderPayment(paymentIntent: Stripe.PaymentIntent) {
   try {
     // 1. Update order payment status to PAID
     await convex.mutation(api.productOrders.mutations.updatePaymentStatus, {
-      orderId: orderId as any,
+      orderId: orderId as Id<"productOrders">,
       paymentStatus: "PAID",
       paymentMethod: "stripe",
       stripePaymentIntentId: paymentIntent.id,
@@ -242,39 +264,39 @@ async function handleProductOrderPayment(paymentIntent: Stripe.PaymentIntent) {
       try {
         // Get order details for earnings
         const orderData = await convex.query(api.productOrders.queries.getOrderById, {
-          orderId: orderId as any,
+          orderId: orderId as Id<"productOrders">,
         });
 
         if (orderData) {
           await convex.mutation(api.vendorEarnings.createFromOrder, {
-            vendorId: vendorId as any,
-            orderId: orderId as any,
+            vendorId: vendorId as Id<"vendors">,
+            orderId: orderId as Id<"productOrders">,
             orderNumber: orderData.orderNumber,
             grossAmount: orderData.subtotal, // Use subtotal (before tax/shipping) for commission
             commissionRate: commissionPercent,
           });
           console.log(`[Stripe Webhook] Vendor earnings created for order ${orderId}`);
         }
-      } catch (earningsError: any) {
-        console.error(`[Stripe Webhook] Failed to create vendor earnings:`, earningsError);
+      } catch (earningsError: unknown) {
+        console.error(`[Stripe Webhook] Failed to create vendor earnings:`, getErrorMessage(earningsError));
         // Don't fail the webhook - the order is still paid
       }
 
       // 3. Update vendor stats
       try {
         await convex.mutation(api.vendors.updateStats, {
-          id: vendorId as any,
+          id: vendorId as Id<"vendors">,
           saleAmount: paymentIntent.amount - applicationFee,
           earningsAmount: paymentIntent.amount - applicationFee,
         });
         console.log(`[Stripe Webhook] Vendor stats updated for ${vendorId}`);
-      } catch (statsError: any) {
-        console.error(`[Stripe Webhook] Failed to update vendor stats:`, statsError);
+      } catch (statsError: unknown) {
+        console.error(`[Stripe Webhook] Failed to update vendor stats:`, getErrorMessage(statsError));
       }
     }
 
-  } catch (error: any) {
-    console.error(`[Stripe Webhook] Failed to process product order ${orderId}:`, error);
+  } catch (error: unknown) {
+    console.error(`[Stripe Webhook] Failed to process product order ${orderId}:`, getErrorMessage(error));
   }
 }
 
@@ -299,14 +321,14 @@ async function handleFoodOrderPayment(paymentIntent: Stripe.PaymentIntent) {
   try {
     // Update food order payment status to PAID
     await convex.mutation(api.foodOrders.updatePaymentStatus, {
-      orderId: orderId as any,
+      orderId: orderId as Id<"foodOrders">,
       paymentStatus: "PAID",
       stripePaymentIntentId: paymentIntent.id,
     });
     console.log(`[Stripe Webhook] Food order ${orderId} marked as PAID`);
 
-  } catch (error: any) {
-    console.error(`[Stripe Webhook] Failed to process food order ${orderId}:`, error);
+  } catch (error: unknown) {
+    console.error(`[Stripe Webhook] Failed to process food order ${orderId}:`, getErrorMessage(error));
   }
 }
 
@@ -335,7 +357,7 @@ async function handlePlatformProductPayment(paymentIntent: Stripe.PaymentIntent)
         const pricePerTicket = parseInt(metadata?.pricePerTicket || "0", 10);
 
         await convex.mutation(api.credits.mutations.confirmCreditPurchase, {
-          organizerId: userId as any,
+          organizerId: userId as Id<"users">,
           stripePaymentIntentId: paymentIntent.id,
           ticketsPurchased: ticketQuantity,
           amountPaid: paymentIntent.amount,
@@ -348,7 +370,7 @@ async function handlePlatformProductPayment(paymentIntent: Stripe.PaymentIntent)
         // Handle subscription activation
         const subscriptionPlan = metadata?.subscriptionPlan;
         console.log(`[Stripe Webhook] Subscription payment received for user ${userId}: ${subscriptionPlan}`);
-        // TODO: Implement subscription activation mutation when subscription system is built
+        // TODO: DEFERRED - Implement subscription activation mutation when subscription system is built
         // await convex.mutation(api.subscriptions.mutations.activateSubscription, {...});
         break;
 
@@ -357,21 +379,21 @@ async function handlePlatformProductPayment(paymentIntent: Stripe.PaymentIntent)
         const eventId = metadata?.eventId;
         const promotionType = metadata?.promotionType;
         console.log(`[Stripe Webhook] Promotion purchase for event ${eventId}: ${promotionType}`);
-        // TODO: Implement promotion activation mutation when promotion system is built
+        // TODO: DEFERRED - Implement promotion activation mutation when promotion system is built
         // await convex.mutation(api.promotions.mutations.activatePromotion, {...});
         break;
 
       case "PREMIUM_FEATURE":
         // Handle premium feature purchase
         console.log(`[Stripe Webhook] Premium feature purchase for user ${userId}`);
-        // TODO: Implement premium feature activation when system is built
+        // TODO: DEFERRED - Implement premium feature activation when system is built
         break;
 
       default:
         console.warn(`[Stripe Webhook] Unknown platform product type: ${productType}`);
     }
-  } catch (error: any) {
-    console.error(`[Stripe Webhook] Failed to process platform payment for ${productType}:`, error);
+  } catch (error: unknown) {
+    console.error(`[Stripe Webhook] Failed to process platform payment for ${productType}:`, getErrorMessage(error));
   }
 }
 
@@ -389,12 +411,12 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   try {
     // Update order status to failed in Convex
     await convex.mutation(api.orders.mutations.markOrderFailed, {
-      orderId: orderId as any,
+      orderId: orderId as Id<"orders">,
       reason: paymentIntent.last_payment_error?.message || "Payment failed",
     });
 
-  } catch (error: any) {
-    console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error);
+  } catch (error: unknown) {
+    console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, getErrorMessage(error));
   }
 }
 
@@ -419,8 +441,8 @@ async function handleAccountUpdated(account: Stripe.Account) {
       detailsSubmitted: account.details_submitted || false,
     });
 
-  } catch (error: any) {
-    console.error(`[Stripe Webhook] Failed to update account ${account.id}:`, error);
+  } catch (error: unknown) {
+    console.error(`[Stripe Webhook] Failed to update account ${account.id}:`, getErrorMessage(error));
   }
 }
 
@@ -474,14 +496,14 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
             console.warn(`[Stripe Webhook] Failed to send refund notification email`);
           }
         }
-      } catch (emailError: any) {
+      } catch (emailError: unknown) {
         // Don't fail the webhook if email fails
-        console.error(`[Stripe Webhook] Error sending refund email:`, emailError);
+        console.error(`[Stripe Webhook] Error sending refund email:`, getErrorMessage(emailError));
       }
     }
 
-  } catch (error: any) {
-    console.error(`[Stripe Webhook] Failed to process refund for ${paymentIntentId}:`, error);
+  } catch (error: unknown) {
+    console.error(`[Stripe Webhook] Failed to process refund for ${paymentIntentId}:`, getErrorMessage(error));
   }
 }
 

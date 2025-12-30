@@ -319,7 +319,7 @@ export const scheduleEmailNotification = internalMutation({
     }
 
     // Log that email should be sent
-    // In production, this would call the Resend API
+    // In production, this calls Postal API (postal.toolboxhosting.com)
     const now = Date.now();
     await ctx.db.insert("notificationLog", {
       restaurantId: args.restaurantId,

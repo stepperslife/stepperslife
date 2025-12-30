@@ -3,9 +3,23 @@ import { api } from "@/convex/_generated/api";
 import { createHash } from "crypto";
 import { convexClient as convex } from "@/lib/auth/convex-client";
 import { hashPassword, validatePasswordStrength } from "@/lib/auth/password-utils";
+import {
+  checkRateLimit,
+  getClientIp,
+  rateLimiters,
+  createRateLimitResponse,
+} from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Strict rate limiting - 3 attempts per 15 minutes
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`reset-password:${clientIp}`, rateLimiters.passwordReset);
+
+    if (!rateLimit.success) {
+      return createRateLimitResponse(rateLimit.retryAfter || 900);
+    }
+
     const { token, password } = await request.json();
 
     if (!token || !password) {

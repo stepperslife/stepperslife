@@ -3,12 +3,25 @@ import { api } from "@/convex/_generated/api";
 import { convexClient as convex } from "@/lib/auth/convex-client";
 import { verifyPassword } from "@/lib/auth/password-utils";
 import { createAndSetSession } from "@/lib/auth/session-manager";
+import {
+  checkRateLimit,
+  getClientIp,
+  rateLimiters,
+  createRateLimitResponse,
+} from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting - 5 attempts per minute per IP
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`login:${clientIp}`, rateLimiters.auth);
+
+    if (!rateLimit.success) {
+      return createRateLimitResponse(rateLimit.retryAfter || 60);
+    }
+
     const body = await request.json();
     const { email, password } = body;
-
 
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });

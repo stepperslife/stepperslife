@@ -1,6 +1,22 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+
+/** PayPal webhook event structure */
+interface PayPalWebhookEvent {
+  event_type: string;
+  resource: {
+    id?: string;
+    custom_id?: string;
+  };
+}
+
+/** Type-safe error message extraction */
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
 
 const PAYPAL_WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
@@ -144,8 +160,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (error: any) {
-    console.error("[PayPal Webhook] Error:", error);
+  } catch (error: unknown) {
+    console.error("[PayPal Webhook] Error:", getErrorMessage(error));
     return NextResponse.json(
       { error: "Webhook processing failed" },
       { status: 500 }
@@ -156,7 +172,7 @@ export async function POST(request: NextRequest) {
 /**
  * Handle successful payment capture
  */
-async function handlePaymentCaptureCompleted(event: any) {
+async function handlePaymentCaptureCompleted(event: PayPalWebhookEvent) {
   const resource = event.resource;
   const customId = resource?.custom_id;
 
@@ -171,30 +187,30 @@ async function handlePaymentCaptureCompleted(event: any) {
 
     if (orderId) {
       await convex.mutation(api.orders.mutations.markOrderPaid, {
-        orderId: orderId as any,
-        paymentIntentId: resource.id,
+        orderId: orderId as Id<"orders">,
+        paymentIntentId: resource.id ?? "",
       });
       console.log(`[PayPal Webhook] Order ${orderId} marked as paid`);
     }
-  } catch (error: any) {
-    console.error("[PayPal Webhook] Failed to process payment capture:", error);
+  } catch (error: unknown) {
+    console.error("[PayPal Webhook] Failed to process payment capture:", getErrorMessage(error));
   }
 }
 
 /**
  * Handle denied payment capture
  */
-async function handlePaymentCaptureDenied(event: any) {
+async function handlePaymentCaptureDenied(event: PayPalWebhookEvent) {
   const resource = event.resource;
   console.log("[PayPal Webhook] Payment capture denied:", resource?.id);
-  // Could update order status to failed here
+  // TODO: DEFERRED - Update order status to failed here
 }
 
 /**
  * Handle refunded payment
  */
-async function handlePaymentRefunded(event: any) {
+async function handlePaymentRefunded(event: PayPalWebhookEvent) {
   const resource = event.resource;
   console.log("[PayPal Webhook] Payment refunded:", resource?.id);
-  // Could update order status to refunded here
+  // TODO: DEFERRED - Update order status to refunded here
 }

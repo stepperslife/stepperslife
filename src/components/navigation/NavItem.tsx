@@ -53,6 +53,8 @@ export function NavItem({
         isCollapsed && "justify-center px-2"
       )}
       onClick={handleClick}
+      aria-expanded={hasSubmenu ? isSubmenuOpen : undefined}
+      aria-current={isActive ? "page" : undefined}
     >
       {/* Icon */}
       <item.icon

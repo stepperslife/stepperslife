@@ -10,50 +10,72 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log to error reporting service
-    console.error("Global error:", error);
+    console.error("[Global Error]", error);
   }, [error]);
 
   return (
-    <html lang="en">
+    <html>
       <body>
-        <div className="min-h-screen bg-card flex items-center justify-center px-4">
-          <div className="max-w-md w-full text-center">
-            <div className="mb-6">
-              <svg
-                className="mx-auto h-20 w-20 text-destructive"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Something went wrong
-            </h1>
-            <p className="text-muted-foreground mb-8">
-              We're sorry, but something unexpected happened. Our team has been notified.
-            </p>
-            <div className="flex gap-4 justify-center">
-              <button
-                onClick={() => reset()}
-                className="px-6 py-3 bg-destructive text-white rounded-lg hover:bg-destructive/80 transition-colors"
-              >
-                Try again
-              </button>
-              <button
-                onClick={() => (window.location.href = "/")}
-                className="px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted transition-colors"
-              >
-                Go home
-              </button>
-            </div>
+        <div style={{
+          display: "flex",
+          minHeight: "100vh",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "1rem",
+          padding: "2rem",
+          fontFamily: "system-ui, sans-serif",
+        }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+            <path d="M12 9v4" />
+            <path d="M12 17h.01" />
+          </svg>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: "600", margin: 0 }}>
+            Something went wrong
+          </h2>
+          <p style={{ color: "#666", textAlign: "center", maxWidth: "400px", margin: 0 }}>
+            An unexpected error occurred. Please try again.
+          </p>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              onClick={reset}
+              style={{
+                padding: "0.5rem 1rem",
+                backgroundColor: "#000",
+                color: "#fff",
+                border: "none",
+                borderRadius: "0.375rem",
+                cursor: "pointer",
+                fontWeight: "500",
+              }}
+            >
+              Try again
+            </button>
+            <button
+              onClick={() => window.location.href = "/"}
+              style={{
+                padding: "0.5rem 1rem",
+                backgroundColor: "#fff",
+                color: "#000",
+                border: "1px solid #ccc",
+                borderRadius: "0.375rem",
+                cursor: "pointer",
+                fontWeight: "500",
+              }}
+            >
+              Go Home
+            </button>
           </div>
         </div>
       </body>

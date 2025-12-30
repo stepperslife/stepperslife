@@ -105,8 +105,8 @@ Use IDE MCP for:
 - **Auth**: Custom JWT with RSA keys
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Payments**: Stripe
-- **Email**: Resend
-- **Hosting**: Vercel
+- **Email**: Postal (self-hosted on postal.toolboxhosting.com) + Mailcow (mailboxes)
+- **Hosting**: Coolify (self-hosted on 72.60.28.175)
 
 # Infrastructure Migration - CRITICAL
 

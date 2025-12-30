@@ -21,12 +21,9 @@ export const isTestingModeAllowed = (): boolean => {
 export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
   const identity = await ctx.auth.getUserIdentity();
 
-  console.log("[getCurrentUser] Identity:", identity ? JSON.stringify(identity) : "null");
-
   if (!identity) {
     // TESTING MODE: Only allow in non-production environments
     if (isTestingModeAllowed()) {
-      console.warn("[getCurrentUser] TESTING MODE - Using test user (no identity)");
       const testUser = await ctx.db
         .query("users")
         .withIndex("by_email", (q) => q.eq("email", PRIMARY_ADMIN_EMAIL))
@@ -38,7 +35,6 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
     }
 
     // In production or if test user not found, require authentication
-    console.error("[getCurrentUser] No identity found - user not authenticated");
     throw new Error("Not authenticated - please sign in");
   }
 
@@ -50,36 +46,30 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
   // Try direct email field first
   if (identity.email && typeof identity.email === "string") {
     email = identity.email;
-    console.log("[getCurrentUser] Found email directly:", email);
   }
 
   // Try extracting from tokenIdentifier (format: "provider|userId|email" or similar)
-  if (!email && (identity as any).tokenIdentifier) {
-    const tokenParts = (identity as any).tokenIdentifier.split("|");
-    console.log("[getCurrentUser] Token parts:", tokenParts);
+  if (!email && identity.tokenIdentifier) {
+    const tokenParts = identity.tokenIdentifier.split("|");
     // Try last part first (often the email)
     const lastPart = tokenParts[tokenParts.length - 1];
     if (lastPart && lastPart.includes("@")) {
       email = lastPart;
-      console.log("[getCurrentUser] Found email from tokenIdentifier:", email);
     }
   }
 
   // Try subject claim which might contain email
-  if (!email && (identity as any).subject) {
-    const subject = (identity as any).subject;
-    console.log("[getCurrentUser] Subject:", subject);
+  if (!email && identity.subject) {
+    const subject = identity.subject;
     if (subject.includes("@")) {
       const emailMatch = subject.match(/[\w.-]+@[\w.-]+\.\w+/);
       if (emailMatch) {
         email = emailMatch[0];
-        console.log("[getCurrentUser] Found email from subject:", email);
       }
     }
   }
 
   if (!email) {
-    console.error("[getCurrentUser] Could not extract email from identity:", JSON.stringify(identity));
     throw new Error("No email found in authentication token - please sign in again");
   }
 
@@ -89,11 +79,9 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
     .first();
 
   if (!user) {
-    console.error("[getCurrentUser] User not found for email:", email);
-    throw new Error(`User not found in database for email: ${email}`);
+    throw new Error("User not found in database - please sign in again");
   }
 
-  console.log("[getCurrentUser] Found user:", user.email, user._id);
   return user;
 }
 

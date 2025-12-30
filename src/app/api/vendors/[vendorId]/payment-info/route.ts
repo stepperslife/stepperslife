@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
+import { verifyAuth } from "@/lib/auth/api-auth";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL || "");
 
@@ -9,13 +10,23 @@ const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL || "");
  * Get vendor payment information for checkout
  * GET /api/vendors/[vendorId]/payment-info
  *
- * Returns Stripe Connect account info and commission rate for split payments
+ * Returns payment capability info for checkout (not sensitive account details)
+ * Requires authentication to prevent enumeration attacks
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ vendorId: string }> }
 ) {
   try {
+    // Require authentication
+    const auth = await verifyAuth(request);
+    if (!auth.authenticated || !auth.user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
     const { vendorId } = await params;
 
     if (!vendorId) {
@@ -37,15 +48,14 @@ export async function GET(
       );
     }
 
-    // Return payment-relevant info
+    // Return only what's needed for checkout UI (hide sensitive IDs)
     return NextResponse.json({
       vendorId: vendor._id,
       vendorName: vendor.name,
-      stripeConnectedAccountId: vendor.stripeConnectedAccountId || null,
-      stripeAccountSetupComplete: vendor.stripeAccountSetupComplete || false,
-      stripeCashAppEnabled: vendor.stripeCashAppEnabled || false,
-      stripePayoutsEnabled: vendor.stripePayoutsEnabled || false,
-      commissionPercent: vendor.commissionPercent || 15, // Default 15%
+      // Don't expose stripeConnectedAccountId - only expose capability flags
+      acceptsCards: vendor.stripeAccountSetupComplete || false,
+      acceptsCashApp: vendor.stripeCashAppEnabled || false,
+      payoutsEnabled: vendor.stripePayoutsEnabled || false,
     });
   } catch (error: any) {
     console.error("[Vendor Payment Info] Error:", error);

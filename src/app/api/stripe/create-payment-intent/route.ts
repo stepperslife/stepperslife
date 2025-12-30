@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 import crypto from "crypto";
+import { verifyAuth } from "@/lib/auth/api-auth";
 
 // Generate idempotency key to prevent duplicate payments
 function generateIdempotencyKey(orderId: string, amount: number): string {
@@ -44,6 +45,15 @@ const convex = new ConvexHttpClient(CONVEX_URL);
  */
 export async function POST(request: NextRequest) {
   try {
+    // Verify user is authenticated
+    const auth = await verifyAuth(request);
+    if (!auth.authenticated || !auth.user) {
+      return NextResponse.json(
+        { error: "Authentication required to create payment" },
+        { status: 401 }
+      );
+    }
+
     if (!stripe) {
       return NextResponse.json(
         { error: "Stripe is not configured. Please contact support." },
@@ -64,8 +74,11 @@ export async function POST(request: NextRequest) {
       useDirectCharge = false, // Default to DESTINATION CHARGE for platform control
     } = body;
 
-    if (!amount) {
-      return NextResponse.json({ error: "Amount is required" }, { status: 400 });
+    if (!amount || typeof amount !== "number" || amount <= 0) {
+      return NextResponse.json(
+        { error: "Valid positive amount is required" },
+        { status: 400 }
+      );
     }
 
     // Determine which connected account to use

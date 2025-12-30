@@ -76,11 +76,8 @@ export async function sendPostalEmail(options: PostalEmailOptions): Promise<Post
   }
 }
 
-// Legacy compatibility - wraps Postal in Resend-like interface
+// Export postal client for direct use
 export const postal = POSTAL_API_KEY ? { send: sendPostalEmail } : null
-
-// Alias for backwards compatibility with existing code
-export const resend = postal
 
 export const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@stepperslife.com'
 export const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'support@stepperslife.com'

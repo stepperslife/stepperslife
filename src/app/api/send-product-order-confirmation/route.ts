@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     if (!emailService.isConfigured()) {
       console.error("[OrderConfirmation] Email service not configured");
       return NextResponse.json(
-        { error: "Email service not configured (RESEND_API_KEY missing)" },
+        { error: "Email service not configured (POSTAL_API_KEY missing)" },
         { status: 500 }
       );
     }

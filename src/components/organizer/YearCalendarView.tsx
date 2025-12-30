@@ -174,7 +174,8 @@ function MonthMiniCalendar({
               {hasEvents && isCurrentMonth && (
                 <div className="absolute bottom-0.5 flex gap-0.5">
                   {dayEvents.slice(0, 3).map((event, idx) => {
-                    const color = colorMap[event.resource?.type] || "#3b82f6";
+                    const eventType = event.resource?.type;
+                    const color = (eventType && colorMap[eventType]) || "#3b82f6";
                     return (
                       <div
                         key={idx}

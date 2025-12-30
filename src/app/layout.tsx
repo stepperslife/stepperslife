@@ -16,6 +16,7 @@ import { ShoppingCart } from "@/components/ShoppingCart";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { FloatingScanButton } from "@/components/FloatingScanButton";
 import { validateEnv } from "@/lib/env-validator";
+import { Toaster } from "sonner";
 
 // Validate environment variables at startup (server-side only)
 if (typeof window === "undefined") {
@@ -106,6 +107,13 @@ export default function RootLayout({
         )}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {/* Skip to main content link for keyboard accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          Skip to main content
+        </a>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -119,10 +127,11 @@ export default function RootLayout({
               <FoodCartProvider>
                 <EventCartProvider>
                   <UnifiedCartProvider>
-                    {children}
+                    <main id="main-content">{children}</main>
                     <ShoppingCart />
                     <MobileBottomNav />
                     <FloatingScanButton />
+                    <Toaster position="top-right" richColors closeButton />
                   </UnifiedCartProvider>
                 </EventCartProvider>
               </FoodCartProvider>

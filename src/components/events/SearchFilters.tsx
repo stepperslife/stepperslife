@@ -59,6 +59,7 @@ export function SearchFilters({
           <button
             type="button"
             onClick={clearSearch}
+            aria-label="Clear search"
             className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors"
           >
             <X className="w-4 h-4 text-muted-foreground" />

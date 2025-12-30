@@ -42,6 +42,103 @@ import { useEventCart } from "@/contexts/EventCartContext";
 // Tab type for purchase options
 type PurchaseTab = "tickets" | "hotels" | "bundles";
 
+// Type definitions for event data from Convex
+interface TicketTier {
+  _id: Id<"ticketTiers">;
+  name: string;
+  description?: string;
+  price: number;
+  currentPrice?: number;
+  currentTierName?: string;
+  quantity?: number;
+  sold?: number;
+  isEarlyBird?: boolean;
+  nextPriceChange?: { date: number; price: number; tierName: string };
+  pricingTiers?: Array<{
+    name: string;
+    price: number;
+    availableFrom: number;
+    availableUntil?: number;
+  }>;
+}
+
+interface RoomType {
+  id: string;
+  name: string;
+  description?: string;
+  pricePerNightCents: number;
+  quantity: number;
+  sold: number;
+  maxGuests: number;
+}
+
+interface HotelPackage {
+  _id: Id<"hotelPackages">;
+  hotelName: string;
+  city: string;
+  state: string;
+  checkInDate: number;
+  checkOutDate: number;
+  roomTypes: RoomType[];
+}
+
+interface BundleTierDetail {
+  tierId: Id<"ticketTiers">;
+  tierName: string;
+  quantity: number;
+}
+
+interface EventBundle {
+  _id: Id<"ticketBundles">;
+  name: string;
+  description?: string;
+  price: number;
+  regularPrice?: number;
+  available: number;
+  percentageSavings?: number;
+  includedTiersDetails?: BundleTierDetail[];
+}
+
+interface Seat {
+  id: string;
+  number: string;
+  status: "AVAILABLE" | "RESERVED" | "UNAVAILABLE" | "BLOCKED";
+  type?: string;
+  sessionId?: string;
+  sessionExpiry?: number;
+}
+
+interface Row {
+  id: string;
+  label: string;
+  seats: Seat[];
+  curved?: boolean;
+}
+
+interface Table {
+  id: string;
+  number: string | number;
+  seats: Seat[];
+  shape?: string;
+  rotation?: number;
+  customPath?: string;
+  seatArc?: { startAngle?: number; arcDegrees?: number };
+}
+
+interface SeatingSection {
+  id: string;
+  name: string;
+  color?: string;
+  rows?: Row[];
+  tables?: Table[];
+}
+
+interface SeatingChart {
+  venueImageUrl?: string;
+  seatingStyle?: "TABLE_BASED" | "ROW_BASED";
+  sections: SeatingSection[];
+}
+
 interface EventDetailClientProps {
   eventId: Id<"events">;
 }
@@ -200,8 +297,9 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
       setWaitlistName("");
       setWaitlistQuantity(1);
       setWaitlistTierId(undefined);
-    } catch (error: any) {
-      alert(error.message || "Failed to join waitlist");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to join waitlist";
+      alert(message);
     } finally {
       setIsJoiningWaitlist(false);
     }
@@ -407,7 +505,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                       </span>
                       {eventDetails.ticketTiers && eventDetails.ticketTiers.length > 0 && (
                         <span className="text-xs font-medium text-success mt-1">
-                          from ${(Math.min(...eventDetails.ticketTiers.map((t: any) => t.currentPrice || t.price)) / 100).toFixed(0)}
+                          from ${(Math.min(...eventDetails.ticketTiers.map((t: TicketTier) => t.currentPrice || t.price)) / 100).toFixed(0)}
                         </span>
                       )}
                     </button>
@@ -442,7 +540,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                       </span>
                       {hotelPackages && hotelPackages.length > 0 && (
                         <span className="text-xs font-medium text-success mt-1">
-                          from ${(Math.min(...hotelPackages.flatMap((h: any) => h.roomTypes.map((r: any) => r.pricePerNightCents))) / 100).toFixed(0)}/night
+                          from ${(Math.min(...hotelPackages.flatMap((h: HotelPackage) => h.roomTypes.map((r: RoomType) => r.pricePerNightCents))) / 100).toFixed(0)}/night
                         </span>
                       )}
                     </button>
@@ -507,7 +605,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                       transition={{ duration: 0.2 }}
                       className="space-y-3"
                     >
-                      {eventDetails.ticketTiers?.map((tier: any) => {
+                      {eventDetails.ticketTiers?.map((tier: TicketTier) => {
                         const isSoldOut =
                           tier.quantity !== undefined &&
                           tier.sold !== undefined &&
@@ -633,7 +731,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                       transition={{ duration: 0.2 }}
                       className="space-y-4"
                     >
-                      {hotelPackages?.map((hotel: any) => {
+                      {hotelPackages?.map((hotel: HotelPackage) => {
                         const nights = Math.ceil(
                           (hotel.checkOutDate - hotel.checkInDate) / (1000 * 60 * 60 * 24)
                         );
@@ -658,7 +756,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
 
                             {/* Room Types - ALL VISIBLE */}
                             <div className="p-4 space-y-3">
-                              {hotel.roomTypes.map((room: any) => {
+                              {hotel.roomTypes.map((room: RoomType) => {
                                 const available = room.quantity - room.sold;
                                 const isSoldOut = available <= 0;
 
@@ -718,7 +816,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                       transition={{ duration: 0.2 }}
                       className="space-y-3"
                     >
-                      {eventBundles?.map((bundle: any) => (
+                      {eventBundles?.map((bundle: EventBundle) => (
                         <div
                           key={bundle._id}
                           className="border border-border rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer"
@@ -737,7 +835,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                 <p className="text-sm text-muted-foreground mb-2">{bundle.description}</p>
                               )}
                               <div className="flex flex-wrap gap-1">
-                                {bundle.includedTiersDetails?.map((tier: any) => (
+                                {bundle.includedTiersDetails?.map((tier: BundleTierDetail) => (
                                   <span
                                     key={tier.tierId}
                                     className="text-xs px-2 py-0.5 bg-muted rounded"
@@ -928,7 +1026,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               )}
 
               {/* Interactive Ballroom Chart for TABLE_BASED layouts */}
-              {(seatingChart as any).seatingStyle === "TABLE_BASED" ? (
+              {(seatingChart as SeatingChart).seatingStyle === "TABLE_BASED" ? (
                 <div className="mb-6">
                   <InteractiveSeatingChart
                     eventId={eventId}
@@ -944,7 +1042,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               ) : (
                 /* Traditional Row/Section view for ROW_BASED layouts */
                 <div className="space-y-6">
-                  {seatingChart.sections.map((section: any, sectionIndex: number) => (
+                  {seatingChart.sections.map((section: SeatingSection) => (
                     <div key={section.id} className="border border-border rounded-lg p-4">
                       <div className="flex items-center gap-3 mb-4">
                         <div
@@ -957,13 +1055,13 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                       {/* Row-based seating */}
                       {section.rows && section.rows.length > 0 && (
                         <div className="space-y-2">
-                          {section.rows.map((row: any) => (
+                          {section.rows.map((row: Row) => (
                             <div key={row.id} className="flex items-center gap-2">
                               <span className="w-8 text-sm font-medium text-muted-foreground text-right">
                                 {row.label}
                               </span>
                               <div className="flex gap-1 flex-wrap">
-                                {row.seats.map((seat: any) => (
+                                {row.seats.map((seat: Seat) => (
                                   <div
                                     key={seat.id}
                                     className={`w-8 h-8 rounded flex items-center justify-center text-xs font-medium border-2 ${
@@ -987,7 +1085,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                       {/* Table-based seating */}
                       {section.tables && section.tables.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                          {section.tables.map((table: any) => (
+                          {section.tables.map((table: Table) => (
                             <div
                               key={table.id}
                               className="border border-border rounded-lg p-3 bg-muted"
@@ -996,7 +1094,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
                                 Table {table.number}
                               </p>
                               <div className="flex gap-1 flex-wrap">
-                                {table.seats.map((seat: any) => (
+                                {table.seats.map((seat: Seat) => (
                                   <div
                                     key={seat.id}
                                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border-2 ${
@@ -1020,7 +1118,7 @@ export default function EventDetailClient({ eventId }: EventDetailClientProps) {
               )}
 
               {/* Legend - Only show for ROW_BASED layouts */}
-              {(seatingChart as any).seatingStyle !== "TABLE_BASED" && (
+              {(seatingChart as SeatingChart).seatingStyle !== "TABLE_BASED" && (
                 <div className="mt-6 pt-6 border-t border-border">
                   <h4 className="font-semibold text-foreground mb-3">Legend</h4>
                   <div className="flex flex-wrap gap-4 text-sm">

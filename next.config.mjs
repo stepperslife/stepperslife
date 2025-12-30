@@ -4,10 +4,9 @@ import { withSentryConfig } from "@sentry/nextjs";
 const nextConfig = {
   // Required for Docker/Coolify deployment (also works with Vercel)
   output: 'standalone',
-  // TODO: Remove ignoreBuildErrors once all type errors are fixed
-  // TypeScript strict mode is enabled for IDE support
+  // TypeScript: All type issues have been resolved
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   // Externalize heavy packages for serverless functions to reduce bundle size
   serverExternalPackages: [
@@ -59,7 +58,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' data: https://fonts.gstatic.com https://vercel.live",
               `img-src 'self' data: blob: https: ${isDevelopment ? 'http://localhost:*' : ''} https://lh3.googleusercontent.com https://images.unsplash.com https://unsplash.com https://convex.toolboxhosting.com`.replace(/\s+/g, ' ').trim(),
-              "connect-src 'self' https://convex.toolboxhosting.com wss://convex.toolboxhosting.com https://api.stripe.com https://stripe.com https://m.stripe.com https://m.stripe.network https://web.squarecdn.com https://sandbox.web.squarecdn.com https://connect.squareup.com https://pci-connect.squareup.com https://api.resend.com https://www.paypal.com https://api.paypal.com https://*.sentry.io https://www.google-analytics.com https://www.googletagmanager.com https://region1.google-analytics.com",
+              "connect-src 'self' https://convex.toolboxhosting.com wss://convex.toolboxhosting.com https://api.stripe.com https://stripe.com https://m.stripe.com https://m.stripe.network https://web.squarecdn.com https://sandbox.web.squarecdn.com https://connect.squareup.com https://pci-connect.squareup.com https://www.paypal.com https://api.paypal.com https://*.sentry.io https://www.google-analytics.com https://www.googletagmanager.com https://region1.google-analytics.com",
               "frame-src 'self' https://web.squarecdn.com https://sandbox.web.squarecdn.com https://www.paypal.com https://js.stripe.com https://vercel.live",
               "object-src 'none'",
               "base-uri 'self'",
@@ -140,12 +139,7 @@ const nextConfig = {
         hostname: "unsplash.com",
         pathname: "/**",
       },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "3004",
-        pathname: "/api/**",
-      },
+      // Note: localhost removed for production - add back in development if needed
       {
         protocol: "https",
         hostname: "stepperslife.com",

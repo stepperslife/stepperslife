@@ -11,7 +11,7 @@ const requiredEnvVars = [
   'NEXTAUTH_URL',
   'AUTH_GOOGLE_CLIENT_ID',
   'AUTH_GOOGLE_CLIENT_SECRET',
-  'RESEND_API_KEY',
+  'POSTAL_API_KEY', // Self-hosted email via Postal (postal.toolboxhosting.com)
   'STRIPE_SECRET_KEY',
   'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
 ] as const;
@@ -27,6 +27,13 @@ export function validateEnv() {
   const missing: string[] = [];
   const warnings: string[] = [];
 
+  // Skip validation during build phase (only validate at runtime)
+  // Next.js sets NEXT_PHASE during build
+  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+  if (isBuildPhase) {
+    return { valid: true, warnings: [], isBuildPhase: true };
+  }
+
   // Check required variables
   for (const key of requiredEnvVars) {
     if (!process.env[key]) {
@@ -41,7 +48,7 @@ export function validateEnv() {
     }
   }
 
-  // Fail if required variables are missing
+  // Fail if required variables are missing (only at runtime, not during build)
   if (missing.length > 0) {
     throw new Error(
       `Missing required environment variables:\n${missing.map(k => `  - ${k}`).join('\n')}\n\n` +
@@ -81,9 +88,10 @@ export function validateEnv() {
   }
 
   // Validate API key formats
-  const resendKey = process.env.RESEND_API_KEY;
-  if (resendKey && !resendKey.startsWith('re_')) {
-    throw new Error('RESEND_API_KEY must start with "re_" (invalid format)');
+  // Postal API key format validation (not strictly required as Postal keys vary)
+  const postalKey = process.env.POSTAL_API_KEY;
+  if (postalKey && postalKey.length < 10) {
+    throw new Error('POSTAL_API_KEY appears to be too short (invalid format)');
   }
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;

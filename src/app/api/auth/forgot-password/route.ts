@@ -4,9 +4,23 @@ import { sendPostalEmail } from "@/lib/email/client";
 import { randomBytes, createHash } from "crypto";
 import { convexClient as convex } from "@/lib/auth/convex-client";
 import { getBaseUrl } from "@/lib/constants/app-config";
+import {
+  checkRateLimit,
+  getClientIp,
+  rateLimiters,
+  createRateLimitResponse,
+} from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Strict rate limiting - 3 attempts per 15 minutes
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`password-reset:${clientIp}`, rateLimiters.passwordReset);
+
+    if (!rateLimit.success) {
+      return createRateLimitResponse(rateLimit.retryAfter || 900);
+    }
+
     const { email } = await request.json();
 
     if (!email) {
